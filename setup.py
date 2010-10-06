@@ -13,8 +13,8 @@ install_requires = [
     'Django',
     'django-staticfiles',
     'lizard-ui',
+    'lizard-map',
     'django-nose',
-    'nosexcover',
     ],
 
 tests_require = [

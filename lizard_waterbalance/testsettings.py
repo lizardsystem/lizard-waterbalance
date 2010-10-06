@@ -5,9 +5,11 @@ DATABASE_NAME = 'test.db'
 SITE_ID = 1
 INSTALLED_APPS = [
     'lizard_waterbalance',
+    'lizard_map',
     'lizard_ui',
     'staticfiles',
     'compressor',
+    'django_nose',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
