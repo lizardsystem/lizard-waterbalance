@@ -7,6 +7,14 @@ from lizard_fewsunblobbed.models import Timeserie
 
 # Create your models here.
 
+class Polder(models.Model):
+    """Represents the area of which we want to know the waterbalance."""
+
+    class Meta:
+        ordering = ("name",)
+
+    name = models.CharField(max_length=80)
+    slug = models.SlugField(help_text=u"Name used for URL.")
 
 class TimeserieWaterbalance(Timeserie):
     """Represents a time series of in or outgoing water.
