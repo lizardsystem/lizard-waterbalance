@@ -44,12 +44,19 @@ class Bucket(models.Model):
     """
     name = models.CharField(max_length=64)
     surface = models.IntegerField()
-    net_precipitation = models.ForeignKey(Timeserie)
-    evaporation = models.ForeignKey(Timeserie)
-    flow_off = models.ForeignKey(Timeserie)
-    drainage = models.ForeignKey(Timeserie)
-    indraft = models.ForeignKey(Timeserie)
-    seepage = models.ForeignKey(Timeserie)
+
+    # To have links to multiple time series, we need to use the named argument
+    # 'related_name'. But Django automatically creates a reverse relation from
+    # a Bucket to a Timeseries, usually called 'bucket_set'. As a Bucket has
+    # multiple foreign keys to a Timeseries, a Timeseries would end up with
+    # multiple attributes with the same name. Therefore we tell Django what
+    # name to use for the relation to the Bucket.
+    net_precipitation = models.ForeignKey(Timeserie, related_name='bucket_net_precipitation')
+    evaporation = models.ForeignKey(Timeserie, related_name='bucket_evaporation')
+    flow_off = models.ForeignKey(Timeserie, related_name='bucket_flow_off')
+    drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
+    indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
+    seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
 
 
 class StackedBucket(Bucket):
