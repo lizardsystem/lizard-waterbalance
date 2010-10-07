@@ -29,7 +29,7 @@ class Polder(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('krw_waternet.waterbody', (), {'area': str(self.slug)})
+        return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
 
 
 class TimeserieWaterbalance(Timeserie):
