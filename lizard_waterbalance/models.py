@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from lizard_fewsunblobbed import Timeserie
+from lizard_fewsunblobbed.models import Timeserie
 
 
 # Create your models here.
@@ -14,10 +14,11 @@ class TimeserieWaterbalance(Timeserie):
     Instance variables:
     * name -- name to show to the user
     * is_outgoing -- holds for outgoing water
-  
+
     """
     name = models.CharField(max_length=64)
     is_outgoing = models.BooleanField()
+
 
 class Bucket(models.Model):
     """Represents a *bakje*.

@@ -14,6 +14,7 @@ install_requires = [
     'django-staticfiles',
     'lizard-ui',
     'lizard-map',
+    'lizard-fewsunblobbed',
     'django-nose',
     ],
 
