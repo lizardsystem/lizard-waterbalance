@@ -8,13 +8,29 @@ from lizard_fewsunblobbed.models import Timeserie
 # Create your models here.
 
 class Polder(models.Model):
-    """Represents the area of which we want to know the waterbalance."""
+    """Represents the area of which we want to know the waterbalance.
 
+    Instance variables:
+    * name -- name to show to the user
+    * slug -- unique name to construct the URL
+    * description -- general description
+    """
     class Meta:
         ordering = ("name",)
 
     name = models.CharField(max_length=80)
     slug = models.SlugField(help_text=u"Name used for URL.")
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   help_text="You can use markdown")
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('krw_waternet.waterbody', (), {'area': str(self.slug)})
+
 
 class TimeserieWaterbalance(Timeserie):
     """Represents a time series of in or outgoing water.
@@ -22,7 +38,6 @@ class TimeserieWaterbalance(Timeserie):
     Instance variables:
     * name -- name to show to the user
     * is_outgoing -- holds for outgoing water
-
     """
     name = models.CharField(max_length=64)
     is_outgoing = models.BooleanField()
@@ -51,8 +66,10 @@ class Bucket(models.Model):
     # multiple foreign keys to a Timeseries, a Timeseries would end up with
     # multiple attributes with the same name. Therefore we tell Django what
     # name to use for the relation to the Bucket.
-    net_precipitation = models.ForeignKey(Timeserie, related_name='bucket_net_precipitation')
-    evaporation = models.ForeignKey(Timeserie, related_name='bucket_evaporation')
+    net_precipitation =  \
+        models.ForeignKey(Timeserie, related_name='bucket_net_precipitation')
+    evaporation = \
+        models.ForeignKey(Timeserie, related_name='bucket_evaporation')
     flow_off = models.ForeignKey(Timeserie, related_name='bucket_flow_off')
     drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
     indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
