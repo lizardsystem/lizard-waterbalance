@@ -49,7 +49,7 @@ class Bucket(models.Model):
     Instance variables:
     * name -- name to show to the user
     * surface -- surface in [ha]
-    * precepitation -- time series for *neerslag*
+    * precipitation -- time series for *neerslag*
     * evaporation -- time series for *verdamping*
     * flow_off -- time series for *afstroming*
     * drainage -- time series for *drainage*
