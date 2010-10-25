@@ -42,8 +42,10 @@ class TimeserieWaterbalance(Timeserie):
     name = models.CharField(max_length=64)
     is_outgoing = models.BooleanField()
 
+
 class WaterbalanceArea(models.Model):
     pass
+
 
 class Bucket(models.Model):
     """Represents a *bakje*.
@@ -78,6 +80,7 @@ class Bucket(models.Model):
     drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
     indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
     seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
+
 
 class OpenWaterBucket(Bucket):
     """Represents an *open water(bakje)*."""
