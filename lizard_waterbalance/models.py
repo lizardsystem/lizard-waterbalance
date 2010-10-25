@@ -42,6 +42,8 @@ class TimeserieWaterbalance(Timeserie):
     name = models.CharField(max_length=64)
     is_outgoing = models.BooleanField()
 
+class WaterbalanceArea(models.Model):
+    pass
 
 class Bucket(models.Model):
     """Represents a *bakje*.
@@ -49,6 +51,7 @@ class Bucket(models.Model):
     Instance variables:
     * name -- name to show to the user
     * surface -- surface in [ha]
+    * is_collapsed -- holds if and only if the bucket is a single bucket
     * precipitation -- time series for *neerslag*
     * evaporation -- time series for *verdamping*
     * flow_off -- time series for *afstroming*
@@ -60,12 +63,13 @@ class Bucket(models.Model):
     name = models.CharField(max_length=64)
     surface = models.IntegerField()
 
-    # To have links to multiple time series, we need to use the named argument
-    # 'related_name'. But Django automatically creates a reverse relation from
-    # a Bucket to a Timeseries, usually called 'bucket_set'. As a Bucket has
-    # multiple foreign keys to a Timeseries, a Timeseries would end up with
-    # multiple attributes with the same name. Therefore we tell Django what
-    # name to use for the relation to the Bucket.
+    # A Bucket has links to several Timeseries or in Django terms, a Bucket has
+    # multiple foreign keys to a Timeseries. For each foreign key from a Bucket
+    # to a Timeseries, Django automatically creates a reverse relation back to
+    # a Bucket, usually called 'bucket_set'. But this would mean that a
+    # Timeseries ends up with multiple attributes with the same name, which is
+    # not allowed. Therefore we tell Django what name to use for the relation
+    # to the Bucket through the use of the named argument related_name.
     net_precipitation =  \
         models.ForeignKey(Timeserie, related_name='bucket_net_precipitation')
     evaporation = \
@@ -74,12 +78,6 @@ class Bucket(models.Model):
     drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
     indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
     seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
-
-
-class StackedBucket(Bucket):
-    """Represents a *gestapeld bakje*."""
-    pass
-
 
 class OpenWaterBucket(Bucket):
     """Represents an *open water(bakje)*."""
