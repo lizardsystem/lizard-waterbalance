@@ -2,49 +2,39 @@
 
 from django.db import models
 
-from lizard_fewsunblobbed.models import Timeserie
-
-
 # Create your models here.
 
-class Polder(models.Model):
-    """Represents the area of which we want to know the waterbalance.
+
+class WaterbalanceTimeserieData(models.Model):
+    """Specifies the value of a parameter at a specific time.
+
+    Note that a WaterbalanceTimeserieData does not specify the parameter
+    itself, only its value at a specific time.
 
     Instance variables:
-    * name -- name to show to the user
-    * slug -- unique name to construct the URL
-    * description -- general description
+    * value -- value of the parameter
+    * time -- time at which the value was measured
+
     """
-    class Meta:
-        ordering = ("name",)
-
-    name = models.CharField(max_length=80)
-    slug = models.SlugField(help_text=u"Name used for URL.")
-    description = models.TextField(null=True,
-                                   blank=True,
-                                   help_text="You can use markdown")
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
+    value = models.FloatField()
+    time = models.DateTimeField()
 
 
-class TimeserieWaterbalance(Timeserie):
-    """Represents a time series of in or outgoing water.
+class WaterbalanceTimeserie(models.Model):
+    """Specifies a time series of a specific parameter.
+
+    Examples of parameters are water discharge, zinc concentration and chloride
+    concentration.
 
     Instance variables:
-    * name -- name to show to the user
-    * is_outgoing -- holds for outgoing water
+    * parameter -- name of the parameter to which this time series belongs
+    * label -- name of the group of parameters to which the parameter belongs
+    * time_series -- link to the time serie
+
     """
-    name = models.CharField(max_length=64)
-    is_outgoing = models.BooleanField()
-
-
-class WaterbalanceArea(models.Model):
-    pass
+    parameter = models.CharField(max_length=64)
+    label = models.CharField(max_length=64)
+    time_series = models.ManyToManyField(WaterbalanceTimeserieData)
 
 
 class Bucket(models.Model):
@@ -72,16 +62,73 @@ class Bucket(models.Model):
     # Timeseries ends up with multiple attributes with the same name, which is
     # not allowed. Therefore we tell Django what name to use for the relation
     # to the Bucket through the use of the named argument related_name.
-    net_precipitation =  \
-        models.ForeignKey(Timeserie, related_name='bucket_net_precipitation')
-    evaporation = \
-        models.ForeignKey(Timeserie, related_name='bucket_evaporation')
-    flow_off = models.ForeignKey(Timeserie, related_name='bucket_flow_off')
-    drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
-    indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
-    seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
+    precipitation = models.ForeignKey(WaterbalanceTimeserie,
+                                      related_name='bucket_net_precipitation')
+    evaporation = models.ForeignKey(WaterbalanceTimeserie,
+                                    related_name='bucket_evaporation')
+    flow_off = models.ForeignKey(WaterbalanceTimeserie,
+                                 related_name='bucket_flow_off')
+    drainage = models.ForeignKey(WaterbalanceTimeserie,
+                                 related_name='bucket_drainage')
+    indraft = models.ForeignKey(WaterbalanceTimeserie,
+                                related_name='bucket_indraft')
+    seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                related_name='bucket_seepage')
 
 
-class OpenWaterBucket(Bucket):
-    """Represents an *open water(bakje)*."""
-    pass
+class OpenWater(Bucket):
+    """Represents an *open water(bakje)*.
+
+    Instance variables:
+    * minimum_height -- minimum allowed water height in [m]
+    * maximum_height -- maximum allowed water height in [m]
+    * intake -- time series for *intake*
+    * pump -- time series for discharge from area (often polder)
+    * sluice_error -- time series for model errors
+
+    Intake consists of two parts: doorspoeling and peilhandhaving
+    """
+    minimum_height = models.IntegerField()
+    maximum_height = models.IntegerField()
+    intake = models.ForeignKey(WaterbalanceTimeserie,
+                               related_name='openwater_intake')
+    pump = models.ForeignKey(WaterbalanceTimeserie,
+                             related_name='openwater_pump')
+    sluice_error = models.ForeignKey(WaterbalanceTimeserie,
+                                     related_name='openwater_sluice_error')
+
+
+class WaterbalanceArea(models.Model):
+    """Represents the area of which we want to know the waterbalance.
+
+    Instance variables:
+    * name -- name to show to the user
+    * slug -- unique name to construct the URL
+    * description -- general description
+    * buckets -- link to the buckets of the area
+    * open_water -- link to the open water bucket of the area
+
+    """
+    class Meta:
+        ordering = ("name",)
+
+    name = models.CharField(max_length=80)
+    slug = models.SlugField(help_text=u"Name used for URL.")
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   help_text="You can use markdown")
+    buckets = models.ForeignKey(Bucket,
+                                null=True,
+                                blank=True,
+                                related_name='waterbalance_area_bucket')
+    open_water = models.ForeignKey(OpenWater,
+                                   null=True,
+                                   blank=True,
+                                   related_name='waterbalance_area_open_water')
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
