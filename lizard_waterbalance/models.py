@@ -5,19 +5,16 @@ from django.db import models
 # Create your models here.
 
 
-class WaterbalanceTimeserieData(models.Model):
-    """Specifies the value of a parameter at a specific time.
-
-    Note that a WaterbalanceTimeserieData does not specify the parameter
-    itself, only its value at a specific time.
+class Label(models.Model):
+    """Specifies the name of a parameter group.
 
     Instance variables:
-    * value -- value of the parameter
-    * time -- time at which the value was measured
+    * name -- name of the group of parameters to which the parameter belongs
+    * color -- hex code of the color used for a value of the parameter group
 
     """
-    value = models.FloatField()
-    time = models.DateTimeField()
+    name = models.CharField(max_length=64)
+    color = models.CharField(max_length=64)
 
 
 class WaterbalanceTimeserie(models.Model):
@@ -26,15 +23,33 @@ class WaterbalanceTimeserie(models.Model):
     Examples of parameters are water discharge, zinc concentration and chloride
     concentration.
 
+    To get to the events that belong to the current WaterbalanceTimeserie, use
+    the implicit attribute 'events' which is a Manager for the events.
+
     Instance variables:
     * parameter -- name of the parameter to which this time series belongs
-    * label -- name of the group of parameters to which the parameter belongs
-    * time_series -- link to the time serie
+    * label -- link to the group of parameters to which the parameter belongs
 
     """
     parameter = models.CharField(max_length=64)
-    label = models.CharField(max_length=64)
-    time_series = models.ManyToManyField(WaterbalanceTimeserieData)
+    label = models.ForeignKey(Label)
+
+
+class WaterbalanceTimeserieEvent(models.Model):
+    """Specifies the value of a parameter at a specific time.
+
+    Note that a WaterbalanceTimeserieData does not specify the parameter
+    itself, only its value at a specific time.
+
+    Instance variables:
+    * value -- value of the parameter
+    * time -- time at which the value was measured
+    * timeserie -- link to the time serie
+
+    """
+    value = models.FloatField()
+    time = models.DateTimeField()
+    timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='events')
 
 
 class Bucket(models.Model):
@@ -83,17 +98,19 @@ class OpenWater(Bucket):
     * minimum_height -- minimum allowed water height in [m]
     * maximum_height -- maximum allowed water height in [m]
     * intake -- time series for *intake*
-    * pump -- time series for discharge from area (often polder)
+    * pumps -- links to time series for discharge from area (often polder)
     * sluice_error -- time series for model errors
 
-    Intake consists of two parts: doorspoeling and peilhandhaving
+    According to Bastiaan, intake consists of two parts: doorspoeling and
+    peilhandhaving. What should we do with this?
+
     """
     minimum_height = models.IntegerField()
     maximum_height = models.IntegerField()
     intake = models.ForeignKey(WaterbalanceTimeserie,
                                related_name='openwater_intake')
-    pump = models.ForeignKey(WaterbalanceTimeserie,
-                             related_name='openwater_pump')
+    pumps = models.ForeignKey(WaterbalanceTimeserie,
+                              related_name='openwater_pumps')
     sluice_error = models.ForeignKey(WaterbalanceTimeserie,
                                      related_name='openwater_sluice_error')
 
@@ -117,10 +134,10 @@ class WaterbalanceArea(models.Model):
     description = models.TextField(null=True,
                                    blank=True,
                                    help_text="You can use markdown")
-    buckets = models.ForeignKey(Bucket,
-                                null=True,
-                                blank=True,
-                                related_name='waterbalance_area_bucket')
+    buckets = models.ManyToManyField(Bucket,
+                                     null=True,
+                                     blank=True,
+                                     related_name='waterbalance_area_bucket')
     open_water = models.ForeignKey(OpenWater,
                                    null=True,
                                    blank=True,
