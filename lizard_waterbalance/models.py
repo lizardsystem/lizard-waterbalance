@@ -2,8 +2,10 @@
 
 from django.db import models
 
-# Create your models here.
+from lizard_fewsunblobbed.models import Timeserie
 
+
+# Create your models here.
 
 class Label(models.Model):
     """Specifies the name of a parameter group.
@@ -15,41 +17,6 @@ class Label(models.Model):
     """
     name = models.CharField(max_length=64)
     color = models.CharField(max_length=64)
-
-
-class WaterbalanceTimeserie(models.Model):
-    """Specifies a time series of a specific parameter.
-
-    Examples of parameters are water discharge, zinc concentration and chloride
-    concentration.
-
-    To get to the events that belong to the current WaterbalanceTimeserie, use
-    the implicit attribute 'events' which is a Manager for the events.
-
-    Instance variables:
-    * parameter -- name of the parameter to which this time series belongs
-    * label -- link to the group of parameters to which the parameter belongs
-
-    """
-    parameter = models.CharField(max_length=64)
-    label = models.ForeignKey(Label)
-
-
-class WaterbalanceTimeserieEvent(models.Model):
-    """Specifies the value of a parameter at a specific time.
-
-    Note that a WaterbalanceTimeserieData does not specify the parameter
-    itself, only its value at a specific time.
-
-    Instance variables:
-    * value -- value of the parameter
-    * time -- time at which the value was measured
-    * timeserie -- link to the time serie
-
-    """
-    value = models.FloatField()
-    time = models.DateTimeField()
-    timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='events')
 
 
 class Bucket(models.Model):
@@ -65,6 +32,7 @@ class Bucket(models.Model):
     * drainage -- time series for *drainage*
     * indraft  -- time series for *intrek*
     * seepage -- time series for *kwel*
+    * open_water -- link to the open_water to which this bucket belongs
 
     """
     name = models.CharField(max_length=64)
@@ -77,18 +45,22 @@ class Bucket(models.Model):
     # Timeseries ends up with multiple attributes with the same name, which is
     # not allowed. Therefore we tell Django what name to use for the relation
     # to the Bucket through the use of the named argument related_name.
-    precipitation = models.ForeignKey(WaterbalanceTimeserie,
+    precipitation = models.ForeignKey(Timeserie,
                                       related_name='bucket_net_precipitation')
-    evaporation = models.ForeignKey(WaterbalanceTimeserie,
+    evaporation = models.ForeignKey(Timeserie,
                                     related_name='bucket_evaporation')
-    flow_off = models.ForeignKey(WaterbalanceTimeserie,
-                                 related_name='bucket_flow_off')
-    drainage = models.ForeignKey(WaterbalanceTimeserie,
-                                 related_name='bucket_drainage')
-    indraft = models.ForeignKey(WaterbalanceTimeserie,
-                                related_name='bucket_indraft')
-    seepage = models.ForeignKey(WaterbalanceTimeserie,
-                                related_name='bucket_seepage')
+    flow_off = models.ForeignKey(Timeserie, related_name='bucket_flow_off')
+    drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
+    indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
+    seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
+
+    # We now couple a bucket to the open water although from a semantic point
+    # of view, an open water should reference the buckets. However, this is the
+    # usual way to implement a one-to-many relationship.
+    open_water = models.ForeignKey("Bucket",
+                                   null=True,
+                                   blank=True,
+                                   related_name='buckets')
 
 
 class OpenWater(Bucket):
@@ -101,17 +73,18 @@ class OpenWater(Bucket):
     * pumps -- links to time series for discharge from area (often polder)
     * sluice_error -- time series for model errors
 
+    To get to the buckets that have access to the current open water, use the
+    implicit attribute 'buckets' which is a Manager for these buckets.
+
     According to Bastiaan, intake consists of two parts: doorspoeling and
     peilhandhaving. What should we do with this?
 
     """
     minimum_height = models.IntegerField()
     maximum_height = models.IntegerField()
-    intake = models.ForeignKey(WaterbalanceTimeserie,
-                               related_name='openwater_intake')
-    pumps = models.ForeignKey(WaterbalanceTimeserie,
-                              related_name='openwater_pumps')
-    sluice_error = models.ForeignKey(WaterbalanceTimeserie,
+    intake = models.ForeignKey(Timeserie, related_name='openwater_intake')
+    pumps = models.ManyToManyField(Timeserie, related_name='openwater_pumps')
+    sluice_error = models.ForeignKey(Timeserie,
                                      related_name='openwater_sluice_error')
 
 
@@ -122,8 +95,7 @@ class WaterbalanceArea(models.Model):
     * name -- name to show to the user
     * slug -- unique name to construct the URL
     * description -- general description
-    * buckets -- link to the buckets of the area
-    * open_water -- link to the open water bucket of the area
+    * open_water -- link to the open water
 
     """
     class Meta:
@@ -134,14 +106,8 @@ class WaterbalanceArea(models.Model):
     description = models.TextField(null=True,
                                    blank=True,
                                    help_text="You can use markdown")
-    buckets = models.ManyToManyField(Bucket,
-                                     null=True,
-                                     blank=True,
-                                     related_name='waterbalance_area_bucket')
-    open_water = models.ForeignKey(OpenWater,
-                                   null=True,
-                                   blank=True,
-                                   related_name='waterbalance_area_open_water')
+
+    open_water = models.ForeignKey(OpenWater, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)
