@@ -2,9 +2,10 @@
 # $Id$
 
 from django.db import models
+from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Timeserie
-
+from lizard_map.models import Color
 
 # Create your models here.
 
@@ -116,3 +117,19 @@ class WaterbalanceArea(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
+
+
+class WaterbalanceLabel(models.Model):
+    """Specifies the labels of a water balance and their color."""
+
+    class Meta:
+        verbose_name = _("Waterbalans label")
+        verbose_name_plural = _("Waterbalans labels")
+        ordering = ("order_index",)
+
+    name = models.CharField(max_length=64)
+    color = models.ForeignKey(Color)
+    order_index = models.IntegerField(unique=True)
+
+    def __unicode__(self):
+        return self.name
