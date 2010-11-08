@@ -5,7 +5,8 @@ from django.db import models
 from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Timeserie
-from lizard_map.models import Color
+from lizard_map.models import ColorField
+
 
 # Create your models here.
 
@@ -146,16 +147,16 @@ class WaterbalanceLabel(models.Model):
         verbose_name_plural = _("Waterbalans labels")
         ordering = ("order_index",)
 
-    TYPE_IN = 0
-    TYPE_OUT = 1
-    TYPE_ERROR = 2
+    TYPE_IN = 1
+    TYPE_OUT = 2
+    TYPE_ERROR = 3
 
     TYPES = ((TYPE_IN, 'in'), (TYPE_OUT, 'out'), (TYPE_ERROR, 'fout'))
 
     name = models.CharField(max_length=64)
     parent = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
-    type = models.IntegerField(choices=TYPES, default=TYPE_IN)
-    color = models.ForeignKey(Color)
+    flow_type = models.IntegerField(choices=TYPES, default=TYPE_IN)
+    color = ColorField()
     order_index = models.IntegerField(unique=True)
 
     def __unicode__(self):
