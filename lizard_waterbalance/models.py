@@ -9,16 +9,18 @@ from lizard_map.models import Color
 
 # Create your models here.
 
-class Label(models.Model):
-    """Specifies the name of a parameter group.
+
+class WaterbalanceTimeserie(models.Model):
+    """Connects a time serie to a WaterbalanceLabel.
 
     Instance variables:
-    * name -- name of the group of parameters to which the parameter belongs
-    * color -- hex code of the color used for a value of the parameter group
+    * timeserie -- link to the actual time serie data
+    * label -- link to the WaterbalanceLabel that describes the time serie
 
     """
-    name = models.CharField(max_length=64)
-    color = models.CharField(max_length=64)
+
+    timeserie = models.ForeignKey(Timeserie)
+    label = models.ForeignKey('WaterbalanceLabel')
 
 
 class Bucket(models.Model):
@@ -47,14 +49,18 @@ class Bucket(models.Model):
     # Timeseries ends up with multiple attributes with the same name, which is
     # not allowed. Therefore we tell Django what name to use for the relation
     # to the Bucket through the use of the named argument related_name.
-    precipitation = models.ForeignKey(Timeserie,
+    precipitation = models.ForeignKey(WaterbalanceTimeserie,
                                       related_name='bucket_net_precipitation')
-    evaporation = models.ForeignKey(Timeserie,
+    evaporation = models.ForeignKey(WaterbalanceTimeserie,
                                     related_name='bucket_evaporation')
-    flow_off = models.ForeignKey(Timeserie, related_name='bucket_flow_off')
-    drainage = models.ForeignKey(Timeserie, related_name='bucket_drainage')
-    indraft = models.ForeignKey(Timeserie, related_name='bucket_indraft')
-    seepage = models.ForeignKey(Timeserie, related_name='bucket_seepage')
+    flow_off = models.ForeignKey(WaterbalanceTimeserie,
+                                 related_name='bucket_flow_off')
+    drainage = models.ForeignKey(WaterbalanceTimeserie,
+                                 related_name='bucket_drainage')
+    indraft = models.ForeignKey(WaterbalanceTimeserie,
+                                related_name='bucket_indraft')
+    seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                related_name='bucket_seepage')
 
     # We now couple a bucket to the open water although from a semantic point
     # of view, an open water should reference the buckets. However, this is the
@@ -84,9 +90,11 @@ class OpenWater(Bucket):
     """
     minimum_height = models.IntegerField()
     maximum_height = models.IntegerField()
-    intake = models.ForeignKey(Timeserie, related_name='openwater_intake')
-    pumps = models.ManyToManyField(Timeserie, related_name='openwater_pumps')
-    sluice_error = models.ForeignKey(Timeserie,
+    intake = models.ForeignKey(WaterbalanceTimeserie,
+                               related_name='openwater_intake')
+    pumps = models.ManyToManyField(WaterbalanceTimeserie,
+                                   related_name='openwater_pumps')
+    sluice_error = models.ForeignKey(WaterbalanceTimeserie,
                                      related_name='openwater_sluice_error')
 
 
@@ -101,6 +109,8 @@ class WaterbalanceArea(models.Model):
 
     """
     class Meta:
+        verbose_name = _("Waterbalans gebied")
+        verbose_name_plural = _("Waterbalans gebieden")
         ordering = ("name",)
 
     name = models.CharField(max_length=80)
@@ -120,14 +130,31 @@ class WaterbalanceArea(models.Model):
 
 
 class WaterbalanceLabel(models.Model):
-    """Specifies the labels of a water balance and their color."""
+    """Specifies the labels of a water balance and their color.
+
+    Instance variables:
+    * name -- name of the group of parameters to which the parameter belongs
+    * parent -- link to a possible parent label to specify a hierarchy
+    * type -- incoming flow, outgoing flow or error flow
+    * color -- hex code of the color that identifies the parameter group
+    * order_index -- index to determine the order of the labels in a legend
+
+    """
 
     class Meta:
         verbose_name = _("Waterbalans label")
         verbose_name_plural = _("Waterbalans labels")
         ordering = ("order_index",)
 
+    TYPE_IN = 0
+    TYPE_OUT = 1
+    TYPE_ERROR = 2
+
+    TYPES = ((TYPE_IN, 'in'), (TYPE_OUT, 'out'), (TYPE_ERROR, 'fout'))
+
     name = models.CharField(max_length=64)
+    parent = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
+    type = models.IntegerField(choices=TYPES, default=TYPE_IN)
     color = models.ForeignKey(Color)
     order_index = models.IntegerField(unique=True)
 
