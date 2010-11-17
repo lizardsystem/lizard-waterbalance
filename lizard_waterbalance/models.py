@@ -7,6 +7,8 @@ from django.utils.translation import ugettext as _
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map.models import ColorField
 
+from south.modelsinspector import add_ignored_fields
+add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
 # Create your models here.
 
