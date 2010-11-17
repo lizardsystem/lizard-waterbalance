@@ -54,33 +54,47 @@ class Bucket(models.Model):
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
     # usual way to implement a one-to-many relationship.
-    open_water = \
-        models.ForeignKey("Bucket", blank=True, related_name='buckets')
+    open_water = models.ForeignKey("Bucket",
+                                   null=True,
+                                   blank=True,
+                                   related_name='buckets')
 
     indraft = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("intrek"),
                                 help_text=_("tijdserie naar intrek"),
+                                null=True,
+                                blank=True,
                                 related_name='+')
     drainage = models.ForeignKey(WaterbalanceTimeserie,
                                  verbose_name=_("drainage"),
                                  help_text=_("tijdserie naar drainage"),
+                                 null=True,
+                                 blank=True,
                                  related_name='+')
     seepage = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("kwel"),
                                 help_text=_("tijdserie naar kwel"),
+                                null=True,
+                                blank=True,
                                 related_name='+')
     infiltration = models.ForeignKey(WaterbalanceTimeserie,
                                      verbose_name=_("wegzijging"),
                                      help_text=_("tijdserie naar wegzijging"),
+                                     null=True,
+                                     blank=True,
                                      related_name='+')
     flow_off = models.ForeignKey(WaterbalanceTimeserie,
                                  verbose_name=_("afstroming"),
                                  help_text=_("tijdserie naar afstroming"),
+                                 null=True,
+                                 blank=True,
                                  related_name='+')
     computed_flow_off = \
         models.ForeignKey(WaterbalanceTimeserie,
                           verbose_name=_("berekende afstroming"),
                           help_text=_("tijdserie naar berekende afstroming"),
+                          null=True,
+                          blank=True,
                           related_name='+')
 
     # We may need to add time series to store the inputs in the the right
@@ -106,39 +120,59 @@ class OpenWater(Bucket):
 
     """
     minimum_level = models.ForeignKey(WaterbalanceTimeserie,
-        verbose_name=_("ondergrens"),
-        help_text=_("tijdserie naar ondergrens peil in meters"),
-        related_name='+')
+                                      verbose_name=_("ondergrens"),
+                                      help_text=_("tijdserie naar ondergrens peil in meters"),
+                                      null=True,
+                                      blank=True,
+                                      related_name='+')
     maximum_level = models.ForeignKey(WaterbalanceTimeserie,
-        verbose_name=_("bovengrens"),
-        help_text=_("tijdserie naar bovengrens peil in meters"),
-        related_name='+')
+                                      verbose_name=_("bovengrens"),
+                                      help_text=_("tijdserie naar bovengrens peil in meters"),
+                                      null=True,
+                                      blank=True,
+                                      related_name='+')
     target_level = models.ForeignKey(WaterbalanceTimeserie,
-        verbose_name=_("streefpeil"),
-        help_text=_("tijdserie met streefpeil in meters"),
-        related_name='+')
+                                     verbose_name=_("streefpeil"),
+                                     help_text=_("tijdserie met streefpeil in meters"),
+                                     null=True,
+                                     blank=True,
+                                     related_name='+')
     sluice_error = models.ForeignKey(WaterbalanceTimeserie,
-        verbose_name= _("sluitfout"),
-        help_text=_("tijdserie met sluitfout"),
-        related_name='+')
+                                     verbose_name=_("sluitfout"),
+                                     help_text=_("tijdserie met sluitfout"),
+                                     null=True,
+                                     blank=True,
+                                     related_name='+')
 
 
 class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.
 
     Instance variables:
+    * name -- name of the pumping station
     * open_water -- link to the OpenWater
     * into -- holds if and only if the pump pumps water into the open water
-    * percentage -- percentage of water through through this pump
+    * percentage -- percentage of water through this pump
 
     If this pump pumps water into (out of) the open water, the percentage is
     the percentage of incoming water that is pumped into (out of) the open
     water.
 
     """
-    open_water = models.ForeignKey(OpenWater, related_name='pumping_stations')
-    into = models.BooleanField()
-    percentage = models.FloatField()
+    class Meta:
+        verbose_name = _("Pomp")
+        verbose_name_plural = _("Pompen")
+
+    name = models.CharField(max_length=64,
+                            verbose_name=_("naam"),
+                            help_text=_("naam van de pomp, bijvoorbeeld \"Inlaat C\" of \"Gemaal D\""))
+    open_water = models.ForeignKey(OpenWater,
+                                   help_text=_("open water waar deze pomp bij hoort"),
+                                   related_name='pumping_stations')
+    into = models.BooleanField(verbose_name=_("ingaande stroom"),
+                               help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
+    percentage = models.FloatField(verbose_name=_("percentage"),
+                                   help_text=_("percentage inkomend of uitgaand water via deze pomp"))
 
 
 class PumpLine(models.Model):
@@ -149,6 +183,10 @@ class PumpLine(models.Model):
     * timeserie -- link to the time serie that contains the data
 
     """
+    class Meta:
+        verbose_name = _("Pomplijn")
+        verbose_name_plural = _("Pomplijnen")
+
     pump = models.ForeignKey(PumpingStation, related_name='pump_lines')
     timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
 
