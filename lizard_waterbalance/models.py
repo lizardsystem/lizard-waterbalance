@@ -47,8 +47,9 @@ class Bucket(models.Model):
     * computed_flow_off -- link to computed time serie for *afstroming*
 
     """
-    name = models.CharField(max_length=64)
-    surface = models.IntegerField()
+    name = models.CharField(verbose_name="naam", max_length=64)
+    surface = models.IntegerField(verbose_name=_("oppervlakte"),
+                                  help_text=_("oppervlakte in hectares"))
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
@@ -56,13 +57,31 @@ class Bucket(models.Model):
     open_water = \
         models.ForeignKey("Bucket", blank=True, related_name='buckets')
 
-    indraft = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    drainage = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    seepage = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    infiltration = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    flow_off = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+    indraft = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("intrek"),
+                                help_text=_("tijdserie naar intrek"),
+                                related_name='+')
+    drainage = models.ForeignKey(WaterbalanceTimeserie,
+                                 verbose_name=_("drainage"),
+                                 help_text=_("tijdserie naar drainage"),
+                                 related_name='+')
+    seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("kwel"),
+                                help_text=_("tijdserie naar kwel"),
+                                related_name='+')
+    infiltration = models.ForeignKey(WaterbalanceTimeserie,
+                                     verbose_name=_("wegzijging"),
+                                     help_text=_("tijdserie naar wegzijging"),
+                                     related_name='+')
+    flow_off = models.ForeignKey(WaterbalanceTimeserie,
+                                 verbose_name=_("afstroming"),
+                                 help_text=_("tijdserie naar afstroming"),
+                                 related_name='+')
     computed_flow_off = \
-        models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+        models.ForeignKey(WaterbalanceTimeserie,
+                          verbose_name=_("berekende afstroming"),
+                          help_text=_("tijdserie naar berekende afstroming"),
+                          related_name='+')
 
     # We may need to add time series to store the inputs in the the right
     # units. For example, chances are seepage is specified in cubic milimeters
@@ -74,23 +93,34 @@ class OpenWater(Bucket):
     """Represents an *open water(bakje)*.
 
     Instance variables:
-    * minimum_height -- minimum allowed water height in [m]
-    * maximum_height -- maximum allowed water height in [m]
-    * target_level -- link to time series for target water level
+    * minimum_level -- link to time series for minimum water level in [m]
+    * maximum_level -- link to time series for maximum water level in [m]
+    * target_level -- link to time series for target water level in [m]
     * sluice_error -- link to computed time series for model errors
 
     To get to the buckets that have access to the current open water, use the
     implicit attribute 'buckets' which is a Manager for these buckets.
 
     To get to the pumps of the current open water, use the implicit attribute
-    'pumps', which is a Manager for these pumps.
+    'pumping_stations', which is a Manager for these pumps.
 
     """
-    minimum_height = models.IntegerField()
-    maximum_height = models.IntegerField()
-
-    target_level = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    sluice_error = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+    minimum_level = models.ForeignKey(WaterbalanceTimeserie,
+        verbose_name=_("ondergrens"),
+        help_text=_("tijdserie naar ondergrens peil in meters"),
+        related_name='+')
+    maximum_level = models.ForeignKey(WaterbalanceTimeserie,
+        verbose_name=_("bovengrens"),
+        help_text=_("tijdserie naar bovengrens peil in meters"),
+        related_name='+')
+    target_level = models.ForeignKey(WaterbalanceTimeserie,
+        verbose_name=_("streefpeil"),
+        help_text=_("tijdserie met streefpeil in meters"),
+        related_name='+')
+    sluice_error = models.ForeignKey(WaterbalanceTimeserie,
+        verbose_name= _("sluitfout"),
+        help_text=_("tijdserie met sluitfout"),
+        related_name='+')
 
 
 class PumpingStation(models.Model):
@@ -106,7 +136,7 @@ class PumpingStation(models.Model):
     water.
 
     """
-    open_water = models.ForeignKey(OpenWater, related_name='pumps')
+    open_water = models.ForeignKey(OpenWater, related_name='pumping_stations')
     into = models.BooleanField()
     percentage = models.FloatField()
 
@@ -140,7 +170,7 @@ class WaterbalanceArea(models.Model):
         ordering = ("name",)
 
     name = models.CharField(max_length=80)
-    slug = models.SlugField(help_text=u"Name to construct the URL.")
+    slug = models.SlugField(help_text=_("Name to construct the URL."))
     description = models.TextField(null=True,
                                    blank=True,
                                    help_text="You can use markdown")
