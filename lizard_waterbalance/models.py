@@ -76,6 +76,7 @@ class OpenWater(Bucket):
     Instance variables:
     * minimum_height -- minimum allowed water height in [m]
     * maximum_height -- maximum allowed water height in [m]
+    * target_level -- link to time series for target water level
     * sluice_error -- link to computed time series for model errors
 
     To get to the buckets that have access to the current open water, use the
@@ -88,10 +89,11 @@ class OpenWater(Bucket):
     minimum_height = models.IntegerField()
     maximum_height = models.IntegerField()
 
-    sluice_error = models.ForeignKey(Timeserie, '+')
+    target_level = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+    sluice_error = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
 
 
-class Pump(models.Model):
+class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.
 
     Instance variables:
@@ -117,8 +119,9 @@ class PumpLine(models.Model):
     * timeserie -- link to the time serie that contains the data
 
     """
-    pump = models.ForeignKey(Pump, related_name='pump_lines')
+    pump = models.ForeignKey(PumpingStation, related_name='pump_lines')
     timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+
 
 class WaterbalanceArea(models.Model):
     """Represents the area of which we want to know the waterbalance.
@@ -129,6 +132,7 @@ class WaterbalanceArea(models.Model):
     * description -- general description
     * precipitation -- link to time series for *neerslag*
     * evaporation -- link to time series for *verdamping*
+
     """
     class Meta:
         verbose_name = _("Waterbalans gebied")
@@ -141,8 +145,14 @@ class WaterbalanceArea(models.Model):
                                    blank=True,
                                    help_text="You can use markdown")
 
-    precipitation = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
-    evaporation = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+    precipitation = models.ForeignKey(WaterbalanceTimeserie,
+                                      related_name='+',
+                                      null=True,
+                                      blank=True)
+    evaporation = models.ForeignKey(WaterbalanceTimeserie,
+                                    related_name='+',
+                                    null=True,
+                                    blank=True)
     open_water = models.ForeignKey(OpenWater, null=True, blank=True)
 
     def __unicode__(self):
