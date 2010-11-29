@@ -1,0 +1,4 @@
+code,name,into,percentage,open_water,calculated
+PS_0,Inlaat Vecht,True,100,O_0,False
+PS_1,dijklek,True,100,O_0,False
+PS_2,inlaat peilbeheer,True,100,O_0,True
