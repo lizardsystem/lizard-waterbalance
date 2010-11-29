@@ -1,5 +1,29 @@
-# (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
-# $Id$
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#******************************************************************************
+#
+# This file is part of the lizard_waterbalance Django app.
+#
+# The lizard_waterbalance app is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# the lizard_waterbalance app.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 2010 Nelen & Schuurmans
+#
+#******************************************************************************
+#
+# Initial programmer: Pieter Swinkels
+#
+#******************************************************************************
 
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -50,8 +74,37 @@ class Bucket(models.Model):
 
     """
     name = models.CharField(verbose_name="naam", max_length=64)
+
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
                                   help_text=_("oppervlakte in hectares"))
+
+    seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("kwel"),
+                                help_text=_("tijdserie naar kwel"),
+                                null=True, blank=True,
+                                related_name='+')
+
+    porosity = models.FloatField(verbose_name=_("porositeit"))
+
+    crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
+    min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor"))
+    drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel"))
+    infiltration_fraction = models.FloatField(verbose_name=_("fractie inzijging"))
+
+    max_water_level = models.FloatField(verbose_name=_("maximum waterstand"),
+                                        help_text=_("maximum waterstand in meters"))
+
+    equi_water_level = models.FloatField(verbose_name=_("equilibrium waterstand"),
+                                         help_text=_("equilibrium waterstand in meters"))
+
+    min_water_level = models.FloatField(verbose_name=_("minimum waterstand"),
+                                        help_text=_("minimum waterstand in meters"))
+
+    init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
+                                         help_text=_("initiele waterstand in meters"))
+
+    external_discharge = models.IntegerField(verbose_name=_("Afvoer (naar extern)"),
+                                             help_text=_("Afvoer (naar extern) in mm/dag"))
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
@@ -73,12 +126,12 @@ class Bucket(models.Model):
                                  null=True,
                                  blank=True,
                                  related_name='+')
-    seepage = models.ForeignKey(WaterbalanceTimeserie,
-                                verbose_name=_("kwel"),
-                                help_text=_("tijdserie naar kwel"),
-                                null=True,
-                                blank=True,
-                                related_name='+')
+    computed_seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                         verbose_name=_("kwel"),
+                                         help_text=_("tijdserie naar kwel"),
+                                         null=True,
+                                         blank=True,
+                                         related_name='+')
     infiltration = models.ForeignKey(WaterbalanceTimeserie,
                                      verbose_name=_("wegzijging"),
                                      help_text=_("tijdserie naar wegzijging"),
