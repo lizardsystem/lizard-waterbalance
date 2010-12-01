@@ -62,12 +62,12 @@ class Bucket(models.Model):
 
     Instance variables:
     * name -- name to show to the user
-    * surface -- surface in [ha]
+    * surface -- surface in [m2]
     * is_collapsed -- holds if and only if the bucket is a single bucket
     * open_water -- link to the open water
     * indraft -- link to input time serie for *intrek*
     * drainage -- link to input time serie for drainage
-    * seepage -- link to input time serie for *kwel*
+    * seepage -- link to input time serie for *kwel* in [mm/day]
     * infiltration -- link to input time serie for *wegzijging*
     * flow_off -- link to input time serie for *afstroming*
     * computed_flow_off -- link to computed time serie for *afstroming*
@@ -253,8 +253,8 @@ class WaterbalanceArea(models.Model):
     * name -- name to show to the user
     * slug -- unique name to construct the URL
     * description -- general description
-    * precipitation -- link to time series for *neerslag*
-    * evaporation -- link to time series for *verdamping*
+    * precipitation -- link to time series for *neerslag* in [mm/day]
+    * evaporation -- link to time series for *verdamping* in [mm/day]
 
     """
     class Meta:
