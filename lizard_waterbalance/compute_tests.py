@@ -178,7 +178,7 @@ class computeTestSuite(TestCase):
         self.assertAlmostEqual(expected_value, water_level.get_value(today))
 
     def test_i(self):
-        """Test compute returns the flow off.
+        """Test compute returns the correct flow off.
 
         """
         evaporation = TimeseriesStub(20)
@@ -194,6 +194,24 @@ class computeTestSuite(TestCase):
                       compute(self.bucket, today, today, evaporation, precipitation, seepage)
 
         self.assertAlmostEqual(expected_value, flow_off.get_value(today), 2)
+
+    def test_ic(self):
+        """Test compute returns the correct net drainage.
+
+        """
+        evaporation = TimeseriesStub(20)
+        precipitation = TimeseriesStub(5)
+        seepage = TimeseriesStub(10)
+
+        self.bucket.equi_water_level = 0.50
+        self.bucket.infiltration_fraction = 0.04
+        today = datetime(2010, 12, 1)
+
+        expected_drainage = -41302.53
+        (water_level, flow_off, net_drainage) = \
+                      compute(self.bucket, today, today, evaporation, precipitation, seepage)
+
+        self.assertAlmostEqual(expected_drainage, net_drainage.get_value(today), 2)
 
     def test_z(self):
 
