@@ -77,7 +77,7 @@ def compute_net_precipitation(bucket,
 def compute_net_drainage(bucket, previous_storage):
     """Return the net drainage of today.
 
-    With net drainage, we mean the volumwe difference caused by drainage and
+    With net drainage, we mean the volume difference caused by drainage and
     infiltration.
 
     Parameters:

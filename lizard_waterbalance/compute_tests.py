@@ -55,31 +55,6 @@ bucket_values = [
 
 bucket_spec = dict(zip(bucket_column_names, bucket_values))
 
-bucket = Bucket()
-# we initialize the input fields
-bucket.name = bucket_spec['name']
-bucket.surface = int(float(bucket_spec['surface']))
-# bucket.seepage = link to input time serie for *kwel*
-bucket.porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
-bucket.crop_evaporation_factor = float(bucket_spec['bl gewasverdampingsfactor (-)'])
-bucket.min_crop_evaporation_factor = float(bucket_spec['bl min. Gewasverdampingsfactor (-)'])
-bucket.drainage_fraction= float(bucket_spec['bl f_uitpoel'])
-bucket.infiltration_fraction = float(bucket_spec['bl f_intrek'])
-bucket.max_water_level = float(bucket_spec['bl max level'])
-bucket.equi_water_level = float(bucket_spec['bl equilibrium level'])
-bucket.min_water_level = float(bucket_spec['bl minimum level'])
-bucket.init_water_level = float(bucket_spec['bl init level'])
-bucket.external_discharge = 0 # not known in bucket_spec
-
-evaporation = TimeseriesStub(0)
-precipitation = TimeseriesStub(0)
-seepage = TimeseriesStub(0)
-
-today = datetime(2010, 11, 29)
-(water_level, flow_off, net_drainage) = \
-              compute(bucket, today, today, evaporation, precipitation, seepage)
-
-print bucket
 
 class computeTestSuite(TestCase):
 
@@ -123,7 +98,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        previous_storage = bucket.init_water_level * bucket.surface
+        previous_storage = self.bucket.init_water_level * self.bucket.surface
         current_precipitation = 0
         current_evaporation = 0
         expected_value = 0.0
@@ -138,7 +113,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        previous_storage = 1400000.00
+        previous_storage = self.bucket.init_water_level * self.bucket.surface
         current_precipitation = 20
         current_evaporation = 5
         expected_value = 47940.44
@@ -153,7 +128,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        previous_storage = 1400000.00
+        previous_storage = self.bucket.init_water_level * self.bucket.surface
         current_precipitation = 5
         current_evaporation = 20
         expected_value = -29501.81
@@ -167,25 +142,58 @@ class computeTestSuite(TestCase):
         """Test compute_net_drainage on less previous day storage than equi storage.
 
         """
+        self.bucket.equi_water_level = 0.50
         self.bucket.infiltration_fraction = 0.04
-        previous_storage = 1400000.00
-        expected_value = -28000
+        previous_storage = self.bucket.init_water_level * self.bucket.surface
+        expected_value = -41302.53
         computed_value = compute_net_drainage(self.bucket, previous_storage)
         self.assertAlmostEqual(expected_value, computed_value, 2)
 
     def test_g(self):
-        """Test compute returns the right water level.
+        """Test compute_net_drainage on more previous day storage than equi storage.
+
+        """
+        self.bucket.init_water_level = 0.65
+        self.bucket.infiltration_fraction = 0.04
+        previous_storage = self.bucket.init_water_level * self.bucket.surface
+        expected_value = -38352.35
+        computed_value = compute_net_drainage(self.bucket, previous_storage)
+        self.assertAlmostEqual(expected_value, computed_value, 2)
+
+    def test_h(self):
+        """Test compute returns the correct water level when the new volume is below the maximum.
 
         """
         evaporation = TimeseriesStub(20)
         precipitation = TimeseriesStub(5)
         seepage = TimeseriesStub(10)
-        self.bucket.infiltration_fraction = 0.04
-        previous_storage = 1400000.00
 
-        today = datetime(2010, 11, 29)
+        self.bucket.infiltration_fraction = 0.04
+        today = datetime(2010, 12, 1)
+
+        expected_value = 0.14
         (water_level, flow_off, net_drainage) = \
-                      compute(bucket, today, today, evaporation, precipitation, seepage)
+                      compute(self.bucket, today, today, evaporation, precipitation, seepage)
+
+        self.assertAlmostEqual(expected_value, water_level.get_value(today))
+
+    def test_i(self):
+        """Test compute returns the flow off.
+
+        """
+        evaporation = TimeseriesStub(20)
+        precipitation = TimeseriesStub(5)
+        seepage = TimeseriesStub(10)
+
+        self.bucket.equi_water_level = 0.50
+        self.bucket.infiltration_fraction = 0.04
+        today = datetime(2010, 12, 1)
+
+        expected_value = -655677.73
+        (water_level, flow_off, net_drainage) = \
+                      compute(self.bucket, today, today, evaporation, precipitation, seepage)
+
+        self.assertAlmostEqual(expected_value, flow_off.get_value(today), 2)
 
     def test_z(self):
 
@@ -195,7 +203,7 @@ class computeTestSuite(TestCase):
 
         today = datetime(2010, 11, 29)
         (water_level, flow_off, net_drainage) = \
-                      compute(bucket, today, today, evaporation, precipitation, seepage)
+                      compute(self.bucket, today, today, evaporation, precipitation, seepage)
 
 
 
