@@ -73,6 +73,10 @@ class Bucket(models.Model):
     * computed_flow_off -- link to computed time serie for *afstroming*
 
     """
+    class Meta:
+        verbose_name = _("Bakje")
+        verbose_name_plural = _("Bakjes")
+
     UNDRAINED_SURFACE = 0
     HARDENED_SURFACE = 1
     DRAINED_SURFACE = 2
