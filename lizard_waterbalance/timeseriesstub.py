@@ -39,7 +39,7 @@ class TimeseriesStub:
     """
     def __init__(self, initial_value):
         self.initial_value = initial_value
-        self.events = []
+        self._events = []
 
     def get_value(self, date_time):
         """Return the value on the given date and time.
@@ -48,7 +48,7 @@ class TimeseriesStub:
         and time first.
 
         """
-        values = (event[1] for event in self.events if date_time >= event[0])
+        values = (event[1] for event in self._events if date_time >= event[0])
         return next(values, self.initial_value)
 
     def add_value(self, date_time, value):
@@ -57,4 +57,12 @@ class TimeseriesStub:
         Please note that events should be added earliest date and time first.
 
         """
-        self.events.append((date_time, value))
+        self._events.append((date_time, value))
+
+    def events(self):
+        """Return a generator to iterate over all events.
+
+        The generator iterates over the events in the order they were added.
+
+        """
+        return (event for event in self._events)
