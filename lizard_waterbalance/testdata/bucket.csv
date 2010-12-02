@@ -1,5 +1,5 @@
 uitspoel,code,indraft,surface,ol minimum level,flow_off,infiltration,bl min. Gewasverdampingsfactor (-),bl init level,bl max level,ol max level,ol gewasverdampingsfactor (-),ol min. Gewasverdampingsfactor (-),ol porositeit / bergingsruimte,bl minimum level,open_water,ol init level,ol equilibrium level,bl equilibrium level,ol f_intrek,ol_volume,bl porositeit / bergingsruimte,nr,bl gewasverdampingsfactor (-),name,bl_volume,computed_flow_off,ol f_uitpoel,bl f_uitpoel,seepage,bl f_intrek
-B_0_1,B_0,B_0_0,1217463.27356,0.0,B_0_4,B_0_3,1.0,0.0,0.002,1.0,0.0,0.0,0.2,0.0,O_0,0.5,0.0,0.0,0.1,"('B_0_6',)",1.0,1,1.0,verhard,B_0_5,,0.1,0.0,B_0_2,0.0
-B_1_1,B_1,B_1_0,3697465.49228,0.0,B_1_4,B_1_3,0.75,0.35,0.7,0.3,0.75,0.25,0.3,0.0,O_0,0.3,0.0,0.0,0.001,"('B_1_6',)",0.3,3,1.0,gedraineerd boven,B_1_5,,0.001,0.5,B_1_2,0.0
+B_0_1,B_0,B_0_0,1217463.27356,0.0,B_0_4,B_0_3,1.0,0.0,0.002,1.0,0.0,0.0,0.2,0.0,O_0,0.5,0.0,0.0,0.1,B_0_6,1.0,1,1.0,verhard,B_0_5,,0.1,0.0,B_0_2,0.0
+B_1_1,B_1,B_1_0,3697465.49228,0.0,B_1_4,B_1_3,0.75,0.35,0.7,0.3,0.75,0.25,0.3,0.0,O_0,0.3,0.0,0.0,0.001,B_1_6,0.3,3,1.0,gedraineerd boven,B_1_5,,0.001,0.5,B_1_2,0.0
 B_2_1,B_2,B_2_0,0.0,,B_2_4,B_2_3,0.75,0.5,1.0,,,,,0.0,O_0,,,0.0,,,0.2,5,1.0,stedelijk,B_2_5,,,0.01,B_2_2,0.00333333333333
 B_3_1,B_3,B_3_0,2950181.83812,,B_3_4,B_3_3,0.75,0.35,0.7,,,,,0.0,O_0,,,0.0,,,0.2,6,1.0,landelijk,B_3_5,,,0.02,B_3_2,0.02

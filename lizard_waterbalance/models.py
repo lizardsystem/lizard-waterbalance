@@ -87,11 +87,13 @@ class Bucket(models.Model):
         )
 
     name = models.CharField(verbose_name=_("naam"), max_length=64)
+    slug = models.CharField(verbose_name=_("slug"), max_length=64)
+
     surface_type =  models.IntegerField(verbose_name=_("oppervlakte type"),
                                         choices=SURFACE_TYPES,
                                         default=UNDRAINED_SURFACE)
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
-                                  help_text=_("oppervlakte in hectares"))
+                                  help_text=_("oppervlakte in vierkante meters"))
 
     seepage = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("kwel"),
@@ -119,7 +121,8 @@ class Bucket(models.Model):
                                          help_text=_("initiele waterstand in meters"))
 
     external_discharge = models.IntegerField(verbose_name=_("Afvoer (naar extern)"),
-                                             help_text=_("Afvoer (naar extern) in mm/dag"))
+                                             help_text=_("Afvoer (naar extern) in mm/dag"),
+                                             default=0)
 
     upper_porosity = models.FloatField(verbose_name=("porositeit bovenste bakje"))
     upper_crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor bovenste bakje"))
@@ -146,8 +149,8 @@ class Bucket(models.Model):
                                  blank=True,
                                  related_name='+')
     computed_seepage = models.ForeignKey(WaterbalanceTimeserie,
-                                         verbose_name=_("kwel"),
-                                         help_text=_("tijdserie naar kwel"),
+                                         verbose_name=_("berekende kwel"),
+                                         help_text=_("tijdserie naar berekende kwel"),
                                          null=True,
                                          blank=True,
                                          related_name='+')
@@ -176,6 +179,8 @@ class Bucket(models.Model):
     # per hour. Internally however, we will probably use cubic meters and it
     # could be handy to store these values explicitly.
 
+    def __unicode__(self):
+        return self.slug
 
 class OpenWater(Bucket):
     """Represents an *open water(bakje)*.
