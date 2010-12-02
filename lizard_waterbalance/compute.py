@@ -125,6 +125,11 @@ def compute(bucket, previous_volume, precipitation, evaporation, seepage):
 
     return (volume / bucket.surface, Q_afst, Q_drain)
 
+def enumerate_events(precipitation, evaporation, seepage):
+
+    for triple in zip(precipitation.events(), evaporation.events(), seepage.events()):
+        yield triple
+
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     """Compute and return the waterbalance time series of the given bucket.
 
@@ -140,5 +145,10 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
 
     """
     initial_volume = bucket.init_water_level * bucket.surface
-    compute(bucket, initial_volume, 20, 10, 0)
+    for triple in enumerate_events(precipitation, evaporation, seepage):
+        precipitation_event = triple[0]
+        evaporation_event = triple[1]
+        seepage_event = triple[2]
+        compute(bucket, initial_volume,
+                precipitation_event[1], evaporation_event[1], seepage_event[1])
     return (0, 0, 0)

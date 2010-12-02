@@ -26,6 +26,7 @@
 #
 #******************************************************************************
 
+from datetime import datetime
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
@@ -217,9 +218,13 @@ class computeTestSuite(TestCase):
 
     def test_k(self):
         """Test compute_timeseries starts with the correct initial water volume."""
-        evaporation = TimeseriesStub(20)
-        precipitation = TimeseriesStub(5)
-        seepage = TimeseriesStub(10)
+        today = datetime(2010,12,2)
+        evaporation = TimeseriesStub(0)
+        evaporation.add_value(today, 20)
+        precipitation = TimeseriesStub(0)
+        precipitation.add_value(today, 5)
+        seepage = TimeseriesStub(0)
+        seepage.add_value(today, 10)
         mock = Mock()
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
@@ -229,6 +234,71 @@ class computeTestSuite(TestCase):
                            mock.compute)
         calls_to_compute = mock.getNamedCalls('compute')
         self.assertTrue(len(calls_to_compute) > 0)
+
         supplied_volume = calls_to_compute[0].getParam(1)
         expected_volume = self.bucket.init_water_level * self.bucket.surface
         self.assertAlmostEqual(supplied_volume, expected_volume)
+
+    def test_l(self):
+        """Test compute_timeseries starts with the correct time serie values."""
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        evaporation = TimeseriesStub(0)
+        evaporation.add_value(today, 20)
+        evaporation.add_value(tomorrow, 30)
+        precipitation = TimeseriesStub(0)
+        precipitation.add_value(today, 5)
+        precipitation.add_value(tomorrow, 10)
+        seepage = TimeseriesStub(0)
+        seepage.add_value(today, 10)
+        seepage.add_value(tomorrow, 20)
+        mock = Mock()
+        # we do not need the return value of the next call and we discard it
+        compute_timeseries(self.bucket,
+                           evaporation,
+                           precipitation,
+                           seepage,
+                           mock.compute)
+        calls_to_compute = mock.getNamedCalls('compute')
+        self.assertTrue(len(calls_to_compute) > 0)
+        supplied_precipitation = calls_to_compute[0].getParam(2)
+        expected_precipitation = 20
+        self.assertAlmostEqual(supplied_precipitation, expected_precipitation)
+        supplied_evaporation = calls_to_compute[0].getParam(3)
+        expected_evaporation = 5
+        self.assertAlmostEqual(supplied_evaporation, expected_evaporation)
+        supplied_seepage = calls_to_compute[0].getParam(4)
+        expected_seepage = 10
+        self.assertAlmostEqual(supplied_seepage, expected_seepage)
+
+    def test_m(self):
+        """Test compute_timeseries supplies the correct time serie values."""
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        evaporation = TimeseriesStub(0)
+        evaporation.add_value(today, 20)
+        evaporation.add_value(tomorrow, 30)
+        precipitation = TimeseriesStub(0)
+        precipitation.add_value(today, 5)
+        precipitation.add_value(tomorrow, 10)
+        seepage = TimeseriesStub(0)
+        seepage.add_value(today, 10)
+        seepage.add_value(tomorrow, 20)
+        mock = Mock()
+        # we do not need the return value of the next call and we discard it
+        compute_timeseries(self.bucket,
+                           evaporation,
+                           precipitation,
+                           seepage,
+                           mock.compute)
+        calls_to_compute = mock.getNamedCalls('compute')
+        self.assertEqual(2, len(calls_to_compute))
+        supplied_precipitation = calls_to_compute[1].getParam(2)
+        expected_precipitation = 30
+        self.assertAlmostEqual(supplied_precipitation, expected_precipitation)
+        supplied_evaporation = calls_to_compute[1].getParam(3)
+        expected_evaporation = 10
+        self.assertAlmostEqual(supplied_evaporation, expected_evaporation)
+        supplied_seepage = calls_to_compute[1].getParam(4)
+        expected_seepage = 20
+        self.assertAlmostEqual(supplied_seepage, expected_seepage)
