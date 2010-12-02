@@ -26,7 +26,7 @@
 #
 #******************************************************************************
 
-from timeseriesstub import TimeseriesStub
+from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
 def compute_seepage(bucket, seepage):
@@ -124,3 +124,21 @@ def compute(bucket, previous_volume, precipitation, evaporation, seepage):
         Q_afst = -(previous_volume + Q_in - max_volume)
 
     return (volume / bucket.surface, Q_afst, Q_drain)
+
+def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
+    """Compute and return the waterbalance time series of the given bucket.
+
+    This method computes the water level, flow off and net drainage time series
+    for the given bucket and returns these times series as a triple.
+
+    Parameters:
+    * bucket -- bucket for which to compute the waterbalance
+    * previous_volume -- water volume of the bucket the day before
+    * precipitation -- precipitation time series for the bucket in [mm/day]
+    * evaporation -- evaporation time series for the bucket in [mm/day]
+    * seepage -- seepage time series for the bucket in [mm/day]
+
+    """
+    initial_volume = bucket.init_water_level * bucket.surface
+    compute(bucket, initial_volume, 20, 10, 0)
+    return (0, 0, 0)

@@ -26,7 +26,6 @@
 #
 #******************************************************************************
 
-from datetime import datetime
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
@@ -34,6 +33,8 @@ from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
 from lizard_waterbalance.compute import compute_seepage
+from lizard_waterbalance.compute import compute_timeseries
+from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
@@ -195,7 +196,7 @@ class computeTestSuite(TestCase):
                                                         seepage)
         self.assertAlmostEqual(expected_flow_off, flow_off, 2)
 
-    def test_ic(self):
+    def test_j(self):
         """Test compute returns the correct net drainage.
 
         """
@@ -213,3 +214,21 @@ class computeTestSuite(TestCase):
                                                         precipitation,
                                                         seepage)
         self.assertAlmostEqual(expected_drainage, net_drainage, 2)
+
+    def test_k(self):
+        """Test compute_timeseries starts with the correct initial water volume."""
+        evaporation = TimeseriesStub(20)
+        precipitation = TimeseriesStub(5)
+        seepage = TimeseriesStub(10)
+        mock = Mock()
+        # we do not need the return value of the next call and we discard it
+        compute_timeseries(self.bucket,
+                           evaporation,
+                           precipitation,
+                           seepage,
+                           mock.compute)
+        calls_to_compute = mock.getNamedCalls('compute')
+        self.assertTrue(len(calls_to_compute) > 0)
+        supplied_volume = calls_to_compute[0].getParam(1)
+        expected_volume = self.bucket.init_water_level * self.bucket.surface
+        self.assertAlmostEqual(supplied_volume, expected_volume)
