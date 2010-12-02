@@ -73,8 +73,19 @@ class Bucket(models.Model):
     * computed_flow_off -- link to computed time serie for *afstroming*
 
     """
-    name = models.CharField(verbose_name="naam", max_length=64)
+    UNDRAINED_SURFACE = 0
+    HARDENED_SURFACE = 1
+    DRAINED_SURFACE = 2
+    SURFACE_TYPES = (
+        (UNDRAINED_SURFACE, _("ongedraineerd")),
+        (HARDENED_SURFACE, _("verhard")),
+        (DRAINED_SURFACE, _("gedraineerd")),
+        )
 
+    name = models.CharField(verbose_name=_("naam"), max_length=64)
+    surface_type =  models.IntegerField(verbose_name=_("oppervlakte type"),
+                                        choices=SURFACE_TYPES,
+                                        default=UNDRAINED_SURFACE)
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
                                   help_text=_("oppervlakte in hectares"))
 
@@ -85,11 +96,11 @@ class Bucket(models.Model):
                                 related_name='+')
 
     porosity = models.FloatField(verbose_name=_("porositeit"))
-
     crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
     min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor"))
+
     drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel"))
-    infiltration_fraction = models.FloatField(verbose_name=_("fractie inzijging"))
+    infiltration_fraction = models.FloatField(verbose_name=_("fractie intrek"))
 
     max_water_level = models.FloatField(verbose_name=_("maximum waterstand"),
                                         help_text=_("maximum waterstand in meters"))
@@ -105,6 +116,10 @@ class Bucket(models.Model):
 
     external_discharge = models.IntegerField(verbose_name=_("Afvoer (naar extern)"),
                                              help_text=_("Afvoer (naar extern) in mm/dag"))
+
+    upper_porosity = models.FloatField(verbose_name=("porositeit bovenste bakje"))
+    upper_crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor bovenste bakje"))
+    upper_min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor bovenste bakje"))
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
