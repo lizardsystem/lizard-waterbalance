@@ -57,6 +57,47 @@ class WaterbalanceTimeserie(models.Model):
     sulfate = models.ForeignKey(Timeserie, related_name='+')
 
 
+class OpenWater(models.Model):
+    """Represents the *open water*.
+
+    Instance variables:
+    * minimum_level -- link to time series for minimum water level in [m]
+    * maximum_level -- link to time series for maximum water level in [m]
+    * target_level -- link to time series for target water level in [m]
+    * seepage -- link to input time serie for *kwel* in [mm/day]
+
+    To get to the buckets that have access to the current open water, use the
+    implicit attribute 'buckets' which is a Manager for these buckets.
+
+    To get to the pumps of the current open water, use the implicit attribute
+    'pumping_stations', which is a Manager for these pumps.
+
+    """
+    class Meta:
+        verbose_name = _("Open water")
+
+    name = models.CharField(verbose_name=_("naam"), max_length=64)
+    slug = models.CharField(verbose_name=_("slug"), max_length=64)
+    minimum_level = models.ForeignKey(WaterbalanceTimeserie,
+                                      verbose_name=_("ondergrens"),
+                                      help_text=_("tijdserie naar ondergrens peil in meters"),
+                                      null=True, blank=True, related_name='+')
+    maximum_level = models.ForeignKey(WaterbalanceTimeserie,
+                                      verbose_name=_("bovengrens"),
+                                      help_text=_("tijdserie naar bovengrens peil in meters"),
+                                      null=True, blank=True, related_name='+')
+    target_level = models.ForeignKey(WaterbalanceTimeserie,
+                                     verbose_name=_("streefpeil"),
+                                     help_text=_("tijdserie met streefpeil in meters"),
+                                     null=True, blank=True, related_name='+')
+    seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("kwel"),
+                                help_text=_("tijdserie naar kwel"),
+                                null=True, blank=True, related_name='+')
+
+    def __unicode__(self):
+        return self.slug
+
 class Bucket(models.Model):
     """Represents a *bakje*.
 
@@ -131,7 +172,7 @@ class Bucket(models.Model):
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
     # usual way to implement a one-to-many relationship.
-    open_water = models.ForeignKey("Bucket",
+    open_water = models.ForeignKey(OpenWater,
                                    null=True,
                                    blank=True,
                                    related_name='buckets')
@@ -181,47 +222,6 @@ class Bucket(models.Model):
 
     def __unicode__(self):
         return self.slug
-
-class OpenWater(Bucket):
-    """Represents an *open water(bakje)*.
-
-    Instance variables:
-    * minimum_level -- link to time series for minimum water level in [m]
-    * maximum_level -- link to time series for maximum water level in [m]
-    * target_level -- link to time series for target water level in [m]
-    * sluice_error -- link to computed time series for model errors
-
-    To get to the buckets that have access to the current open water, use the
-    implicit attribute 'buckets' which is a Manager for these buckets.
-
-    To get to the pumps of the current open water, use the implicit attribute
-    'pumping_stations', which is a Manager for these pumps.
-
-    """
-    minimum_level = models.ForeignKey(WaterbalanceTimeserie,
-                                      verbose_name=_("ondergrens"),
-                                      help_text=_("tijdserie naar ondergrens peil in meters"),
-                                      null=True,
-                                      blank=True,
-                                      related_name='+')
-    maximum_level = models.ForeignKey(WaterbalanceTimeserie,
-                                      verbose_name=_("bovengrens"),
-                                      help_text=_("tijdserie naar bovengrens peil in meters"),
-                                      null=True,
-                                      blank=True,
-                                      related_name='+')
-    target_level = models.ForeignKey(WaterbalanceTimeserie,
-                                     verbose_name=_("streefpeil"),
-                                     help_text=_("tijdserie met streefpeil in meters"),
-                                     null=True,
-                                     blank=True,
-                                     related_name='+')
-    sluice_error = models.ForeignKey(WaterbalanceTimeserie,
-                                     verbose_name=_("sluitfout"),
-                                     help_text=_("tijdserie met sluitfout"),
-                                     null=True,
-                                     blank=True,
-                                     related_name='+')
 
 
 class PumpingStation(models.Model):

@@ -28,6 +28,43 @@
 import sys
 
 from lizard_waterbalance.models import Bucket
+from lizard_waterbalance.models import OpenWater
+
+def retrieve_definitions(filename):
+    """Return the list of records stored in the file with the given name.
+
+    Each element of th list that this function returns is a dictionary of field
+    name to field value (as a string).
+
+    Each line of the file with the given name specifies a record, where each
+    field is separated from the next through a comma. The first line of the
+    file specifies the name of each field.
+
+    """
+    definitions = []
+    f = open(filename)
+    first_line = True
+    for line in f.readlines():
+        if first_line:
+            labels = [label.rstrip("\r\n") for label in line.split(',')]
+            first_line = False
+        else:
+            values = [value.rstrip("\r\n") for value in line.split(',')]
+            definitions.append(dict(zip(labels, values)))
+    f.close()
+    return definitions
+
+def import_openwaters(filename):
+
+    for openwater_definition in retrieve_definitions(filename):
+        print openwater_definition
+        openwater = OpenWater()
+
+        openwater.name = openwater_definition['name']
+        openwater.slug = "Aetseveldsepolder oost - %s" % openwater.name
+
+        openwater.surface = int(float(openwater_definition['surface']))
+        openwater.save()
 
 def import_buckets(filename):
     bucket_definitions = []
