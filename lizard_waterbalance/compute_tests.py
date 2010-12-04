@@ -35,6 +35,7 @@ from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
 from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
+from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
@@ -302,3 +303,47 @@ class computeTestSuite(TestCase):
         supplied_seepage = calls_to_compute[1].getParam(4)
         expected_seepage = 20
         self.assertAlmostEqual(supplied_seepage, expected_seepage)
+
+class enumerate_eventsTestSuite(TestCase):
+
+    def test_a(self):
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        precipitation = TimeseriesStub(0)
+        precipitation.add_value(today, 5)
+        precipitation.add_value(tomorrow, 10)
+        evaporation = TimeseriesStub(0)
+        evaporation.add_value(today, 20)
+        evaporation.add_value(tomorrow, 30)
+        seepage = TimeseriesStub(0)
+        seepage.add_value(today, 10)
+        seepage.add_value(tomorrow, 20)
+        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+
+        expected_events = [((today, 5), (today, 20), (today, 10)),
+                           ((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
+        self.assertEqual(expected_events, events)
+
+    # def test_b(self):
+    #     today = datetime(2010,12,2)
+    #     tomorrow = datetime(2010,12,3)
+    #     day_after_tomorrow = datetime(2010,12,4)
+    #     precipitation = TimeseriesStub(0)
+    #     precipitation.add_value(today, 5)
+    #     precipitation.add_value(tomorrow, 10)
+    #     precipitation.add_value(day_after_tomorrow, 15)
+    #     evaporation = TimeseriesStub(0)
+    #     evaporation.add_value(today, 20)
+    #     evaporation.add_value(day_after_tomorrow, 40)
+    #     seepage = TimeseriesStub(0)
+    #     seepage.add_value(today, 10)
+    #     seepage.add_value(tomorrow, 20)
+    #     seepage.add_value(day_after_tomorrow, 30)
+    #     events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+
+    #     expected_events = [((today, 5), (today, 20), (today, 10)),
+    #                        ((tomorrow, 10), (tomorrow, 20), (tomorrow, 20)),
+    #                        ((day_after_tomorrow, 20), (day_after_tomorrow, 40), (day_after_tomorrow, 30))]
+    #     self.assertEqual(expected_events[0], events[0])
+    #     self.assertEqual(expected_events[1], events[1])
+

@@ -74,3 +74,15 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie.add_value(day_after_tomorrow, 30.0)
         self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
 
+    def test_f(self):
+        """Test missing dates are automatically added."""
+        timeserie = TimeseriesStub(0)
+        today = datetime(2010, 12, 3)
+        tomorrow = datetime(2010, 12, 4)
+        day_after_tomorrow = datetime(2010, 12, 5)
+        timeserie.add_value(today, 20)
+        timeserie.add_value(day_after_tomorrow, 30)
+        events = [event for event in timeserie.events()]
+
+        expected_events = [(today, 20), (tomorrow, 20), (day_after_tomorrow, 30)]
+        self.assertEqual(expected_events, events)

@@ -26,6 +26,7 @@
 #
 #******************************************************************************
 
+from datetime import timedelta
 
 class TimeseriesStub:
     """Represents a time series.
@@ -65,4 +66,13 @@ class TimeseriesStub:
         The generator iterates over the events in the order they were added.
 
         """
-        return (event for event in self._events)
+        previous_value = None
+        date_to_yield = None # we initialize this variable to silence pyflakes
+        for event in self._events:
+            if previous_value:
+                while date_to_yield < event[0]:
+                    yield (date_to_yield, previous_value)
+                    date_to_yield = date_to_yield + timedelta(1)
+            yield event
+            previous_value = event[1]
+            date_to_yield = event[0] + timedelta(1)
