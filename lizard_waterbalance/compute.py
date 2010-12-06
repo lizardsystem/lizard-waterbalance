@@ -130,6 +130,18 @@ def compute(bucket, previous_volume, precipitation, evaporation, seepage):
 def enumerate_events(precipitation, evaporation, seepage):
 
     for triple in zip(precipitation.events(), evaporation.events(), seepage.events()):
+        latest_start_date = triple[0][0]
+        if latest_start_date < triple[1][0]:
+            latest_start_date = triple[1][0]
+        if latest_start_date < triple[2][0]:
+            latest_start_date = triple[2][0]
+        break
+
+    precipitation = (event for event in precipitation.events() if event[0] >= latest_start_date)
+    evaporation = (event for event in evaporation.events() if event[0] >= latest_start_date)
+    seepage = (event for event in seepage.events() if event[0] >= latest_start_date)
+
+    for triple in zip(precipitation, evaporation, seepage):
         yield triple
 
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
