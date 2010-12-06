@@ -26,6 +26,7 @@
 #
 #******************************************************************************
 
+from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
@@ -137,7 +138,7 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     for the given bucket and returns these times series as a triple.
 
     Parameters:
-    * bucket -- bucket for which to compute the waterbalance
+    * bucket -- undrained surface for which to compute the waterbalance
     * previous_volume -- water volume of the bucket the day before
     * precipitation -- precipitation time series for the bucket in [mm/day]
     * evaporation -- evaporation time series for the bucket in [mm/day]
@@ -152,3 +153,65 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
         compute(bucket, initial_volume,
                 precipitation_event[1], evaporation_event[1], seepage_event[1])
     return (0, 0, 0)
+
+def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
+
+    # we first compute the upper bucket:
+    #   - the upper bucket does not have seepage and does not have net drainage
+    #   - the porosity of the upper bucket is always 1.0
+    upper_seepage = TimeseriesStub(0)
+    bucket.porosity, tmp = 1.0, bucket.porosity
+    (upper_water_level, upper_flow_off, dont_care) = compute_timeseries(bucket,
+                                                                        precipitation,
+                                                                        evaporation,
+                                                                        upper_seepage,
+                                                                        compute)
+    bucket.porosity = tmp
+
+    # we then compute the lower bucket:
+    #  - the lower bucket does not have precipitation, evaporation and does not
+    #    have flow off
+    lower_precipitation = TimeseriesStub(0)
+    lower_evaporation = TimeseriesStub(0)
+    (lower_water_level, dont_care, lower_net_drainage) = compute_timeseries(bucket,
+                                                                            lower_precipitation,
+                                                                            lower_evaporation,
+                                                                            seepage,
+                                                                            compute)
+
+    return (upper_water_level, upper_flow_off,  lower_net_drainage)
+
+def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage, compute):
+
+    # we first compute the upper bucket:
+    #   - the upper bucket does not have seepage
+    #   - the upper bucket has some of its own attributes
+    upper_seepage = TimeseriesStub(0)
+
+    bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
+    bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
+    bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+    (upper_water_level, upper_flow_off, upper_net_drainage) = compute_timeseries(bucket,
+                                                                                 precipitation,
+                                                                                 evaporation,
+                                                                                 upper_seepage,
+                                                                                 compute)
+    bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
+    bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
+    bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+
+    # we then compute the lower bucket:
+    #  - the lower bucket does not have precipitation, evaporation and does not
+    #    have flow off
+    lower_precipitation = add_timeseries(upper_flow_off, upper_net_drainage)
+    lower_evaporation = TimeseriesStub(0)
+    (lower_water_level, lower_flow_off, lower_net_drainage) = compute_timeseries(bucket,
+                                                                                 lower_precipitation,
+                                                                                 lower_evaporation,
+                                                                                 seepage,
+                                                                                 compute)
+
+    return (upper_water_level,
+            add_timeseries(upper_flow_off, lower_flow_off),
+            add_timeseries(upper_net_drainage, lower_net_drainage))
+

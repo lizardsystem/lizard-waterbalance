@@ -245,7 +245,7 @@ class PumpingStation(models.Model):
     name = models.CharField(max_length=64,
                             verbose_name=_("naam"),
                             help_text=_("naam van de pomp, bijvoorbeeld \"Inlaat C\" of \"Gemaal D\""))
-    open_water = models.ForeignKey(OpenWater,
+    open_water = models.ForeignKey(OpenWater, null=True, blank=True,
                                    help_text=_("open water waar deze pomp bij hoort"),
                                    related_name='pumping_stations')
     into = models.BooleanField(verbose_name=_("ingaande stroom"),
@@ -253,6 +253,8 @@ class PumpingStation(models.Model):
     percentage = models.FloatField(verbose_name=_("percentage"),
                                    help_text=_("percentage inkomend of uitgaand water via deze pomp"))
 
+    def __unicode__(self):
+        return self.name
 
 class PumpLine(models.Model):
     """Represents a *pomplijn*.

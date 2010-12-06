@@ -29,6 +29,7 @@ import sys
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.models import PumpingStation
 
 def retrieve_definitions(filename):
     """Return the list of records stored in the file with the given name.
@@ -53,6 +54,17 @@ def retrieve_definitions(filename):
             definitions.append(dict(zip(labels, values)))
     f.close()
     return definitions
+
+def import_pumpingstations(filename):
+
+    for pumpingstation_definition in retrieve_definitions(filename):
+        print pumpingstation_definition
+        pumpingstation = PumpingStation()
+
+        pumpingstation.name = pumpingstation_definition['name']
+        pumpingstation.into = pumpingstation_definition['into'].lower() == "true"
+        pumpingstation.percentage = int(pumpingstation_definition['percentage'])
+        pumpingstation.save()
 
 def import_openwaters(filename):
 

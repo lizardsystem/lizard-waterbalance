@@ -76,3 +76,7 @@ class TimeseriesStub:
             yield event
             previous_value = event[1]
             date_to_yield = event[0] + timedelta(1)
+
+def add_timeseries(timeseries_a, timeseries_b):
+    """Return the sum of the given time series."""
+    return ((a[0], a[1] + b[1]) for (a, b) in zip(timeseries_a.events(), timeseries_b.events()))

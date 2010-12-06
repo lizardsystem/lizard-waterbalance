@@ -31,6 +31,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
+from timeseriesstub import add_timeseries
 from timeseriesstub import TimeseriesStub
 
 class TimeseriesStubTestSuite(TestCase):
@@ -86,3 +87,16 @@ class TimeseriesStubTestSuite(TestCase):
 
         expected_events = [(today, 20), (tomorrow, 20), (day_after_tomorrow, 30)]
         self.assertEqual(expected_events, events)
+
+    def test_g(self):
+        """Test add_timeseries on time series with the same start and end date."""
+        today = datetime(2010, 12, 5)
+        tomorrow = datetime(2010, 12, 6)
+        timeserie_a = TimeseriesStub(0)
+        timeserie_a.add_value(today, 10)
+        timeserie_a.add_value(tomorrow, 20)
+        timeserie_b = TimeseriesStub(0)
+        timeserie_b.add_value(today, 30)
+        timeserie_b.add_value(tomorrow, 40)
+        expected_timeserie = [(today, 40), (tomorrow, 60)]
+        self.assertEqual(expected_timeserie, list(add_timeseries(timeserie_a, timeserie_b)))
