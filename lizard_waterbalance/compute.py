@@ -146,14 +146,22 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     * seepage -- seepage time series for the bucket in [mm/day]
 
     """
+    water_level = TimeseriesStub(0)
+    flow_off = TimeseriesStub(0)
+    net_drainage = TimeseriesStub(0)
+
     initial_volume = bucket.init_water_level * bucket.surface
     for triple in enumerate_events(precipitation, evaporation, seepage):
         precipitation_event = triple[0]
+        event_date = precipitation_event[0]
         evaporation_event = triple[1]
         seepage_event = triple[2]
-        compute(bucket, initial_volume,
-                precipitation_event[1], evaporation_event[1], seepage_event[1])
-    return (0, 0, 0)
+        bucket_triple = compute(bucket, initial_volume, precipitation_event[1],
+                                evaporation_event[1], seepage_event[1])
+        water_level.add_value(event_date, bucket_triple[0])
+        flow_off.add_value(event_date, bucket_triple[1])
+        net_drainage.add_value(event_date, bucket_triple[2])
+    return (water_level, flow_off, net_drainage)
 
 def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
 
@@ -220,8 +228,24 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
 def open_water_compute(open_water,
                        buckets,
                        bucket_computers,
+                       pumping_stations,
                        timeseries_retriever):
+    """Compute and return the waterbalance.
 
+    Parameters:
+    * open_water -- open water for which the function computes the waterbalance
+    * buckets -- list of buckets connected to the open water
+    * bucket_computers -- dictionary of bucket surface type to function
+    * pumping_stations -- list of stations that pump water into or out of the open water
+    * timeseries_retriever -- object to retrieve the input time series
+
+    Return value:
+    * result -- dictionary of bucket and open water name to time series name
+    to time series
+
+    The input time series are precipitation, evaporation and seepage.
+
+    """
     result = {}
 
     precipitation = timeseries_retriever.get_timeseries("precipitation")
@@ -230,7 +254,7 @@ def open_water_compute(open_water,
 
     for bucket in buckets:
         bucket_computer = bucket_computers[bucket.surface_type]
-        triple = bucket_computer.compute(bucket, precipitation, evaporation, seepage)
+        triple = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
         result.setdefault(bucket.name, {'water_level': triple[0],
                                         'flow_off': triple[1],
                                         'net_drainage': triple[2]})
@@ -241,7 +265,7 @@ def open_water_compute(open_water,
     # [<open-water-name>]['sum drained flow_off + net_drainage'] to TimeseriesStub
     # [<open-water-name>]['sum hardened net_drainage and undrained net_drainage'] to TimeseriesStub
     # [<open-water-name>]['sum undrained flow_off'] to TimeseriesStub
-    # [<open-water-name>]['sum pumps'] to TimeseriesStub
+    # [<open-water-name>]['sum intake'] to TimeseriesStub
     # [<open-water-name>]['sum infiltration'] to TimeseriesStub
     # [<open-water-name>]['sum seepage'] to TimeseriesStub
     # [<open-water-name>]['sum sluice error'] to TimeseriesStub

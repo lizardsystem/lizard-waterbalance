@@ -230,7 +230,7 @@ class computeTestSuite(TestCase):
         precipitation.add_value(today, 5)
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
-        mock = Mock()
+        mock = Mock({"compute": (0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -257,7 +257,7 @@ class computeTestSuite(TestCase):
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
-        mock = Mock()
+        mock = Mock({"compute": (0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -289,7 +289,7 @@ class computeTestSuite(TestCase):
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
-        mock = Mock()
+        mock = Mock({"compute": (0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -363,14 +363,18 @@ class OpenWaterComputeTestSuite(TestCase):
         self.bucket.surface_type = Bucket.UNDRAINED_SURFACE
         self.buckets = [self.bucket]
         self.bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, None)])
+        self.pumping_stations = []
         self.today = datetime(2010, 12, 6)
         self.next_week = self.today + timedelta(7)
     def test_a(self):
         """Test open_water_compute creates time series for the open water and the bucket."""
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = Mock({"compute": (None, None, None)})
+        mock_compute = Mock({"compute": (None, None, None)}).compute
+        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
         timeseries_retriever = Mock()
         timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers, timeseries_retriever)
+                                        self.bucket_computers,
+                                        self.pumping_stations,
+                                        timeseries_retriever)
         self.assertEqual(2, len(timeseries.keys()))
         self.assertTrue(self.bucket.name in timeseries.keys())
         self.assertTrue(self.open_water.name in timeseries.keys())
@@ -386,10 +390,13 @@ class OpenWaterComputeTestSuite(TestCase):
         net_drainage = TimeseriesStub(0)
         net_drainage.add_value(self.today, 0.2)
         net_drainage.add_value(self.next_week, 0.2)
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = Mock({"compute": (water_level, flow_off, net_drainage)})
+        mock_compute = Mock({"compute": (water_level, flow_off, net_drainage)}).compute
+        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
         timeseries_retriever = Mock()
         timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers, timeseries_retriever)
+                                        self.bucket_computers,
+                                        self.pumping_stations,
+                                        timeseries_retriever)
         timeseries_bucket = timeseries[self.bucket.name]
         self.assertEqual(water_level, timeseries_bucket['water_level'])
         self.assertEqual(flow_off, timeseries_bucket['flow_off'])
@@ -403,7 +410,9 @@ class OpenWaterComputeTestSuite(TestCase):
         timeseries.add_value(self.today, 10)
         timeseries_retriever = Mock({"get_timeseries": timeseries})
         timeseries = open_water_compute(self.open_water, buckets,
-                                        bucket_computers, timeseries_retriever)
+                                        bucket_computers,
+                                        self.pumping_stations,
+                                        timeseries_retriever)
         timeseries_open_water = timeseries[self.open_water.name]
         self.assertTrue('precipitation' in timeseries_open_water.keys())
 

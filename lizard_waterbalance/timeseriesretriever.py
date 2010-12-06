@@ -36,7 +36,7 @@ class FileReader:
         self.file = open(filename)
 
     def readlines(self):
-        return self.f.readlines()
+        return self.file.readlines()
 
     def close(self):
         self.file.close()
