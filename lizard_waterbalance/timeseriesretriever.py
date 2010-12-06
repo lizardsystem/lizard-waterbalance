@@ -1,0 +1,101 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#******************************************************************************
+#
+# This file is part of the lizard_waterbalance Django app.
+#
+# The lizard_waterbalance app is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# the lizard_waterbalance app.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Copyright 2010 Nelen & Schuurmans
+#
+#******************************************************************************
+#
+# Initial programmer: Pieter Swinkels
+# Initial date:       2010-12-06
+#
+#******************************************************************************
+
+from datetime import datetime
+
+from timeseriesstub import TimeseriesStub
+
+class FileReader:
+
+    def open(self, filename):
+        self.file = open(filename)
+
+    def readlines(self):
+        return self.f.readlines()
+
+    def close(self):
+        self.file.close()
+
+class FileReaderStub():
+
+    def __init__(self, lines):
+        self.lines = lines
+
+    def open(self, filename):
+        pass
+
+    def readlines(self):
+        return self.lines
+
+    def close(self):
+        pass
+
+class TimeseriesRetriever:
+    """Retrieves the time series stored in an ASCII file."""
+
+    def __init__(self):
+        self.filereader = FileReader()
+
+        self.name_in_file = dict([("A_0_0", "precipitation"),
+                                  ("A_0_1", "evaporation"),
+                                  ("O_0_0", "seepage"),
+                                  ("O_0_1", "infiltration"),
+                                  ("O_0_2", "minimum level"),
+                                  ("O_0_3", "maximum level"),
+                                  ("O_0_4", "target level"),
+                                  ("O_0_6", "volume"),
+                                  ("PS_0", "Inlaat Vecht"),
+                                  ("PS_1", "dijklek"),
+                                  ("PS_2", "inlaat peilbeheer")])
+
+    def read_timeseries(self, filename):
+
+        self.timeseries = {}
+        self.filereader.open(filename)
+        first_line = True
+        for line in self.filereader.readlines():
+            if first_line:
+                first_line = False
+            else:
+                fields = line.split(',')
+                name = self.find_name(fields[0])
+                date = datetime(int(fields[1]), int(fields[2]), int(fields[3]))
+                value = float(fields[4])
+                self.timeseries.setdefault(name, TimeseriesStub(0)).add_value(date, value)
+        self.filereader.close()
+
+    def find_name(self, code):
+        timeseries_name = ""
+        for key, value in self.name_in_file.items():
+            if key == code[0:len(key)]:
+                timeseries_name = value
+        return timeseries_name
+
+    def get_timeseries(self, name):
+        return self.timeseries[name]
+
