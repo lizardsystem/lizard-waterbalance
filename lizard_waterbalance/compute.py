@@ -27,6 +27,7 @@
 #******************************************************************************
 
 from lizard_waterbalance.timeseriesstub import add_timeseries
+from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
@@ -215,3 +216,40 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
             add_timeseries(upper_flow_off, lower_flow_off),
             add_timeseries(upper_net_drainage, lower_net_drainage))
 
+
+def open_water_compute(open_water,
+                       buckets,
+                       bucket_computers,
+                       timeseries_retriever):
+
+    result = {}
+
+    precipitation = timeseries_retriever.get_timeseries("precipitation")
+    evaporation = timeseries_retriever.get_timeseries("evaporation")
+    seepage = timeseries_retriever.get_timeseries("seepage")
+
+    for bucket in buckets:
+        bucket_computer = bucket_computers[bucket.surface_type]
+        triple = bucket_computer.compute(bucket, precipitation, evaporation, seepage)
+        result.setdefault(bucket.name, {'water_level': triple[0],
+                                        'flow_off': triple[1],
+                                        'net_drainage': triple[2]})
+
+    # [<open-water-name>]['precipitation'] to TimeseriesStub
+    # [<open-water-name>]['evaporation'] to TimeseriesStub
+    # [<open-water-name>]['sum hardened flow_off'] to TimeseriesStub
+    # [<open-water-name>]['sum drained flow_off + net_drainage'] to TimeseriesStub
+    # [<open-water-name>]['sum hardened net_drainage and undrained net_drainage'] to TimeseriesStub
+    # [<open-water-name>]['sum undrained flow_off'] to TimeseriesStub
+    # [<open-water-name>]['sum pumps'] to TimeseriesStub
+    # [<open-water-name>]['sum infiltration'] to TimeseriesStub
+    # [<open-water-name>]['sum seepage'] to TimeseriesStub
+    # [<open-water-name>]['sum sluice error'] to TimeseriesStub
+
+    result.setdefault(open_water.name, {})
+
+    if precipitation:
+        result[open_water.name].setdefault('precipitation')
+        result[open_water.name]['precipitation'] = multiply_timeseries(precipitation, open_water.surface / 1000.0)
+
+    return result

@@ -32,6 +32,7 @@ from datetime import timedelta
 from unittest import TestCase
 
 from timeseriesstub import add_timeseries
+from timeseriesstub import multiply_timeseries
 from timeseriesstub import TimeseriesStub
 
 class TimeseriesStubTestSuite(TestCase):
@@ -100,3 +101,14 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie_b.add_value(tomorrow, 40)
         expected_timeserie = [(today, 40), (tomorrow, 60)]
         self.assertEqual(expected_timeserie, list(add_timeseries(timeserie_a, timeserie_b)))
+
+    def test_h(self):
+        """Test multiply_timeseries on time series."""
+        today = datetime(2010, 12, 5)
+        tomorrow = datetime(2010, 12, 6)
+        timeserie = TimeseriesStub(0)
+        timeserie.add_value(today, 10)
+        timeserie.add_value(tomorrow, 20)
+        expected_timeserie = [(today, 40), (tomorrow, 80)]
+        multiplied_timeseries = list(multiply_timeseries(timeserie, 4))
+        self.assertEqual(expected_timeserie, multiplied_timeseries)

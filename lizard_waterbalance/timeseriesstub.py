@@ -80,3 +80,7 @@ class TimeseriesStub:
 def add_timeseries(timeseries_a, timeseries_b):
     """Return the sum of the given time series."""
     return ((a[0], a[1] + b[1]) for (a, b) in zip(timeseries_a.events(), timeseries_b.events()))
+
+def multiply_timeseries(timeseries, value):
+    """Return the product of the given time series with the given value."""
+    return ((event[0], event[1] * value) for event in timeseries.events())

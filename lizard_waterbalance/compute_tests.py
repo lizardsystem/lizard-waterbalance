@@ -27,16 +27,20 @@
 #******************************************************************************
 
 from datetime import datetime
+from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
+from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
 from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import enumerate_events
+from lizard_waterbalance.compute import open_water_compute
 from lizard_waterbalance.mock import Mock
+from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
@@ -346,4 +350,61 @@ class enumerate_eventsTestSuite(TestCase):
     #                        ((day_after_tomorrow, 20), (day_after_tomorrow, 40), (day_after_tomorrow, 30))]
     #     self.assertEqual(expected_events[0], events[0])
     #     self.assertEqual(expected_events[1], events[1])
+
+
+class OpenWaterComputeTestSuite(TestCase):
+
+    def setUp(self):
+        self.open_water = OpenWater()
+        self.open_water.name = "Aetseveldsepolder oost - openwater"
+        self.open_water.surface = int(float("402613.682123"))
+        self.bucket = Bucket()
+        self.bucket.name = "Aetseveldsepolder oost - landelijk"
+        self.bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        self.buckets = [self.bucket]
+        self.bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, None)])
+        self.today = datetime(2010, 12, 6)
+        self.next_week = self.today + timedelta(7)
+    def test_a(self):
+        """Test open_water_compute creates time series for the open water and the bucket."""
+        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = Mock({"compute": (None, None, None)})
+        timeseries_retriever = Mock()
+        timeseries = open_water_compute(self.open_water, self.buckets,
+                                        self.bucket_computers, timeseries_retriever)
+        self.assertEqual(2, len(timeseries.keys()))
+        self.assertTrue(self.bucket.name in timeseries.keys())
+        self.assertTrue(self.open_water.name in timeseries.keys())
+
+    def test_b(self):
+        """Test open_water_compute stores the time series for the bucket."""
+        water_level = TimeseriesStub(0)
+        water_level.add_value(self.today, 0.6)
+        water_level.add_value(self.next_week, 0.8)
+        flow_off = TimeseriesStub(0)
+        flow_off.add_value(self.today, 0.1)
+        flow_off.add_value(self.next_week, 0.2)
+        net_drainage = TimeseriesStub(0)
+        net_drainage.add_value(self.today, 0.2)
+        net_drainage.add_value(self.next_week, 0.2)
+        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = Mock({"compute": (water_level, flow_off, net_drainage)})
+        timeseries_retriever = Mock()
+        timeseries = open_water_compute(self.open_water, self.buckets,
+                                        self.bucket_computers, timeseries_retriever)
+        timeseries_bucket = timeseries[self.bucket.name]
+        self.assertEqual(water_level, timeseries_bucket['water_level'])
+        self.assertEqual(flow_off, timeseries_bucket['flow_off'])
+        self.assertEqual(net_drainage, timeseries_bucket['net_drainage'])
+
+    def test_c(self):
+        """Test open_water_compute stores the precipitation for the open water."""
+        buckets = []
+        bucket_computers = []
+        timeseries = TimeseriesStub(0)
+        timeseries.add_value(self.today, 10)
+        timeseries_retriever = Mock({"get_timeseries": timeseries})
+        timeseries = open_water_compute(self.open_water, buckets,
+                                        bucket_computers, timeseries_retriever)
+        timeseries_open_water = timeseries[self.open_water.name]
+        self.assertTrue('precipitation' in timeseries_open_water.keys())
+
 

@@ -61,6 +61,7 @@ class OpenWater(models.Model):
     """Represents the *open water*.
 
     Instance variables:
+    * surface -- surface in [m2]
     * minimum_level -- link to time series for minimum water level in [m]
     * maximum_level -- link to time series for maximum water level in [m]
     * target_level -- link to time series for target water level in [m]
@@ -78,6 +79,8 @@ class OpenWater(models.Model):
 
     name = models.CharField(verbose_name=_("naam"), max_length=64)
     slug = models.CharField(verbose_name=_("slug"), max_length=64)
+    surface = models.IntegerField(verbose_name=_("oppervlakte"),
+                                  help_text=_("oppervlakte in vierkante meters"))
     minimum_level = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("ondergrens"),
                                       help_text=_("tijdserie naar ondergrens peil in meters"),
