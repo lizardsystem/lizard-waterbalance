@@ -56,25 +56,29 @@ class FileReaderStub():
         pass
 
 class TimeseriesRetriever:
-    """Retrieves the time series stored in an ASCII file."""
+    """Retrieves the time series stored in an ASCII file.
 
+    Instance variables:
+    * filereader -- interface to the ASCII file
+    * code2name -- dictionary that maps each time serie code to time serie name
+
+    """
     def __init__(self):
         self.filereader = FileReader()
-
-        self.name_in_file = dict([("A_0_0", "precipitation"),
-                                  ("A_0_1", "evaporation"),
-                                  ("O_0_0", "seepage"),
-                                  ("O_0_1", "infiltration"),
-                                  ("O_0_2", "minimum level"),
-                                  ("O_0_3", "maximum level"),
-                                  ("O_0_4", "target level"),
-                                  ("O_0_6", "volume"),
-                                  ("PS_0", "Inlaat Vecht"),
-                                  ("PS_1", "dijklek"),
-                                  ("PS_2", "inlaat peilbeheer")])
+        self.code2name = dict([("A_0_0", "precipitation"),
+                               ("A_0_1", "evaporation"),
+                               ("O_0_0", "seepage"),
+                               ("O_0_1", "infiltration"),
+                               ("O_0_2", "minimum level"),
+                               ("O_0_3", "maximum level"),
+                               ("O_0_4", "target level"),
+                               ("O_0_6", "volume"),
+                               ("PS_0", "Inlaat Vecht"),
+                               ("PS_1", "dijklek"),
+                               ("PS_2", "inlaat peilbeheer")])
 
     def read_timeseries(self, filename):
-
+        """Retrieve the time series in the ASCII file with the given name."""
         self.timeseries = {}
         self.filereader.open(filename)
         first_line = True
@@ -90,12 +94,14 @@ class TimeseriesRetriever:
         self.filereader.close()
 
     def find_name(self, code):
+        """Return the complete name of the time series with the given code."""
         timeseries_name = ""
-        for key, value in self.name_in_file.items():
+        for key, value in self.code2name.items():
             if key == code[0:len(key)]:
                 timeseries_name = value
         return timeseries_name
 
     def get_timeseries(self, name):
+        """Return the TimeseriesStub with the given name."""
         return self.timeseries[name]
 
