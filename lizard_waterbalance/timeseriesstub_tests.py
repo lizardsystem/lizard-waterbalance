@@ -33,6 +33,7 @@ from unittest import TestCase
 
 from timeseriesstub import add_timeseries
 from timeseriesstub import multiply_timeseries
+from timeseriesstub import split_timeseries
 from timeseriesstub import TimeseriesStub
 
 class TimeseriesStubTestSuite(TestCase):
@@ -77,7 +78,7 @@ class TimeseriesStubTestSuite(TestCase):
         self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
 
     def test_f(self):
-        """Test missing dates are automatically added."""
+        """Test missing dates are automatically added as zeros."""
         timeserie = TimeseriesStub(0)
         today = datetime(2010, 12, 3)
         tomorrow = datetime(2010, 12, 4)
@@ -86,7 +87,7 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie.add_value(day_after_tomorrow, 30)
         events = [event for event in timeserie.events()]
 
-        expected_events = [(today, 20), (tomorrow, 20), (day_after_tomorrow, 30)]
+        expected_events = [(today, 20), (tomorrow, 0), (day_after_tomorrow, 30)]
         self.assertEqual(expected_events, events)
 
     def test_g(self):
@@ -110,5 +111,21 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie.add_value(today, 10)
         timeserie.add_value(tomorrow, 20)
         expected_timeserie = [(today, 40), (tomorrow, 80)]
-        multiplied_timeseries = list(multiply_timeseries(timeserie, 4))
+        multiplied_timeseries = list(multiply_timeseries(timeserie, 4).events())
         self.assertEqual(expected_timeserie, multiplied_timeseries)
+
+    def test_i(self):
+        """Test split_timeseries on time series."""
+        timeserie = TimeseriesStub(0)
+        timeserie.add_value(datetime(2010, 12, 7), 10)
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        timeserie.add_value(datetime(2010, 12, 9), -5)
+        expected_negative_timeserie_events = [(datetime(2010, 12, 7), 0),
+                                              (datetime(2010, 12, 8), 0),
+                                              (datetime(2010, 12, 9), -5)]
+        expected_positive_timeserie_events = [(datetime(2010, 12, 7), 10),
+                                              (datetime(2010, 12, 8), 20),
+                                              (datetime(2010, 12, 9), 0)]
+        splitted_timeseries = split_timeseries(timeserie)
+        self.assertEqual(expected_negative_timeserie_events, list(splitted_timeseries[0].events()))
+        self.assertEqual(expected_positive_timeserie_events, list(splitted_timeseries[1].events()))

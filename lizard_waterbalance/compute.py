@@ -287,5 +287,8 @@ def open_water_compute(open_water,
     if precipitation:
         result[open_water.name].setdefault('precipitation')
         result[open_water.name]['precipitation'] = multiply_timeseries(precipitation, open_water.surface / 1000.0)
+    if evaporation:
+        result[open_water.name].setdefault('evaporation')
+        result[open_water.name]['evaporation'] = multiply_timeseries(evaporation, open_water.surface / 1000.0)
 
     return result

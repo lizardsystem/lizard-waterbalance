@@ -63,7 +63,9 @@ class TimeseriesStub:
     def events(self):
         """Return a generator to iterate over all events.
 
-        The generator iterates over the events in the order they were added.
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function fills
+        in the missing dates with value 0.
 
         """
         previous_value = None
@@ -71,7 +73,7 @@ class TimeseriesStub:
         for event in self._events:
             if previous_value:
                 while date_to_yield < event[0]:
-                    yield (date_to_yield, previous_value)
+                    yield (date_to_yield, 0)
                     date_to_yield = date_to_yield + timedelta(1)
             yield event
             previous_value = event[1]
@@ -82,5 +84,33 @@ def add_timeseries(timeseries_a, timeseries_b):
     return ((a[0], a[1] + b[1]) for (a, b) in zip(timeseries_a.events(), timeseries_b.events()))
 
 def multiply_timeseries(timeseries, value):
-    """Return the product of the given time series with the given value."""
-    return ((event[0], event[1] * value) for event in timeseries.events())
+    """Return the product of the given time series with the given value.
+
+    The product is a TimeseriesStub.
+
+    """
+    product = TimeseriesStub(0)
+    for event in timeseries.events():
+        product.add_value(event[0], event[1] * value)
+    return product
+
+def split_timeseries(timeseries):
+    """Return the tuple of time series of non-positive and non-negative events.
+
+    Paramaters:
+    * timeseries -- single time series that this functions splits
+
+    """
+    non_pos_timeseries = TimeseriesStub(0)
+    non_neg_timeseries = TimeseriesStub(0)
+    for (date, value) in timeseries.events():
+        if value > 0:
+            non_pos_timeseries.add_value(date, 0)
+            non_neg_timeseries.add_value(date, value)
+        elif value < 0:
+            non_pos_timeseries.add_value(date, value)
+            non_neg_timeseries.add_value(date, 0)
+        else:
+            non_pos_timeseries.add_value(date, 0)
+            non_neg_timeseries.add_value(date, 0)
+    return (non_pos_timeseries, non_neg_timeseries)
