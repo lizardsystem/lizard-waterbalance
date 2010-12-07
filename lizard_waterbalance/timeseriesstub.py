@@ -80,8 +80,15 @@ class TimeseriesStub:
             date_to_yield = event[0] + timedelta(1)
 
 def add_timeseries(timeseries_a, timeseries_b):
-    """Return the sum of the given time series."""
-    return ((a[0], a[1] + b[1]) for (a, b) in zip(timeseries_a.events(), timeseries_b.events()))
+    """Return the sum of the given time series.
+
+    The product is a TimeseriesStub.
+
+    """
+    sum = TimeseriesStub(0)
+    for (a, b) in zip(timeseries_a.events(), timeseries_b.events()):
+        sum.add_value(a[0], a[1] + b[1])
+    return sum
 
 def multiply_timeseries(timeseries, value):
     """Return the product of the given time series with the given value.
@@ -95,10 +102,16 @@ def multiply_timeseries(timeseries, value):
     return product
 
 def split_timeseries(timeseries):
-    """Return the tuple of time series of non-positive and non-negative events.
+    """Return the 2-tuple of non-positive and non-negative time series.
 
     Paramaters:
-    * timeseries -- single time series that this functions splits
+    * timeseries -- time series that contains the events for the new 2 -tuple
+
+    This function creates a 2-tuple of TimeseriesStub, where the first element
+    contains all non-positive events (of the given time series) and the second
+    element contains all non-negative events. The 2 resulting time series have
+    events for the same dates as the given time series, but with value zero if
+    the value at that date does not have the right sign.
 
     """
     non_pos_timeseries = TimeseriesStub(0)

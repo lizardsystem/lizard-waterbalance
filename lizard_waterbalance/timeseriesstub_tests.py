@@ -101,7 +101,8 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie_b.add_value(today, 30)
         timeserie_b.add_value(tomorrow, 40)
         expected_timeserie = [(today, 40), (tomorrow, 60)]
-        self.assertEqual(expected_timeserie, list(add_timeseries(timeserie_a, timeserie_b)))
+        summed_timeseries = list(add_timeseries(timeserie_a, timeserie_b).events())
+        self.assertEqual(expected_timeserie, summed_timeseries)
 
     def test_h(self):
         """Test multiply_timeseries on time series."""
