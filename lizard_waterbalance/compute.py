@@ -48,6 +48,27 @@ class BucketOutcome:
         self.flow_off = TimeseriesStub(0)
         self.net_drainage = TimeseriesStub(0)
 
+    def name2timeseries(self):
+        return {"storage": self.storage,
+                "flow_off": self.flow_off,
+                "net_drainage": self.net_drainage}
+
+class OpenWaterOutcome:
+    """Stores the time series that are computed for an OpenWater.
+
+    Instance variables:
+    * precipitation -- time series for *neerslag*
+    * evaporation -- time series for *verdamping*
+
+    """
+    def __init__(self):
+        self.precipitation = TimeseriesStub(0)
+        self.evaporation = TimeseriesStub(0)
+
+    def name2timeseries(self):
+        return {"precipitation": self.precipitation,
+                "evaporation": self.evaporation}
+
 def compute_seepage(bucket, seepage):
     """Return the seepage of the given bucket on the given date.
 
@@ -164,8 +185,8 @@ def enumerate_events(precipitation, evaporation, seepage):
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     """Compute and return the waterbalance time series of the given bucket.
 
-    This method computes the water level, flow off and net drainage time series
-    for the given bucket and returns these times series as a triple.
+    This method computes the time series that can be stored in a BucketOutcome
+    for the given bucket and returns these times series as a BucketOutcome.
 
     Parameters:
     * bucket -- undrained surface for which to compute the waterbalance
@@ -296,13 +317,11 @@ def open_water_compute(open_water,
     # [<open-water-name>]['sum seepage'] to TimeseriesStub
     # [<open-water-name>]['sum sluice error'] to TimeseriesStub
 
-    result.setdefault(open_water.name, {})
+    outcome = result.setdefault(open_water.name, OpenWaterOutcome())
 
     if precipitation:
-        result[open_water.name].setdefault('precipitation')
-        result[open_water.name]['precipitation'] = multiply_timeseries(precipitation, open_water.surface / 1000.0)
+        result[open_water.name].precipitation = multiply_timeseries(precipitation, open_water.surface / 1000.0)
     if evaporation:
-        result[open_water.name].setdefault('evaporation')
-        result[open_water.name]['evaporation'] = multiply_timeseries(evaporation, open_water.surface / 1000.0)
+        result[open_water.name].evaporation = multiply_timeseries(evaporation, open_water.surface / 1000.0)
 
     return result

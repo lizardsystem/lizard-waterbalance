@@ -405,7 +405,7 @@ class OpenWaterComputeTestSuite(TestCase):
                                         bucket_computers,
                                         self.pumping_stations,
                                         timeseries_retriever)
-        timeseries_open_water = timeseries[self.open_water.name]
-        self.assertTrue('precipitation' in timeseries_open_water.keys())
+        precipitation = timeseries[self.open_water.name].precipitation
+        self.assertEqual(1, len(list(precipitation.events())))
 
 

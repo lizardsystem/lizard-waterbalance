@@ -58,8 +58,8 @@ class Command(BaseCommand):
         result = open_water_compute(open_water, buckets, bucket_computers,
                                     pumping_stations, timeseries_retriever)
         f = open(join(directory, "outcome.csv"), "w")
-        for key, name2timeseries in result.items():
-            for name, timeseries in name2timeseries.items():
+        for key, outcome in result.items():
+            for name, timeseries in outcome.name2timeseries().items():
                 name = name2name[name]
                 if name == "netto drainage":
                     (drainage_timeseries, timeseries) = split_timeseries(timeseries)
