@@ -175,13 +175,13 @@ class computeTestSuite(TestCase):
         precipitation = 5
         seepage = 10
 
-        expected_water_level = 0.14
-        (water_level, flow_off, net_drainage) = compute(self.bucket,
-                                                        previous_volume,
-                                                        evaporation,
-                                                        precipitation,
-                                                        seepage)
-        self.assertAlmostEqual(expected_water_level, water_level)
+        expected_storage = 413025.34
+        (storage, flow_off, net_drainage) = compute(self.bucket,
+                                                    previous_volume,
+                                                    evaporation,
+                                                    precipitation,
+                                                    seepage)
+        self.assertAlmostEqual(expected_storage, storage)
 
     def test_i(self):
         """Test compute returns the correct flow off.
@@ -195,11 +195,11 @@ class computeTestSuite(TestCase):
         seepage = 10
 
         expected_flow_off = -655677.73
-        (water_level, flow_off, net_drainage) = compute(self.bucket,
-                                                        previous_volume,
-                                                        evaporation,
-                                                        precipitation,
-                                                        seepage)
+        (storage, flow_off, net_drainage) = compute(self.bucket,
+                                                    previous_volume,
+                                                    evaporation,
+                                                    precipitation,
+                                                    seepage)
         self.assertAlmostEqual(expected_flow_off, flow_off, 2)
 
     def test_j(self):
@@ -214,11 +214,11 @@ class computeTestSuite(TestCase):
         seepage = 10
 
         expected_drainage = -41302.53
-        (water_level, flow_off, net_drainage) = compute(self.bucket,
-                                                        previous_volume,
-                                                        evaporation,
-                                                        precipitation,
-                                                        seepage)
+        (storage, flow_off, net_drainage) = compute(self.bucket,
+                                                    previous_volume,
+                                                    evaporation,
+                                                    precipitation,
+                                                    seepage)
         self.assertAlmostEqual(expected_drainage, net_drainage, 2)
 
     def test_k(self):
@@ -374,16 +374,16 @@ class OpenWaterComputeTestSuite(TestCase):
 
     def test_b(self):
         """Test open_water_compute stores the time series for the bucket."""
-        water_level = TimeseriesStub(0)
-        water_level.add_value(self.today, 0.6)
-        water_level.add_value(self.next_week, 0.8)
+        storage = TimeseriesStub(0)
+        storage.add_value(self.today, 0.6)
+        storage.add_value(self.next_week, 0.8)
         flow_off = TimeseriesStub(0)
         flow_off.add_value(self.today, 0.1)
         flow_off.add_value(self.next_week, 0.2)
         net_drainage = TimeseriesStub(0)
         net_drainage.add_value(self.today, 0.2)
         net_drainage.add_value(self.next_week, 0.2)
-        mock_compute = Mock({"compute": (water_level, flow_off, net_drainage)}).compute
+        mock_compute = Mock({"compute": (storage, flow_off, net_drainage)}).compute
         self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
         timeseries_retriever = Mock()
         timeseries = open_water_compute(self.open_water, self.buckets,
@@ -391,7 +391,7 @@ class OpenWaterComputeTestSuite(TestCase):
                                         self.pumping_stations,
                                         timeseries_retriever)
         timeseries_bucket = timeseries[self.bucket.name]
-        self.assertEqual(water_level, timeseries_bucket['water_level'])
+        self.assertEqual(storage, timeseries_bucket['storage'])
         self.assertEqual(flow_off, timeseries_bucket['flow_off'])
         self.assertEqual(net_drainage, timeseries_bucket['net_drainage'])
 

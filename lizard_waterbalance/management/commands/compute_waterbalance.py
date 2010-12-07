@@ -37,7 +37,7 @@ from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import split_timeseries
 
-name2name = dict([("water_level", "waterstand"),
+name2name = dict([("storage", "berging"),
                   ("flow_off", "afstroming"),
                   ("net_drainage" , "netto drainage"),
                   ("precipitation", "neerslag"),
