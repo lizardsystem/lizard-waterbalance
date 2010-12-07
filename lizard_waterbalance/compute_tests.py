@@ -32,6 +32,7 @@ from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.compute import BucketOutcome
 from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
@@ -361,7 +362,7 @@ class OpenWaterComputeTestSuite(TestCase):
         self.next_week = self.today + timedelta(7)
     def test_a(self):
         """Test open_water_compute creates time series for the open water and the bucket."""
-        mock_compute = Mock({"compute": (None, None, None)}).compute
+        mock_compute = Mock({"compute": BucketOutcome()}).compute
         self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
         timeseries_retriever = Mock()
         timeseries = open_water_compute(self.open_water, self.buckets,
@@ -374,16 +375,14 @@ class OpenWaterComputeTestSuite(TestCase):
 
     def test_b(self):
         """Test open_water_compute stores the time series for the bucket."""
-        storage = TimeseriesStub(0)
-        storage.add_value(self.today, 0.6)
-        storage.add_value(self.next_week, 0.8)
-        flow_off = TimeseriesStub(0)
-        flow_off.add_value(self.today, 0.1)
-        flow_off.add_value(self.next_week, 0.2)
-        net_drainage = TimeseriesStub(0)
-        net_drainage.add_value(self.today, 0.2)
-        net_drainage.add_value(self.next_week, 0.2)
-        mock_compute = Mock({"compute": (storage, flow_off, net_drainage)}).compute
+        outcome = BucketOutcome()
+        outcome.storage.add_value(self.today, 0.6)
+        outcome.storage.add_value(self.next_week, 0.8)
+        outcome.flow_off.add_value(self.today, 0.1)
+        outcome.flow_off.add_value(self.next_week, 0.2)
+        outcome.net_drainage.add_value(self.today, 0.2)
+        outcome.net_drainage.add_value(self.next_week, 0.2)
+        mock_compute = Mock({"compute": outcome}).compute
         self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
         timeseries_retriever = Mock()
         timeseries = open_water_compute(self.open_water, self.buckets,
@@ -391,9 +390,9 @@ class OpenWaterComputeTestSuite(TestCase):
                                         self.pumping_stations,
                                         timeseries_retriever)
         timeseries_bucket = timeseries[self.bucket.name]
-        self.assertEqual(storage, timeseries_bucket['storage'])
-        self.assertEqual(flow_off, timeseries_bucket['flow_off'])
-        self.assertEqual(net_drainage, timeseries_bucket['net_drainage'])
+        self.assertEqual(outcome.storage, timeseries_bucket.storage)
+        self.assertEqual(outcome.flow_off, timeseries_bucket.flow_off)
+        self.assertEqual(outcome.net_drainage, timeseries_bucket.net_drainage)
 
     def test_c(self):
         """Test open_water_compute stores the precipitation for the open water."""
