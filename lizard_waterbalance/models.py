@@ -81,6 +81,7 @@ class OpenWater(models.Model):
     slug = models.CharField(verbose_name=_("slug"), max_length=64)
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
                                   help_text=_("oppervlakte in vierkante meters"))
+    crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
     minimum_level = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("ondergrens"),
                                       help_text=_("tijdserie naar ondergrens peil in meters"),
