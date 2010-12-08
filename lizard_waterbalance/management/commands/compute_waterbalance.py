@@ -40,6 +40,7 @@ from lizard_waterbalance.timeseriesstub import split_timeseries
 name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),
                   ("net_drainage" , "netto drainage"),
+                  ("net_precipitation" , "netto neerslag"),
                   ("precipitation", "neerslag"),
                   ("seepage", "kwel"),
                   ("storage", "berging")])
@@ -62,7 +63,7 @@ class Command(BaseCommand):
         for key, outcome in result.items():
             for name, timeseries in outcome.name2timeseries().items():
                 name = name2name[name]
-                if name == "berging":
+                if name == "berging" or name == "netto neerslag":
                     continue
                 if name == "netto drainage":
                     (drainage_timeseries, timeseries) = split_timeseries(timeseries)
