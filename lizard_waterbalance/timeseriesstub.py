@@ -71,16 +71,14 @@ class TimeseriesStub:
         in the missing dates with value 0.
 
         """
-        previous_value = None
         date_to_yield = None # we initialize this variable to silence pyflakes
-        for event in self._events:
-            if previous_value:
-                while date_to_yield < event[0]:
+        for date, value in self._events:
+            if date_to_yield:
+                while date_to_yield < date:
                     yield (date_to_yield, 0)
                     date_to_yield = date_to_yield + timedelta(1)
-            yield event
-            previous_value = event[1]
-            date_to_yield = event[0] + timedelta(1)
+            yield date, value
+            date_to_yield = date + timedelta(1)
 
     def monthly_events(self):
         """Return a generator to iterate over all monthly events.

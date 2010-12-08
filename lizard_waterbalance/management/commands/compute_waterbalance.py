@@ -37,11 +37,12 @@ from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import split_timeseries
 
-name2name = dict([("storage", "berging"),
+name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),
                   ("net_drainage" , "netto drainage"),
                   ("precipitation", "neerslag"),
-                  ("evaporation", "verdamping")])
+                  ("seepage", "kwel"),
+                  ("storage", "berging")])
 
 class Command(BaseCommand):
     args = "directory that contains test data"
@@ -61,6 +62,8 @@ class Command(BaseCommand):
         for key, outcome in result.items():
             for name, timeseries in outcome.name2timeseries().items():
                 name = name2name[name]
+                if name == "berging":
+                    continue
                 if name == "netto drainage":
                     (drainage_timeseries, timeseries) = split_timeseries(timeseries)
                     self.write_timeseries(f, key, "drainage", drainage_timeseries)

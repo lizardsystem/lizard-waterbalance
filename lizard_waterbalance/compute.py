@@ -37,6 +37,7 @@ class BucketOutcome:
     * storage -- time series for *berging*
     * flow_off -- time series for *afstroming*
     * net_drainage -- time series for *drainage* and *intrek*
+    * seepage -- time series for *kwel*
 
     The value of a net_drainage event is positive when there is water coming
     into the bucket and negatice when there is water going out of the bucket.
@@ -47,11 +48,13 @@ class BucketOutcome:
         self.storage = TimeseriesStub(0)
         self.flow_off = TimeseriesStub(0)
         self.net_drainage = TimeseriesStub(0)
+        self.seepage = TimeseriesStub(0)
 
     def name2timeseries(self):
         return {"storage": self.storage,
                 "flow_off": self.flow_off,
-                "net_drainage": self.net_drainage}
+                "net_drainage": self.net_drainage,
+                "seepage": self.seepage}
 
 class OpenWaterOutcome:
     """Stores the time series that are computed for an OpenWater.
@@ -163,7 +166,7 @@ def compute(bucket, previous_volume, precipitation, evaporation, seepage):
         volume = max_volume
         Q_afst = -(previous_volume + Q_in - max_volume)
 
-    return (volume, Q_afst, Q_drain)
+    return (volume, Q_afst, Q_drain, Q_seepage)
 
 def enumerate_events(precipitation, evaporation, seepage):
 
@@ -199,17 +202,20 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
 
     outcome = BucketOutcome()
 
-    initial_volume = bucket.init_water_level * bucket.surface
+    volume = bucket.init_water_level * bucket.surface
     for triple in enumerate_events(precipitation, evaporation, seepage):
         precipitation_event = triple[0]
         event_date = precipitation_event[0]
         evaporation_event = triple[1]
         seepage_event = triple[2]
-        bucket_triple = compute(bucket, initial_volume, precipitation_event[1],
+        bucket_triple = compute(bucket, volume, precipitation_event[1],
                                 evaporation_event[1], seepage_event[1])
-        outcome.storage.add_value(event_date, bucket_triple[0])
+        #note that bucket_triple is a quadruple now
+        volume = bucket_triple[0]
+        outcome.storage.add_value(event_date, volume)
         outcome.flow_off.add_value(event_date, bucket_triple[1])
         outcome.net_drainage.add_value(event_date, bucket_triple[2])
+        outcome.seepage.add_value(event_date, bucket_triple[3])
     return outcome
 
 def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
