@@ -28,32 +28,9 @@
 
 from datetime import datetime
 
+from filereader import FileReader
 from timeseriesstub import TimeseriesStub
 
-class FileReader:
-
-    def open(self, filename):
-        self.file = open(filename)
-
-    def readlines(self):
-        return self.file.readlines()
-
-    def close(self):
-        self.file.close()
-
-class FileReaderStub():
-
-    def __init__(self, lines):
-        self.lines = lines
-
-    def open(self, filename):
-        pass
-
-    def readlines(self):
-        return self.lines
-
-    def close(self):
-        pass
 
 class TimeseriesRetriever:
     """Retrieves the time series stored in an ASCII file.

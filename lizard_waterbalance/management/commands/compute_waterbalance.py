@@ -69,7 +69,7 @@ class Command(BaseCommand):
         f.close()
 
     def write_timeseries(self, file, key, name, timeseries):
-        for (date, value) in timeseries.events():
+        for (date, value) in timeseries.monthly_events():
             file.write("%s,%s,%d,%d,%d,%f\n" % (key, name, date.year,
                                                 date.month, date.day, value))
 

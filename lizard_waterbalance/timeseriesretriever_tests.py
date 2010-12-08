@@ -29,8 +29,9 @@
 from datetime import datetime
 from unittest import TestCase
 
-from timeseriesretriever import FileReaderStub
+from filereader import FileReaderStub
 from timeseriesretriever import TimeseriesRetriever
+
 
 class TimeserieRetrieverSuite(TestCase):
 

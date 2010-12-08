@@ -31,7 +31,9 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
+from filereader import FileReaderStub
 from timeseriesstub import add_timeseries
+from timeseriesstub import create_from_file
 from timeseriesstub import multiply_timeseries
 from timeseriesstub import split_timeseries
 from timeseriesstub import TimeseriesStub
@@ -90,6 +92,36 @@ class TimeseriesStubTestSuite(TestCase):
         expected_events = [(today, 20), (tomorrow, 0), (day_after_tomorrow, 30)]
         self.assertEqual(expected_events, events)
 
+    def test_fa(self):
+        """Test the aggregation of a single daily events to a monthly event."""
+        timeserie = TimeseriesStub(0)
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        monthly_events = [event for event in timeserie.monthly_events()]
+        expected_monthly_events = [(datetime(2010, 12, 1), 20)]
+        self.assertEqual(expected_monthly_events, monthly_events)
+
+    def test_fb(self):
+        """Test the aggregation of a multiple daily events to a monthly event."""
+        timeserie = TimeseriesStub(0)
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        timeserie.add_value(datetime(2010, 12, 9), 30)
+        timeserie.add_value(datetime(2010, 12, 10),40)
+        monthly_events = [event for event in timeserie.monthly_events()]
+        expected_monthly_events = [(datetime(2010, 12, 1), 90)]
+        self.assertEqual(expected_monthly_events, monthly_events)
+
+    def test_fc(self):
+        """Test the aggregation of a multiple daily events to monthly events."""
+        timeserie = TimeseriesStub(0)
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        timeserie.add_value(datetime(2010, 12, 9), 30)
+        timeserie.add_value(datetime(2010, 12, 10),40)
+        timeserie.add_value(datetime(2011, 1, 1), 50)
+        monthly_events = [event for event in timeserie.monthly_events()]
+        expected_monthly_events = [(datetime(2010, 12, 1), 90),
+                                   (datetime(2011, 1, 1), 50)]
+        self.assertEqual(expected_monthly_events, monthly_events)
+
     def test_g(self):
         """Test add_timeseries on time series with the same start and end date."""
         today = datetime(2010, 12, 5)
@@ -130,3 +162,30 @@ class TimeseriesStubTestSuite(TestCase):
         splitted_timeseries = split_timeseries(timeserie)
         self.assertEqual(expected_negative_timeserie_events, list(splitted_timeseries[0].events()))
         self.assertEqual(expected_positive_timeserie_events, list(splitted_timeseries[1].events()))
+
+class create_from_fileTestSuite(TestCase):
+
+    def test_a(self):
+        filereader = FileReaderStub(["openwater,neerslag,1996,1,2,0.000000"])
+        result = create_from_file("dont care", filereader)
+        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
+        expected_result = {}
+        expected_result["openwater"] = {}
+        expected_result["openwater"]["neerslag"] = expected_timeserie
+        self.assertEqual(expected_result, result)
+
+    def test_b(self):
+        filereader = FileReaderStub(["openwater,neerslag,1996,1,2,0.000000",
+                                     "landelijk,berging,1996,1,2,413025.340000"])
+        result = create_from_file("dont care", filereader)
+        expected_result = {}
+        expected_result["openwater"] = {}
+        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
+        expected_result["openwater"]["neerslag"] = expected_timeserie
+        expected_result["landelijk"] = {}
+        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie.add_value(datetime(1996, 1, 2), 413025.34)
+        expected_result["landelijk"]["berging"] = expected_timeserie
+        self.assertEqual(expected_result, result)
