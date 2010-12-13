@@ -31,6 +31,7 @@ from os.path import join
 from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import compute_timeseries
+from lizard_waterbalance.compute import compute_timeseries_on_hardened_surface
 from lizard_waterbalance.compute import open_water_compute
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
@@ -52,8 +53,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         directory = args[0]
         open_water = OpenWater.objects.all()[0]
-        buckets = [Bucket.objects.all()[0]]
-        bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, compute_timeseries)])
+        buckets = [Bucket.objects.filter(name="landelijk")[0],
+                   Bucket.objects.filter(name="stedelijk")[0],
+                   Bucket.objects.filter(name="verhard")[0]]
+        bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, compute_timeseries),
+                                 (Bucket.HARDENED_SURFACE, compute_timeseries_on_hardened_surface)])
         pumping_stations = []
         timeseries_retriever = TimeseriesRetriever()
         timeseries_retriever.read_timeseries(join(directory, "timeserie.csv"))

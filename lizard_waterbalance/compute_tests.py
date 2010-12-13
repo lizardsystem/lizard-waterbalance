@@ -177,12 +177,9 @@ class computeTestSuite(TestCase):
         seepage = 10
 
         expected_storage = 413025.34
-        (storage, flow_off, net_drainage) = compute(self.bucket,
-                                                    previous_volume,
-                                                    evaporation,
-                                                    precipitation,
-                                                    seepage)
-        self.assertAlmostEqual(expected_storage, storage)
+        result_tuple = compute(self.bucket, previous_volume, evaporation,
+                               precipitation, seepage)
+        self.assertAlmostEqual(expected_storage, result_tuple[0])
 
     def test_i(self):
         """Test compute returns the correct flow off.
@@ -196,12 +193,9 @@ class computeTestSuite(TestCase):
         seepage = 10
 
         expected_flow_off = -655677.73
-        (storage, flow_off, net_drainage) = compute(self.bucket,
-                                                    previous_volume,
-                                                    evaporation,
-                                                    precipitation,
-                                                    seepage)
-        self.assertAlmostEqual(expected_flow_off, flow_off, 2)
+        result_tuple = compute(self.bucket, previous_volume, evaporation,
+                               precipitation, seepage)
+        self.assertAlmostEqual(expected_flow_off, result_tuple[1], 2)
 
     def test_j(self):
         """Test compute returns the correct net drainage.
@@ -215,12 +209,9 @@ class computeTestSuite(TestCase):
         seepage = 10
 
         expected_drainage = -41302.53
-        (storage, flow_off, net_drainage) = compute(self.bucket,
-                                                    previous_volume,
-                                                    evaporation,
-                                                    precipitation,
-                                                    seepage)
-        self.assertAlmostEqual(expected_drainage, net_drainage, 2)
+        result_tuple = compute(self.bucket, previous_volume, evaporation,
+                               precipitation, seepage)
+        self.assertAlmostEqual(expected_drainage, result_tuple[2], 2)
 
     def test_k(self):
         """Test compute_timeseries starts with the correct initial water volume."""
@@ -231,7 +222,7 @@ class computeTestSuite(TestCase):
         precipitation.add_value(today, 5)
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
-        mock = Mock({"compute": (0, 0, 0)})
+        mock = Mock({"compute": (0, 0, 0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -258,7 +249,7 @@ class computeTestSuite(TestCase):
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
-        mock = Mock({"compute": (0, 0, 0)})
+        mock = Mock({"compute": (0, 0, 0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -290,7 +281,7 @@ class computeTestSuite(TestCase):
         seepage = TimeseriesStub(0)
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
-        mock = Mock({"compute": (0, 0, 0)})
+        mock = Mock({"compute": (0, 0, 0, 0, 0)})
         # we do not need the return value of the next call and we discard it
         compute_timeseries(self.bucket,
                            evaporation,
@@ -352,6 +343,7 @@ class OpenWaterComputeTestSuite(TestCase):
         self.open_water = OpenWater()
         self.open_water.name = "Aetseveldsepolder oost - openwater"
         self.open_water.surface = int(float("402613.682123"))
+        self.open_water.crop_evaporation_factor = 1.0
         self.bucket = Bucket()
         self.bucket.name = "Aetseveldsepolder oost - landelijk"
         self.bucket.surface_type = Bucket.UNDRAINED_SURFACE

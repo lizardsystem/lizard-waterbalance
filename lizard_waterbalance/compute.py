@@ -69,10 +69,12 @@ class OpenWaterOutcome:
     def __init__(self):
         self.precipitation = TimeseriesStub(0)
         self.evaporation = TimeseriesStub(0)
+        self.seepage = TimeseriesStub(0)
 
     def name2timeseries(self):
         return {"precipitation": self.precipitation,
-                "evaporation": self.evaporation}
+                "evaporation": self.evaporation,
+                "seepage": self.seepage}
 
 def compute_seepage(bucket, seepage):
     """Return the seepage of the given bucket on the given date.
@@ -195,15 +197,13 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
 
     Parameters:
     * bucket -- undrained surface for which to compute the waterbalance
-    * previous_volume -- water volume of the bucket the day before
-    * precipitation -- precipitation time series for the bucket in [mm/day]
-    * evaporation -- evaporation time series for the bucket in [mm/day]
-    * seepage -- seepage time series for the bucket in [mm/day]
+    * precipitation -- precipitation time series in [mm/day]
+    * evaporation -- evaporation time series  in [mm/day]
+    * seepage -- seepage time series in [mm/day]
+    * compute -- function to compute the daily waterbalance
 
     """
-
     outcome = BucketOutcome()
-
     volume = bucket.init_water_level * bucket.surface
     for triple in enumerate_events(precipitation, evaporation, seepage):
         precipitation_event = triple[0]
@@ -228,11 +228,11 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #   - the porosity of the upper bucket is always 1.0
     upper_seepage = TimeseriesStub(0)
     bucket.porosity, tmp = 1.0, bucket.porosity
-    (upper_storage, upper_flow_off, dont_care) = compute_timeseries(bucket,
-                                                                    precipitation,
-                                                                    evaporation,
-                                                                    upper_seepage,
-                                                                    compute)
+    upper_outcome = compute_timeseries(bucket,
+                                       precipitation,
+                                       evaporation,
+                                       upper_seepage,
+                                       compute)
     bucket.porosity = tmp
 
     # we then compute the lower bucket:
@@ -240,13 +240,19 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #    have flow off
     lower_precipitation = TimeseriesStub(0)
     lower_evaporation = TimeseriesStub(0)
-    (lower_storage, dont_care, lower_net_drainage) = compute_timeseries(bucket,
-                                                                        lower_precipitation,
-                                                                        lower_evaporation,
-                                                                        seepage,
-                                                                        compute)
+    lower_outcome = compute_timeseries(bucket,
+                                       lower_precipitation,
+                                       lower_evaporation,
+                                       seepage,
+                                       compute)
 
-    return (upper_storage, upper_flow_off,  lower_net_drainage)
+    outcome = BucketOutcome()
+    outcome.storage = upper_outcome.storage
+    outcome.flow_off = upper_outcome.flow_off
+    outcome.net_drainage = lower_outcome.net_drainage
+    outcome.seepage = lower_outcome.seepage
+    outcome.net_precipitation = upper_outcome.net_precipitation
+    return outcome
 
 def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage, compute):
 
@@ -258,11 +264,11 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
-    (upper_storage, upper_flow_off, upper_net_drainage) = compute_timeseries(bucket,
-                                                                             precipitation,
-                                                                             evaporation,
-                                                                             upper_seepage,
-                                                                             compute)
+    upper_outcome = compute_timeseries(bucket,
+                                       precipitation,
+                                       evaporation,
+                                       upper_seepage,
+                                       compute)
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
@@ -272,12 +278,19 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     #    have flow off
     lower_precipitation = add_timeseries(upper_flow_off, upper_net_drainage)
     lower_evaporation = TimeseriesStub(0)
-    (lower_storage, lower_flow_off, lower_net_drainage) = compute_timeseries(bucket,
-                                                                             lower_precipitation,
-                                                                             lower_evaporation,
-                                                                             seepage,
-                                                                             compute)
+    lower_outcome = compute_timeseries(bucket,
+                                       lower_precipitation,
+                                       lower_evaporation,
+                                       seepage,
+                                       compute)
 
+    outcome = BucketOutcome()
+    outcome.storage = upper_outcome.storage
+    outcome.flow_off = upper_outcome.flow_off
+    outcome.net_drainage = lower_outcome.net_drainage
+    outcome.seepage = lower_outcome.seepage
+    outcome.net_precipitation = upper_outcome.net_precipitation
+    return outcome
     return (upper_storage,
             add_timeseries(upper_flow_off, lower_flow_off),
             add_timeseries(upper_net_drainage, lower_net_drainage))
@@ -313,6 +326,7 @@ def open_water_compute(open_water,
     for bucket in buckets:
         bucket_computer = bucket_computers[bucket.surface_type]
         outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
+        print bucket, outcome
         result.setdefault(bucket.name, outcome)
 
     # [<open-water-name>]['precipitation'] to TimeseriesStub
@@ -331,6 +345,8 @@ def open_water_compute(open_water,
     if precipitation:
         result[open_water.name].precipitation = multiply_timeseries(precipitation, open_water.surface / 1000.0)
     if evaporation:
-        result[open_water.name].evaporation = multiply_timeseries(evaporation, open_water.surface / 1000.0)
+        result[open_water.name].evaporation = multiply_timeseries(evaporation, -open_water.surface * open_water.crop_evaporation_factor / 1000.0)
+    if seepage:
+        result[open_water.name].seepage = multiply_timeseries(seepage, open_water.surface / 1000.0)
 
     return result
