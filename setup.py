@@ -12,9 +12,10 @@ long_description = '\n\n'.join([
 install_requires = [
     'Django',
     'django-staticfiles',
-    'lizard-ui',
-    'lizard-map',
     'lizard-fewsunblobbed',
+    'lizard-map',
+    'lizard-shape',
+    'lizard-ui',
     'django-nose',
     ],
 
@@ -23,15 +24,15 @@ tests_require = [
 
 setup(name='lizard-waterbalance',
       version=version,
-      description="TODO",
+      description="Django app to compute waterbalances",
       long_description=long_description,
       # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=['Programming Language :: Python',
                    'Framework :: Django',
                    ],
       keywords=[],
-      author='TODO',
-      author_email='TODO@nelen-schuurmans.nl',
+      author='P.C.J. Swinkels',
+      author_email='pieter.swinkels@nelen-schuurmans.nl',
       url='',
       license='GPL',
       packages=['lizard_waterbalance'],
