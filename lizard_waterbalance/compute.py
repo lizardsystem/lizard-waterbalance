@@ -139,38 +139,34 @@ def compute_net_drainage(bucket, previous_volume):
         net_drainage = 0
     return net_drainage
 
-def compute(bucket, previous_volume, precipitation, evaporation, seepage):
+def compute(bucket, previous_storage, precipitation, evaporation, seepage):
     """Compute and return the waterbalance of the given bucket.
 
-    This method computes the water level, flow off and net drainage of the
-    given bucket and returns them as a triple.
+    This method computes for the given bucket the water storage, flow off, net
+    drainage, seepage and net precipitation and returns them as a quintuple.
 
     Parameters:
     * bucket -- bucket for which to compute the waterbalance
-    * previous_volume -- water volume of the bucket the day before
-    * precipitation -- precipitation for the bucket in [mm/day]
-    * evaporation -- evaporation for the bucket in [mm/day]
-    * seepage -- seepage for the bucket in [mm/day]
+    * previous_storage -- water storage of the bucket the day before in [m3]
+    * precipitation -- precipitation time series for the bucket in [mm/day]
+    * evaporation -- evaporation time series for the bucket in [mm/day]
+    * seepage -- seepage time series for the bucket in [mm/day]
 
     """
-    max_volume = bucket.max_water_level * bucket.porosity * bucket.surface
+    net_precipitation = compute_net_precipitation(bucket, previous_storage,
+                                                  precipitation, evaporation)
+    net_drainage = compute_net_drainage(bucket, previous_storage)
+    seepage = compute_seepage(bucket, seepage)
 
-    Q_precipitation = compute_net_precipitation(bucket,
-                                                previous_volume,
-                                                precipitation,
-                                                evaporation)
-    Q_seepage = compute_seepage(bucket, seepage)
-    Q_drain = compute_net_drainage(bucket, previous_volume)
-    Q_in = Q_drain + Q_precipitation + Q_seepage
-
-    if previous_volume + Q_in < max_volume:
-        volume = previous_volume + Q_in
-        Q_afst = 0
+    storage = previous_storage + net_precipitation + net_drainage + seepage
+    max_storage = bucket.max_water_level * bucket.surface * bucket.porosity
+    if storage > max_storage:
+        flow_off = max_storage - storage
+        storage = max_storage
     else:
-        volume = max_volume
-        Q_afst = -(previous_volume + Q_in - max_volume)
+        flow_off = 0
 
-    return (volume, Q_afst, Q_drain, Q_seepage, Q_precipitation)
+    return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
 def enumerate_events(precipitation, evaporation, seepage):
 
@@ -192,11 +188,11 @@ def enumerate_events(precipitation, evaporation, seepage):
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     """Compute and return the waterbalance time series of the given bucket.
 
-    This method computes the time series that can be stored in a BucketOutcome
-    for the given bucket and returns these times series as a BucketOutcome.
+    This method computes for the given bucket the time series that can be
+    stored in a BucketOutcome and returns them as a BucketOutcome.
 
     Parameters:
-    * bucket -- undrained surface for which to compute the waterbalance
+    * bucket -- bucket for which to compute the waterbalance
     * precipitation -- precipitation time series in [mm/day]
     * evaporation -- evaporation time series  in [mm/day]
     * seepage -- seepage time series in [mm/day]
@@ -301,7 +297,7 @@ def open_water_compute(open_water,
     """Compute and return the waterbalance.
 
     Parameters:
-    * open_water -- open water for which the function computes the waterbalance
+    * open_water -- open water for which to compute the waterbalance
     * buckets -- list of buckets connected to the open water
     * bucket_computers -- dictionary of bucket surface type to function
     * pumping_stations -- list of stations that pump water into or out of the open water
