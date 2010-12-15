@@ -291,9 +291,6 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     outcome.seepage = lower_outcome.seepage
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
-    return (upper_storage,
-            add_timeseries(upper_flow_off, lower_flow_off),
-            add_timeseries(upper_net_drainage, lower_net_drainage))
 
 
 def open_water_compute(open_water,
