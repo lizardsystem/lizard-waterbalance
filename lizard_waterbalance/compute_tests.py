@@ -26,12 +26,16 @@
 #
 #******************************************************************************
 
+import logging
+
 from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.models import PumpLine
+from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.compute import BucketOutcome
 from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
@@ -216,11 +220,11 @@ class computeTestSuite(TestCase):
     def test_k(self):
         """Test compute_timeseries starts with the correct initial water volume."""
         today = datetime(2010,12,2)
-        evaporation = TimeseriesStub(0)
+        evaporation = TimeseriesStub()
         evaporation.add_value(today, 20)
-        precipitation = TimeseriesStub(0)
+        precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
-        seepage = TimeseriesStub(0)
+        seepage = TimeseriesStub()
         seepage.add_value(today, 10)
         mock = Mock({"compute": (0, 0, 0, 0, 0)})
         # we do not need the return value of the next call and we discard it
@@ -240,13 +244,13 @@ class computeTestSuite(TestCase):
         """Test compute_timeseries starts with the correct time serie values."""
         today = datetime(2010,12,2)
         tomorrow = datetime(2010,12,3)
-        evaporation = TimeseriesStub(0)
+        evaporation = TimeseriesStub()
         evaporation.add_value(today, 20)
         evaporation.add_value(tomorrow, 30)
-        precipitation = TimeseriesStub(0)
+        precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
         precipitation.add_value(tomorrow, 10)
-        seepage = TimeseriesStub(0)
+        seepage = TimeseriesStub()
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
         mock = Mock({"compute": (0, 0, 0, 0, 0)})
@@ -272,13 +276,13 @@ class computeTestSuite(TestCase):
         """Test compute_timeseries supplies the correct time serie values."""
         today = datetime(2010,12,2)
         tomorrow = datetime(2010,12,3)
-        evaporation = TimeseriesStub(0)
+        evaporation = TimeseriesStub()
         evaporation.add_value(today, 20)
         evaporation.add_value(tomorrow, 30)
-        precipitation = TimeseriesStub(0)
+        precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
         precipitation.add_value(tomorrow, 10)
-        seepage = TimeseriesStub(0)
+        seepage = TimeseriesStub()
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
         mock = Mock({"compute": (0, 0, 0, 0, 0)})
@@ -305,13 +309,13 @@ class enumerate_eventsTestSuite(TestCase):
     def test_a(self):
         today = datetime(2010,12,2)
         tomorrow = datetime(2010,12,3)
-        precipitation = TimeseriesStub(0)
+        precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
         precipitation.add_value(tomorrow, 10)
-        evaporation = TimeseriesStub(0)
+        evaporation = TimeseriesStub()
         evaporation.add_value(today, 20)
         evaporation.add_value(tomorrow, 30)
-        seepage = TimeseriesStub(0)
+        seepage = TimeseriesStub()
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
         events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
@@ -323,12 +327,12 @@ class enumerate_eventsTestSuite(TestCase):
     def test_b(self):
         today = datetime(2010,12,2)
         tomorrow = datetime(2010,12,3)
-        precipitation = TimeseriesStub(0)
+        precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
         precipitation.add_value(tomorrow, 10)
-        evaporation = TimeseriesStub(0)
+        evaporation = TimeseriesStub()
         evaporation.add_value(tomorrow, 30)
-        seepage = TimeseriesStub(0)
+        seepage = TimeseriesStub()
         seepage.add_value(today, 10)
         seepage.add_value(tomorrow, 20)
         events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
@@ -390,7 +394,7 @@ class OpenWaterComputeTestSuite(TestCase):
         """Test open_water_compute stores the precipitation for the open water."""
         buckets = []
         bucket_computers = []
-        timeseries = TimeseriesStub(0)
+        timeseries = TimeseriesStub()
         timeseries.add_value(self.today, 10)
         timeseries_retriever = Mock({"get_timeseries": timeseries})
         timeseries = open_water_compute(self.open_water, buckets,
@@ -400,4 +404,23 @@ class OpenWaterComputeTestSuite(TestCase):
         precipitation = timeseries[self.open_water.name].precipitation
         self.assertEqual(1, len(list(precipitation.events())))
 
+
+def retrieve_net_intake(open_water):
+
+    return open_water.retrieve_incoming_timeseries()
+
+class PumpingStationTestSuite(TestCase):
+
+    def test_a(self):
+        """Test the case without any pump lines."""
+        open_water = OpenWater()
+        self.assertEqual(0, len(list(retrieve_net_intake(open_water).events())))
+
+    def test_b(self):
+        """Test the case with a single incoming timeseries."""
+        timeseries = TimeseriesStub([(datetime(2010, 12, 15), 10)])
+        open_water = OpenWater()
+        open_water.retrieve_incoming_timeseries = (lambda : timeseries)
+        net_intake = retrieve_net_intake(open_water)
+        self.assertEqual(timeseries, net_intake)
 

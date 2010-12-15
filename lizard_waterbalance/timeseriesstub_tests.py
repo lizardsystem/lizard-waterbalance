@@ -40,30 +40,17 @@ from timeseriesstub import TimeseriesStub
 
 class TimeseriesStubTestSuite(TestCase):
 
-    def test_a(self):
-        """Test the initial value is set correctly."""
-        timeserie = TimeseriesStub(initial_value=10.0)
-        today = datetime(2010, 11, 24)
-        self.assertAlmostEqual(10.0, timeserie.get_value(today))
-
-    def test_b(self):
-        """Test the value before the first date & time is the initial value."""
-        timeserie = TimeseriesStub(initial_value=10.0)
-        today = datetime(2010, 11, 24)
-        timeserie.add_value(today, 20.0)
-        yesterday = today + timedelta(-1)
-        self.assertAlmostEqual(10.0, timeserie.get_value(yesterday))
 
     def test_c(self):
         """Test the value on the first date & time is the first value."""
-        timeserie = TimeseriesStub(initial_value=10.0)
+        timeserie = TimeseriesStub()
         today = datetime(2010, 11, 24)
         timeserie.add_value(today, 20.0)
         self.assertAlmostEqual(20.0, timeserie.get_value(today))
 
     def test_d(self):
         """Test the value after the first date & time is the first value."""
-        timeserie = TimeseriesStub(initial_value=10.0)
+        timeserie = TimeseriesStub()
         today = datetime(2010, 11, 24)
         timeserie.add_value(today, 20.0)
         tomorrow = today + timedelta(1)
@@ -71,7 +58,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_e(self):
         """Test the value before the second date & time is the first value."""
-        timeserie = TimeseriesStub(initial_value=10.0)
+        timeserie = TimeseriesStub()
         today = datetime(2010, 11, 24)
         timeserie.add_value(today, 20.0)
         tomorrow = today + timedelta(1)
@@ -81,7 +68,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_f(self):
         """Test missing dates are automatically added as zeros."""
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         today = datetime(2010, 12, 3)
         tomorrow = datetime(2010, 12, 4)
         day_after_tomorrow = datetime(2010, 12, 5)
@@ -94,7 +81,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_fa(self):
         """Test the aggregation of a single daily events to a monthly event."""
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         timeserie.add_value(datetime(2010, 12, 8), 20)
         monthly_events = [event for event in timeserie.monthly_events()]
         expected_monthly_events = [(datetime(2010, 12, 1), 20)]
@@ -102,7 +89,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_fb(self):
         """Test the aggregation of a multiple daily events to a monthly event."""
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         timeserie.add_value(datetime(2010, 12, 8), 20)
         timeserie.add_value(datetime(2010, 12, 9), 30)
         timeserie.add_value(datetime(2010, 12, 10),40)
@@ -112,7 +99,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_fc(self):
         """Test the aggregation of a multiple daily events to monthly events."""
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         timeserie.add_value(datetime(2010, 12, 8), 20)
         timeserie.add_value(datetime(2010, 12, 9), 30)
         timeserie.add_value(datetime(2010, 12, 10),40)
@@ -126,10 +113,10 @@ class TimeseriesStubTestSuite(TestCase):
         """Test add_timeseries on time series with the same start and end date."""
         today = datetime(2010, 12, 5)
         tomorrow = datetime(2010, 12, 6)
-        timeserie_a = TimeseriesStub(0)
+        timeserie_a = TimeseriesStub()
         timeserie_a.add_value(today, 10)
         timeserie_a.add_value(tomorrow, 20)
-        timeserie_b = TimeseriesStub(0)
+        timeserie_b = TimeseriesStub()
         timeserie_b.add_value(today, 30)
         timeserie_b.add_value(tomorrow, 40)
         expected_timeserie = [(today, 40), (tomorrow, 60)]
@@ -140,7 +127,7 @@ class TimeseriesStubTestSuite(TestCase):
         """Test multiply_timeseries on time series."""
         today = datetime(2010, 12, 5)
         tomorrow = datetime(2010, 12, 6)
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         timeserie.add_value(today, 10)
         timeserie.add_value(tomorrow, 20)
         expected_timeserie = [(today, 40), (tomorrow, 80)]
@@ -149,7 +136,7 @@ class TimeseriesStubTestSuite(TestCase):
 
     def test_i(self):
         """Test split_timeseries on time series."""
-        timeserie = TimeseriesStub(0)
+        timeserie = TimeseriesStub()
         timeserie.add_value(datetime(2010, 12, 7), 10)
         timeserie.add_value(datetime(2010, 12, 8), 20)
         timeserie.add_value(datetime(2010, 12, 9), -5)
@@ -168,7 +155,7 @@ class create_from_fileTestSuite(TestCase):
     def test_a(self):
         filereader = FileReaderStub(["openwater,neerslag,1996,1,2,0.000000"])
         result = create_from_file("dont care", filereader)
-        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie = TimeseriesStub()
         expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
         expected_result = {}
         expected_result["openwater"] = {}
@@ -181,11 +168,11 @@ class create_from_fileTestSuite(TestCase):
         result = create_from_file("dont care", filereader)
         expected_result = {}
         expected_result["openwater"] = {}
-        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie = TimeseriesStub()
         expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
         expected_result["openwater"]["neerslag"] = expected_timeserie
         expected_result["landelijk"] = {}
-        expected_timeserie = TimeseriesStub(0)
+        expected_timeserie = TimeseriesStub()
         expected_timeserie.add_value(datetime(1996, 1, 2), 413025.34)
         expected_result["landelijk"]["berging"] = expected_timeserie
         self.assertEqual(expected_result, result)

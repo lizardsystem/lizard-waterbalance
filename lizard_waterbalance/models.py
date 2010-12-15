@@ -30,6 +30,7 @@ from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map.models import ColorField
+from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
@@ -101,6 +102,9 @@ class OpenWater(models.Model):
 
     def __unicode__(self):
         return self.slug
+
+    def retrieve_incoming_timeseries(self):
+        return TimeseriesStub()
 
 class Bucket(models.Model):
     """Represents a *bakje*.

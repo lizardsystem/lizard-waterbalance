@@ -45,11 +45,11 @@ class BucketOutcome:
     """
     def __init__(self):
 
-        self.storage = TimeseriesStub(0)
-        self.flow_off = TimeseriesStub(0)
-        self.net_drainage = TimeseriesStub(0)
-        self.seepage = TimeseriesStub(0)
-        self.net_precipitation = TimeseriesStub(0)
+        self.storage = TimeseriesStub()
+        self.flow_off = TimeseriesStub()
+        self.net_drainage = TimeseriesStub()
+        self.seepage = TimeseriesStub()
+        self.net_precipitation = TimeseriesStub()
 
     def name2timeseries(self):
         return {"storage": self.storage,
@@ -67,9 +67,9 @@ class OpenWaterOutcome:
 
     """
     def __init__(self):
-        self.precipitation = TimeseriesStub(0)
-        self.evaporation = TimeseriesStub(0)
-        self.seepage = TimeseriesStub(0)
+        self.precipitation = TimeseriesStub()
+        self.evaporation = TimeseriesStub()
+        self.seepage = TimeseriesStub()
 
     def name2timeseries(self):
         return {"precipitation": self.precipitation,
@@ -222,7 +222,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage and does not have net drainage
     #   - the porosity of the upper bucket is always 1.0
-    upper_seepage = TimeseriesStub(0)
+    upper_seepage = TimeseriesStub()
     bucket.porosity, tmp = 1.0, bucket.porosity
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
@@ -234,8 +234,8 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
-    lower_precipitation = TimeseriesStub(0)
-    lower_evaporation = TimeseriesStub(0)
+    lower_precipitation = TimeseriesStub()
+    lower_evaporation = TimeseriesStub()
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,
@@ -255,7 +255,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
-    upper_seepage = TimeseriesStub(0)
+    upper_seepage = TimeseriesStub()
 
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
@@ -273,7 +273,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
     lower_precipitation = add_timeseries(upper_flow_off, upper_net_drainage)
-    lower_evaporation = TimeseriesStub(0)
+    lower_evaporation = TimeseriesStub()
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,

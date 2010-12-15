@@ -67,7 +67,7 @@ class TimeseriesRetriever:
                 name = self.find_name(fields[0])
                 date = datetime(int(fields[1]), int(fields[2]), int(fields[3]))
                 value = float(fields[4])
-                self.timeseries.setdefault(name, TimeseriesStub(0)).add_value(date, value)
+                self.timeseries.setdefault(name, TimeseriesStub()).add_value(date, value)
         self.filereader.close()
 
     def find_name(self, code):

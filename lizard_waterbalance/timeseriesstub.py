@@ -26,6 +26,8 @@
 #
 #******************************************************************************
 
+import logging
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -41,9 +43,10 @@ class TimeseriesStub:
     * events -- list of (date and time, value) tuples ordered by date and time
 
     """
-    def __init__(self, initial_value):
-        self.initial_value = initial_value
-        self._events = []
+    def __init__(self, events=None):
+        if events is None:
+            events = []
+        self._events = events
 
     def get_value(self, date_time):
         """Return the value on the given date and time.
@@ -53,7 +56,7 @@ class TimeseriesStub:
 
         """
         values = (event[1] for event in self._events if date_time >= event[0])
-        return next(values, self.initial_value)
+        return next(values, 0)
 
     def add_value(self, date_time, value):
         """Add the given value for the given date and time.
@@ -73,9 +76,9 @@ class TimeseriesStub:
         """
         date_to_yield = None # we initialize this variable to silence pyflakes
         for date, value in self._events:
-            if date_to_yield:
+            if not date_to_yield is None:
                 while date_to_yield < date:
-                    yield (date_to_yield, 0)
+                    yield date_to_yield, 0
                     date_to_yield = date_to_yield + timedelta(1)
             yield date, value
             date_to_yield = date + timedelta(1)
@@ -124,7 +127,7 @@ def add_timeseries(timeseries_a, timeseries_b):
     The product is a TimeseriesStub.
 
     """
-    sum = TimeseriesStub(0)
+    sum = TimeseriesStub()
     for (a, b) in zip(timeseries_a.events(), timeseries_b.events()):
         sum.add_value(a[0], a[1] + b[1])
     return sum
@@ -135,7 +138,7 @@ def multiply_timeseries(timeseries, value):
     The product is a TimeseriesStub.
 
     """
-    product = TimeseriesStub(0)
+    product = TimeseriesStub()
     for event in timeseries.events():
         product.add_value(event[0], event[1] * value)
     return product
@@ -153,8 +156,8 @@ def split_timeseries(timeseries):
     the value at that date does not have the right sign.
 
     """
-    non_pos_timeseries = TimeseriesStub(0)
-    non_neg_timeseries = TimeseriesStub(0)
+    non_pos_timeseries = TimeseriesStub()
+    non_neg_timeseries = TimeseriesStub()
     for (date, value) in timeseries.events():
         if value > 0:
             non_pos_timeseries.add_value(date, 0)
@@ -176,7 +179,7 @@ def create_from_file(filename, filereader=FileReader()):
         date = datetime(int(year), int(month), int(day))
         value = float(value)
         result.setdefault(name, {})
-        result[name].setdefault(label, TimeseriesStub(0))
+        result[name].setdefault(label, TimeseriesStub())
         result[name][label].add_value(date, value)
     filereader.close()
     return result
