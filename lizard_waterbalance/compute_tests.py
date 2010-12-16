@@ -43,6 +43,7 @@ from lizard_waterbalance.compute import compute_net_precipitation
 from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import enumerate_events
+from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import open_water_compute
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
@@ -405,22 +406,32 @@ class OpenWaterComputeTestSuite(TestCase):
         self.assertEqual(1, len(list(precipitation.events())))
 
 
-def retrieve_net_intake(open_water):
-
-    return open_water.retrieve_incoming_timeseries()
-
 class PumpingStationTestSuite(TestCase):
 
     def test_a(self):
         """Test the case without any pump lines."""
         open_water = OpenWater()
+        open_water.retrieve_incoming_timeseries = (lambda : TimeseriesStub())
+        open_water.retrieve_outgoing_timeseries = (lambda : TimeseriesStub())
         self.assertEqual(0, len(list(retrieve_net_intake(open_water).events())))
 
     def test_b(self):
         """Test the case with a single incoming timeseries."""
-        timeseries = TimeseriesStub([(datetime(2010, 12, 15), 10)])
+        incoming_timeseries = TimeseriesStub([(datetime(2010, 12, 15), 10)])
+        outgoing_timeseries = TimeseriesStub([(datetime(2010, 12, 15), 0)])
         open_water = OpenWater()
-        open_water.retrieve_incoming_timeseries = (lambda : timeseries)
+        open_water.retrieve_incoming_timeseries = (lambda : incoming_timeseries)
+        open_water.retrieve_outgoing_timeseries = (lambda : outgoing_timeseries)
         net_intake = retrieve_net_intake(open_water)
-        self.assertEqual(timeseries, net_intake)
+        self.assertEqual(incoming_timeseries, net_intake)
 
+    def test_y(self):
+        """Test the case with a single incoming and outgoing timeseries."""
+        incoming_timeseries = TimeseriesStub([(datetime(2010, 12, 15), 10)])
+        outgoing_timeseries = TimeseriesStub([(datetime(2010, 12, 15), 2)])
+        open_water = OpenWater()
+        open_water.retrieve_incoming_timeseries = (lambda : incoming_timeseries)
+        open_water.retrieve_outgoing_timeseries = (lambda : outgoing_timeseries)
+        expected_net_intake = TimeseriesStub([(datetime(2010, 12, 15), 8)])
+        net_intake = retrieve_net_intake(open_water)
+        self.assertEqual(expected_net_intake, net_intake)

@@ -143,6 +143,17 @@ def multiply_timeseries(timeseries, value):
         product.add_value(event[0], event[1] * value)
     return product
 
+def subtract_timeseries(timeseries_a, timeseries_b):
+    """Return the difference of the first given time series minus the second.
+
+    The product is a TimeseriesStub.
+
+    """
+    difference = TimeseriesStub()
+    for (a, b) in zip(timeseries_a.events(), timeseries_b.events()):
+        difference.add_value(a[0], a[1] - b[1])
+    return difference
+
 def split_timeseries(timeseries):
     """Return the 2-tuple of non-positive and non-negative time series.
 

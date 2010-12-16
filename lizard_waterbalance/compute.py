@@ -26,8 +26,11 @@
 #
 #******************************************************************************
 
+from datetime import datetime
+
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
+from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 class BucketOutcome:
@@ -168,22 +171,21 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage):
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
-def enumerate_events(precipitation, evaporation, seepage):
+def enumerate_events(*timeseries_list):
 
-    for triple in zip(precipitation.events(), evaporation.events(), seepage.events()):
-        latest_start_date = triple[0][0]
-        if latest_start_date < triple[1][0]:
-            latest_start_date = triple[1][0]
-        if latest_start_date < triple[2][0]:
-            latest_start_date = triple[2][0]
-        break
+    latest_start = datetime.min
+    for timeseries in timeseries_list:
+        start = next((event[0] for event in timeseries.events()), None)
+        assert not start is None
+        latest_start = max(latest_start, start)
 
-    precipitation = (event for event in precipitation.events() if event[0] >= latest_start_date)
-    evaporation = (event for event in evaporation.events() if event[0] >= latest_start_date)
-    seepage = (event for event in seepage.events() if event[0] >= latest_start_date)
+    new_timeseries_list = []
+    for timeseries in timeseries_list:
+        event_generator = (e for e in timeseries.events() if e[0] >= latest_start)
+        new_timeseries_list.append(event_generator)
 
-    for triple in zip(precipitation, evaporation, seepage):
-        yield triple
+    for timeseries_tuple in zip(*new_timeseries_list):
+        yield timeseries_tuple
 
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     """Compute and return the waterbalance time series of the given bucket.
@@ -288,6 +290,12 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
 
+def retrieve_net_intake(open_water):
+
+    incoming_timeseries = open_water.retrieve_incoming_timeseries()
+    outgoing_timeseries = open_water.retrieve_outgoing_timeseries()
+
+    return subtract_timeseries(incoming_timeseries, outgoing_timeseries)
 
 def open_water_compute(open_water,
                        buckets,
