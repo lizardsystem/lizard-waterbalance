@@ -121,16 +121,63 @@ class TimeseriesStub:
                     break
         return equal
 
+def enumerate_events(timeseries_a, timeseries_b):
+    events_a = timeseries_a.events()
+    events_b = timeseries_b.events()
+    event_a = next(events_a, None)
+    event_b = next(events_b, None)
+    while not event_a is None and not event_b is None:
+        if event_a[0] < event_b[0]:
+            yield event_a[0], event_a[1], 0
+            event_a = next(events_a, None)
+        elif event_a[0] > event_b[0]:
+            yield event_b[0], 0, event_b[1]
+            event_b = next(events_b, None)
+        else:
+            yield event_a[0], event_a[1], event_b[1]
+            event_a = next(events_a, None)
+            event_b = next(events_b, None)
+    if event_a is None:
+        if not event_b is None:
+            yield event_b[0], 0, event_b[1]
+        for event in events_b:
+            yield event[0], 0, event[1]
+    else:
+        if not event_a is None:
+            yield event_a[0], event_a[1], 0
+        for event in events_a:
+            yield event[0], event[1], 0
+
+
 def add_timeseries(timeseries_a, timeseries_b):
-    """Return the sum of the given time series.
-
-    The product is a TimeseriesStub.
-
-    """
-    sum = TimeseriesStub()
-    for (a, b) in zip(timeseries_a.events(), timeseries_b.events()):
-        sum.add_value(a[0], a[1] + b[1])
-    return sum
+    """Return the TimeseriesStub that is the sum of the given time series."""
+    result = TimeseriesStub()
+    events_a = timeseries_a.events()
+    events_b = timeseries_b.events()
+    event_a = next(events_a, None)
+    event_b = next(events_b, None)
+    while not event_a is None and not event_b is None:
+        if event_a[0] < event_b[0]:
+            result.add_value(event_a[0], event_a[1])
+            event_a = next(events_a, None)
+        elif event_a[0] > event_b[0]:
+            result.add_value(event_b[0], event_b[1])
+            event_b = next(events_b, None)
+        else:
+            result.add_value(event_a[0], event_a[1] + event_b[1])
+            event_a = next(events_a, None)
+            event_b = next(events_b, None)
+    if event_a is None:
+        if not event_b is None:
+            result.add_value(event_b[0], event_b[1])
+        for event in events_b:
+            result.add_value(event[0], event[1])
+    else:
+        if not event_a is None:
+            result.add_value(event_a[0], event_a[1])
+        for event in events_a:
+            result.add_value(event[0], event[1])
+    return result
 
 def multiply_timeseries(timeseries, value):
     """Return the product of the given time series with the given value.
@@ -144,15 +191,34 @@ def multiply_timeseries(timeseries, value):
     return product
 
 def subtract_timeseries(timeseries_a, timeseries_b):
-    """Return the difference of the first given time series minus the second.
-
-    The product is a TimeseriesStub.
-
-    """
-    difference = TimeseriesStub()
-    for (a, b) in zip(timeseries_a.events(), timeseries_b.events()):
-        difference.add_value(a[0], a[1] - b[1])
-    return difference
+    """Return the TimeseriesStub that is the difference of the given time series."""
+    result = TimeseriesStub()
+    events_a = timeseries_a.events()
+    events_b = timeseries_b.events()
+    event_a = next(events_a, None)
+    event_b = next(events_b, None)
+    while not event_a is None and not event_b is None:
+        if event_a[0] < event_b[0]:
+            result.add_value(event_a[0], event_a[1])
+            event_a = next(events_a, None)
+        elif event_a[0] > event_b[0]:
+            result.add_value(event_b[0], -event_b[1])
+            event_b = next(events_b, None)
+        else:
+            result.add_value(event_a[0], event_a[1] - event_b[1])
+            event_a = next(events_a, None)
+            event_b = next(events_b, None)
+    if event_a is None:
+        if not event_b is None:
+            result.add_value(event_b[0], -event_b[1])
+        for event in events_b:
+            result.add_value(event[0], -event[1])
+    else:
+        if not event_a is None:
+            result.add_value(event_a[0], event_a[1])
+        for event in events_a:
+            result.add_value(event[0], event[1])
+    return result
 
 def split_timeseries(timeseries):
     """Return the 2-tuple of non-positive and non-negative time series.

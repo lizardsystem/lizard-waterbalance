@@ -292,8 +292,13 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
 
 def retrieve_net_intake(open_water):
 
-    incoming_timeseries = open_water.retrieve_incoming_timeseries()
-    outgoing_timeseries = open_water.retrieve_outgoing_timeseries()
+    incoming_timeseries = TimeseriesStub()
+    for timeseries in open_water.retrieve_incoming_timeseries():
+        incoming_timeseries = add_timeseries(incoming_timeseries, timeseries)
+
+    outgoing_timeseries = TimeseriesStub()
+    for timeseries in open_water.retrieve_outgoing_timeseries():
+        outgoing_timeseries = add_timeseries(outgoing_timeseries, timeseries)
 
     return subtract_timeseries(incoming_timeseries, outgoing_timeseries)
 

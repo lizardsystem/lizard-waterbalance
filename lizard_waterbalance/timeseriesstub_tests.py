@@ -123,6 +123,16 @@ class TimeseriesStubTestSuite(TestCase):
         summed_timeseries = list(add_timeseries(timeserie_a, timeserie_b).events())
         self.assertEqual(expected_timeserie, summed_timeseries)
 
+    def test_ga(self):
+        """Test add_timeseries on time series with different start and end dates."""
+        today = datetime(2010, 12, 5)
+        tomorrow = datetime(2010, 12, 6)
+        timeserie_a = TimeseriesStub([(today, 10)])
+        timeserie_b = TimeseriesStub([(tomorrow, 40)])
+        expected_events = [(today, 10), (tomorrow, 40)]
+        events = list(add_timeseries(timeserie_a, timeserie_b).events())
+        self.assertEqual(expected_events, events)
+
     def test_h(self):
         """Test multiply_timeseries on time series."""
         today = datetime(2010, 12, 5)
