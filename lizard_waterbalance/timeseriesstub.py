@@ -152,35 +152,19 @@ def enumerate_events(timeseries_a, timeseries_b):
 def add_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the sum of the given time series."""
     result = TimeseriesStub()
-    events_a = timeseries_a.events()
-    events_b = timeseries_b.events()
-    event_a = next(events_a, None)
-    event_b = next(events_b, None)
-    while not event_a is None and not event_b is None:
-        if event_a[0] < event_b[0]:
-            result.add_value(event_a[0], event_a[1])
-            event_a = next(events_a, None)
-        elif event_a[0] > event_b[0]:
-            result.add_value(event_b[0], event_b[1])
-            event_b = next(events_b, None)
-        else:
-            result.add_value(event_a[0], event_a[1] + event_b[1])
-            event_a = next(events_a, None)
-            event_b = next(events_b, None)
-    if event_a is None:
-        if not event_b is None:
-            result.add_value(event_b[0], event_b[1])
-        for event in events_b:
-            result.add_value(event[0], event[1])
-    else:
-        if not event_a is None:
-            result.add_value(event_a[0], event_a[1])
-        for event in events_a:
-            result.add_value(event[0], event[1])
+    for date, value_a, value_b in enumerate_events(timeseries_a, timeseries_b):
+        result.add_value(date, value_a + value_b)
+    return result
+
+def subtract_timeseries(timeseries_a, timeseries_b):
+    """Return the TimeseriesStub that is the difference of the given time series."""
+    result = TimeseriesStub()
+    for date, value_a, value_b in enumerate_events(timeseries_a, timeseries_b):
+        result.add_value(date, value_a - value_b)
     return result
 
 def multiply_timeseries(timeseries, value):
-    """Return the product of the given time series with the given value.
+    """Return the the product of the given time series with the given value.
 
     The product is a TimeseriesStub.
 
@@ -189,36 +173,6 @@ def multiply_timeseries(timeseries, value):
     for event in timeseries.events():
         product.add_value(event[0], event[1] * value)
     return product
-
-def subtract_timeseries(timeseries_a, timeseries_b):
-    """Return the TimeseriesStub that is the difference of the given time series."""
-    result = TimeseriesStub()
-    events_a = timeseries_a.events()
-    events_b = timeseries_b.events()
-    event_a = next(events_a, None)
-    event_b = next(events_b, None)
-    while not event_a is None and not event_b is None:
-        if event_a[0] < event_b[0]:
-            result.add_value(event_a[0], event_a[1])
-            event_a = next(events_a, None)
-        elif event_a[0] > event_b[0]:
-            result.add_value(event_b[0], -event_b[1])
-            event_b = next(events_b, None)
-        else:
-            result.add_value(event_a[0], event_a[1] - event_b[1])
-            event_a = next(events_a, None)
-            event_b = next(events_b, None)
-    if event_a is None:
-        if not event_b is None:
-            result.add_value(event_b[0], -event_b[1])
-        for event in events_b:
-            result.add_value(event[0], -event[1])
-    else:
-        if not event_a is None:
-            result.add_value(event_a[0], event_a[1])
-        for event in events_a:
-            result.add_value(event[0], event[1])
-    return result
 
 def split_timeseries(timeseries):
     """Return the 2-tuple of non-positive and non-negative time series.
