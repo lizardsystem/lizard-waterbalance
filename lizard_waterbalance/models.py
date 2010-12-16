@@ -110,16 +110,18 @@ class OpenWater(models.Model):
         """Return the list of time series of intakes."""
         incoming_timeseries = []
         for pumping_station in self.retrieve_pumping_stations():
-            for timeseries in pumping_station.retrieve_timeseries():
-                incoming_timeseries.append(timeseries)
+            if pumping_station.into:
+                for timeseries in pumping_station.retrieve_timeseries():
+                    incoming_timeseries.append(timeseries)
         return incoming_timeseries
 
     def retrieve_outgoing_timeseries(self):
         """Return the list of time series of pumps."""
         outgoing_timeseries = []
-        # for pumping_station in self.retrieve_pumping_stations():
-        #     for timeseries in pumping_station.retrieve_timeseries():
-        #         outgoing_timeseries.append(timeseries)
+        for pumping_station in self.retrieve_pumping_stations():
+            if not pumping_station.into:
+                for timeseries in pumping_station.retrieve_timeseries():
+                    outgoing_timeseries.append(timeseries)
         return outgoing_timeseries
 
 
