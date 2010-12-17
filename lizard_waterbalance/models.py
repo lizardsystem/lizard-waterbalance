@@ -25,6 +25,8 @@
 #
 #******************************************************************************
 
+from datetime import datetime
+
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -283,6 +285,16 @@ class PumpingStation(models.Model):
     def __unicode__(self):
         return self.name
 
+    def retrieve_timeseries(self):
+        """Returns the list of TimeseriesStub(s) of each of its PumpLine(s)."""
+        result = []
+        for pump_line in self.retrieve_pump_lines():
+            result.append(pump_line.retrieve_timeseries())
+        return result
+
+    def retrieve_pump_lines(self):
+        pass
+
 class PumpLine(models.Model):
     """Represents a *pomplijn*.
 
@@ -297,6 +309,9 @@ class PumpLine(models.Model):
 
     pump = models.ForeignKey(PumpingStation, related_name='pump_lines')
     timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+
+    def retrieve_timeseries(self):
+        pass
 
 
 class WaterbalanceArea(models.Model):

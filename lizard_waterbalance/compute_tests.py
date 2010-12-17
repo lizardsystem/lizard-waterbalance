@@ -26,8 +26,6 @@
 #
 #******************************************************************************
 
-import logging
-
 from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
@@ -451,6 +449,7 @@ class NetIntakeTests(TestCase):
                            (datetime(2010, 12, 16), -10))
         self.assertEqual(list(expected_events), list(net_intake.events()))
 
+
 class OpenWaterAccessToPumpingStationsTests(TestCase):
     """Contains tests for the access of an OpenWater to its PumpingStation(s).
 
@@ -538,3 +537,38 @@ class OpenWaterAccessToPumpingStationsTests(TestCase):
         expected_events = ((datetime(2010, 12, 15), 20),)
         self.assertEqual(list(expected_events), list(net_intake.events()))
 
+
+class PumpingStationAccessPumpLinesTests(TestCase):
+    """Contains tests for the access of a PumpingStation to its PumpLine(s).
+
+    A PumpingStation does not have direct access to the time series associated
+    with its PumpLine(s): it has to retrieve them via them. The tests in this
+    test suite supply a PumpingStation with one or more stub PumpLine(s). Then
+    it queries the PumpingStation for the time series to test wether it
+    accesses its PumpLine(s) correctly.
+
+    """
+    def test_a(self):
+        """Test the case with one pump line."""
+        timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10))]
+        pump_lines = [PumpLine()]
+        pump_lines[0].retrieve_timeseries = lambda : timeseries[0]
+        pumping_station = PumpingStation()
+        pumping_station.retrieve_pump_lines = lambda : pump_lines
+        timeseries = pumping_station.retrieve_timeseries()
+        expected_timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10))]
+        self.assertEqual(expected_timeseries, timeseries)
+
+    def test_b(self):
+        """Test the case with multiple pump lines."""
+        timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10)),
+                      TimeseriesStub((datetime(2010, 12, 17), 20))]
+        pump_lines = [PumpLine() for index in range(0, 2)]
+        pump_lines[0].retrieve_timeseries = lambda : timeseries[0]
+        pump_lines[1].retrieve_timeseries = lambda : timeseries[1]
+        pumping_station = PumpingStation()
+        pumping_station.retrieve_pump_lines = lambda : pump_lines
+        timeseries = pumping_station.retrieve_timeseries()
+        expected_timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10)),
+                               TimeseriesStub((datetime(2010, 12, 17), 20))]
+        self.assertEqual(expected_timeseries, timeseries)
