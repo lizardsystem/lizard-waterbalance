@@ -43,8 +43,8 @@ class TimeseriesStub:
     * events -- list of (date and time, value) tuples ordered by date and time
 
     """
-    def __init__(self, events=None):
-        if events is None:
+    def __init__(self, *events):
+        if len(events) == 0:
             events = []
         self._events = events
 

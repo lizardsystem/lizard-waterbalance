@@ -127,8 +127,8 @@ class TimeseriesStubTestSuite(TestCase):
         """Test add_timeseries on time series with different start and end dates."""
         today = datetime(2010, 12, 5)
         tomorrow = datetime(2010, 12, 6)
-        timeserie_a = TimeseriesStub([(today, 10)])
-        timeserie_b = TimeseriesStub([(tomorrow, 40)])
+        timeserie_a = TimeseriesStub((today, 10))
+        timeserie_b = TimeseriesStub((tomorrow, 40))
         expected_events = [(today, 10), (tomorrow, 40)]
         events = list(add_timeseries(timeserie_a, timeserie_b).events())
         self.assertEqual(expected_events, events)

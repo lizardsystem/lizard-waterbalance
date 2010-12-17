@@ -406,83 +406,135 @@ class OpenWaterComputeTestSuite(TestCase):
         self.assertEqual(1, len(list(precipitation.events())))
 
 
-class PumpingStationTestSuite(TestCase):
+class NetIntakeTests(TestCase):
+    """Contains tests for the net intake computation of an OpenWater.
 
+    The function compute.retrieve_net_intake computes the net intake of water
+    of an OpenWater. To do so, it uses the methods of an OpenWater that
+    retrieve all the time series associated with its intakes and its pumps. The
+    tests in this test suite override these methods to test the behavior of
+    compute.retrieve_net_intake.
+
+    """
     def test_a(self):
         """Test the case without any intake or pump time series."""
-        incoming_timeseries = TimeseriesStub()
-        outgoing_timeseries = TimeseriesStub()
+        incoming_timeseries = []
+        outgoing_timeseries = []
         open_water = OpenWater()
-        open_water.retrieve_incoming_timeseries = lambda : [incoming_timeseries]
-        open_water.retrieve_outgoing_timeseries = lambda : [outgoing_timeseries]
-        self.assertEqual(0, len(list(retrieve_net_intake(open_water).events())))
+        open_water.retrieve_incoming_timeseries = lambda : incoming_timeseries
+        open_water.retrieve_outgoing_timeseries = lambda : outgoing_timeseries
+        net_intake = retrieve_net_intake(open_water)
+        self.assertEqual(0, len(list(net_intake.events())))
 
     def test_b(self):
         """Test the case with one intake and one pump time series."""
-        incoming_timeseries = TimeseriesStub((datetime(2010, 12, 15), 10))
-        outgoing_timeseries = TimeseriesStub((datetime(2010, 12, 15), 0))
+        incoming_timeseries = [TimeseriesStub((datetime(2010, 12, 15), 10))]
+        outgoing_timeseries = [TimeseriesStub((datetime(2010, 12, 15), 2))]
         open_water = OpenWater()
-        open_water.retrieve_incoming_timeseries = lambda : [incoming_timeseries]
-        open_water.retrieve_outgoing_timeseries = lambda : [outgoing_timeseries]
+        open_water.retrieve_incoming_timeseries = lambda : incoming_timeseries
+        open_water.retrieve_outgoing_timeseries = lambda : outgoing_timeseries
         net_intake = retrieve_net_intake(open_water)
-        print list(incoming_timeseries.events())
-        print list(outgoing_timeseries.events())
-        self.assertEqual(list(incoming_timeseries.events()), list(net_intake.events()))
+        expected_events = TimeseriesStub((datetime(2010, 12, 15), 8)).events()
+        self.assertEqual(list(expected_events), list(net_intake.events()))
 
     def test_c(self):
-        """Test the case with one incoming and one outgoing timeseries."""
-        incoming_timeseries = TimeseriesStub((datetime(2010, 12, 15), 10))
-        outgoing_timeseries = TimeseriesStub((datetime(2010, 12, 15), 2))
+        """Test the case with only two pump time series."""
+        incoming_timeseries = []
+        outgoing_timeseries = [
+            TimeseriesStub((datetime(2010, 12, 15), 0)),
+            TimeseriesStub((datetime(2010, 12, 16), 10))]
         open_water = OpenWater()
-        open_water.retrieve_incoming_timeseries = lambda : [incoming_timeseries]
-        open_water.retrieve_outgoing_timeseries = lambda : [outgoing_timeseries]
-        expected_net_intake = TimeseriesStub((datetime(2010, 12, 15), 8))
+        open_water.retrieve_incoming_timeseries = lambda : incoming_timeseries
+        open_water.retrieve_outgoing_timeseries = lambda : outgoing_timeseries
         net_intake = retrieve_net_intake(open_water)
-        self.assertEqual(expected_net_intake, net_intake)
+        expected_events = ((datetime(2010, 12, 15), 0),
+                           (datetime(2010, 12, 16), -10))
+        self.assertEqual(list(expected_events), list(net_intake.events()))
 
-    def test_d(self):
-        """Test the case with a single incoming timeseries from a single PumpingStation."""
-        timeseries = TimeseriesStub((datetime(2010, 12, 15), 10))
-        pumping_station = PumpingStation()
-        pumping_station.into = True
-        pumping_station.retrieve_timeseries = lambda : [timeseries]
+class OpenWaterAccessToPumpingStationsTests(TestCase):
+    """Contains tests for the access of an OpenWater to its PumpingStation(s).
+
+    An OpenWater does not have direct access to the time series associated with
+    its intakes and pumps: it has to retrieve them via its pumping
+    stations. The tests in this test suite supply the OpenWater with dummy
+    pumping stations. Then it computes the net intake to test wether the
+    OpenWater accesses its pumping stations correctly.
+
+    """
+    def test_a(self):
+        """Test the case with one intake time series.
+
+        The test defines one pumping station.
+
+        """
+        incoming_timeseries = [TimeseriesStub((datetime(2010, 12, 15), 10))]
+        pumping_stations = [PumpingStation()]
+        pumping_stations[0].into = True
+        pumping_stations[0].retrieve_timeseries = lambda : incoming_timeseries
         open_water = OpenWater()
-        open_water.retrieve_pumping_stations = lambda : [pumping_station]
+        open_water.retrieve_pumping_stations = lambda : pumping_stations
         net_intake = retrieve_net_intake(open_water)
-        self.assertEqual(timeseries, net_intake)
+        expected_events = ((datetime(2010, 12, 15), 10),)
+        self.assertEqual(list(expected_events), list(net_intake.events()))
 
-    def test_e(self):
-        """Test the case with a single outgoing timeseries from a single PumpingStation."""
-        timeseries = TimeseriesStub((datetime(2010, 12, 15), 10))
-        pumping_station = PumpingStation()
-        pumping_station.into = False
-        pumping_station.retrieve_timeseries = lambda : [timeseries]
+    def test_b(self):
+        """Test the case with one pump time series.
+
+        The test defines one pumping station.
+
+        """
+        outgoing_timeseries = [TimeseriesStub((datetime(2010, 12, 15), 10))]
+        pumping_stations = [PumpingStation()]
+        pumping_stations[0].into = False
+        pumping_stations[0].retrieve_timeseries = lambda : outgoing_timeseries
         open_water = OpenWater()
-        open_water.retrieve_pumping_stations = lambda : [pumping_station]
-        expected_net_intake = multiply_timeseries(timeseries, -1.0)
+        open_water.retrieve_pumping_stations = lambda : pumping_stations
         net_intake = retrieve_net_intake(open_water)
-        self.assertEqual(expected_net_intake, net_intake)
+        expected_events = ((datetime(2010, 12, 15), -10),)
+        self.assertEqual(list(expected_events), list(net_intake.events()))
 
-    def test_f(self):
-        """Test the case with a single outgoing timeseries from a single PumpingStation."""
+    def test_c(self):
+        """Test the case with multiple intake and pump timeseries.
+
+        The test defines one pumping station for the multiple intake time
+        series and one pumping station for the multiple pump time series.
+
+        """
         incoming_timeseries = [
             TimeseriesStub((datetime(2010, 12, 15), 10)),
             TimeseriesStub((datetime(2010, 12, 16), 20))]
         outgoing_timeseries = [
             TimeseriesStub((datetime(2010, 12, 16), 5)),
             TimeseriesStub((datetime(2010, 12, 17), 15))]
-        incoming_pumping_station = PumpingStation()
-        incoming_pumping_station.into = True
-        incoming_pumping_station.retrieve_timeseries = lambda : incoming_timeseries
-        outgoing_pumping_station = PumpingStation()
-        outgoing_pumping_station.into = False
-        outgoing_pumping_station.retrieve_timeseries = lambda : outgoing_timeseries
-        pumping_stations = [incoming_pumping_station, outgoing_pumping_station]
+        pumping_stations = [PumpingStation() for index in range(0, 2)]
+        pumping_stations[0].into = True
+        pumping_stations[0].retrieve_timeseries = lambda : incoming_timeseries
+        pumping_stations[1].into = False
+        pumping_stations[1].retrieve_timeseries = lambda : outgoing_timeseries
         open_water = OpenWater()
         open_water.retrieve_pumping_stations = lambda : pumping_stations
-        expected_net_intake = TimeseriesStub(
-            (datetime(2010, 12, 15), 10),
-            (datetime(2010, 12, 16), 15),
-            (datetime(2010, 12, 17), -15))
         net_intake = retrieve_net_intake(open_water)
-        self.assertEqual(list(expected_net_intake.events()), list(net_intake.events()))
+        expected_events = ((datetime(2010, 12, 15), 10),
+                           (datetime(2010, 12, 16), 15),
+                           (datetime(2010, 12, 17), -15))
+        self.assertEqual(list(expected_events), list(net_intake.events()))
+
+    def test_d(self):
+        """Test the case with multiple intake time series.
+
+        The test defines multiple pumping stations for the multiple intake time
+        series.
+
+        """
+        incoming_timeseries = [TimeseriesStub((datetime(2010, 12, 15), 10))]
+        pumping_stations = [PumpingStation() for index in range(0, 2)]
+        pumping_stations[0].into = True
+        pumping_stations[0].retrieve_timeseries = lambda : incoming_timeseries
+        pumping_stations[1].into = True
+        pumping_stations[1].retrieve_timeseries = lambda : incoming_timeseries
+        open_water = OpenWater()
+        open_water.retrieve_pumping_stations = lambda : pumping_stations
+        net_intake = retrieve_net_intake(open_water)
+        expected_events = ((datetime(2010, 12, 15), 20),)
+        self.assertEqual(list(expected_events), list(net_intake.events()))
+
