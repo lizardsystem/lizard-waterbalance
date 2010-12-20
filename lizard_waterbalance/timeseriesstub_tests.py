@@ -37,6 +37,7 @@ from timeseriesstub import create_from_file
 from timeseriesstub import multiply_timeseries
 from timeseriesstub import split_timeseries
 from timeseriesstub import TimeseriesStub
+from timeseriesstub import TimeseriesWithMemoryStub
 
 class TimeseriesStubTestSuite(TestCase):
 
@@ -49,22 +50,30 @@ class TimeseriesStubTestSuite(TestCase):
         self.assertAlmostEqual(20.0, timeserie.get_value(today))
 
     def test_d(self):
-        """Test the value after the first date & time is the first value."""
+        """Test the value after the first date & time is zero."""
         timeserie = TimeseriesStub()
         today = datetime(2010, 11, 24)
         timeserie.add_value(today, 20.0)
         tomorrow = today + timedelta(1)
-        self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
+        self.assertAlmostEqual(0.0, timeserie.get_value(tomorrow))
 
     def test_e(self):
-        """Test the value before the second date & time is the first value."""
+        """Test the value before the second date & time is zero."""
         timeserie = TimeseriesStub()
         today = datetime(2010, 11, 24)
         timeserie.add_value(today, 20.0)
         tomorrow = today + timedelta(1)
         day_after_tomorrow = tomorrow + timedelta(1)
         timeserie.add_value(day_after_tomorrow, 30.0)
-        self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
+        self.assertAlmostEqual(0.0, timeserie.get_value(tomorrow))
+
+    def test_ea(self):
+        """Test the value before the third date & time is the second value."""
+        today = datetime(2010, 12, 20)
+        timeserie = TimeseriesStub((today, 10.0),
+                                   (today + timedelta(1), 20.0),
+                                   (today + timedelta(2), 30.0))
+        self.assertAlmostEqual(20.0, timeserie.get_value(today + timedelta(1)))
 
     def test_f(self):
         """Test missing dates are automatically added as zeros."""
@@ -75,7 +84,6 @@ class TimeseriesStubTestSuite(TestCase):
         timeserie.add_value(today, 20)
         timeserie.add_value(day_after_tomorrow, 30)
         events = [event for event in timeserie.events()]
-
         expected_events = [(today, 20), (tomorrow, 0), (day_after_tomorrow, 30)]
         self.assertEqual(expected_events, events)
 
@@ -159,6 +167,42 @@ class TimeseriesStubTestSuite(TestCase):
         splitted_timeseries = split_timeseries(timeserie)
         self.assertEqual(expected_negative_timeserie_events, list(splitted_timeseries[0].events()))
         self.assertEqual(expected_positive_timeserie_events, list(splitted_timeseries[1].events()))
+
+class TimeseriesWithMemoryTests(TestCase):
+
+    def test_a(self):
+        """Test the value on the first date is the first value."""
+        today = datetime(2010, 12, 20)
+        timeserie = TimeseriesWithMemoryStub((today, 20.0))
+        self.assertAlmostEqual(20.0, timeserie.get_value(today))
+
+    def test_b(self):
+        """Test the value after the first date & time is the first value."""
+        today = datetime(2010, 12, 20)
+        timeserie = TimeseriesWithMemoryStub((today, 20.0))
+        tomorrow = today + timedelta(1)
+        self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
+
+    def test_c(self):
+        """Test the value before the second date & time is the first value."""
+        today = datetime(2010, 12, 20)
+        timeserie = TimeseriesWithMemoryStub((today, 20.0),
+                                             (today + timedelta(2), 30.0))
+        tomorrow = today + timedelta(1)
+        self.assertAlmostEqual(20.0, timeserie.get_value(tomorrow))
+
+    def test_d(self):
+        """Test missing dates are automatically added as the latest known value."""
+        timeserie = TimeseriesWithMemoryStub()
+        today = datetime(2010, 12, 3)
+        tomorrow = datetime(2010, 12, 4)
+        day_after_tomorrow = datetime(2010, 12, 5)
+        timeserie.add_value(today, 20)
+        timeserie.add_value(day_after_tomorrow, 30)
+        events = [event for event in timeserie.events()]
+        expected_events = [(today, 20), (tomorrow, 20), (day_after_tomorrow, 30)]
+        self.assertEqual(expected_events, events)
+
 
 class create_from_fileTestSuite(TestCase):
 

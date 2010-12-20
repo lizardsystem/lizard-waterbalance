@@ -27,6 +27,7 @@
 #******************************************************************************
 
 from datetime import datetime
+from datetime import timedelta
 
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
@@ -356,3 +357,62 @@ def open_water_compute(open_water,
         result[open_water.name].seepage = multiply_timeseries(seepage, open_water.surface / 1000.0)
 
     return result
+
+def compute_buckets(buckets, precipitation, evaporation, seepage):
+    pass
+
+class SluiceErrorComputer:
+
+    def compute(self, start_date, end_date, open_water, bucket_outcomes,
+                precipitation, evaporation, seepage):
+        """Compute the sluice error time series for the given open water.
+
+        This function returns the TimeseriesStub that contains the sluice error
+        time series for the given open_water.
+
+        Parameters:
+        * open_water -- OpenWater for which to compute the sluice error time series
+        * bucket_outcomes -- BucketOutcome(s) with the results of each bucket
+        * precipitation -- TimeseriesStub with the precipitation in [mm/day]
+        * evaporation -- TimeseriesStub with the evaporation in [mm/day]
+        * seepage -- TimeseriesStub with the seepage in [mm/day]
+
+        """
+        result = TimeseriesStub()
+        # open_water.surface is specified in [ha] but we need [m2]: 1 [ha] =
+        # 10000 [m2]
+        surface = open_water.surface * 10000.0
+        water_level = open_water.init_water_level
+        date = start_date
+        while date < end_date:
+            # precipitation is specified in [mm/day] but we need [m/day]: 1 [mm] =
+            # 0.001 [m]
+            precipitation_value = precipitation.get_value(date) * surface * 0.001
+            evaporation_value = -evaporation.get_value(date) * surface * 0.001
+            evaporation_value *= open_water.crop_evaporation_factor
+            seepage_value = seepage.get_value(date) * surface * 0.001
+            incoming_value = precipitation_value + evaporation_value + seepage_value
+
+            water_level += incoming_value / surface
+            sluice_error = self._compute_sluice_error(date, open_water, surface, water_level)
+            water_level -= sluice_error / surface
+
+            result.add_value(date, sluice_error)
+            date += timedelta(1)
+        return result
+
+    def _compute_sluice_error(self, date, open_water, surface, water_level):
+        """Compute the sluice error."""
+        minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
+        maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
+        if water_level > maximum_water_level:
+            sluice_error = (water_level - maximum_water_level) * surface
+        elif water_level < minimum_water_level:
+            sluice_error = (water_level - minimum_water_level) * surface
+        else:
+            sluice_error = 0
+        return sluice_error
+
+
+def compute_level_control():
+    pass

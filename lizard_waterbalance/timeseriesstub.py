@@ -30,6 +30,7 @@ import logging
 
 from datetime import datetime
 from datetime import timedelta
+from math import fabs
 
 from filereader import FileReader
 
@@ -55,8 +56,13 @@ class TimeseriesStub:
         and time first.
 
         """
-        values = (event[1] for event in self._events if date_time >= event[0])
-        return next(values, 0)
+        result = 0.0
+        events = (event for event in self._events if event[0] >= date_time)
+        event = next(events, None)
+        if not event is None:
+            if event[0] == date_time:
+                result = event[1]
+        return result
 
     def add_value(self, date_time, value):
         """Add the given value for the given date and time.
@@ -116,10 +122,58 @@ class TimeseriesStub:
         equal = len(my_events) == len(your_events)
         if equal:
             for (my_event, your_event) in zip(my_events, your_events):
-                equal = my_event == your_event
+                equal = my_event[0] == your_event[0]
+                if equal:
+                    equal = fabs(my_event[1] - your_event[1]) < 1e-6
                 if not equal:
                     break
         return equal
+
+class TimeseriesWithMemoryStub(TimeseriesStub):
+
+    def __init__(self, *args, **kwargs):
+        TimeseriesStub.__init__(self, *args, **kwargs)
+
+    def get_value(self, date_time):
+        """Return the value on the given date and time.
+
+        Note that this method assumes that the events are ordered earliest date
+        and time first.
+
+        """
+        result = 0.0
+        previous_event = None
+        # note that we traverse the list of events in reverse
+        for event in reversed(self._events):
+            if event[0] < date_time:
+                if previous_event is None:
+                    result = event[1]
+                else:
+                    result = previous_event[1]
+                break
+            elif event[0] == date_time:
+                result = event[1]
+                previous_event = event
+        return result
+
+    def events(self):
+        """Return a generator to iterate over all daily events.
+
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function fills
+        in the missing dates with the value on the latest known date.
+
+        """
+        date_to_yield = None # we initialize this variable to silence pyflakes
+        previous_value = 0
+        for date, value in self._events:
+            if not date_to_yield is None:
+                while date_to_yield < date:
+                    yield date_to_yield, previous_value
+                    date_to_yield = date_to_yield + timedelta(1)
+            yield date, value
+            previous_value = value
+            date_to_yield = date + timedelta(1)
 
 def enumerate_events(timeseries_a, timeseries_b):
     events_a = timeseries_a.events()
