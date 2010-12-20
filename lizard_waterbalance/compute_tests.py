@@ -43,7 +43,7 @@ from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import open_water_compute
-from lizard_waterbalance.compute import SluiceErrorComputer
+from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
@@ -575,10 +575,10 @@ class PumpingStationAccessToPumpLinesTests(TestCase):
                                TimeseriesStub((datetime(2010, 12, 17), 20))]
         self.assertEqual(expected_timeseries, timeseries)
 
-class SluiceErrorTests(TestCase):
-    """Contains tests for the sluice error computation of an OpenWater.
+class LevelControlTests(TestCase):
+    """Contains tests for the level control computation of an OpenWater.
 
-    The tests in this suite verify that SluiceErrorComputer computes the right
+    The tests in this suite verify that LevelControlComputer computes the right
     sluice error.
 
     """
@@ -597,81 +597,81 @@ class SluiceErrorTests(TestCase):
 
     def test_a(self):
         """Test the case with precipitation on a single day."""
-        sluice_error = SluiceErrorComputer()
+        level_control = LevelControlComputer()
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 0.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        sluice_error = sluice_error.compute(self.today,
+        level_control = level_control.compute(self.today,
                                             self.today + timedelta(1),
                                             self.open_water,
                                             self.bucket_outcomes,
                                             precipitation,
                                             evaporation,
                                             seepage)
-        expected_sluice_error = TimeseriesStub((self.today, 2000.0))
-        self.assertEqual(expected_sluice_error, sluice_error)
+        expected_level_control = TimeseriesStub((self.today, 2000.0))
+        self.assertEqual(expected_level_control, level_control)
 
     def test_b(self):
         """Test the case with precipitation on two days."""
-        sluice_error = SluiceErrorComputer()
+        level_control = LevelControlComputer()
         tomorrow = self.today + timedelta(1)
         precipitation = TimeseriesStub((self.today, 2.0), (tomorrow, 1.0))
         evaporation = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
         seepage = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
-        sluice_error = sluice_error.compute(self.today,
+        level_control = level_control.compute(self.today,
                                             tomorrow + timedelta(1),
                                             self.open_water,
                                             self.bucket_outcomes,
                                             precipitation,
                                             evaporation,
                                             seepage)
-        expected_sluice_error = TimeseriesStub((self.today, 2000.0), (tomorrow, 1000.0))
-        self.assertEqual(expected_sluice_error, sluice_error)
+        expected_level_control = TimeseriesStub((self.today, 2000.0), (tomorrow, 1000.0))
+        self.assertEqual(expected_level_control, level_control)
 
     def test_c(self):
         """Test the case with precipitation and evaporation on a single day."""
-        sluice_error = SluiceErrorComputer()
+        level_control = LevelControlComputer()
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        sluice_error = sluice_error.compute(self.today,
+        level_control = level_control.compute(self.today,
                                             self.today + timedelta(1),
                                             self.open_water,
                                             self.bucket_outcomes,
                                             precipitation,
                                             evaporation,
                                             seepage)
-        expected_sluice_error = TimeseriesStub((self.today, 1000.0))
-        self.assertEqual(expected_sluice_error, sluice_error)
+        expected_level_control = TimeseriesStub((self.today, 1000.0))
+        self.assertEqual(expected_level_control, level_control)
 
     def test_d(self):
         """Test the case with precipitation, evaporation and seepage on a single day."""
-        sluice_error = SluiceErrorComputer()
+        level_control = LevelControlComputer()
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.5))
-        sluice_error = sluice_error.compute(self.today,
+        level_control = level_control.compute(self.today,
                                             self.today + timedelta(1),
                                             self.open_water,
                                             self.bucket_outcomes,
                                             precipitation,
                                             evaporation,
                                             seepage)
-        expected_sluice_error = TimeseriesStub((self.today, 1500.0))
-        self.assertEqual(expected_sluice_error, sluice_error)
+        expected_level_control = TimeseriesStub((self.today, 1500.0))
+        self.assertEqual(expected_level_control, level_control)
 
     def test_e(self):
         """Test the case with evaporation on a single day."""
-        sluice_error = SluiceErrorComputer()
+        level_control = LevelControlComputer()
         precipitation = TimeseriesStub((self.today, 0.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        sluice_error = sluice_error.compute(self.today,
+        level_control = level_control.compute(self.today,
                                             self.today + timedelta(1),
                                             self.open_water,
                                             self.bucket_outcomes,
                                             precipitation,
                                             evaporation,
                                             seepage)
-        expected_sluice_error = TimeseriesStub((self.today, -1000.0))
-        self.assertEqual(expected_sluice_error, sluice_error)
+        expected_level_control = TimeseriesStub((self.today, -1000.0))
+        self.assertEqual(expected_level_control, level_control)

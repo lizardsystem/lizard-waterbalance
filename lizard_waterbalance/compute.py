@@ -361,11 +361,11 @@ def open_water_compute(open_water,
 def compute_buckets(buckets, precipitation, evaporation, seepage):
     pass
 
-class SluiceErrorComputer:
+class LevelControlComputer:
 
     def compute(self, start_date, end_date, open_water, bucket_outcomes,
                 precipitation, evaporation, seepage):
-        """Compute the sluice error time series for the given open water.
+        """Compute the level control time series for the given open water.
 
         This function returns the TimeseriesStub that contains the sluice error
         time series for the given open_water.
@@ -394,25 +394,23 @@ class SluiceErrorComputer:
             incoming_value = precipitation_value + evaporation_value + seepage_value
 
             water_level += incoming_value / surface
-            sluice_error = self._compute_sluice_error(date, open_water, surface, water_level)
-            water_level -= sluice_error / surface
+            level_control = self._compute_level_control(date, open_water,
+                                                        surface, water_level)
+            water_level -= level_control / surface
 
-            result.add_value(date, sluice_error)
+            result.add_value(date, level_control)
             date += timedelta(1)
         return result
 
-    def _compute_sluice_error(self, date, open_water, surface, water_level):
+    def _compute_level_control(self, date, open_water, surface, water_level):
         """Compute the sluice error."""
         minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
         maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
         if water_level > maximum_water_level:
-            sluice_error = (water_level - maximum_water_level) * surface
+            level_control = (water_level - maximum_water_level) * surface
         elif water_level < minimum_water_level:
-            sluice_error = (water_level - minimum_water_level) * surface
+            level_control = (water_level - minimum_water_level) * surface
         else:
-            sluice_error = 0
-        return sluice_error
+            level_control = 0
+        return level_control
 
-
-def compute_level_control():
-    pass
