@@ -31,6 +31,7 @@ from datetime import timedelta
 
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
+from lizard_waterbalance.timeseriesstub import split_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
@@ -365,10 +366,10 @@ class LevelControlComputer:
 
     def compute(self, start_date, end_date, open_water, bucket_outcomes,
                 precipitation, evaporation, seepage):
-        """Compute the level control time series for the given open water.
+        """Compute and return the pair of intake and pump time series.
 
-        This function returns the TimeseriesStub that contains the sluice error
-        time series for the given open_water.
+        This function returns the pair of TimeseriesStub(s) that contains the
+        intake time series and pump time series for the given open_water.
 
         Parameters:
         * open_water -- OpenWater for which to compute the sluice error time series
@@ -396,20 +397,21 @@ class LevelControlComputer:
             water_level += incoming_value / surface
             level_control = self._compute_level_control(date, open_water,
                                                         surface, water_level)
-            water_level -= level_control / surface
+            water_level += level_control / surface
 
             result.add_value(date, level_control)
             date += timedelta(1)
-        return result
+        (pump_time_series, intake_time_series) = split_timeseries(result)
+        return (intake_time_series, pump_time_series)
 
     def _compute_level_control(self, date, open_water, surface, water_level):
         """Compute the sluice error."""
         minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
         maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
         if water_level > maximum_water_level:
-            level_control = (water_level - maximum_water_level) * surface
+            level_control = -(water_level - maximum_water_level) * surface
         elif water_level < minimum_water_level:
-            level_control = (water_level - minimum_water_level) * surface
+            level_control = (minimum_water_level - water_level) * surface
         else:
             level_control = 0
         return level_control

@@ -601,15 +601,16 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 0.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        level_control = level_control.compute(self.today,
-                                            self.today + timedelta(1),
-                                            self.open_water,
-                                            self.bucket_outcomes,
-                                            precipitation,
-                                            evaporation,
-                                            seepage)
-        expected_level_control = TimeseriesStub((self.today, 2000.0))
-        self.assertEqual(expected_level_control, level_control)
+        timeseries = level_control.compute(self.today,
+                                           self.today + timedelta(1),
+                                           self.open_water,
+                                           self.bucket_outcomes,
+                                           precipitation,
+                                           evaporation,
+                                           seepage)
+        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, -2000.0)))
+        self.assertEqual(expected_timeseries, timeseries)
 
     def test_b(self):
         """Test the case with precipitation on two days."""
@@ -618,15 +619,16 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 2.0), (tomorrow, 1.0))
         evaporation = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
         seepage = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
-        level_control = level_control.compute(self.today,
-                                            tomorrow + timedelta(1),
-                                            self.open_water,
-                                            self.bucket_outcomes,
-                                            precipitation,
-                                            evaporation,
-                                            seepage)
-        expected_level_control = TimeseriesStub((self.today, 2000.0), (tomorrow, 1000.0))
-        self.assertEqual(expected_level_control, level_control)
+        timeseries = level_control.compute(self.today,
+                                           tomorrow + timedelta(1),
+                                           self.open_water,
+                                           self.bucket_outcomes,
+                                           precipitation,
+                                           evaporation,
+                                               seepage)
+        expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
+                               TimeseriesStub((self.today, -2000.0), (tomorrow, -1000.0)))
+        self.assertEqual(expected_timeseries, timeseries)
 
     def test_c(self):
         """Test the case with precipitation and evaporation on a single day."""
@@ -634,15 +636,16 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        level_control = level_control.compute(self.today,
-                                            self.today + timedelta(1),
-                                            self.open_water,
-                                            self.bucket_outcomes,
-                                            precipitation,
-                                            evaporation,
-                                            seepage)
-        expected_level_control = TimeseriesStub((self.today, 1000.0))
-        self.assertEqual(expected_level_control, level_control)
+        timeseries = level_control.compute(self.today,
+                                           self.today + timedelta(1),
+                                           self.open_water,
+                                           self.bucket_outcomes,
+                                           precipitation,
+                                           evaporation,
+                                           seepage)
+        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, -1000.0)))
+        self.assertEqual(expected_timeseries, timeseries)
 
     def test_d(self):
         """Test the case with precipitation, evaporation and seepage on a single day."""
@@ -650,15 +653,16 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 2.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.5))
-        level_control = level_control.compute(self.today,
-                                            self.today + timedelta(1),
-                                            self.open_water,
-                                            self.bucket_outcomes,
-                                            precipitation,
-                                            evaporation,
-                                            seepage)
-        expected_level_control = TimeseriesStub((self.today, 1500.0))
-        self.assertEqual(expected_level_control, level_control)
+        timeseries = level_control.compute(self.today,
+                                           self.today + timedelta(1),
+                                           self.open_water,
+                                           self.bucket_outcomes,
+                                           precipitation,
+                                           evaporation,
+                                           seepage)
+        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, -1500.0)))
+        self.assertEqual(expected_timeseries, timeseries)
 
     def test_e(self):
         """Test the case with evaporation on a single day."""
@@ -666,12 +670,13 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 0.0))
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
-        level_control = level_control.compute(self.today,
-                                            self.today + timedelta(1),
-                                            self.open_water,
-                                            self.bucket_outcomes,
-                                            precipitation,
-                                            evaporation,
-                                            seepage)
-        expected_level_control = TimeseriesStub((self.today, -1000.0))
-        self.assertEqual(expected_level_control, level_control)
+        timeseries = level_control.compute(self.today,
+                                           self.today + timedelta(1),
+                                           self.open_water,
+                                           self.bucket_outcomes,
+                                           precipitation,
+                                           evaporation,
+                                           seepage)
+        expected_timeseries = (TimeseriesStub((self.today, 1000.0)),
+                               TimeseriesStub((self.today, 0.0)))
+        self.assertEqual(expected_timeseries, timeseries)
