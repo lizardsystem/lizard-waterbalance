@@ -35,6 +35,7 @@ from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpLine
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.compute import BucketOutcome
+from lizard_waterbalance.compute import BucketSummarizer
 from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
@@ -593,7 +594,7 @@ class LevelControlTests(TestCase):
         water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
         self.open_water.retrieve_minimum_level = lambda : water_levels
         self.open_water.retrieve_maximum_level = lambda : water_levels
-        self.bucket_outcomes = []
+        self.bucket_outcomes = {}
 
     def test_a(self):
         """Test the case with precipitation on a single day."""
@@ -680,3 +681,116 @@ class LevelControlTests(TestCase):
         expected_timeseries = (TimeseriesStub((self.today, 1000.0)),
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries, timeseries)
+
+def create_saveable_bucket():
+    """Return a bucket that can be saved to the database.
+
+    When you manually create a Bucket, you have to fill in all the required
+    fields before you can save it to the database. This function creates a
+    Bucket, fills in the required fields and returns it.
+
+    Why would we want to be able to save the bucket to the database? We want to
+    use the Bucket as the key in a dictionary which requires Bucket.__eq__ to
+    function properly. That function assumes the pk value of the Bucket is set,
+    which is set when the Bucket is saved to the database.
+
+    """
+    bucket = Bucket()
+    bucket.surface_type = Bucket.UNDRAINED_SURFACE
+    bucket.surface = 100
+    bucket.porosity = 1.0
+    bucket.crop_evaporation_factor = 1.0
+    bucket.min_crop_evaporation_factor = 1.0
+    bucket.drainage_fraction = 1.0
+    bucket.infiltration_fraction = 1.0
+    bucket.init_water_level =  1.0
+    bucket.equi_water_level =  1.0
+    bucket.min_water_level =  1.0
+    bucket.max_water_level =  1.0
+    bucket.external_discharge = 1.0
+    bucket.upper_porosity = 1.0
+    bucket.upper_crop_evaporation_factor = 1.0
+    bucket.upper_min_crop_evaporation_factor = 1.0
+    return bucket
+
+class BucketSummarizerTests(TestCase):
+    """Contains tests for the daily incoming volume computation of an OpenWater.
+
+    """
+    def test_a(self):
+        """Test the flow off is zero when there are no buckets."""
+        today = datetime(2010, 12, 20)
+        bucket = Bucket()
+        bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        bucket2outcome = {}
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertEqual(0.0, summarizer.compute_sum_undrained_flow_off(today))
+
+    def test_b(self):
+        """Test the flow off in case of one bucket of the right type."""
+        bucket = Bucket()
+        bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        today = datetime(2010, 12, 20)
+        outcome = BucketOutcome()
+        outcome.flow_off = TimeseriesStub((today, -10.0))
+        bucket2outcome = {bucket: outcome}
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_flow_off(today))
+
+    def test_c(self):
+        """Test the flow off in case of two buckets of the right type."""
+        bucket = create_saveable_bucket()
+        bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        bucket.save()
+        another_bucket = create_saveable_bucket()
+        another_bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        another_bucket.save()
+        today = datetime(2010, 12, 20)
+        outcome = BucketOutcome()
+        outcome.flow_off = TimeseriesStub((today, -10.0))
+        bucket2outcome = {bucket: outcome, another_bucket: outcome}
+        self.assertEqual(2, len(bucket2outcome.keys()))
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(-20.0, summarizer.compute_sum_undrained_flow_off(today))
+
+    def test_d(self):
+        """Test the flow off in case of one bucket of the wrong type."""
+        bucket = Bucket()
+        bucket.surface_type = Bucket.HARDENED_SURFACE
+        today = datetime(2010, 12, 20)
+        outcome = BucketOutcome()
+        outcome.flow_off = TimeseriesStub((today, -10.0))
+        bucket2outcome = {bucket: outcome}
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_flow_off(today))
+
+    def test_aa(self):
+        """Test the undrained is zero when there are no buckets."""
+        today = datetime(2010, 12, 20)
+        bucket = Bucket()
+        bucket.surface_type = Bucket.UNDRAINED_SURFACE
+        bucket2outcome = {}
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage(today))
+
+    def test_ab(self):
+        """Test the undrained when there is one bucket of the right type."""
+        today = datetime(2010, 12, 20)
+        bucket = create_saveable_bucket()
+        bucket.surface_type = Bucket.HARDENED_SURFACE
+        outcome = BucketOutcome()
+        outcome.net_drainage = TimeseriesStub((today, -10.0))
+        bucket2outcome = { bucket: outcome }
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_net_drainage(today))
+
+    def test_ac(self):
+        """Test the undrained when there is one bucket of the right type with positive net drainage."""
+        today = datetime(2010, 12, 20)
+        bucket = create_saveable_bucket()
+        bucket.surface_type = Bucket.HARDENED_SURFACE
+        outcome = BucketOutcome()
+        outcome.net_drainage = TimeseriesStub((today, 10.0))
+        bucket2outcome = { bucket: outcome }
+        summarizer = BucketSummarizer(bucket2outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage(today))

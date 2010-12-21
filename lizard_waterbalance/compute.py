@@ -29,6 +29,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import split_timeseries
@@ -362,7 +363,74 @@ def open_water_compute(open_water,
 def compute_buckets(buckets, precipitation, evaporation, seepage):
     pass
 
+class BucketSummarizer:
+
+    def __init__(self, bucket2outcomes = None):
+        if bucket2outcomes is None:
+            self.bucket2outcomes = {}
+        else:
+            self.bucket2outcomes = bucket2outcomes
+
+    def set_bucket2outcomes(self, bucket2outcomes):
+        self.bucket2outcomes = bucket2outcomes
+
+    def compute(self, date):
+        return self.compute_sum_hardened(date) + \
+               self.compute_sum_drained(date) + \
+               self.compute_sum_undrained_net_drainage(date) + \
+               self.compute_sum_undrained_flow_off(date) + \
+               self.compute_sum_infiltration(date)
+
+    def compute_sum_hardened(self, date):
+        sum = 0.0
+        for bucket, outcome in self.bucket2outcomes.iteritems():
+            if bucket.surface_type == Bucket.HARDENED_SURFACE:
+                sum += outcome.flow_off.get_value(date)
+        return sum
+
+    def compute_sum_drained(self, date):
+        sum = 0.0
+        for bucket, outcome in self.bucket2outcomes.iteritems():
+            if bucket.surface_type == Bucket.DRAINED_SURFACE:
+                sum += outcome.flow_off.get_value(date)
+                net_drainage = outcome.net_drainage.get_value(date)
+                if net_drainage < 0:
+                    sum += net_drainage
+        return sum
+
+    def compute_sum_undrained_net_drainage(self, date):
+        sum = 0.0
+        for bucket, outcome in self.bucket2outcomes.iteritems():
+            if bucket.surface_type == Bucket.HARDENED_SURFACE or \
+               bucket.surface_type == Bucket.UNDRAINED_SURFACE:
+                net_drainage = outcome.net_drainage.get_value(date)
+                if net_drainage < 0:
+                    sum += net_drainage
+        return sum
+
+    def compute_sum_undrained_flow_off(self, date):
+        sum = 0.0
+        for bucket, outcome in self.bucket2outcomes.iteritems():
+            if bucket.surface_type == Bucket.UNDRAINED_SURFACE:
+                sum += outcome.flow_off.get_value(date)
+        return sum
+
+    def compute_sum_infiltration(self, date):
+        sum = 0.0
+        for bucket, outcome in self.bucket2outcomes.iteritems():
+            if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
+               bucket.surface_type == Bucket.HARDENED_SURFACE or \
+               bucket.surface_type == Bucket.DRAINED_SURFACE:
+                net_drainage = outcome.net_drainage.get_value(date)
+                if net_drainage > 0:
+                    sum += net_drainage
+        return sum
+
 class LevelControlComputer:
+
+    def __init__(self):
+
+        self.bucket_summarizer = BucketSummarizer()
 
     def compute(self, start_date, end_date, open_water, bucket_outcomes,
                 precipitation, evaporation, seepage):
@@ -372,7 +440,7 @@ class LevelControlComputer:
         intake time series and pump time series for the given open_water.
 
         Parameters:
-        * open_water -- OpenWater for which to compute the sluice error time series
+        * open_water -- OpenWater for which to compute the level control time series
         * bucket_outcomes -- BucketOutcome(s) with the results of each bucket
         * precipitation -- TimeseriesStub with the precipitation in [mm/day]
         * evaporation -- TimeseriesStub with the evaporation in [mm/day]
@@ -386,13 +454,15 @@ class LevelControlComputer:
         water_level = open_water.init_water_level
         date = start_date
         while date < end_date:
-            # precipitation is specified in [mm/day] but we need [m/day]: 1 [mm] =
-            # 0.001 [m]
-            precipitation_value = precipitation.get_value(date) * surface * 0.001
-            evaporation_value = -evaporation.get_value(date) * surface * 0.001
-            evaporation_value *= open_water.crop_evaporation_factor
-            seepage_value = seepage.get_value(date) * surface * 0.001
-            incoming_value = precipitation_value + evaporation_value + seepage_value
+            incoming_value = self.compute_incoming_volume(date,
+                                                          surface,
+                                                          open_water.crop_evaporation_factor,
+                                                          water_level,
+                                                          bucket_outcomes,
+                                                          precipitation,
+                                                          evaporation,
+                                                          seepage)
+
 
             water_level += incoming_value / surface
             level_control = self._compute_level_control(date, open_water,
@@ -404,8 +474,30 @@ class LevelControlComputer:
         (pump_time_series, intake_time_series) = split_timeseries(result)
         return (intake_time_series, pump_time_series)
 
+    def compute_incoming_volume(self, date, surface, crop_evaporation_factor,
+                                 water_level, bucket_outcomes, precipitation,
+                                 evaporation, seepage):
+        precipitation = precipitation.get_value(date) * surface
+        evaporation = -evaporation.get_value(date) * surface * \
+                      crop_evaporation_factor
+        seepage = seepage.get_value(date) * surface
+        incoming_volume = precipitation + evaporation + seepage
+        summarizer = BucketSummarizer(bucket_outcomes)
+        incoming_volume += summarizer.compute(date)
+        # all aforementioned time series are specified in [mm/day] but we need
+        # [m/day]: 1 [mm] = 0.001 [m]
+        return incoming_volume * 0.001
+
     def _compute_level_control(self, date, open_water, surface, water_level):
-        """Compute the sluice error."""
+        """Compute and return the level control for the given date.
+
+        Parameters:
+        * date -- date for which to compute the intake or pump value
+        * open_water -- OpenWater for which to compute the level control time series
+        * surface -- surface of the open water in [m2]
+        * water_level -- uncorrected water level of the open water in [m]
+
+        """
         minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
         maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
         if water_level > maximum_water_level:
@@ -415,4 +507,3 @@ class LevelControlComputer:
         else:
             level_control = 0
         return level_control
-
