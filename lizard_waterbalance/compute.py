@@ -360,19 +360,25 @@ def open_water_compute(open_water,
     return result
 
 
-class OpenWaterComputer:
+class WaterbalanceComputer:
 
-    def __init__(self, buckets_computer, timeseries_retriever):
+    def __init__(self, buckets_computer):
         self.buckets_computer = buckets_computer
-        self.timeseries_retriever = timeseries_retriever
 
-    def compute(self, open_water, start_date, end_date):
+    def compute(self, area, start_date, end_date):
+        """Return all waterbalance related time series for the given area.
 
-        precipitation = self.timeseries_retriever.get_timeseries("precipitation", start_date, end_date)
-        evaporation = self.timeseries_retriever.get_timeseries("evaporation", start_date, end_date)
-        seepage = self.timeseries_retriever.get_timeseries("seepage", start_date, end_date)
+        Paramaters:
+        * area -- WaterbalanceArea for which to compute the time series
+        * start_date -- first date of the time window (for ...)
+        * end_date -- day after the last date of the time window (for ...)
 
-        buckets = open_water.retrieve_buckets()
+        """
+        precipitation = area.retrieve_precipitation(start_date, end_date)
+        evaporation = area.retrieve_evaporation(start_date, end_date)
+        seepage = area.retrieve_seepage(start_date, end_date)
+
+        buckets = area.retrieve_buckets()
         buckets2outcome = self.buckets_computer.compute(buckets, precipitation, evaporation, seepage)
 
 
