@@ -45,6 +45,7 @@ from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import open_water_compute
 from lizard_waterbalance.compute import LevelControlComputer
+from lizard_waterbalance.compute import OpenWaterComputer
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
@@ -794,3 +795,54 @@ class BucketSummarizerTests(TestCase):
         bucket2outcome = { bucket: outcome }
         summarizer = BucketSummarizer(bucket2outcome)
         self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage(today))
+
+class TimeseriesRetrieverStub():
+
+    def __init__(self):
+        self.precipitation = TimeseriesStub()
+        self.evaporation = TimeseriesStub()
+        self.seepage = TimeseriesStub()
+
+    def get_timeseries(self, name, start_date, end_date):
+        return getattr(self, name)
+
+class OpenWaterComputerTests(TestCase):
+
+    def setUp(self):
+        self.buckets_computer = Mock()
+        self.buckets = ["This is a bucket", "This is a another bucket"]
+        self.open_water = OpenWater()
+        self.open_water.retrieve_buckets = lambda : self.buckets
+        self.timeseries_retriever = TimeseriesRetrieverStub()
+
+    def test_a(self):
+        """Test that method compute sends one message to the bucket computer."""
+        start = datetime(2010, 12, 21)
+        open_water_computer = OpenWaterComputer(self.buckets_computer,
+                                                self.timeseries_retriever)
+        open_water_computer.compute(self.open_water, start, start + timedelta(1))
+        calls = self.buckets_computer.getAllCalls()
+        self.assertEqual(1, len(calls))
+        self.assertEqual("compute", calls[0].getName())
+
+    def test_b(self):
+        """Test that method compute passes the buckets of the open water to the bucket computer."""
+        start = datetime(2010, 12, 21)
+        open_water_computer = OpenWaterComputer(self.buckets_computer,
+                                                self.timeseries_retriever)
+        open_water_computer.compute(self.open_water, start, start + timedelta(1))
+        calls = self.buckets_computer.getNamedCalls("compute")
+        self.assertEqual(1, len(calls))
+        self.assertEqual(self.buckets, calls[0].getParam(0))
+
+    def test_c(self):
+        """Test that method compute passes the time series from the TimeseriesRetriever to the bucket computer."""
+        start = datetime(2010, 12, 21)
+        open_water_computer = OpenWaterComputer(self.buckets_computer,
+                                                self.timeseries_retriever)
+        open_water_computer.compute(self.open_water, start, start + timedelta(1))
+        calls = self.buckets_computer.getNamedCalls("compute")
+        self.assertEqual(1, len(calls))
+        self.assertEqual(self.timeseries_retriever.precipitation, calls[0].getParam(1))
+        self.assertEqual(self.timeseries_retriever.evaporation, calls[0].getParam(2))
+        self.assertEqual(self.timeseries_retriever.seepage, calls[0].getParam(3))
