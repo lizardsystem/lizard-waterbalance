@@ -64,6 +64,26 @@ class BucketOutcome:
                 "seepage": self.seepage,
                 "net_precipitation": self.net_precipitation}
 
+class BucketsTotals:
+    """Stores the total time series computed for all buckets.
+
+    Instance variables:
+    * hardened -- time series for *Qsom verhard*
+    * drained -- time series for *Qsom gedraineerdonder*
+    * undrained -- time series for *Qsom ongedraineerd*
+    * flow off -- time series for *Qsom afst*
+    * intake -- time series for *Qsom inlaat*
+    * infiltration -- time series for *Qsom intrek*
+
+    """
+    def __init__(self):
+        self.hardened = TimeseriesStub()
+        self.drained = TimeseriesStub()
+        self.undrained = TimeseriesStub()
+        self.flow = TimeseriesStub()
+        self.intake = TimeseriesStub()
+        self.infiltration = TimeseriesStub()
+
 class OpenWaterOutcome:
     """Stores the time series that are computed for an OpenWater.
 
@@ -362,8 +382,10 @@ def open_water_compute(open_water,
 
 class WaterbalanceComputer:
 
-    def __init__(self, buckets_computer):
+    def __init__(self, buckets_computer, buckets_totals_computer, level_control_computer):
         self.buckets_computer = buckets_computer
+        self.buckets_totals_computer = buckets_totals_computer
+        self.level_control_computer = level_control_computer
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -377,9 +399,22 @@ class WaterbalanceComputer:
         precipitation = area.retrieve_precipitation(start_date, end_date)
         evaporation = area.retrieve_evaporation(start_date, end_date)
         seepage = area.retrieve_seepage(start_date, end_date)
-
         buckets = area.retrieve_buckets()
-        buckets2outcome = self.buckets_computer.compute(buckets, precipitation, evaporation, seepage)
+        bucket2outcome = self.buckets_computer.compute(buckets,
+                                                       precipitation,
+                                                       evaporation,
+                                                       seepage)
+        buckets_totals = self.buckets_totals_computer.compute(bucket2outcome,
+                                                              start_date,
+                                                              end_date)
+        level_control = self.level_control_computer.compute(start_date,
+                                                            end_date,
+                                                            area.open_water,
+                                                            buckets_totals,
+                                                            precipitation,
+                                                            evaporation,
+                                                            seepage)
+        return (bucket2outcome, level_control)
 
 
 class BucketsComputer:
@@ -411,6 +446,22 @@ class BucketsComputer:
             outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
             result[bucket] = outcome
         return result
+
+
+class BucketsTotalsComputer:
+
+    def __init__(self, bucket_summarizer):
+        self.bucket_summarizer = bucket_summarizer
+
+    def compute(self, start_date, end_date, bucket2outcome):
+
+        totals = BucketsTotals()
+
+        date = start_date
+        while date < end_date:
+            for bucket, outcome in bucket2outcome.iteritems():
+                daily_totals = self.bucket_summarizer.compute(date)
+            totals.append(daily_totals)
 
 
 class LevelControlComputer:
@@ -494,6 +545,8 @@ class LevelControlComputer:
         else:
             level_control = 0
         return level_control
+
+
 
 class BucketSummarizer:
 

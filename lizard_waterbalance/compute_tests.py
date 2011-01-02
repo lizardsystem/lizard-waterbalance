@@ -807,11 +807,17 @@ class TimeseriesRetrieverStub():
     def get_timeseries(self, name, start_date, end_date):
         return getattr(self, name)
 
+
 class WaterbalanceComputerTests(TestCase):
 
     def setUp(self):
-        self.buckets_computer = Mock()
-        self.buckets = ["This is a bucket", "This is a another bucket"]
+        self.buckets_result = 1 # don't care
+        self.buckets_computer = Mock({"compute": self.buckets_result})
+        self.buckets_totals_result = 2 #  don't care
+        self.buckets_totals_computer = Mock({"compute": self.buckets_totals_result})
+        self.level_result = 3  #  don't care
+        self.level_control_computer = Mock({"compute": self.level_result})
+        self.buckets = [Bucket(), Bucket()]
         self.area = WaterbalanceArea()
         self.area.retrieve_buckets = lambda : self.buckets
         self.precipitation = TimeseriesStub()
@@ -824,29 +830,53 @@ class WaterbalanceComputerTests(TestCase):
     def test_a(self):
         """Test that compute calls the right method of the bucket computer."""
         start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer)
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.buckets_totals_computer,
+                                        self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getAllCalls()
         self.assertEqual(1, len(calls))
         self.assertEqual("compute", calls[0].getName())
 
     def test_b(self):
-        """Test that method compute passes the buckets of the open water to the bucket computer."""
+        """Test that method compute passes the buckets of the waterbalance area to the bucket computer."""
         start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer)
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.buckets_totals_computer,
+                                        self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
         self.assertEqual(self.buckets, calls[0].getParam(0))
 
     def test_c(self):
-        """Test that method compute passes the time series from the TimeseriesRetriever to the bucket computer."""
+        """Test that method compute passes the time series to the bucket computer."""
         start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer)
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.buckets_totals_computer,
+                                        self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
         self.assertEqual(self.precipitation, calls[0].getParam(1))
         self.assertEqual(self.evaporation, calls[0].getParam(2))
         self.assertEqual(self.seepage, calls[0].getParam(3))
+
+    def test_d(self):
+        """Test that method compute returns the bucket time series."""
+        start = datetime(2010, 12, 21)
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.buckets_totals_computer,
+                                        self.level_control_computer)
+        result = computer.compute(self.area, start, start + timedelta(1))
+        self.assertEqual(self.buckets_result, result[0])
+
+    def test_e(self):
+        """Test that method compute returns the level control time series."""
+        start = datetime(2010, 12, 21)
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.buckets_totals_computer,
+                                        self.level_control_computer)
+        result = computer.compute(self.area, start, start + timedelta(1))
+        self.assertEqual(self.level_result, result[1])
 
 
 class BucketsComputerTests(TestCase):
