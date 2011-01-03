@@ -29,6 +29,8 @@
 from datetime import datetime
 from datetime import timedelta
 
+import logging
+
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
@@ -301,16 +303,16 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     upper_seepage = TimeseriesStub()
 
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
-    bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+    bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
+    bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
                                        evaporation,
                                        upper_seepage,
                                        compute)
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
-    bucket.crop_evaporation_factor, buckets.upper_crop_evaporation_factor = buckets.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, buckets.upper_min_crop_evaporation_factor = buckets.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+    bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
+    bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
 
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
@@ -513,9 +515,7 @@ class LevelControlComputer:
 
         """
         result = TimeseriesStub()
-        # open_water.surface is specified in [ha] but we need [m2]: 1 [ha] =
-        # 10000 [m2]
-        surface = open_water.surface * 10000.0
+        surface = open_water.surface
         water_level = open_water.init_water_level
         date = start_date
         while date < end_date:
@@ -530,9 +530,13 @@ class LevelControlComputer:
 
 
             water_level += incoming_value / surface
+            logging.debug("incoming_value (%.2f) / surface (%.2f) = %.2f" % (incoming_value, surface, incoming_value / surface))
+            logging.debug("water_level = %.2f (uncorrected) " % water_level)
             level_control = self._compute_level_control(date, open_water,
                                                         surface, water_level)
+            logging.debug("level_control = %.2f " % level_control)
             water_level += level_control / surface
+            logging.debug("water_level = %.2f " % water_level)
 
             result.add_value(date, level_control)
             date += timedelta(1)
@@ -548,7 +552,9 @@ class LevelControlComputer:
         seepage = seepage.get_value(date) * surface
         incoming_volume = precipitation + evaporation + seepage
         summarizer = BucketSummarizer(bucket_outcomes)
-        incoming_volume += summarizer.compute(date).total()
+        total = summarizer.compute(date).total()
+        incoming_volume += total
+        logging.debug("compute_incoming_volume on %s: %.2f (%.2f, %.2f, %.2f) %.2f" % (date.strftime("%Y-%m-%d"), incoming_volume * 0.001, precipitation, evaporation, seepage, total))
         # all aforementioned time series are specified in [mm/day] but we need
         # [m/day]: 1 [mm] = 0.001 [m]
         return incoming_volume * 0.001
@@ -565,6 +571,7 @@ class LevelControlComputer:
         """
         minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
         maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
+        logging.debug("minimum maximum water_level = %.2f %2f " % (minimum_water_level, maximum_water_level))
         if water_level > maximum_water_level:
             level_control = -(water_level - maximum_water_level) * surface
         elif water_level < minimum_water_level:

@@ -34,6 +34,7 @@ from django.core.management.base import BaseCommand
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
+from lizard_waterbalance.timeseriesstub import split_timeseries
 
 name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),
@@ -78,7 +79,19 @@ class Command(BaseCommand):
         area.open_water.retrieve_maximum_level = lambda : timeseries_retriever.get_timeseries("maximum level")
 
         waterbalance_computer = WaterbalanceComputer()
-        result = waterbalance_computer.compute(area, start_date, end_date)
+        bucket2outcome, level_control = \
+                        waterbalance_computer.compute(area, start_date, end_date)
+
+        f = open(join(directory, "intermediate-results.csv"), "w")
+        for bucket, outcome in bucket2outcome.items():
+            self.write_timeseries(f, bucket.name, "afstroming", outcome.flow_off)
+            (drainage_timeseries, timeseries) = split_timeseries(outcome.net_drainage)
+            self.write_timeseries(f, bucket.name, "drainage", drainage_timeseries)
+            self.write_timeseries(f, bucket.name, "intrek", timeseries)
+            self.write_timeseries(f, bucket.name, "kwel", outcome.seepage)
+        self.write_timeseries(f, "openwater", "inlaat", level_control[0])
+        self.write_timeseries(f, "openwater", "Pieter Post", level_control[1])
+        f.close()
 
         # f = open(join(directory, "outcome.csv"), "w")
         # for key, outcome in result.items():

@@ -612,7 +612,7 @@ class LevelControlTests(TestCase):
                                            evaporation,
                                            seepage)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -2000.0)))
+                               TimeseriesStub((self.today, -0.2)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_b(self):
@@ -630,7 +630,7 @@ class LevelControlTests(TestCase):
                                            evaporation,
                                                seepage)
         expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
-                               TimeseriesStub((self.today, -2000.0), (tomorrow, -1000.0)))
+                               TimeseriesStub((self.today, -0.2), (tomorrow, -0.1)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_c(self):
@@ -647,7 +647,7 @@ class LevelControlTests(TestCase):
                                            evaporation,
                                            seepage)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -1000.0)))
+                               TimeseriesStub((self.today, -0.1)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_d(self):
@@ -664,7 +664,7 @@ class LevelControlTests(TestCase):
                                            evaporation,
                                            seepage)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -1500.0)))
+                               TimeseriesStub((self.today, -0.1500)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_e(self):
@@ -680,7 +680,7 @@ class LevelControlTests(TestCase):
                                            precipitation,
                                            evaporation,
                                            seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 1000.0)),
+        expected_timeseries = (TimeseriesStub((self.today, 0.1)),
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries, timeseries)
 

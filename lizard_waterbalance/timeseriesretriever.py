@@ -30,6 +30,7 @@ from datetime import datetime
 
 from filereader import FileReader
 from timeseriesstub import TimeseriesStub
+from timeseriesstub import TimeseriesWithMemoryStub
 
 
 class TimeseriesRetriever:
@@ -38,6 +39,7 @@ class TimeseriesRetriever:
     Instance variables:
     * filereader -- interface to the ASCII file
     * code2name -- dictionary that maps each time serie code to time serie name
+    * incomplete_timeseries -- names of time series with missing dates
 
     """
     def __init__(self):
@@ -54,6 +56,8 @@ class TimeseriesRetriever:
                                ("PS_1", "dijklek"),
                                ("PS_2", "inlaat peilbeheer")])
 
+        self.incomplete_timeseries = ["minimum level", "maximum level"]
+
     def read_timeseries(self, filename):
         """Retrieve the time series in the ASCII file with the given name."""
         self.timeseries = {}
@@ -67,7 +71,10 @@ class TimeseriesRetriever:
                 name = self.find_name(fields[0])
                 date = datetime(int(fields[1]), int(fields[2]), int(fields[3]))
                 value = float(fields[4])
-                self.timeseries.setdefault(name, TimeseriesStub()).add_value(date, value)
+                if name in self.incomplete_timeseries:
+                    self.timeseries.setdefault(name, TimeseriesWithMemoryStub()).add_value(date, value)
+                else:
+                    self.timeseries.setdefault(name, TimeseriesStub()).add_value(date, value)
         self.filereader.close()
 
     def find_name(self, code):
