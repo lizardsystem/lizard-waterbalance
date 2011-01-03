@@ -97,6 +97,8 @@ class OpenWater(models.Model):
                                      verbose_name=_("streefpeil"),
                                      help_text=_("tijdserie met streefpeil in meters"),
                                      null=True, blank=True, related_name='+')
+    init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
+                                         help_text=_("initiele waterstand in meters"))
     seepage = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("kwel"),
                                 help_text=_("tijdserie naar kwel"),
@@ -352,6 +354,13 @@ class WaterbalanceArea(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
+
+    def retrieve_buckets(self):
+        if self.open_water is None:
+            buckets = []
+        else:
+            buckets = self.open_water.buckets.all()
+        return buckets
 
 
 class WaterbalanceLabel(models.Model):

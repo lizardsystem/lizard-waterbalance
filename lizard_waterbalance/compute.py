@@ -64,6 +64,24 @@ class BucketOutcome:
                 "seepage": self.seepage,
                 "net_precipitation": self.net_precipitation}
 
+class SingleDayBucketsSummary:
+    """Stores the interesting values of a single day summed over all buckets.
+
+    Instance variables:
+    * hardened -- single day value of *Qsom verhard*
+    * drained -- single day value of *Qsom gedraineerdonder*
+    * undrained -- single day value of *Qsom ongedraineerd*
+    * flow off -- single day value of *Qsom afst*
+    * infiltration -- single day of *Qsom intrek*
+
+    """
+    def total(self):
+        return self.hardened +\
+               self.drained +\
+               self.undrained +\
+               self.flow_off +\
+               self.infiltration
+
 class BucketsTotals:
     """Stores the total time series computed for all buckets.
 
@@ -80,7 +98,7 @@ class BucketsTotals:
         self.hardened = TimeseriesStub()
         self.drained = TimeseriesStub()
         self.undrained = TimeseriesStub()
-        self.flow = TimeseriesStub()
+        self.flow_off = TimeseriesStub()
         self.intake = TimeseriesStub()
         self.infiltration = TimeseriesStub()
 
@@ -382,10 +400,20 @@ def open_water_compute(open_water,
 
 class WaterbalanceComputer:
 
-    def __init__(self, buckets_computer, buckets_totals_computer, level_control_computer):
-        self.buckets_computer = buckets_computer
-        self.buckets_totals_computer = buckets_totals_computer
-        self.level_control_computer = level_control_computer
+    def __init__(self, buckets_computer=None, buckets_totals_computer=None,
+                 level_control_computer=None):
+        if buckets_computer is None:
+            self.buckets_computer = BucketsComputer()
+        else:
+            self.buckets_computer = buckets_computer
+        if buckets_totals_computer is None:
+            self.buckets_totals_computer = BucketsTotalsComputer()
+        else:
+            self.buckets_totals_computer = buckets_totals_computer
+        if level_control_computer is None:
+            self.level_control_computer = LevelControlComputer()
+        else:
+            self.level_control_computer = level_control_computer
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -404,16 +432,16 @@ class WaterbalanceComputer:
                                                        precipitation,
                                                        evaporation,
                                                        seepage)
-        buckets_totals = self.buckets_totals_computer.compute(bucket2outcome,
-                                                              start_date,
-                                                              end_date)
         level_control = self.level_control_computer.compute(start_date,
                                                             end_date,
                                                             area.open_water,
-                                                            buckets_totals,
+                                                            bucket2outcome,
                                                             precipitation,
                                                             evaporation,
                                                             seepage)
+        # buckets_totals = self.buckets_totals_computer.compute(start_date,
+        #                                                       end_date,
+        #                                                       bucket2outcome)
         return (bucket2outcome, level_control)
 
 
@@ -450,8 +478,11 @@ class BucketsComputer:
 
 class BucketsTotalsComputer:
 
-    def __init__(self, bucket_summarizer):
-        self.bucket_summarizer = bucket_summarizer
+    def __init__(self, bucket_summarizer=None):
+        if bucket_summarizer is None:
+            self.bucket_summarizer = BucketSummarizer()
+        else:
+            self.bucket_summarizer = bucket_summarizer
 
     def compute(self, start_date, end_date, bucket2outcome):
 
@@ -465,10 +496,6 @@ class BucketsTotalsComputer:
 
 
 class LevelControlComputer:
-
-    def __init__(self):
-
-        self.bucket_summarizer = BucketSummarizer()
 
     def compute(self, start_date, end_date, open_water, bucket_outcomes,
                 precipitation, evaporation, seepage):
@@ -521,7 +548,7 @@ class LevelControlComputer:
         seepage = seepage.get_value(date) * surface
         incoming_volume = precipitation + evaporation + seepage
         summarizer = BucketSummarizer(bucket_outcomes)
-        incoming_volume += summarizer.compute(date)
+        incoming_volume += summarizer.compute(date).total()
         # all aforementioned time series are specified in [mm/day] but we need
         # [m/day]: 1 [mm] = 0.001 [m]
         return incoming_volume * 0.001
@@ -547,35 +574,36 @@ class LevelControlComputer:
         return level_control
 
 
-
 class BucketSummarizer:
+    """Computes the SingleDayBucketsSummary.
 
-    def __init__(self, bucket2outcomes = None):
-        if bucket2outcomes is None:
-            self.bucket2outcomes = {}
-        else:
-            self.bucket2outcomes = bucket2outcomes
-
-    def set_bucket2outcomes(self, bucket2outcomes):
-        self.bucket2outcomes = bucket2outcomes
+    Instance variables:
+    * bucket2outcome -- dictionary of Bucket to BucketOutcome
+    """
+    def __init__(self, bucket2outcome={}):
+        """Set the dictionary of Bucket to BucketOutcome to the given one."""
+        self.bucket2outcome = bucket2outcome
 
     def compute(self, date):
-        return self.compute_sum_hardened(date) + \
-               self.compute_sum_drained(date) + \
-               self.compute_sum_undrained_net_drainage(date) + \
-               self.compute_sum_undrained_flow_off(date) + \
-               self.compute_sum_infiltration(date)
+        """Compute and return the SingleDayBucketsSummary on the given date."""
+        summary = SingleDayBucketsSummary()
+        summary.hardened = self.compute_sum_hardened(date)
+        summary.drained = self.compute_sum_drained(date)
+        summary.undrained = self.compute_sum_undrained_net_drainage(date)
+        summary.flow_off = self.compute_sum_undrained_flow_off(date)
+        summary.infiltration = self.compute_sum_infiltration(date)
+        return summary
 
     def compute_sum_hardened(self, date):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcomes.iteritems():
+        for bucket, outcome in self.bucket2outcome.iteritems():
             if bucket.surface_type == Bucket.HARDENED_SURFACE:
                 sum += outcome.flow_off.get_value(date)
         return sum
 
     def compute_sum_drained(self, date):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcomes.iteritems():
+        for bucket, outcome in self.bucket2outcome.iteritems():
             if bucket.surface_type == Bucket.DRAINED_SURFACE:
                 sum += outcome.flow_off.get_value(date)
                 net_drainage = outcome.net_drainage.get_value(date)
@@ -585,7 +613,7 @@ class BucketSummarizer:
 
     def compute_sum_undrained_net_drainage(self, date):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcomes.iteritems():
+        for bucket, outcome in self.bucket2outcome.iteritems():
             if bucket.surface_type == Bucket.HARDENED_SURFACE or \
                bucket.surface_type == Bucket.UNDRAINED_SURFACE:
                 net_drainage = outcome.net_drainage.get_value(date)
@@ -595,14 +623,14 @@ class BucketSummarizer:
 
     def compute_sum_undrained_flow_off(self, date):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcomes.iteritems():
+        for bucket, outcome in self.bucket2outcome.iteritems():
             if bucket.surface_type == Bucket.UNDRAINED_SURFACE:
                 sum += outcome.flow_off.get_value(date)
         return sum
 
     def compute_sum_infiltration(self, date):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcomes.iteritems():
+        for bucket, outcome in self.bucket2outcome.iteritems():
             if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
                bucket.surface_type == Bucket.HARDENED_SURFACE or \
                bucket.surface_type == Bucket.DRAINED_SURFACE:

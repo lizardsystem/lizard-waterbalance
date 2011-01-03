@@ -26,17 +26,14 @@
 #
 #******************************************************************************
 
+from datetime import datetime
 from os.path import join
 
 from django.core.management.base import BaseCommand
 
-from lizard_waterbalance.compute import compute_timeseries
-from lizard_waterbalance.compute import compute_timeseries_on_hardened_surface
-from lizard_waterbalance.compute import open_water_compute
-from lizard_waterbalance.models import Bucket
-from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.compute import WaterbalanceComputer
+from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
-from lizard_waterbalance.timeseriesstub import split_timeseries
 
 name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),
@@ -46,35 +43,55 @@ name2name = dict([("evaporation", "verdamping"),
                   ("seepage", "kwel"),
                   ("storage", "berging")])
 
+
 class Command(BaseCommand):
-    args = "directory that contains test data"
+    args = "<test-data-directory WaterbalanceArea-name start-date end-date>"
     help = "Calculates the water balance on the first open water."
 
     def handle(self, *args, **options):
         directory = args[0]
-        open_water = OpenWater.objects.all()[0]
-        buckets = [Bucket.objects.filter(name="landelijk")[0],
-                   Bucket.objects.filter(name="stedelijk")[0],
-                   Bucket.objects.filter(name="verhard")[0]]
-        bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, compute_timeseries),
-                                 (Bucket.HARDENED_SURFACE, compute_timeseries_on_hardened_surface)])
-        pumping_stations = []
+        area_name = args[1]
+        start_date = datetime.strptime(args[2], "%Y-%m-%d")
+        end_date = datetime.strptime(args[3], "%Y-%m-%d")
+
+        # open_water = OpenWater.objects.all()[0]
+        # buckets = [Bucket.objects.filter(name="landelijk")[0],
+        #            Bucket.objects.filter(name="stedelijk")[0],
+        #            Bucket.objects.filter(name="verhard")[0]]
+        # bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, compute_timeseries),
+        #                          (Bucket.HARDENED_SURFACE, compute_timeseries_on_hardened_surface)])
+        # pumping_stations = []
+
         timeseries_retriever = TimeseriesRetriever()
         timeseries_retriever.read_timeseries(join(directory, "timeserie.csv"))
-        result = open_water_compute(open_water, buckets, bucket_computers,
-                                    pumping_stations, timeseries_retriever)
-        f = open(join(directory, "outcome.csv"), "w")
-        for key, outcome in result.items():
-            for name, timeseries in outcome.name2timeseries().items():
-                name = name2name[name]
-                if name == "berging" or name == "netto neerslag":
-                    continue
-                if name == "netto drainage":
-                    (drainage_timeseries, timeseries) = split_timeseries(timeseries)
-                    self.write_timeseries(f, key, "drainage", drainage_timeseries)
-                    name = "intrek"
-                self.write_timeseries(f, key, name, timeseries)
-        f.close()
+
+        area = WaterbalanceArea.objects.filter(name=area_name)[0]
+        assert not area is None
+
+        area.retrieve_precipitation = lambda s,e: timeseries_retriever.get_timeseries("precipitation")
+        area.retrieve_evaporation = lambda s,e: timeseries_retriever.get_timeseries("evaporation")
+        area.retrieve_seepage = lambda s,e: timeseries_retriever.get_timeseries("seepage")
+
+        assert not area.open_water is None
+
+        area.open_water.retrieve_minimum_level = lambda : timeseries_retriever.get_timeseries("minimum level")
+        area.open_water.retrieve_maximum_level = lambda : timeseries_retriever.get_timeseries("maximum level")
+
+        waterbalance_computer = WaterbalanceComputer()
+        result = waterbalance_computer.compute(area, start_date, end_date)
+
+        # f = open(join(directory, "outcome.csv"), "w")
+        # for key, outcome in result.items():
+        #     for name, timeseries in outcome.name2timeseries().items():
+        #         name = name2name[name]
+        #         if name == "berging" or name == "netto neerslag":
+        #             continue
+        #         if name == "netto drainage":
+        #             (drainage_timeseries, timeseries) = split_timeseries(timeseries)
+        #             self.write_timeseries(f, key, "drainage", drainage_timeseries)
+        #             name = "intrek"
+        #         self.write_timeseries(f, key, name, timeseries)
+        # f.close()
 
     def write_timeseries(self, file, key, name, timeseries):
         for (date, value) in timeseries.monthly_events():
