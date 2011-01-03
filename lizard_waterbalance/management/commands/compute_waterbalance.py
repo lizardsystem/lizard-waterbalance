@@ -89,8 +89,8 @@ class Command(BaseCommand):
             self.write_timeseries(f, bucket.name, "drainage", drainage_timeseries)
             self.write_timeseries(f, bucket.name, "intrek", timeseries)
             self.write_timeseries(f, bucket.name, "kwel", outcome.seepage)
-        self.write_timeseries(f, "openwater", "inlaat", level_control[0])
-        self.write_timeseries(f, "openwater", "Pieter Post", level_control[1])
+        self.write_timeseries(f, "openwater", "inlaat peilbeheer", level_control[0])
+        self.write_timeseries(f, "openwater", "pomp peilbeheer", level_control[1])
         f.close()
 
         # f = open(join(directory, "outcome.csv"), "w")

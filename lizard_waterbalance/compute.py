@@ -317,7 +317,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
-    lower_precipitation = add_timeseries(upper_flow_off, upper_net_drainage)
+    lower_precipitation = add_timeseries(upper_outcome.flow_off, upper_outcome.net_drainage)
     lower_evaporation = TimeseriesStub()
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
