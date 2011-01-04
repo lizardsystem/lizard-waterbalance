@@ -182,7 +182,7 @@ def compute_net_drainage(bucket, previous_volume):
     if previous_volume > equi_volume:
         net_drainage = -previous_volume * bucket.drainage_fraction
     elif previous_volume < equi_volume:
-        net_drainage = -previous_volume * bucket.infiltration_fraction
+        net_drainage = -previous_volume * bucket.indraft_fraction
     else:
         net_drainage = 0
     return net_drainage
@@ -492,8 +492,8 @@ class BucketsTotalsComputer:
         else:
             self.bucket_summarizer = bucket_summarizer
 
-    def compute(self, start_date, end_date, bucket2outcome):
-
+    def compute(self, bucket2outcome):
+        """Compute and return the """
         totals = BucketsTotals()
 
         date = start_date

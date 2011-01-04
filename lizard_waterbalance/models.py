@@ -178,7 +178,7 @@ class Bucket(models.Model):
     min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor"))
 
     drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel"))
-    infiltration_fraction = models.FloatField(verbose_name=_("fractie intrek"))
+    indraft_fraction = models.FloatField(verbose_name=_("fractie intrek"))
 
     max_water_level = models.FloatField(verbose_name=_("maximum waterstand"),
                                         help_text=_("maximum waterstand in meters"))

@@ -143,7 +143,7 @@ def import_buckets(filename):
         # we do not use bucket_definition['ol f_uitpoel']
         bucket.drainage_fraction = float(bucket_definition['bl f_uitpoel'])
         # we do not use bucket_definition['seepage']
-        bucket.infiltration_fraction = float(bucket_definition['bl f_intrek'])
+        bucket.indraft_fraction = float(bucket_definition['bl f_intrek'])
         bucket.save()
 
 if __name__ == "__main__":
