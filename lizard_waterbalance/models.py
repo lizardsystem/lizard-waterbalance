@@ -172,6 +172,12 @@ class Bucket(models.Model):
                                 help_text=_("tijdserie naar kwel"),
                                 null=True, blank=True,
                                 related_name='+')
+    infiltration = models.ForeignKey(WaterbalanceTimeserie,
+                                     verbose_name=_("wegzijging"),
+                                     help_text=_("tijdserie naar wegzijging"),
+                                     null=True,
+                                     blank=True,
+                                     related_name='+')
 
     porosity = models.FloatField(verbose_name=_("porositeit"))
     crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
@@ -226,12 +232,7 @@ class Bucket(models.Model):
                                          null=True,
                                          blank=True,
                                          related_name='+')
-    infiltration = models.ForeignKey(WaterbalanceTimeserie,
-                                     verbose_name=_("wegzijging"),
-                                     help_text=_("tijdserie naar wegzijging"),
-                                     null=True,
-                                     blank=True,
-                                     related_name='+')
+
     flow_off = models.ForeignKey(WaterbalanceTimeserie,
                                  verbose_name=_("afstroming"),
                                  help_text=_("tijdserie naar afstroming"),
