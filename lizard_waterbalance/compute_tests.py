@@ -727,6 +727,8 @@ def create_saveable_bucket():
     bucket.upper_porosity = 1.0
     bucket.upper_crop_evaporation_factor = 1.0
     bucket.upper_min_crop_evaporation_factor = 1.0
+    bucket.upper_drainage_fraction = 1.0
+    bucket.upper_indraft_fraction = 1.0
     return bucket
 
 class BucketSummarizerTests(TestCase):
