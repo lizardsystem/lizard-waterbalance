@@ -205,6 +205,8 @@ class Bucket(models.Model):
     upper_porosity = models.FloatField(verbose_name=("porositeit bovenste bakje"))
     upper_crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor bovenste bakje"))
     upper_min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor bovenste bakje"))
+    upper_drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel bovenste bakje"))
+    upper_indraft_fraction = models.FloatField(verbose_name=_("fractie intrek bovenste bakje"))
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
