@@ -27,6 +27,7 @@
 #******************************************************************************
 
 from datetime import datetime
+from datetime import MINYEAR
 from datetime import timedelta
 from unittest import TestCase
 
@@ -307,6 +308,19 @@ class computeTestSuite(TestCase):
         supplied_seepage = calls_to_compute[1].getParam(4)
         expected_seepage = 20
         self.assertAlmostEqual(supplied_seepage, expected_seepage)
+
+    def test_n(self):
+        """Test enumerate_events fires an assertion with an empty time series."""
+        self.assertRaises(AssertionError, list, enumerate_events(TimeseriesStub()))
+
+    def test_o(self):
+        """Test enumerate_events returns the intersection of dates."""
+        event = (datetime(2011, 1, 3), 0.0)
+        always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+        enumerated_events = list(enumerate_events(TimeseriesStub(event), always_zero))
+        expected_events = [(event, event)]
+        self.assertEqual(expected_events, enumerated_events)
+
 
 class enumerate_eventsTestSuite(TestCase):
 

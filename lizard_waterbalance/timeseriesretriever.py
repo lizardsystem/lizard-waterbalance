@@ -46,8 +46,8 @@ class TimeseriesRetriever:
         self.filereader = FileReader()
         self.code2name = dict([("A_0_0", "precipitation"),
                                ("A_0_1", "evaporation"),
-                               ("O_0_0", "seepage"),
-                               ("O_0_1", "infiltration"),
+                               ("O_0_0_0", "seepage"),
+                               ("O_0_1_0", "infiltration"),
                                ("O_0_2", "minimum level"),
                                ("O_0_3", "maximum level"),
                                ("O_0_4", "target level"),
@@ -56,7 +56,7 @@ class TimeseriesRetriever:
                                ("PS_1", "dijklek"),
                                ("PS_2", "inlaat peilbeheer")])
 
-        self.incomplete_timeseries = ["minimum level", "maximum level"]
+        self.incomplete_timeseries = ["seepage", "minimum level", "maximum level"]
 
     def read_timeseries(self, filename):
         """Retrieve the time series in the ASCII file with the given name."""

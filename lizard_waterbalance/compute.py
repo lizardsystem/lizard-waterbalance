@@ -27,6 +27,7 @@
 #******************************************************************************
 
 from datetime import datetime
+from datetime import MINYEAR
 from datetime import timedelta
 
 import logging
@@ -37,6 +38,7 @@ from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import split_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
+
 
 class BucketOutcome:
     """Stores the time series that are computed for a Bucket.
@@ -267,7 +269,8 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage and does not have net drainage
     #   - the porosity of the upper bucket is always 1.0
-    upper_seepage = TimeseriesStub()
+
+    upper_seepage = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
     bucket.porosity, tmp = 1.0, bucket.porosity
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
@@ -279,14 +282,13 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
-    lower_precipitation = TimeseriesStub()
-    lower_evaporation = TimeseriesStub()
+    lower_precipitation = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+    lower_evaporation = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,
                                        seepage,
                                        compute)
-
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
     outcome.flow_off = upper_outcome.flow_off
@@ -300,7 +302,8 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
-    upper_seepage = TimeseriesStub()
+    always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+    upper_seepage = always_zero
 
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
@@ -310,6 +313,8 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                                        evaporation,
                                        upper_seepage,
                                        compute)
+    assert len(list(upper_outcome.flow_off.events())) > 0
+    assert len(list(upper_outcome.net_drainage.events())) > 0
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
@@ -318,7 +323,8 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
     lower_precipitation = add_timeseries(upper_outcome.flow_off, upper_outcome.net_drainage)
-    lower_evaporation = TimeseriesStub()
+    lower_evaporation = always_zero
+    assert len(list(lower_precipitation.events())) > 0
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,
@@ -530,13 +536,13 @@ class LevelControlComputer:
 
 
             water_level += incoming_value / surface
-            logging.debug("incoming_value (%.2f) / surface (%.2f) = %.2f" % (incoming_value, surface, incoming_value / surface))
-            logging.debug("water_level = %.2f (uncorrected) " % water_level)
+            # logging.debug("incoming_value (%.2f) / surface (%.2f) = %.2f" % (incoming_value, surface, incoming_value / surface))
+            # logging.debug("water_level = %.2f (uncorrected) " % water_level)
             level_control = self._compute_level_control(date, open_water,
                                                         surface, water_level)
-            logging.debug("level_control = %.2f " % level_control)
+            # logging.debug("level_control = %.2f " % level_control)
             water_level += level_control / surface
-            logging.debug("water_level = %.2f " % water_level)
+            # logging.debug("water_level = %.2f " % water_level)
 
             result.add_value(date, level_control)
             date += timedelta(1)
@@ -554,7 +560,7 @@ class LevelControlComputer:
         summarizer = BucketSummarizer(bucket_outcomes)
         total = summarizer.compute(date).total()
         incoming_volume += total
-        logging.debug("compute_incoming_volume on %s: %.2f (%.2f, %.2f, %.2f) %.2f" % (date.strftime("%Y-%m-%d"), incoming_volume * 0.001, precipitation, evaporation, seepage, total))
+        # logging.debug("compute_incoming_volume on %s: %.2f (%.2f, %.2f, %.2f) %.2f" % (date.strftime("%Y-%m-%d"), incoming_volume * 0.001, precipitation, evaporation, seepage, total))
         # all aforementioned time series are specified in [mm/day] but we need
         # [m/day]: 1 [mm] = 0.001 [m]
         return incoming_volume * 0.001
@@ -571,7 +577,7 @@ class LevelControlComputer:
         """
         minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
         maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
-        logging.debug("minimum maximum water_level = %.2f %2f " % (minimum_water_level, maximum_water_level))
+        # logging.debug("minimum maximum water_level = %.2f %2f " % (minimum_water_level, maximum_water_level))
         if water_level > maximum_water_level:
             level_control = -(water_level - maximum_water_level) * surface
         elif water_level < minimum_water_level:
