@@ -32,6 +32,7 @@ from os.path import join
 from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import WaterbalanceComputer
+from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import split_timeseries
@@ -91,6 +92,27 @@ class Command(BaseCommand):
             self.write_timeseries(f, bucket.name, "kwel", outcome.seepage)
         self.write_timeseries(f, "openwater", "inlaat peilbeheer", level_control[0])
         self.write_timeseries(f, "openwater", "pomp peilbeheer", level_control[1])
+        f.close()
+
+        f = open(join(directory, "Bastiaan-results.csv"), "w")
+        f.write("bakje,jaar,maand,dag,berging,afstroming,netto drainage,kwel,netto neerslag\n")
+        for bucket, outcome in bucket2outcome.items():
+            for event_tuple in enumerate_events(outcome.storage,
+                                                outcome.flow_off,
+                                                outcome.net_drainage,
+                                                outcome.seepage,
+                                                outcome.net_precipitation):
+                date = event_tuple[0][0]
+                assert date == event_tuple[1][0]
+                assert date == event_tuple[2][0]
+                assert date == event_tuple[3][0]
+                assert date == event_tuple[4][0]
+                storage = event_tuple[0][1]
+                flow_off = event_tuple[1][1]
+                net_drainage = event_tuple[2][1]
+                seepage = event_tuple[3][1]
+                net_precipitation = event_tuple[4][1]
+                f.write("%s,%d,%d,%d,%f,%f,%f,%f,%f\n" % (bucket.name, date.year, date.month, date.day, storage, flow_off, net_drainage, seepage, net_precipitation))
         f.close()
 
         # f = open(join(directory, "outcome.csv"), "w")
