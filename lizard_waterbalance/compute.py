@@ -272,11 +272,19 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
 
     upper_seepage = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
     bucket.porosity, tmp = 1.0, bucket.porosity
+    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
+                              bucket.upper_drainage_fraction, bucket.drainage_fraction
+    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
+                              bucket.upper_indraft_fraction, bucket.indraft_fraction
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
                                        evaporation,
                                        upper_seepage,
                                        compute)
+    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
+                              bucket.upper_drainage_fraction, bucket.drainage_fraction
+    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
+                              bucket.upper_indraft_fraction, bucket.indraft_fraction
     bucket.porosity = tmp
 
     # we then compute the lower bucket:
@@ -308,6 +316,10 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
+                              bucket.upper_drainage_fraction, bucket.drainage_fraction
+    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
+                              bucket.upper_indraft_fraction, bucket.indraft_fraction
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
                                        evaporation,
@@ -318,11 +330,16 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
+    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
+                              bucket.upper_drainage_fraction, bucket.drainage_fraction
+    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
+                              bucket.upper_indraft_fraction, bucket.indraft_fraction
 
-    # we then compute the lower bucket:
-    #  - the lower bucket does not have precipitation, evaporation and does not
-    #    have flow off
+    # we compute the lower bucket
     lower_precipitation = add_timeseries(upper_outcome.flow_off, upper_outcome.net_drainage)
+    # lower_precipitation is specified in [m3/day] but should be specified in
+    # [mm/day]
+    lower_precipitation = multiply_timeseries(lower_precipitation, 1000.0 / bucket.surface)
     lower_evaporation = always_zero
     assert len(list(lower_precipitation.events())) > 0
     lower_outcome = compute_timeseries(bucket,
@@ -330,7 +347,6 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                                        lower_evaporation,
                                        seepage,
                                        compute)
-
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
     outcome.flow_off = upper_outcome.flow_off
