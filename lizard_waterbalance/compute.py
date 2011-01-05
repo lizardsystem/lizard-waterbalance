@@ -187,7 +187,7 @@ def compute_net_drainage(bucket, previous_volume):
         net_drainage = 0
     return net_drainage
 
-def compute(bucket, previous_storage, precipitation, evaporation, seepage):
+def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow_below_minimum_storage=True):
     """Compute and return the waterbalance of the given bucket.
 
     This method computes for the given bucket the water storage, flow off, net
@@ -199,6 +199,7 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage):
     * precipitation -- precipitation time series for the bucket in [mm/day]
     * evaporation -- evaporation time series for the bucket in [mm/day]
     * seepage -- seepage time series for the bucket in [mm/day]
+    * allow_below_minimum_storage -- holds iff the computed storage can be below the minimum storage
 
     """
     net_precipitation = compute_net_precipitation(bucket, previous_storage,
@@ -213,6 +214,9 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage):
         storage = max_storage
     else:
         flow_off = 0
+
+    if not allow_below_minimum_storage:
+        storage = max(storage, bucket.min_water_level * bucket.surface)
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
@@ -232,7 +236,7 @@ def enumerate_events(*timeseries_list):
     for timeseries_tuple in zip(*new_timeseries_list):
         yield timeseries_tuple
 
-def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
+def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, allow_below_minimum_storage=True):
     """Compute and return the waterbalance time series of the given bucket.
 
     This method computes for the given bucket the time series that can be
@@ -244,6 +248,7 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
     * evaporation -- evaporation time series  in [mm/day]
     * seepage -- seepage time series in [mm/day]
     * compute -- function to compute the daily waterbalance
+    * allow_below_minimum_storage -- holds iff the computed storage can be below the minimum storage
 
     """
     outcome = BucketOutcome()
@@ -254,7 +259,8 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
         evaporation_event = triple[1]
         seepage_event = triple[2]
         bucket_triple = compute(bucket, volume, precipitation_event[1],
-                                evaporation_event[1], seepage_event[1])
+                                evaporation_event[1], seepage_event[1],
+                                allow_below_minimum_storage)
         #note that bucket_triple is a quintuple now
         volume = bucket_triple[0]
         outcome.storage.add_value(event_date, volume)
@@ -266,9 +272,10 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute):
 
 def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
 
-    # we first compute the upper bucket:
-    #   - the upper bucket does not have seepage and does not have net drainage
+    # we compute the upper bucket:
+    #   - the upper bucket does not have seepage
     #   - the porosity of the upper bucket is always 1.0
+    #   - the storage of the upper bucket can not be below the minimum storage
 
     upper_seepage = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
     bucket.porosity, tmp = 1.0, bucket.porosity
@@ -280,7 +287,8 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
                                        precipitation,
                                        evaporation,
                                        upper_seepage,
-                                       compute)
+                                       compute,
+                                       False)
     bucket.drainage_fraction, bucket.upper_drainage_fraction = \
                               bucket.upper_drainage_fraction, bucket.drainage_fraction
     bucket.indraft_fraction, bucket.upper_indraft_fraction = \
