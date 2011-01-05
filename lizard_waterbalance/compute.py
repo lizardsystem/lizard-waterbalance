@@ -308,7 +308,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
     outcome.flow_off = upper_outcome.flow_off
-    outcome.net_drainage = lower_outcome.net_drainage
+    outcome.net_drainage = add_timeseries(lower_outcome.flow_off, lower_outcome.net_drainage)
     outcome.seepage = lower_outcome.seepage
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
