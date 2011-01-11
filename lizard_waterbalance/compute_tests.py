@@ -46,6 +46,7 @@ from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import open_water_compute
+from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
@@ -943,3 +944,25 @@ class BucketsComputerTests(TestCase):
         self.assertEqual(outcome.storage, timeseries_bucket.storage)
         self.assertEqual(outcome.flow_off, timeseries_bucket.flow_off)
         self.assertEqual(outcome.net_drainage, timeseries_bucket.net_drainage)
+
+class TotalDailyBucketOutcomeTests(TestCase):
+
+    def test_a(self):
+        """When there are no buckets, there is no total daily bucket outcome."""
+        bucket2outcome = {}
+        for outcome in total_daily_bucket_outcome(bucket2outcome):
+            self.assertFalse(True)
+
+    def test_b(self):
+        """When there are no buckets, there is no total daily bucket outcome."""
+        bucket = Bucket()
+        outcome = BucketOutcome()
+        outcome.flow_off.add_value(datetime(2011, 1, 11), 10.0)
+        outcome.flow_off.add_value(datetime(2011, 1, 12), 20.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 11), 30.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 12), 40.0)
+        bucket2outcome = {bucket: outcome}
+        outcomes = list(total_daily_bucket_outcome(bucket2outcome))
+        self.assertEqual(2, len(outcomes))
+
+

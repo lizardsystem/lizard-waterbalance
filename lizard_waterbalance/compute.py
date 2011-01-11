@@ -526,6 +526,20 @@ class BucketsTotalsComputer:
                 daily_totals = self.bucket_summarizer.compute(date)
             totals.append(daily_totals)
 
+def total_daily_bucket_outcome(bucket2outcome):
+    """Return the total daily flow off and net drainage of all buckets
+
+    Parameters:
+    * bucket2outcome -- dictionary of Bucket to BucketOutcome
+
+    """
+    generator = ()
+    if len(bucket2outcome.keys()) > 0:
+        buckets, outcomes = zip(*((b, o) for (b, o) in bucket2outcome.items()))
+        b = buckets[0]
+        o = outcomes[0]
+        generator = ((b, f, d) for (f, d) in enumerate_events(o.flow_off, o.net_drainage))
+    return generator
 
 class LevelControlComputer:
 
