@@ -954,8 +954,9 @@ class TotalDailyBucketOutcomeTests(TestCase):
             self.assertFalse(True)
 
     def test_b(self):
-        """When there are no buckets, there is no total daily bucket outcome."""
-        bucket = Bucket()
+        """Test the case that there is a single bucket."""
+        bucket = create_saveable_bucket()
+        bucket.save()
         outcome = BucketOutcome()
         outcome.flow_off.add_value(datetime(2011, 1, 11), 10.0)
         outcome.flow_off.add_value(datetime(2011, 1, 12), 20.0)
@@ -963,6 +964,63 @@ class TotalDailyBucketOutcomeTests(TestCase):
         outcome.net_drainage.add_value(datetime(2011, 1, 12), 40.0)
         bucket2outcome = {bucket: outcome}
         outcomes = list(total_daily_bucket_outcome(bucket2outcome))
-        self.assertEqual(2, len(outcomes))
+
+        number_of_days = 2
+        self.assertEqual(number_of_days, len(outcomes))
+        self.assertEqual(datetime(2011, 1, 11), outcomes[0][0])
+        self.assertEqual(datetime(2011, 1, 12), outcomes[1][0])
+
+        number_of_buckets = 1
+        self.assertEqual(number_of_buckets, len(outcomes[0][1].items()))
+        self.assert_(bucket in outcomes[0][1].keys())
+        self.assertEqual(number_of_buckets, len(outcomes[1][1].items()))
+        self.assert_(bucket in outcomes[1][1].keys())
+
+        event_values = outcomes[0][1][bucket]
+        self.assertEqual(10.0, event_values[0])
+        self.assertEqual(30.0, event_values[1])
+        event_values = outcomes[1][1][bucket]
+        self.assertEqual(20.0, event_values[0])
+        self.assertEqual(40.0, event_values[1])
+
+    def test_c(self):
+        """Test the case that there are two buckets."""
+        bucket2outcome = {}
+        bucket0 = create_saveable_bucket()
+        bucket0.save()
+        outcome = BucketOutcome()
+        outcome.flow_off.add_value(datetime(2011, 1, 11), 10.0)
+        outcome.flow_off.add_value(datetime(2011, 1, 12), 20.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 11), 30.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 12), 40.0)
+        bucket2outcome[bucket0] = outcome
+        bucket1 = create_saveable_bucket()
+        bucket1.save()
+        outcome = BucketOutcome()
+        outcome.flow_off.add_value(datetime(2011, 1, 11), 50.0)
+        outcome.flow_off.add_value(datetime(2011, 1, 12), 60.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 11), 70.0)
+        outcome.net_drainage.add_value(datetime(2011, 1, 12), 80.0)
+        bucket2outcome[bucket1] = outcome
+        outcomes = list(total_daily_bucket_outcome(bucket2outcome))
+
+        number_of_days = 2
+        self.assertEqual(number_of_days, len(outcomes))
+        self.assertEqual(datetime(2011, 1, 11), outcomes[0][0])
+        self.assertEqual(datetime(2011, 1, 12), outcomes[1][0])
+
+        number_of_buckets = 2
+        self.assertEqual(number_of_buckets, len(outcomes[0][1].items()))
+        self.assert_(bucket0 in outcomes[0][1].keys())
+        self.assert_(bucket1 in outcomes[0][1].keys())
+        self.assertEqual(number_of_buckets, len(outcomes[1][1].items()))
+        self.assert_(bucket0 in outcomes[1][1].keys())
+        self.assert_(bucket1 in outcomes[1][1].keys())
+
+        self.assertEqual([10.0, 30.0], outcomes[0][1][bucket0])
+        self.assertEqual([20.0, 40.0], outcomes[1][1][bucket0])
+        self.assertEqual([50.0, 70.0], outcomes[0][1][bucket1])
+        self.assertEqual([60.0, 80.0], outcomes[1][1][bucket1])
+
 
 

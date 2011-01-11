@@ -526,6 +526,20 @@ class BucketsTotalsComputer:
                 daily_totals = self.bucket_summarizer.compute(date)
             totals.append(daily_totals)
 
+
+def event_tuple_values(events):
+    """Return the list of event values from the given tuple of events."""
+    return [event[1] for event in events]
+
+def create_bucket_to_daily_outcome(buckets, daily_outcome):
+    assert len(buckets) * 2 == len(daily_outcome)
+    index = 0
+    bucket2daily_outcome = {}
+    for bucket in buckets:
+        bucket2daily_outcome[bucket] = [daily_outcome[index * 2], daily_outcome[index * 2 + 1]]
+        index = index + 1
+    return bucket2daily_outcome
+
 def total_daily_bucket_outcome(bucket2outcome):
     """Return the total daily flow off and net drainage of all buckets
 
@@ -536,10 +550,14 @@ def total_daily_bucket_outcome(bucket2outcome):
     generator = ()
     if len(bucket2outcome.keys()) > 0:
         buckets, outcomes = zip(*((b, o) for (b, o) in bucket2outcome.items()))
-        b = buckets[0]
-        o = outcomes[0]
-        generator = ((b, f, d) for (f, d) in enumerate_events(o.flow_off, o.net_drainage))
+        interesting_timeseries = []
+        for outcome in outcomes:
+            interesting_timeseries.append(outcome.flow_off)
+            interesting_timeseries.append(outcome.net_drainage)
+        generator = ((event_tuple[0][0], create_bucket_to_daily_outcome(buckets, event_tuple_values(event_tuple))) \
+                     for event_tuple in enumerate_events(*interesting_timeseries))
     return generator
+
 
 class LevelControlComputer:
 
