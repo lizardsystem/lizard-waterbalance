@@ -611,7 +611,7 @@ class LevelControlTests(TestCase):
         water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
         self.open_water.retrieve_minimum_level = lambda : water_levels
         self.open_water.retrieve_maximum_level = lambda : water_levels
-        self.bucket_outcomes = {}
+        self.bucket2outcome = {}
 
     def test_a(self):
         """Test the case with precipitation on a single day."""
@@ -622,7 +622,7 @@ class LevelControlTests(TestCase):
         timeseries = level_control.compute(self.today,
                                            self.today + timedelta(1),
                                            self.open_water,
-                                           self.bucket_outcomes,
+                                           self.bucket2outcome,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -640,7 +640,7 @@ class LevelControlTests(TestCase):
         timeseries = level_control.compute(self.today,
                                            tomorrow + timedelta(1),
                                            self.open_water,
-                                           self.bucket_outcomes,
+                                           self.bucket2outcome,
                                            precipitation,
                                            evaporation,
                                                seepage)
@@ -657,7 +657,7 @@ class LevelControlTests(TestCase):
         timeseries = level_control.compute(self.today,
                                            self.today + timedelta(1),
                                            self.open_water,
-                                           self.bucket_outcomes,
+                                           self.bucket2outcome,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -674,7 +674,7 @@ class LevelControlTests(TestCase):
         timeseries = level_control.compute(self.today,
                                            self.today + timedelta(1),
                                            self.open_water,
-                                           self.bucket_outcomes,
+                                           self.bucket2outcome,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -691,7 +691,7 @@ class LevelControlTests(TestCase):
         timeseries = level_control.compute(self.today,
                                            self.today + timedelta(1),
                                            self.open_water,
-                                           self.bucket_outcomes,
+                                           self.bucket2outcome,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -738,23 +738,21 @@ class BucketSummarizerTests(TestCase):
     """
     def test_a(self):
         """Test the flow off is zero when there are no buckets."""
-        today = datetime(2010, 12, 20)
         bucket = Bucket()
         bucket.surface_type = Bucket.UNDRAINED_SURFACE
-        bucket2outcome = {}
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertEqual(0.0, summarizer.compute_sum_undrained_flow_off(today))
+        bucket2daily_outcome = {}
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertEqual(0.0, summarizer.compute_sum_undrained_flow_off())
 
     def test_b(self):
         """Test the flow off in case of one bucket of the right type."""
         bucket = Bucket()
         bucket.surface_type = Bucket.UNDRAINED_SURFACE
-        today = datetime(2010, 12, 20)
-        outcome = BucketOutcome()
-        outcome.flow_off = TimeseriesStub((today, -10.0))
-        bucket2outcome = {bucket: outcome}
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_flow_off(today))
+        flow_off = -10.0
+        net_drainage = 0.0 # don't care for this test
+        bucket2daily_outcome = {bucket: [flow_off, net_drainage]}
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_flow_off())
 
     def test_c(self):
         """Test the flow off in case of two buckets of the right type."""
@@ -764,55 +762,51 @@ class BucketSummarizerTests(TestCase):
         another_bucket = create_saveable_bucket()
         another_bucket.surface_type = Bucket.UNDRAINED_SURFACE
         another_bucket.save()
-        today = datetime(2010, 12, 20)
-        outcome = BucketOutcome()
-        outcome.flow_off = TimeseriesStub((today, -10.0))
-        bucket2outcome = {bucket: outcome, another_bucket: outcome}
-        self.assertEqual(2, len(bucket2outcome.keys()))
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(-20.0, summarizer.compute_sum_undrained_flow_off(today))
+        flow_off = -10.0
+        net_drainage = 0.0 # don't care for this test
+        bucket2daily_outcome = {bucket: [flow_off, net_drainage],
+                                another_bucket: [flow_off, net_drainage]}
+        self.assertEqual(2, len(bucket2daily_outcome.keys()))
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(-20.0, summarizer.compute_sum_undrained_flow_off())
 
     def test_d(self):
         """Test the flow off in case of one bucket of the wrong type."""
         bucket = Bucket()
         bucket.surface_type = Bucket.HARDENED_SURFACE
-        today = datetime(2010, 12, 20)
-        outcome = BucketOutcome()
-        outcome.flow_off = TimeseriesStub((today, -10.0))
-        bucket2outcome = {bucket: outcome}
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_flow_off(today))
+        flow_off = -10.0
+        net_drainage = 0.0 # don't care for this test
+        bucket2daily_outcome = {bucket: [flow_off, net_drainage]}
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_flow_off())
 
     def test_aa(self):
         """Test the undrained is zero when there are no buckets."""
-        today = datetime(2010, 12, 20)
         bucket = Bucket()
         bucket.surface_type = Bucket.UNDRAINED_SURFACE
-        bucket2outcome = {}
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage(today))
+        bucket2daily_outcome = {}
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage())
 
     def test_ab(self):
         """Test the undrained when there is one bucket of the right type."""
-        today = datetime(2010, 12, 20)
         bucket = create_saveable_bucket()
         bucket.surface_type = Bucket.HARDENED_SURFACE
-        outcome = BucketOutcome()
-        outcome.net_drainage = TimeseriesStub((today, -10.0))
-        bucket2outcome = { bucket: outcome }
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_net_drainage(today))
+        flow_off = 0.0 # don't care for this test
+        net_drainage = -10.0
+        bucket2daily_outcome = { bucket: [flow_off, net_drainage] }
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(-10.0, summarizer.compute_sum_undrained_net_drainage())
 
     def test_ac(self):
         """Test the undrained when there is one bucket of the right type with positive net drainage."""
-        today = datetime(2010, 12, 20)
         bucket = create_saveable_bucket()
         bucket.surface_type = Bucket.HARDENED_SURFACE
-        outcome = BucketOutcome()
-        outcome.net_drainage = TimeseriesStub((today, 10.0))
-        bucket2outcome = { bucket: outcome }
-        summarizer = BucketSummarizer(bucket2outcome)
-        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage(today))
+        flow_off = 0.0 # don't care for this test
+        net_drainage = 10.0
+        bucket2daily_outcome = { bucket: [flow_off, net_drainage] }
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        self.assertAlmostEqual(0.0, summarizer.compute_sum_undrained_net_drainage())
 
 class TimeseriesRetrieverStub():
 

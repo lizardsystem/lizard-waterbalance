@@ -579,17 +579,25 @@ class LevelControlComputer:
         result = TimeseriesStub()
         surface = open_water.surface
         water_level = open_water.init_water_level
-        date = start_date
-        while date < end_date:
+        for event, daily_outcome in self.enumerate_events(precipitation, bucket_outcomes):
+            date = event[0]
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            if daily_outcome is None:
+                print date
+                bucket2daily_outcome = {}
+            else:
+                bucket2daily_outcome = daily_outcome[1]
             incoming_value = self.compute_incoming_volume(date,
                                                           surface,
                                                           open_water.crop_evaporation_factor,
                                                           water_level,
-                                                          bucket_outcomes,
+                                                          bucket2daily_outcome,
                                                           precipitation,
                                                           evaporation,
                                                           seepage)
-
 
             water_level += incoming_value / surface
             # logging.debug("incoming_value (%.2f) / surface (%.2f) = %.2f" % (incoming_value, surface, incoming_value / surface))
@@ -605,16 +613,23 @@ class LevelControlComputer:
         (pump_time_series, intake_time_series) = split_timeseries(result)
         return (intake_time_series, pump_time_series)
 
+    def enumerate_events(self, precipitation, bucket_outcomes):
+        generator = total_daily_bucket_outcome(bucket_outcomes)
+        for event in precipitation.events():
+            date = event[0]
+            daily_outcome = next((d for d in generator if d[0] == date), None)
+            yield event, daily_outcome
+
     def compute_incoming_volume(self, date, surface, crop_evaporation_factor,
-                                 water_level, bucket_outcomes, precipitation,
+                                 water_level, bucket2daily_outcome, precipitation,
                                  evaporation, seepage):
         precipitation = precipitation.get_value(date) * surface
         evaporation = -evaporation.get_value(date) * surface * \
                       crop_evaporation_factor
         seepage = seepage.get_value(date) * surface
         incoming_volume = precipitation + evaporation + seepage
-        summarizer = BucketSummarizer(bucket_outcomes)
-        total = summarizer.compute(date).total()
+        summarizer = BucketSummarizer(bucket2daily_outcome)
+        total = summarizer.compute().total()
         incoming_volume += total
         # logging.debug("compute_incoming_volume on %s: %.2f (%.2f, %.2f, %.2f) %.2f" % (date.strftime("%Y-%m-%d"), incoming_volume * 0.001, precipitation, evaporation, seepage, total))
         # all aforementioned time series are specified in [mm/day] but we need
@@ -647,63 +662,63 @@ class BucketSummarizer:
     """Computes the SingleDayBucketsSummary.
 
     Instance variables:
-    * bucket2outcome -- dictionary of Bucket to BucketOutcome
+    * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
     """
-    def __init__(self, bucket2outcome={}):
+    def __init__(self, bucket2daily_outcome={}):
         """Set the dictionary of Bucket to BucketOutcome to the given one."""
-        self.bucket2outcome = bucket2outcome
+        self.bucket2daily_outcome = bucket2daily_outcome
 
-    def compute(self, date):
-        """Compute and return the SingleDayBucketsSummary on the given date."""
+    def compute(self):
+        """Compute and return the SingleDayBucketsSummary."""
         summary = SingleDayBucketsSummary()
-        summary.hardened = self.compute_sum_hardened(date)
-        summary.drained = self.compute_sum_drained(date)
-        summary.undrained = self.compute_sum_undrained_net_drainage(date)
-        summary.flow_off = self.compute_sum_undrained_flow_off(date)
-        summary.infiltration = self.compute_sum_infiltration(date)
+        summary.hardened = self.compute_sum_hardened()
+        summary.drained = self.compute_sum_drained()
+        summary.undrained = self.compute_sum_undrained_net_drainage()
+        summary.flow_off = self.compute_sum_undrained_flow_off()
+        summary.infiltration = self.compute_sum_infiltration()
         return summary
 
-    def compute_sum_hardened(self, date):
+    def compute_sum_hardened(self):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcome.iteritems():
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.HARDENED_SURFACE:
-                sum += outcome.flow_off.get_value(date)
+                sum += outcome[0]
         return sum
 
-    def compute_sum_drained(self, date):
+    def compute_sum_drained(self):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcome.iteritems():
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.DRAINED_SURFACE:
-                sum += outcome.flow_off.get_value(date)
-                net_drainage = outcome.net_drainage.get_value(date)
+                sum += outcome[0]
+                net_drainage = outcome[1]
                 if net_drainage < 0:
                     sum += net_drainage
         return sum
 
-    def compute_sum_undrained_net_drainage(self, date):
+    def compute_sum_undrained_net_drainage(self):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcome.iteritems():
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.HARDENED_SURFACE or \
                bucket.surface_type == Bucket.UNDRAINED_SURFACE:
-                net_drainage = outcome.net_drainage.get_value(date)
+                net_drainage = outcome[1]
                 if net_drainage < 0:
                     sum += net_drainage
         return sum
 
-    def compute_sum_undrained_flow_off(self, date):
+    def compute_sum_undrained_flow_off(self):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcome.iteritems():
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.UNDRAINED_SURFACE:
-                sum += outcome.flow_off.get_value(date)
+                sum += outcome[0]
         return sum
 
-    def compute_sum_infiltration(self, date):
+    def compute_sum_infiltration(self):
         sum = 0.0
-        for bucket, outcome in self.bucket2outcome.iteritems():
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
                bucket.surface_type == Bucket.HARDENED_SURFACE or \
                bucket.surface_type == Bucket.DRAINED_SURFACE:
-                net_drainage = outcome.net_drainage.get_value(date)
+                net_drainage = outcome[1]
                 if net_drainage > 0:
                     sum += net_drainage
         return sum
