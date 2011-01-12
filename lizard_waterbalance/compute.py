@@ -585,11 +585,7 @@ class LevelControlComputer:
                 continue
             if date >= end_date:
                 break
-            if daily_outcome is None:
-                print date
-                bucket2daily_outcome = {}
-            else:
-                bucket2daily_outcome = daily_outcome[1]
+            bucket2daily_outcome = daily_outcome[1]
             incoming_value = self.compute_incoming_volume(date,
                                                           surface,
                                                           open_water.crop_evaporation_factor,
@@ -617,7 +613,8 @@ class LevelControlComputer:
         generator = total_daily_bucket_outcome(bucket_outcomes)
         for event in precipitation.events():
             date = event[0]
-            daily_outcome = next((d for d in generator if d[0] == date), None)
+            null_daily_outcome = date, {}
+            daily_outcome = next((d for d in generator if d[0] == date), null_daily_outcome)
             yield event, daily_outcome
 
     def compute_incoming_volume(self, date, surface, crop_evaporation_factor,
