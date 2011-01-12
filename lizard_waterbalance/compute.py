@@ -579,7 +579,10 @@ class LevelControlComputer:
         result = TimeseriesStub()
         surface = open_water.surface
         water_level = open_water.init_water_level
-        for values in self.enumerate_values(bucket_outcomes, precipitation, evaporation, seepage):
+        for values in self.enumerate_values(bucket_outcomes, precipitation,
+                                            evaporation, seepage,
+                                            open_water.retrieve_minimum_level(),
+                                            open_water.retrieve_maximum_level()):
             date = values[0]
             if date < start_date:
                 continue
@@ -589,6 +592,8 @@ class LevelControlComputer:
             precipitation_value = values[2]
             evaporation_value = values[3]
             seepage_value = values[4]
+            minimum_level = values[5]
+            maximum_level = values[6]
             incoming_value = self.compute_incoming_volume(date,
                                                           surface,
                                                           open_water.crop_evaporation_factor,
@@ -601,8 +606,7 @@ class LevelControlComputer:
             water_level += incoming_value / surface
             # logging.debug("incoming_value (%.2f) / surface (%.2f) = %.2f" % (incoming_value, surface, incoming_value / surface))
             # logging.debug("water_level = %.2f (uncorrected) " % water_level)
-            level_control = self._compute_level_control(date, open_water,
-                                                        surface, water_level)
+            level_control = self._compute_level_control(date, surface, water_level, minimum_level, maximum_level)
             # logging.debug("level_control = %.2f " % level_control)
             water_level += level_control / surface
             # logging.debug("water_level = %.2f " % water_level)
@@ -612,15 +616,17 @@ class LevelControlComputer:
         (pump_time_series, intake_time_series) = split_timeseries(result)
         return (intake_time_series, pump_time_series)
 
-    def enumerate_values(self, bucket_outcomes, precipitation, evaporation, seepage):
+    def enumerate_values(self, bucket_outcomes, precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
         generator = total_daily_bucket_outcome(bucket_outcomes)
-        for event_tuple in enumerate_events(precipitation, evaporation, seepage):
+        for event_tuple in enumerate_events(precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
             precipitation_event = event_tuple[0]
             evaporation_event = event_tuple[1]
             seepage_event = event_tuple[2]
+            minimum_water_level_event = event_tuple[3]
+            maximum_water_level_event = event_tuple[4]
             date = precipitation_event[0]
             bucket2daily_outcome = next((d[1] for d in generator if d[0] == date), {})
-            yield date, bucket2daily_outcome, precipitation_event[1], evaporation_event[1], seepage_event[1]
+            yield date, bucket2daily_outcome, precipitation_event[1], evaporation_event[1], seepage_event[1], minimum_water_level_event[1], maximum_water_level_event[1]
 
     def compute_incoming_volume(self, date, surface, crop_evaporation_factor,
                                  water_level, bucket2daily_outcome, precipitation_value,
@@ -638,7 +644,7 @@ class LevelControlComputer:
         # [m/day]: 1 [mm] = 0.001 [m]
         return incoming_volume * 0.001
 
-    def _compute_level_control(self, date, open_water, surface, water_level):
+    def _compute_level_control(self, date, surface, water_level, minimum_water_level, maximum_water_level):
         """Compute and return the level control for the given date.
 
         Parameters:
@@ -646,10 +652,10 @@ class LevelControlComputer:
         * open_water -- OpenWater for which to compute the level control time series
         * surface -- surface of the open water in [m2]
         * water_level -- uncorrected water level of the open water in [m]
+        * minimum_water_level -- lowest allowed water level
+        * maximum_water_level -- highest allowed water level
 
         """
-        minimum_water_level = open_water.retrieve_minimum_level().get_value(date)
-        maximum_water_level = open_water.retrieve_maximum_level().get_value(date)
         # logging.debug("minimum maximum water_level = %.2f %2f " % (minimum_water_level, maximum_water_level))
         if water_level > maximum_water_level:
             level_control = -(water_level - maximum_water_level) * surface

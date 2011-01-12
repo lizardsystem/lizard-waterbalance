@@ -637,13 +637,17 @@ class LevelControlTests(TestCase):
         precipitation = TimeseriesStub((self.today, 2.0), (tomorrow, 1.0))
         evaporation = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
         seepage = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
+        water_levels = TimeseriesWithMemoryStub((self.today, 1.0),
+                                                (tomorrow, 1.0))
+        self.open_water.retrieve_minimum_level = lambda : water_levels
+        self.open_water.retrieve_maximum_level = lambda : water_levels
         timeseries = level_control.compute(self.today,
                                            tomorrow + timedelta(1),
                                            self.open_water,
                                            self.bucket2outcome,
                                            precipitation,
                                            evaporation,
-                                               seepage)
+                                           seepage)
         expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
                                TimeseriesStub((self.today, -0.2), (tomorrow, -0.1)))
         self.assertEqual(expected_timeseries, timeseries)
