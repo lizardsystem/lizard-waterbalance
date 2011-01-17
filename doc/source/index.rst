@@ -12,6 +12,7 @@ Project documentation
 .. toctree::
    :maxdepth: 2
 
+   datamodel
    project
 
 Indices and tables
