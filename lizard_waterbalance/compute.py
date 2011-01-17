@@ -465,14 +465,14 @@ class WaterbalanceComputer:
                                                        precipitation,
                                                        evaporation,
                                                        seepage)
+
+        buckets_summary = BucketsSummarizer().compute(bucket2outcome)
+
         level_control = self.level_control_computer.compute(area.open_water,
-                                                            bucket2outcome,
+                                                            buckets_summary,
                                                             precipitation,
                                                             evaporation,
                                                             seepage)
-        # buckets_totals = self.buckets_totals_computer.compute(start_date,
-        #                                                       end_date,
-        #                                                       bucket2outcome)
         return (bucket2outcome, level_control)
 
 
@@ -560,7 +560,7 @@ def total_daily_bucket_outcome(bucket2outcome):
 
 class LevelControlComputer:
 
-    def compute(self, open_water, bucket2outcome,
+    def compute(self, open_water, buckets_summary,
                 precipitation, evaporation, seepage):
         """Compute and return the pair of intake and pump time series.
 
@@ -569,7 +569,7 @@ class LevelControlComputer:
 
         Parameters:
         * open_water -- OpenWater for which to compute the level control
-        * bucket2outcome -- dictionary of Bucket to BucketOutcome
+        * buckets_summary -- BucketsSummary with the summed outcome of each bucket
         * precipitation -- TimeseriesStub with the precipitation in [mm/day]
         * evaporation -- TimeseriesStub with the evaporation in [mm/day]
         * seepage -- TimeseriesStub with the (open water) seepage in [mm/day]
@@ -578,16 +578,6 @@ class LevelControlComputer:
         result = TimeseriesStub()
         surface = open_water.surface
         water_level = open_water.init_water_level
-
-        buckets_summary = BucketsSummary()
-        for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
-            daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
-            buckets_summary.totals.add_value(date, daily_summary.total())
-            buckets_summary.hardened.add_value(date, daily_summary.hardened)
-            buckets_summary.drained.add_value(date, daily_summary.drained)
-            buckets_summary.undrained.add_value(date, daily_summary.undrained)
-            buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
-            buckets_summary.infiltration.add_value(date, daily_summary.infiltration)
 
         for values in self.enumerate_values(buckets_summary.totals, precipitation,
                                             evaporation, seepage,
@@ -662,7 +652,7 @@ class LevelControlComputer:
 
 
 class BucketSummarizer:
-    """Computes the SingleDayBucketsSummary.
+    """Computes the SingleDayBucketSummary.
 
     Instance variables:
     * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
@@ -727,3 +717,26 @@ class BucketSummarizer:
         return sum
 
 
+class BucketsSummarizer:
+    """Computes the BucketSummary from the outcome of each bucket.
+
+    Instance variables:
+    * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
+    """
+    def compute(self, bucket2outcome):
+        """Returns the BucketsSummary of the given buckets.
+
+        Parameters:
+        * bucket2outcome --dictionary of Bucket to BucketOutcome
+
+        """
+        buckets_summary = BucketsSummary()
+        for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
+            daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
+            buckets_summary.totals.add_value(date, daily_summary.total())
+            buckets_summary.hardened.add_value(date, daily_summary.hardened)
+            buckets_summary.drained.add_value(date, daily_summary.drained)
+            buckets_summary.undrained.add_value(date, daily_summary.undrained)
+            buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
+            buckets_summary.infiltration.add_value(date, daily_summary.infiltration)
+        return buckets_summary

@@ -38,6 +38,7 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.compute import BucketOutcome
 from lizard_waterbalance.compute import BucketSummarizer
+from lizard_waterbalance.compute import BucketsSummary
 from lizard_waterbalance.compute import compute
 from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
@@ -611,7 +612,7 @@ class LevelControlTests(TestCase):
         water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
         self.open_water.retrieve_minimum_level = lambda : water_levels
         self.open_water.retrieve_maximum_level = lambda : water_levels
-        self.bucket2outcome = {}
+        self.buckets_summary = BucketsSummary()
 
     def test_a(self):
         """Test the case with precipitation on a single day."""
@@ -620,7 +621,7 @@ class LevelControlTests(TestCase):
         evaporation = TimeseriesStub((self.today, 0.0))
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
-                                           self.bucket2outcome,
+                                           self.buckets_summary,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -640,7 +641,7 @@ class LevelControlTests(TestCase):
         self.open_water.retrieve_minimum_level = lambda : water_levels
         self.open_water.retrieve_maximum_level = lambda : water_levels
         timeseries = level_control.compute(self.open_water,
-                                           self.bucket2outcome,
+                                           self.buckets_summary,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -655,7 +656,7 @@ class LevelControlTests(TestCase):
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
-                                           self.bucket2outcome,
+                                           self.buckets_summary,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -670,7 +671,7 @@ class LevelControlTests(TestCase):
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.5))
         timeseries = level_control.compute(self.open_water,
-                                           self.bucket2outcome,
+                                           self.buckets_summary,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -685,7 +686,7 @@ class LevelControlTests(TestCase):
         evaporation = TimeseriesStub((self.today, 1.0))
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
-                                           self.bucket2outcome,
+                                           self.buckets_summary,
                                            precipitation,
                                            evaporation,
                                            seepage)
@@ -816,7 +817,7 @@ class TimeseriesRetrieverStub():
 class WaterbalanceComputerTests(TestCase):
 
     def setUp(self):
-        self.buckets_result = 1 # don't care
+        self.buckets_result = {} # don't care
         self.buckets_computer = Mock({"compute": self.buckets_result})
         self.buckets_totals_result = 2 #  don't care
         self.buckets_totals_computer = Mock({"compute": self.buckets_totals_result})
