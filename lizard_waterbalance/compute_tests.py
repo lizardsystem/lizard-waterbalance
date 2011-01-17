@@ -27,7 +27,6 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import MINYEAR
 from datetime import timedelta
 from unittest import TestCase
 
