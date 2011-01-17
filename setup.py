@@ -11,12 +11,13 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'Django',
+    'django-extensions',
+    'django-nose',
     'django-staticfiles',
     'lizard-fewsunblobbed',
     'lizard-map',
     'lizard-shape',
     'lizard-ui',
-    'django-nose',
     ],
 
 tests_require = [
