@@ -86,7 +86,7 @@ class SingleDayBucketsSummary:
                self.flow_off +\
                self.infiltration
 
-class BucketsTotals:
+class BucketsSummary:
     """Stores the total time series computed for all buckets.
 
     Instance variables:
@@ -99,6 +99,7 @@ class BucketsTotals:
 
     """
     def __init__(self):
+        self.totals = TimeseriesStub()
         self.hardened = TimeseriesStub()
         self.drained = TimeseriesStub()
         self.undrained = TimeseriesStub()
@@ -577,12 +578,23 @@ class LevelControlComputer:
         result = TimeseriesStub()
         surface = open_water.surface
         water_level = open_water.init_water_level
-        for values in self.enumerate_values(bucket2outcome, precipitation,
+
+        buckets_summary = BucketsSummary()
+        for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
+            daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
+            buckets_summary.totals.add_value(date, daily_summary.total())
+            buckets_summary.hardened.add_value(date, daily_summary.hardened)
+            buckets_summary.drained.add_value(date, daily_summary.drained)
+            buckets_summary.undrained.add_value(date, daily_summary.undrained)
+            buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
+            buckets_summary.infiltration.add_value(date, daily_summary.infiltration)
+
+        for values in self.enumerate_values(buckets_summary.totals, precipitation,
                                             evaporation, seepage,
                                             open_water.retrieve_minimum_level(),
                                             open_water.retrieve_maximum_level()):
             date = values[0]
-            bucket2daily_outcome = values[1]
+            buckets_total_value = values[1]
             precipitation_value = values[2]
             evaporation_value = values[3]
             seepage_value = values[4]
@@ -591,7 +603,7 @@ class LevelControlComputer:
             incoming_value = self.compute_incoming_volume(surface,
                                                           open_water.crop_evaporation_factor,
                                                           water_level,
-                                                          bucket2daily_outcome,
+                                                          buckets_total_value,
                                                           precipitation_value,
                                                           evaporation_value,
                                                           seepage_value)
@@ -605,8 +617,8 @@ class LevelControlComputer:
         (pump_time_series, intake_time_series) = split_timeseries(result)
         return (intake_time_series, pump_time_series)
 
-    def enumerate_values(self, bucket_outcomes, precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
-        generator = total_daily_bucket_outcome(bucket_outcomes)
+    def enumerate_values(self, buckets_totals, precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
+        generator = buckets_totals.events()
         for event_tuple in enumerate_events(precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
             precipitation_event = event_tuple[0]
             evaporation_event = event_tuple[1]
@@ -614,20 +626,18 @@ class LevelControlComputer:
             minimum_water_level_event = event_tuple[3]
             maximum_water_level_event = event_tuple[4]
             date = precipitation_event[0]
-            bucket2daily_outcome = next((d[1] for d in generator if d[0] == date), {})
-            yield date, bucket2daily_outcome, precipitation_event[1], evaporation_event[1], seepage_event[1], minimum_water_level_event[1], maximum_water_level_event[1]
+            buckets_totals = next((d[1] for d in generator if d[0] == date), 0)
+            yield date, buckets_totals, precipitation_event[1], evaporation_event[1], seepage_event[1], minimum_water_level_event[1], maximum_water_level_event[1]
 
     def compute_incoming_volume(self, surface, crop_evaporation_factor,
-                                 water_level, bucket2daily_outcome, precipitation_value,
+                                 water_level, buckets_value, precipitation_value,
                                  evaporation_value, seepage_value):
+        incoming_volume = buckets_value
         precipitation = precipitation_value * surface
         evaporation = -evaporation_value * surface * \
                       crop_evaporation_factor
         seepage = seepage_value * surface
-        incoming_volume = precipitation + evaporation + seepage
-        summarizer = BucketSummarizer(bucket2daily_outcome)
-        total = summarizer.compute().total()
-        incoming_volume += total
+        incoming_volume += precipitation + evaporation + seepage
         # all aforementioned time series are specified in [mm/day] but we need
         # [m/day]: 1 [mm] = 0.001 [m]
         return incoming_volume * 0.001
