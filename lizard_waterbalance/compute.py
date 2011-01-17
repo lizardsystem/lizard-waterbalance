@@ -376,60 +376,6 @@ def retrieve_net_intake(open_water):
 
     return subtract_timeseries(incoming_timeseries, outgoing_timeseries)
 
-def open_water_compute(open_water,
-                       buckets,
-                       bucket_computers,
-                       pumping_stations,
-                       timeseries_retriever):
-    """Compute and return the waterbalance.
-
-    Parameters:
-    * open_water -- open water for which to compute the waterbalance
-    * buckets -- list of buckets connected to the open water
-    * bucket_computers -- dictionary of bucket surface type to function
-    * pumping_stations -- list of stations that pump water into or out of the open water
-    * timeseries_retriever -- object to retrieve the input time series
-
-    Return value:
-    * result -- dictionary of bucket and open water name to time series name
-    to time series
-
-    The input time series are precipitation, evaporation and seepage.
-
-    """
-    result = {}
-
-    precipitation = timeseries_retriever.get_timeseries("precipitation")
-    evaporation = timeseries_retriever.get_timeseries("evaporation")
-    seepage = timeseries_retriever.get_timeseries("seepage")
-
-    for bucket in buckets:
-        bucket_computer = bucket_computers[bucket.surface_type]
-        outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-        result[bucket.name] = outcome
-
-    # [<open-water-name>]['precipitation'] to TimeseriesStub
-    # [<open-water-name>]['evaporation'] to TimeseriesStub
-    # [<open-water-name>]['sum hardened flow_off'] to TimeseriesStub
-    # [<open-water-name>]['sum drained flow_off + net_drainage'] to TimeseriesStub
-    # [<open-water-name>]['sum hardened net_drainage and undrained net_drainage'] to TimeseriesStub
-    # [<open-water-name>]['sum undrained flow_off'] to TimeseriesStub
-    # [<open-water-name>]['sum intake'] to TimeseriesStub
-    # [<open-water-name>]['sum infiltration'] to TimeseriesStub
-    # [<open-water-name>]['sum seepage'] to TimeseriesStub
-    # [<open-water-name>]['sum sluice error'] to TimeseriesStub
-
-    outcome = result.setdefault(open_water.name, OpenWaterOutcome())
-
-    if precipitation:
-        result[open_water.name].precipitation = multiply_timeseries(precipitation, open_water.surface / 1000.0)
-    if evaporation:
-        result[open_water.name].evaporation = multiply_timeseries(evaporation, -open_water.surface * open_water.crop_evaporation_factor / 1000.0)
-    if seepage:
-        result[open_water.name].seepage = multiply_timeseries(seepage, open_water.surface / 1000.0)
-
-    return result
-
 
 class WaterbalanceComputer:
 
@@ -439,10 +385,6 @@ class WaterbalanceComputer:
             self.buckets_computer = BucketsComputer()
         else:
             self.buckets_computer = buckets_computer
-        if buckets_totals_computer is None:
-            self.buckets_totals_computer = BucketsTotalsComputer()
-        else:
-            self.buckets_totals_computer = buckets_totals_computer
         if level_control_computer is None:
             self.level_control_computer = LevelControlComputer()
         else:
@@ -505,25 +447,6 @@ class BucketsComputer:
             outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
             result[bucket] = outcome
         return result
-
-
-class BucketsTotalsComputer:
-
-    def __init__(self, bucket_summarizer=None):
-        if bucket_summarizer is None:
-            self.bucket_summarizer = BucketSummarizer()
-        else:
-            self.bucket_summarizer = bucket_summarizer
-
-    def compute(self, bucket2outcome):
-        """Compute and return the """
-        totals = BucketsTotals()
-
-        date = start_date
-        while date < end_date:
-            for bucket, outcome in bucket2outcome.iteritems():
-                daily_totals = self.bucket_summarizer.compute(date)
-            totals.append(daily_totals)
 
 
 def event_tuple_values(events):
@@ -718,11 +641,7 @@ class BucketSummarizer:
 
 
 class BucketsSummarizer:
-    """Computes the BucketSummary from the outcome of each bucket.
-
-    Instance variables:
-    * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
-    """
+    """Computes the BucketSummary from the outcome of each bucket."""
     def compute(self, bucket2outcome):
         """Returns the BucketsSummary of the given buckets.
 

@@ -56,14 +56,6 @@ class Command(BaseCommand):
         start_date = datetime.strptime(args[2], "%Y-%m-%d")
         end_date = datetime.strptime(args[3], "%Y-%m-%d")
 
-        # open_water = OpenWater.objects.all()[0]
-        # buckets = [Bucket.objects.filter(name="landelijk")[0],
-        #            Bucket.objects.filter(name="stedelijk")[0],
-        #            Bucket.objects.filter(name="verhard")[0]]
-        # bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, compute_timeseries),
-        #                          (Bucket.HARDENED_SURFACE, compute_timeseries_on_hardened_surface)])
-        # pumping_stations = []
-
         timeseries_retriever = TimeseriesRetriever()
         timeseries_retriever.read_timeseries(join(directory, "timeserie.csv"))
 

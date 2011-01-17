@@ -46,7 +46,6 @@ from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.compute import retrieve_net_intake
-from lizard_waterbalance.compute import open_water_compute
 from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.compute import WaterbalanceComputer
@@ -359,70 +358,6 @@ class enumerate_eventsTestSuite(TestCase):
 
         expected_events = [((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
         self.assertEqual(expected_events[0], events[0])
-
-
-class OpenWaterComputeTestSuite(TestCase):
-
-    def setUp(self):
-        self.open_water = OpenWater()
-        self.open_water.name = "Aetseveldsepolder oost - openwater"
-        self.open_water.surface = int(float("402613.682123"))
-        self.open_water.crop_evaporation_factor = 1.0
-        self.bucket = Bucket()
-        self.bucket.name = "Aetseveldsepolder oost - landelijk"
-        self.bucket.surface_type = Bucket.UNDRAINED_SURFACE
-        self.buckets = [self.bucket]
-        self.bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, None)])
-        self.pumping_stations = []
-        self.today = datetime(2010, 12, 6)
-        self.next_week = self.today + timedelta(7)
-    def test_a(self):
-        """Test open_water_compute creates time series for the open water and the bucket."""
-        mock_compute = Mock({"compute": BucketOutcome()}).compute
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
-        timeseries_retriever = Mock()
-        timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers,
-                                        self.pumping_stations,
-                                        timeseries_retriever)
-        self.assertEqual(2, len(timeseries.keys()))
-        self.assertTrue(self.bucket.name in timeseries.keys())
-        self.assertTrue(self.open_water.name in timeseries.keys())
-
-    def test_b(self):
-        """Test open_water_compute stores the time series for the bucket."""
-        outcome = BucketOutcome()
-        outcome.storage.add_value(self.today, 0.6)
-        outcome.storage.add_value(self.next_week, 0.8)
-        outcome.flow_off.add_value(self.today, 0.1)
-        outcome.flow_off.add_value(self.next_week, 0.2)
-        outcome.net_drainage.add_value(self.today, 0.2)
-        outcome.net_drainage.add_value(self.next_week, 0.2)
-        mock_compute = Mock({"compute": outcome}).compute
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
-        timeseries_retriever = Mock()
-        timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers,
-                                        self.pumping_stations,
-                                        timeseries_retriever)
-        timeseries_bucket = timeseries[self.bucket.name]
-        self.assertEqual(outcome.storage, timeseries_bucket.storage)
-        self.assertEqual(outcome.flow_off, timeseries_bucket.flow_off)
-        self.assertEqual(outcome.net_drainage, timeseries_bucket.net_drainage)
-
-    def test_c(self):
-        """Test open_water_compute stores the precipitation for the open water."""
-        buckets = []
-        bucket_computers = []
-        timeseries = TimeseriesStub()
-        timeseries.add_value(self.today, 10)
-        timeseries_retriever = Mock({"get_timeseries": timeseries})
-        timeseries = open_water_compute(self.open_water, buckets,
-                                        bucket_computers,
-                                        self.pumping_stations,
-                                        timeseries_retriever)
-        precipitation = timeseries[self.open_water.name].precipitation
-        self.assertEqual(1, len(list(precipitation.events())))
 
 
 class NetIntakeTests(TestCase):
@@ -884,55 +819,6 @@ class WaterbalanceComputerTests(TestCase):
         result = computer.compute(self.area, start, start + timedelta(1))
         self.assertEqual(self.level_result, result[1])
 
-
-class BucketsComputerTests(TestCase):
-
-    def setUp(self):
-        self.open_water = OpenWater()
-        self.open_water.name = "Aetseveldsepolder oost - openwater"
-        self.open_water.surface = int(float("402613.682123"))
-        self.open_water.crop_evaporation_factor = 1.0
-        self.bucket = Bucket()
-        self.bucket.name = "Aetseveldsepolder oost - landelijk"
-        self.bucket.surface_type = Bucket.UNDRAINED_SURFACE
-        self.buckets = [self.bucket]
-        self.bucket_computers = dict([(Bucket.UNDRAINED_SURFACE, None)])
-        self.pumping_stations = []
-        self.today = datetime(2010, 12, 6)
-        self.next_week = self.today + timedelta(7)
-    def test_a(self):
-        """Test open_water_compute creates time series for the open water and the bucket."""
-        mock_compute = Mock({"compute": BucketOutcome()}).compute
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
-        timeseries_retriever = Mock()
-        timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers,
-                                        self.pumping_stations,
-                                        timeseries_retriever)
-        self.assertEqual(2, len(timeseries.keys()))
-        self.assertTrue(self.bucket.name in timeseries.keys())
-        self.assertTrue(self.open_water.name in timeseries.keys())
-
-    def test_b(self):
-        """Test open_water_compute stores the time series for the bucket."""
-        outcome = BucketOutcome()
-        outcome.storage.add_value(self.today, 0.6)
-        outcome.storage.add_value(self.next_week, 0.8)
-        outcome.flow_off.add_value(self.today, 0.1)
-        outcome.flow_off.add_value(self.next_week, 0.2)
-        outcome.net_drainage.add_value(self.today, 0.2)
-        outcome.net_drainage.add_value(self.next_week, 0.2)
-        mock_compute = Mock({"compute": outcome}).compute
-        self.bucket_computers[Bucket.UNDRAINED_SURFACE] = mock_compute
-        timeseries_retriever = Mock()
-        timeseries = open_water_compute(self.open_water, self.buckets,
-                                        self.bucket_computers,
-                                        self.pumping_stations,
-                                        timeseries_retriever)
-        timeseries_bucket = timeseries[self.bucket.name]
-        self.assertEqual(outcome.storage, timeseries_bucket.storage)
-        self.assertEqual(outcome.flow_off, timeseries_bucket.flow_off)
-        self.assertEqual(outcome.net_drainage, timeseries_bucket.net_drainage)
 
 class TotalDailyBucketOutcomeTests(TestCase):
 
