@@ -27,17 +27,62 @@
 
 from datetime import datetime
 
+from django.contrib.contenttypes import generic
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map.models import ColorField
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
 # Create your models here.
+
+
+class Timeseries(models.Model):
+    """Specifies a time series in the database of the current Django app.
+
+    A time series is a sequence of events, where an event is a value - date
+    time pair.
+
+    To get to the events that belong to the current Timeseries, use the
+    implicit attribute 'timeseries_events', which is a Manager for the events.
+
+    """
+
+    def events(self):
+        """Return a generator to iterate over all events.
+
+        The generator iterates over the events in the order defined for
+        TimeseriesEvent.
+
+        """
+        for event in self.timeseries_events.all():
+            yield event.time, event.value
+
+
+class TimeseriesEvent(models.Model):
+    """Specifies a single event, that is, a value - date time pair.
+
+    Instance variables:
+    * value -- value of the event
+    * time -- date time of the event
+    * timeseries -- link to the time serie
+
+    """
+    class Meta:
+        verbose_name = _("Timeseries event")
+        verbose_name_plural = _("Timeseries events")
+        ordering = ["time"]
+
+    time = models.DateTimeField()
+    value = models.FloatField()
+
+    timeseries = models.ForeignKey(Timeseries, related_name='timeseries_events')
+
+    def __unicode__(self):
+        return u'Event %s: (%s, %s)' % (self.timeseries, self.time, self.value)
 
 
 class WaterbalanceTimeserie(models.Model):
@@ -179,6 +224,7 @@ class Bucket(models.Model):
                                      blank=True,
                                      related_name='+')
 
+    # TODO these values are optional: change their definition accordingly
     porosity = models.FloatField(verbose_name=_("porositeit"))
     crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
     min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor"))
