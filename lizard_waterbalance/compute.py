@@ -379,7 +379,7 @@ def retrieve_net_intake(open_water):
 
 class WaterbalanceComputer:
 
-    def __init__(self, buckets_computer=None, buckets_totals_computer=None,
+    def __init__(self, buckets_computer=None,
                  level_control_computer=None):
         if buckets_computer is None:
             self.buckets_computer = BucketsComputer()

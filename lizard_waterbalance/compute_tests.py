@@ -753,8 +753,6 @@ class WaterbalanceComputerTests(TestCase):
     def setUp(self):
         self.buckets_result = {} # don't care
         self.buckets_computer = Mock({"compute": self.buckets_result})
-        self.buckets_totals_result = 2 #  don't care
-        self.buckets_totals_computer = Mock({"compute": self.buckets_totals_result})
         self.level_result = 3  #  don't care
         self.level_control_computer = Mock({"compute": self.level_result})
         self.buckets = [Bucket(), Bucket()]
@@ -771,7 +769,6 @@ class WaterbalanceComputerTests(TestCase):
         """Test that compute calls the right method of the bucket computer."""
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.buckets_totals_computer,
                                         self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getAllCalls()
@@ -782,7 +779,6 @@ class WaterbalanceComputerTests(TestCase):
         """Test that method compute passes the buckets of the waterbalance area to the bucket computer."""
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.buckets_totals_computer,
                                         self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
@@ -792,7 +788,6 @@ class WaterbalanceComputerTests(TestCase):
         """Test that method compute passes the time series to the bucket computer."""
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.buckets_totals_computer,
                                         self.level_control_computer)
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
@@ -804,7 +799,6 @@ class WaterbalanceComputerTests(TestCase):
         """Test that method compute returns the bucket time series."""
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.buckets_totals_computer,
                                         self.level_control_computer)
         result = computer.compute(self.area, start, start + timedelta(1))
         self.assertEqual(self.buckets_result, result[0])
@@ -813,10 +807,13 @@ class WaterbalanceComputerTests(TestCase):
         """Test that method compute returns the level control time series."""
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.buckets_totals_computer,
                                         self.level_control_computer)
         result = computer.compute(self.area, start, start + timedelta(1))
         self.assertEqual(self.level_result, result[1])
+
+    def test_f(self):
+        """Test that method compute stores the relevant time series of the buckets summary."""
+        pass
 
 
 class TotalDailyBucketOutcomeTests(TestCase):
