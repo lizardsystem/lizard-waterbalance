@@ -98,7 +98,7 @@ class WaterbalanceTimeserie(models.Model):
 
     """
     label = models.ForeignKey('WaterbalanceLabel')
-    volume = models.ForeignKey(Timeserie, related_name='+')
+    volume = models.ForeignKey(Timeseries, related_name='+')
     chloride = models.ForeignKey(Timeserie, related_name='+')
     phosphate = models.ForeignKey(Timeserie, related_name='+')
     nitrate = models.ForeignKey(Timeserie, related_name='+')
@@ -148,6 +148,13 @@ class OpenWater(models.Model):
                                 verbose_name=_("kwel"),
                                 help_text=_("tijdserie naar kwel"),
                                 null=True, blank=True, related_name='+')
+
+    # the computed time series are stored here
+
+    undrained = models.ForeignKey(WaterbalanceTimeserie,
+                                  verbose_name=_("Qsom ongedraineerd"),
+                                  help_text=_("tijdserie naar Qsom ongedraineerd"),
+                                  null=True, blank=True, related_name='+')
 
     def __unicode__(self):
         return self.slug

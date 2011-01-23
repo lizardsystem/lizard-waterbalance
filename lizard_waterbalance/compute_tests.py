@@ -757,6 +757,7 @@ class WaterbalanceComputerTests(TestCase):
         self.level_control_computer = Mock({"compute": self.level_result})
         self.buckets = [Bucket(), Bucket()]
         self.area = WaterbalanceArea()
+        self.area.open_water = OpenWater()
         self.area.retrieve_buckets = lambda : self.buckets
         self.precipitation = TimeseriesStub()
         self.evaporation = TimeseriesStub()
@@ -812,8 +813,17 @@ class WaterbalanceComputerTests(TestCase):
         self.assertEqual(self.level_result, result[1])
 
     def test_f(self):
-        """Test that method compute stores the relevant time series of the buckets summary."""
-        pass
+        """Test that method compute stores the undrained time series of the buckets summary."""
+        buckets_summary = BucketsSummary()
+        today = datetime(2011, 1, 23)
+        buckets_summary.undrained = TimeseriesStub((today, 10))
+        computer = WaterbalanceComputer(self.buckets_computer,
+                                        self.level_control_computer)
+        computer.buckets_summarizer = Mock({"compute": buckets_summary})
+        result = computer.compute(self.area, today, today + timedelta(1))
+        result # to silence pyflakes
+        wb_timeserie = self.area.open_water.undrained
+        self.assertEqual(list(buckets_summary.undrained.events()), list(wb_timeserie.volume.events()))
 
 
 class TotalDailyBucketOutcomeTests(TestCase):

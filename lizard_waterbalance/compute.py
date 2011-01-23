@@ -33,6 +33,8 @@ from datetime import timedelta
 import logging
 
 from lizard_waterbalance.models import Bucket
+from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import split_timeseries
@@ -389,6 +391,7 @@ class WaterbalanceComputer:
             self.level_control_computer = LevelControlComputer()
         else:
             self.level_control_computer = level_control_computer
+        self.buckets_summarizer = BucketsSummarizer()
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -408,7 +411,10 @@ class WaterbalanceComputer:
                                                        evaporation,
                                                        seepage)
 
-        buckets_summary = BucketsSummarizer().compute(bucket2outcome)
+        buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
+
+        area.open_water.undrained = WaterbalanceTimeserie()
+        area.open_water.undrained.volume = store(buckets_summary.undrained)
 
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
