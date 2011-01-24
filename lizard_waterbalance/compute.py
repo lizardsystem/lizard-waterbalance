@@ -413,7 +413,38 @@ class WaterbalanceComputer:
 
         buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
 
-        area.open_water.undrained = self.replace_volume_timeseries(area.open_water.undrained, buckets_summary.undrained)
+        if area.open_water.undrained is None:
+            area.open_water.undrained = WaterbalanceTimeserie()
+        previous_timeseries = area.open_water.undrained.volume
+        area.open_water.undrained.volume = store(buckets_summary.undrained)
+        area.open_water.undrained.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
+        if area.open_water.drained is None:
+            area.open_water.drained = WaterbalanceTimeserie()
+        previous_timeseries = area.open_water.drained.volume
+        area.open_water.drained.volume = store(buckets_summary.drained)
+        area.open_water.drained.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
+        if area.open_water.hardened is None:
+            area.open_water.hardened = WaterbalanceTimeserie()
+        previous_timeseries = area.open_water.hardened.volume
+        area.open_water.hardened.volume = store(buckets_summary.hardened)
+        area.open_water.hardened.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
+        if area.open_water.flow_off is None:
+            area.open_water.flow_off = WaterbalanceTimeserie()
+        previous_timeseries = area.open_water.flow_off.volume
+        area.open_water.flow_off.volume = store(buckets_summary.flow_off)
+        area.open_water.flow_off.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
         area.open_water.save()
 
         level_control = self.level_control_computer.compute(area.open_water,
@@ -423,14 +454,6 @@ class WaterbalanceComputer:
                                                             seepage)
         return (bucket2outcome, level_control)
 
-    def replace_volume_timeseries(self, current_timeseries, new_timeseries):
-        previous_timeseries = current_timeseries
-        timeseries = WaterbalanceTimeserie()
-        timeseries.volume = store(new_timeseries)
-        timeseries.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-        return timeseries
 
 class BucketsComputer:
 

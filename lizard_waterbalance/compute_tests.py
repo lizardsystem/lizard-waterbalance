@@ -50,6 +50,7 @@ from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
+from lizard_waterbalance.timeseries import Timeseries
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 from lizard_waterbalance.timeseriesstub import TimeseriesWithMemoryStub
@@ -880,12 +881,12 @@ class WaterbalanceComputerTests(TestCase):
         result = computer.compute(self.area, today, today + timedelta(1))
         result # to silence pyflakes
 
-        pk = self.area.open_water.undrained.pk
+        pk = self.area.open_water.undrained.volume.pk
 
         result = computer.compute(self.area, today, today + timedelta(1))
         result # to silence pyflakes
 
-        self.assertEqual(0, WaterbalanceTimeserie.objects.filter(pk=pk).count())
+        self.assertEqual(0, Timeseries.objects.filter(pk=pk).count())
 
 
 class TotalDailyBucketOutcomeTests(TestCase):
