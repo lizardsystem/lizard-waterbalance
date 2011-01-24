@@ -37,6 +37,8 @@ from lizard_map.models import ColorField
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
+from lizard_waterbalance.timeseriesstub import TimeseriesStub
+
 # Create your models here.
 
 
@@ -159,6 +161,26 @@ class OpenWater(models.Model):
                                   help_text=_("tijdserie naar Qsom ongedraineerd"),
                                   null=True, blank=True, related_name='+')
 
+    drained = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("Qsom gedraineerd"),
+                                help_text=_("tijdserie naar Qsom gedraineerd"),
+                                null=True, blank=True, related_name='+')
+
+    hardened = models.ForeignKey(WaterbalanceTimeserie,
+                                 verbose_name=_("Qsom verhard"),
+                                 help_text=_("tijdserie naar Qsom verhard"),
+                                 null=True, blank=True, related_name='+')
+
+    flow_off = models.ForeignKey(WaterbalanceTimeserie,
+                                 verbose_name=_("Qsom afstroming"),
+                                 help_text=_("tijdserie naar Qsom afstroming"),
+                                 null=True, blank=True, related_name='+')
+
+    storage = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("berging"),
+                                help_text=_("tijdserie naar berekende berging"),
+                                null=True, blank=True, related_name='+')
+
     def __unicode__(self):
         return self.slug
 
@@ -183,6 +205,11 @@ class OpenWater(models.Model):
                     outgoing_timeseries.append(timeseries)
         return outgoing_timeseries
 
+    def retrieve_minimum_level(self):
+        return TimeseriesStub()
+
+    def retrieve_maximum_level(self):
+        return TimeseriesStub()
 
 class Bucket(models.Model):
     """Represents a *bakje*.
@@ -413,6 +440,15 @@ class WaterbalanceArea(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
+
+    def retrieve_precipitation(self, start_date, end_date):
+        return TimeseriesStub()
+
+    def retrieve_evaporation(self, start_date, end_date):
+        return TimeseriesStub()
+
+    def retrieve_seepage(self, start_date, end_date):
+        return TimeseriesStub()
 
     def retrieve_buckets(self):
         if self.open_water is None:

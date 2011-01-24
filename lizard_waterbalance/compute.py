@@ -228,7 +228,8 @@ def enumerate_events(*timeseries_list):
     latest_start = datetime.min
     for timeseries in timeseries_list:
         start = next((event[0] for event in timeseries.events()), None)
-        assert not start is None
+        if start is None:
+            return
         latest_start = max(latest_start, start)
 
     new_timeseries_list = []
@@ -414,15 +415,20 @@ class WaterbalanceComputer:
         buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
 
         if area.open_water.undrained is None:
-            area.open_water.undrained = WaterbalanceTimeserie()
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.undrained = new_timeseries
         previous_timeseries = area.open_water.undrained.volume
         area.open_water.undrained.volume = store(buckets_summary.undrained)
         area.open_water.undrained.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()
+        area.open_water.save()
 
         if area.open_water.drained is None:
-            area.open_water.drained = WaterbalanceTimeserie()
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.drained = new_timeseries
         previous_timeseries = area.open_water.drained.volume
         area.open_water.drained.volume = store(buckets_summary.drained)
         area.open_water.drained.save()
@@ -430,7 +436,9 @@ class WaterbalanceComputer:
             previous_timeseries.delete()
 
         if area.open_water.hardened is None:
-            area.open_water.hardened = WaterbalanceTimeserie()
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.hardened = new_timeseries
         previous_timeseries = area.open_water.hardened.volume
         area.open_water.hardened.volume = store(buckets_summary.hardened)
         area.open_water.hardened.save()
@@ -438,10 +446,22 @@ class WaterbalanceComputer:
             previous_timeseries.delete()
 
         if area.open_water.flow_off is None:
-            area.open_water.flow_off = WaterbalanceTimeserie()
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.flow_off = new_timeseries
         previous_timeseries = area.open_water.flow_off.volume
         area.open_water.flow_off.volume = store(buckets_summary.flow_off)
         area.open_water.flow_off.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
+        if area.open_water.storage is None:
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.storage = new_timeseries
+        previous_timeseries = area.open_water.storage.volume
+        area.open_water.storage.volume = store(TimeseriesStub())
+        area.open_water.storage.volume.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()
 

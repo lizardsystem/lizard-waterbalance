@@ -34,6 +34,7 @@ from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpLine
 from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import Timeserie
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.compute import BucketOutcome
@@ -312,8 +313,8 @@ class computeTestSuite(TestCase):
         self.assertAlmostEqual(supplied_seepage, expected_seepage)
 
     def test_n(self):
-        """Test enumerate_events fires an assertion with an empty time series."""
-        self.assertRaises(AssertionError, list, enumerate_events(TimeseriesStub()))
+        """Test enumerate_events returns an empty list with an empty time series."""
+        self.assertEqual([], list(enumerate_events(TimeseriesStub())))
 
     def test_o(self):
         """Test enumerate_events returns the intersection of dates."""
@@ -866,6 +867,10 @@ class WaterbalanceComputerTests(TestCase):
         wb_timeserie = WaterbalanceTimeserie.objects.get(pk=pk)
         self.assertEqual(list(buckets_summary.undrained.events()), list(wb_timeserie.volume.events()))
 
+        pk_open_water = self.area.open_water.pk
+        open_water = OpenWater.objects.get(pk=pk_open_water)
+        self.assertEqual(pk, open_water.undrained.pk)
+
     def test_h(self):
         """Test that method compute removes the existing undrained time series of the buckets summary.
 
@@ -888,6 +893,65 @@ class WaterbalanceComputerTests(TestCase):
 
         self.assertEqual(0, Timeseries.objects.filter(pk=pk).count())
 
+class StorageTests(TestCase):
+
+    def setUp(self):
+        self.area = WaterbalanceArea()
+        self.area.open_water = create_saveable_openwater()
+
+    def test_a(self):
+        """Test WaterbalanceComputer.compute creates a storage time series when none exists.
+
+        This test checks that the time series are stored in the database.
+
+        """
+        self.assertEqual(None, self.area.open_water.storage)
+        today = datetime(2011, 1, 24)
+        computer = WaterbalanceComputer()
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        pk = self.area.open_water.storage.pk
+        self.assertEqual(1, WaterbalanceTimeserie.objects.filter(pk=pk).count())
+
+    def test_b(self):
+        """Test WaterbalanceComputer.compute reuses an existing storage time series.
+
+        This test checks that the time series are stored in the database.
+
+        """
+        self.assertEqual(None, self.area.open_water.storage)
+        today = datetime(2011, 1, 24)
+        computer = WaterbalanceComputer()
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        pk = self.area.open_water.storage.pk
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        self.assertEqual(1, WaterbalanceTimeserie.objects.filter(pk=pk).count())
+
+    def test_c(self):
+        """Test WaterbalanceComputer.compute creates a storage volume time series when none exists.
+
+        This test checks that the time series are stored in the database.
+
+        """
+        self.assertEqual(None, self.area.open_water.storage)
+        today = datetime(2011, 1, 24)
+        computer = WaterbalanceComputer()
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        pk = self.area.open_water.storage.volume.pk
+        self.assertEqual(1, Timeseries.objects.filter(pk=pk).count())
+
+    def test_d(self):
+        """Test WaterbalanceComputer.compute recreates an existing storage volume time series.
+
+        This test checks that the time series are stored in the database.
+
+        """
+        self.assertEqual(None, self.area.open_water.storage)
+        today = datetime(2011, 1, 24)
+        computer = WaterbalanceComputer()
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        pk = self.area.open_water.storage.volume.pk
+        x = computer.compute(self.area, today, today + timedelta(1)); x
+        self.assertEqual(0, Timeseries.objects.filter(pk=pk).count())
 
 class TotalDailyBucketOutcomeTests(TestCase):
 
