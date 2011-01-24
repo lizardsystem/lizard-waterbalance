@@ -413,10 +413,7 @@ class WaterbalanceComputer:
 
         buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
 
-        undrained = WaterbalanceTimeserie()
-        undrained.volume = store(buckets_summary.undrained)
-        undrained.save()
-        area.open_water.undrained = undrained
+        area.open_water.undrained = self.replace_volume_timeseries(area.open_water.undrained, buckets_summary.undrained)
         area.open_water.save()
 
         level_control = self.level_control_computer.compute(area.open_water,
@@ -426,6 +423,14 @@ class WaterbalanceComputer:
                                                             seepage)
         return (bucket2outcome, level_control)
 
+    def replace_volume_timeseries(self, current_timeseries, new_timeseries):
+        previous_timeseries = current_timeseries
+        timeseries = WaterbalanceTimeserie()
+        timeseries.volume = store(new_timeseries)
+        timeseries.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+        return timeseries
 
 class BucketsComputer:
 
