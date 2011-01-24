@@ -50,6 +50,9 @@ class Timeseries(models.Model):
     implicit attribute 'timeseries_events', which is a Manager for the events.
 
     """
+    class Meta:
+        verbose_name = _("Timeseries")
+        verbose_name_plural = _("Timeseries'")
 
     def events(self):
         """Return a generator to iterate over all events.
@@ -97,12 +100,12 @@ class WaterbalanceTimeserie(models.Model):
     * sulfate -- link to the sulfate time serie data
 
     """
-    label = models.ForeignKey('WaterbalanceLabel')
-    volume = models.ForeignKey(Timeseries, related_name='+')
-    chloride = models.ForeignKey(Timeserie, related_name='+')
-    phosphate = models.ForeignKey(Timeserie, related_name='+')
-    nitrate = models.ForeignKey(Timeserie, related_name='+')
-    sulfate = models.ForeignKey(Timeserie, related_name='+')
+    label = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
+    volume = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
+    chloride = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
+    phosphate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
+    nitrate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
+    sulfate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
 
 
 class OpenWater(models.Model):

@@ -415,6 +415,8 @@ class WaterbalanceComputer:
 
         area.open_water.undrained = WaterbalanceTimeserie()
         area.open_water.undrained.volume = store(buckets_summary.undrained)
+        area.open_water.undrained.save()
+        area.open_water.save()
 
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
