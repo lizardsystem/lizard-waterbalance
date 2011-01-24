@@ -628,6 +628,20 @@ class LevelControlTests(TestCase):
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries, timeseries)
 
+def create_saveable_openwater():
+    """Return an OpenWater that can be saved to the database.
+
+    When you manually create an OpenWater, you have to fill in all the required
+    fields before you can save it to the database. This function creates a
+    OpenWater, fills in the required fields and returns it.
+
+    """
+    open_water = OpenWater()
+    open_water.surface = 0
+    open_water.crop_evaporation_factor = 0.0
+    open_water.init_water_level = 0.0
+    return open_water
+
 def create_saveable_bucket():
     """Return a bucket that can be saved to the database.
 
@@ -757,7 +771,7 @@ class WaterbalanceComputerTests(TestCase):
         self.level_control_computer = Mock({"compute": self.level_result})
         self.buckets = [Bucket(), Bucket()]
         self.area = WaterbalanceArea()
-        self.area.open_water = OpenWater()
+        self.area.open_water = create_saveable_openwater()
         self.area.retrieve_buckets = lambda : self.buckets
         self.precipitation = TimeseriesStub()
         self.evaporation = TimeseriesStub()
