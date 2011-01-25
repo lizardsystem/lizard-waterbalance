@@ -175,7 +175,24 @@ class TimeseriesWithMemoryStub(TimeseriesStub):
             previous_value = value
             date_to_yield = date + timedelta(1)
 
-def enumerate_events(timeseries_a, timeseries_b):
+def enumerate_events(*timeseries_list):
+
+    latest_start = datetime.min
+    for timeseries in timeseries_list:
+        start = next((event[0] for event in timeseries.events()), None)
+        if start is None:
+            return
+        latest_start = max(latest_start, start)
+
+    new_timeseries_list = []
+    for timeseries in timeseries_list:
+        event_generator = (e for e in timeseries.events() if e[0] >= latest_start)
+        new_timeseries_list.append(event_generator)
+
+    for timeseries_tuple in zip(*new_timeseries_list):
+        yield timeseries_tuple
+
+def enumerate_merged_events(timeseries_a, timeseries_b):
     events_a = timeseries_a.events()
     events_b = timeseries_b.events()
     event_a = next(events_a, None)
@@ -202,18 +219,17 @@ def enumerate_events(timeseries_a, timeseries_b):
         for event in events_a:
             yield event[0], event[1], 0
 
-
 def add_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the sum of the given time series."""
     result = TimeseriesStub()
-    for date, value_a, value_b in enumerate_events(timeseries_a, timeseries_b):
+    for date, value_a, value_b in enumerate_merged_events(timeseries_a, timeseries_b):
         result.add_value(date, value_a + value_b)
     return result
 
 def subtract_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the difference of the given time series."""
     result = TimeseriesStub()
-    for date, value_a, value_b in enumerate_events(timeseries_a, timeseries_b):
+    for date, value_a, value_b in enumerate_merged_events(timeseries_a, timeseries_b):
         result.add_value(date, value_a - value_b)
     return result
 

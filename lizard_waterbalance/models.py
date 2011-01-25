@@ -185,7 +185,7 @@ class OpenWater(models.Model):
         return self.slug
 
     def retrieve_pumping_stations(self):
-        pass
+        return []
 
     def retrieve_incoming_timeseries(self):
         """Return the list of time series of intakes."""

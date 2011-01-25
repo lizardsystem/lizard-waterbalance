@@ -27,15 +27,16 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import MINYEAR
 from datetime import timedelta
 
 import logging
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
+from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import split_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
@@ -223,23 +224,6 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
-def enumerate_events(*timeseries_list):
-
-    latest_start = datetime.min
-    for timeseries in timeseries_list:
-        start = next((event[0] for event in timeseries.events()), None)
-        if start is None:
-            return
-        latest_start = max(latest_start, start)
-
-    new_timeseries_list = []
-    for timeseries in timeseries_list:
-        event_generator = (e for e in timeseries.events() if e[0] >= latest_start)
-        new_timeseries_list.append(event_generator)
-
-    for timeseries_tuple in zip(*new_timeseries_list):
-        yield timeseries_tuple
-
 def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, allow_below_minimum_storage=True):
     """Compute and return the waterbalance time series of the given bucket.
 
@@ -393,6 +377,7 @@ class WaterbalanceComputer:
         else:
             self.level_control_computer = level_control_computer
         self.buckets_summarizer = BucketsSummarizer()
+        self.storage_computer= StorageComputer()
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -460,7 +445,15 @@ class WaterbalanceComputer:
             new_timeseries.save()
             area.open_water.storage = new_timeseries
         previous_timeseries = area.open_water.storage.volume
-        area.open_water.storage.volume = store(TimeseriesStub())
+        volume_timeseries = self.storage_computer.compute(area.open_water.surface,
+                                                          area.open_water.init_water_level,
+                                                          buckets_summary,
+                                                          area.open_water.retrieve_incoming_timeseries(),
+                                                          area.open_water.retrieve_outgoing_timeseries(),
+                                                          precipitation,
+                                                          evaporation,
+                                                          seepage)
+        area.open_water.storage.volume = store(volume_timeseries)
         area.open_water.storage.volume.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()

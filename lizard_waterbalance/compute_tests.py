@@ -45,14 +45,13 @@ from lizard_waterbalance.compute import compute_net_drainage
 from lizard_waterbalance.compute import compute_net_precipitation
 from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
-from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseries import Timeseries
-from lizard_waterbalance.timeseriesstub import multiply_timeseries
+from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 from lizard_waterbalance.timeseriesstub import TimeseriesWithMemoryStub
 
@@ -311,55 +310,6 @@ class computeTestSuite(TestCase):
         supplied_seepage = calls_to_compute[1].getParam(4)
         expected_seepage = 20
         self.assertAlmostEqual(supplied_seepage, expected_seepage)
-
-    def test_n(self):
-        """Test enumerate_events returns an empty list with an empty time series."""
-        self.assertEqual([], list(enumerate_events(TimeseriesStub())))
-
-    def test_o(self):
-        """Test enumerate_events returns the intersection of dates."""
-        event = (datetime(2011, 1, 3), 0.0)
-        always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
-        enumerated_events = list(enumerate_events(TimeseriesStub(event), always_zero))
-        expected_events = [(event, event)]
-        self.assertEqual(expected_events, enumerated_events)
-
-
-class enumerate_eventsTestSuite(TestCase):
-
-    def test_a(self):
-        today = datetime(2010,12,2)
-        tomorrow = datetime(2010,12,3)
-        precipitation = TimeseriesStub()
-        precipitation.add_value(today, 5)
-        precipitation.add_value(tomorrow, 10)
-        evaporation = TimeseriesStub()
-        evaporation.add_value(today, 20)
-        evaporation.add_value(tomorrow, 30)
-        seepage = TimeseriesStub()
-        seepage.add_value(today, 10)
-        seepage.add_value(tomorrow, 20)
-        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
-
-        expected_events = [((today, 5), (today, 20), (today, 10)),
-                           ((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
-        self.assertEqual(expected_events, events)
-
-    def test_b(self):
-        today = datetime(2010,12,2)
-        tomorrow = datetime(2010,12,3)
-        precipitation = TimeseriesStub()
-        precipitation.add_value(today, 5)
-        precipitation.add_value(tomorrow, 10)
-        evaporation = TimeseriesStub()
-        evaporation.add_value(tomorrow, 30)
-        seepage = TimeseriesStub()
-        seepage.add_value(today, 10)
-        seepage.add_value(tomorrow, 20)
-        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
-
-        expected_events = [((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
-        self.assertEqual(expected_events[0], events[0])
 
 
 class NetIntakeTests(TestCase):

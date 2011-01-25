@@ -34,6 +34,7 @@ from unittest import TestCase
 from filereader import FileReaderStub
 from timeseriesstub import add_timeseries
 from timeseriesstub import create_from_file
+from timeseriesstub import enumerate_events
 from timeseriesstub import multiply_timeseries
 from timeseriesstub import split_timeseries
 from timeseriesstub import TimeseriesStub
@@ -230,3 +231,53 @@ class create_from_fileTestSuite(TestCase):
         expected_timeserie.add_value(datetime(1996, 1, 2), 413025.34)
         expected_result["landelijk"]["berging"] = expected_timeserie
         self.assertEqual(expected_result, result)
+
+
+class enumerate_eventsTestSuite(TestCase):
+
+    def test_a(self):
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        precipitation = TimeseriesStub()
+        precipitation.add_value(today, 5)
+        precipitation.add_value(tomorrow, 10)
+        evaporation = TimeseriesStub()
+        evaporation.add_value(today, 20)
+        evaporation.add_value(tomorrow, 30)
+        seepage = TimeseriesStub()
+        seepage.add_value(today, 10)
+        seepage.add_value(tomorrow, 20)
+        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+
+        expected_events = [((today, 5), (today, 20), (today, 10)),
+                           ((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
+        self.assertEqual(expected_events, events)
+
+    def test_b(self):
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        precipitation = TimeseriesStub()
+        precipitation.add_value(today, 5)
+        precipitation.add_value(tomorrow, 10)
+        evaporation = TimeseriesStub()
+        evaporation.add_value(tomorrow, 30)
+        seepage = TimeseriesStub()
+        seepage.add_value(today, 10)
+        seepage.add_value(tomorrow, 20)
+        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+
+        expected_events = [((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
+        self.assertEqual(expected_events[0], events[0])
+
+    def test_c(self):
+        """Test enumerate_events returns an empty list with an empty time series."""
+        self.assertEqual([], list(enumerate_events(TimeseriesStub())))
+
+    def test_d(self):
+        """Test enumerate_events returns the intersection of dates."""
+        event = (datetime(2011, 1, 3), 0.0)
+        always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+        enumerated_events = list(enumerate_events(TimeseriesStub(event), always_zero))
+        expected_events = [(event, event)]
+        self.assertEqual(expected_events, enumerated_events)
+
