@@ -55,7 +55,6 @@ class StorageComputerTests(TestCase):
                                                       precipitation,
                                                       evaporation,
                                                       seepage)
-
         expected_storage = surface * (init_water_level + 0.008 - 0.004 + 0.002)
         expected_storage_timeseries = TimeseriesStub((today, expected_storage))
         self.assertEqual(expected_storage_timeseries, storage_timeseries)
@@ -79,13 +78,11 @@ class StorageComputerTests(TestCase):
                                                       precipitation,
                                                       evaporation,
                                                       seepage)
-
-
         expected_storage = surface * (init_water_level + 0.008 - 0.004 + 0.002) + 10
         expected_storage_timeseries = TimeseriesStub((today, expected_storage))
         self.assertEqual(expected_storage_timeseries, storage_timeseries)
 
-    def test_b(self):
+    def test_c(self):
         today = datetime(2011, 1, 25)
         surface = 100
         init_water_level = 1.0
@@ -104,11 +101,37 @@ class StorageComputerTests(TestCase):
                                                       precipitation,
                                                       evaporation,
                                                       seepage)
-
-
         expected_storage = surface * (init_water_level + 0.008 - 0.004 + 0.002) + 10 - 5
         expected_storage_timeseries = TimeseriesStub((today, expected_storage))
         self.assertEqual(expected_storage_timeseries, storage_timeseries)
+
+    def test_d(self):
+        today = datetime(2011, 1, 25)
+        surface = 100
+        init_water_level = 1.0
+        buckets_summary = BucketsSummary()
+        buckets_summary.hardened = TimeseriesStub((today, 3))
+        buckets_summary.drained  = TimeseriesStub((today, 6))
+        buckets_summary.undrained = TimeseriesStub((today, 9))
+        buckets_summary.flow_off = TimeseriesStub((today, 12))
+        buckets_summary.infiltration = TimeseriesStub((today, -3))
+        intakes_timeseries = [TimeseriesStub((today, 10))]
+        pumps_timeseries = [TimeseriesStub((today, 5))]
+        precipitation = TimeseriesStub((today, 8))
+        evaporation = TimeseriesStub((today, 4))
+        seepage = TimeseriesStub((today, 2))
+        storage_computer = StorageComputer()
+        storage_timeseries = storage_computer.compute(surface,
+                                                      init_water_level,
+                                                      buckets_summary,
+                                                      intakes_timeseries,
+                                                      pumps_timeseries,
+                                                      precipitation,
+                                                      evaporation,
+                                                      seepage)
+        expected_storage = surface * (init_water_level + 0.008 - 0.004 + 0.002) + 3 + 6  + 9 + 12 - 3 + 10 - 5
+        expected_storage_timeseries = TimeseriesStub((today, expected_storage))
+        self.assertEqual(list(expected_storage_timeseries.events()), list(storage_timeseries.events()))
 
 
 

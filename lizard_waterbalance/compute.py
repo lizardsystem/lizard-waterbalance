@@ -97,7 +97,6 @@ class BucketsSummary:
     * drained -- time series for *Qsom gedraineerdonder*
     * undrained -- time series for *Qsom ongedraineerd*
     * flow off -- time series for *Qsom afst*
-    * intake -- time series for *Qsom inlaat*
     * infiltration -- time series for *Qsom intrek*
 
     """
@@ -107,7 +106,6 @@ class BucketsSummary:
         self.drained = TimeseriesStub()
         self.undrained = TimeseriesStub()
         self.flow_off = TimeseriesStub()
-        self.intake = TimeseriesStub()
         self.infiltration = TimeseriesStub()
 
 class OpenWaterOutcome:
@@ -265,7 +263,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #   - the porosity of the upper bucket is always 1.0
     #   - the storage of the upper bucket can not be below the minimum storage
 
-    upper_seepage = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+    upper_seepage = TimeseriesStub()
     bucket.porosity, tmp = 1.0, bucket.porosity
     bucket.drainage_fraction, bucket.upper_drainage_fraction = \
                               bucket.upper_drainage_fraction, bucket.drainage_fraction
@@ -286,8 +284,8 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
-    lower_precipitation = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
-    lower_evaporation = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+    lower_precipitation = TimeseriesStub()
+    lower_evaporation = TimeseriesStub()
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,
@@ -306,7 +304,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
-    always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
+    always_zero = TimeseriesStub()
     upper_seepage = always_zero
 
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity

@@ -32,9 +32,9 @@ from os.path import join
 from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import WaterbalanceComputer
-from lizard_waterbalance.compute import enumerate_events
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
+from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import split_timeseries
 
 name2name = dict([("evaporation", "verdamping"),

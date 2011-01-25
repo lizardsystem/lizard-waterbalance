@@ -176,21 +176,48 @@ class TimeseriesWithMemoryStub(TimeseriesStub):
             date_to_yield = date + timedelta(1)
 
 def enumerate_events(*timeseries_list):
+    """Yield the events for all the days of the given time series.
 
-    latest_start = datetime.min
+    Parameter:
+    * timeseries_list -- list of time series
+
+    Each of the given time series should specify values for a non-continous
+    ranges of dates. For each day present in a time series, this method yields
+    a tuple of events of all time series. If that day is present in a time
+    series, the tuple contains the corresponding event. If that day is not
+    present, the tuple contains an event with value 0 at that day.
+
+    """
+    next_start = datetime.max
     for timeseries in timeseries_list:
         start = next((event[0] for event in timeseries.events()), None)
-        if start is None:
-            return
-        latest_start = max(latest_start, start)
+        if not start is None:
+            next_start = min(next_start, start)
 
-    new_timeseries_list = []
-    for timeseries in timeseries_list:
-        event_generator = (e for e in timeseries.events() if e[0] >= latest_start)
-        new_timeseries_list.append(event_generator)
+    if next_start == datetime.max:
+        # none of the time series contains an event and we stop immediately
+        return
 
-    for timeseries_tuple in zip(*new_timeseries_list):
-        yield timeseries_tuple
+    # next_start is the first date for which an event is specified
+
+    events_list = [timeseries.events() for timeseries in timeseries_list]
+    earliest_event_list = [next(events, None) for events in events_list]
+
+    timeseries_count = len(timeseries_list)
+
+    no_events_are_present = False
+    while not no_events_are_present:
+        no_events_are_present = True
+        to_yield = [(next_start, 0)] * timeseries_count
+        for index, earliest_event in enumerate(earliest_event_list):
+            if not earliest_event is None:
+                no_events_are_present = False
+                if earliest_event[0] == next_start:
+                    to_yield[index] = earliest_event
+                    earliest_event_list[index] = next(events_list[index], None)
+        next_start = next_start + timedelta(1)
+        if not no_events_are_present:
+            yield tuple(to_yield)
 
 def enumerate_merged_events(timeseries_a, timeseries_b):
     events_a = timeseries_a.events()

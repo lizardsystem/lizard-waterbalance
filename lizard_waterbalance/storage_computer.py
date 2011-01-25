@@ -35,7 +35,7 @@ class StorageComputer:
     def compute(self, surface, init_water_level, buckets_summary,
                 intakes_timeseries, pumps_timeseries, precipitation,
                 evaporation, seepage):
-        """Compute and return the computed storage time series.
+        """Return the computed storage time series for the given surface.
 
         Parameters:
         * surface -- surface of the open water in [m2]
@@ -52,11 +52,17 @@ class StorageComputer:
         storage_timeseries = TimeseriesStub()
         storage = surface * init_water_level
         timeseries_list = []
+        timeseries_list += [buckets_summary.hardened]
+        timeseries_list += [buckets_summary.drained]
+        timeseries_list += [buckets_summary.undrained]
+        timeseries_list += [buckets_summary.flow_off]
+        timeseries_list += [buckets_summary.infiltration]
         timeseries_list += intakes_timeseries[:]
         timeseries_list += pumps_timeseries[:]
         timeseries_list += [precipitation, evaporation, seepage]
         for event_tuple in enumerate_events(*timeseries_list):
-            for intake_event in event_tuple[:-3-len(pumps_timeseries)]:
+            storage += sum((event[1] for event in event_tuple[0:5]))
+            for intake_event in event_tuple[5:-3-len(pumps_timeseries)]:
                 storage += intake_event[1]
             for pump_event in event_tuple[-3-len(pumps_timeseries):-3]:
                 storage -= pump_event[1]
@@ -65,3 +71,5 @@ class StorageComputer:
             storage += surface * (precipitation_event[1] - evaporation_event[1] + seepage_event[1]) * 0.001
             storage_timeseries.add_value(date, storage)
         return storage_timeseries
+
+

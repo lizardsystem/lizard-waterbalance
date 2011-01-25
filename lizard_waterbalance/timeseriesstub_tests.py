@@ -254,30 +254,51 @@ class enumerate_eventsTestSuite(TestCase):
         self.assertEqual(expected_events, events)
 
     def test_b(self):
+        """Test the case that the time series contain different dates"""
         today = datetime(2010,12,2)
         tomorrow = datetime(2010,12,3)
         precipitation = TimeseriesStub()
         precipitation.add_value(today, 5)
-        precipitation.add_value(tomorrow, 10)
         evaporation = TimeseriesStub()
+        evaporation.add_value(today, 10)
         evaporation.add_value(tomorrow, 30)
-        seepage = TimeseriesStub()
-        seepage.add_value(today, 10)
-        seepage.add_value(tomorrow, 20)
-        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+        events = [event for event in enumerate_events(precipitation, evaporation)]
 
-        expected_events = [((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
+        expected_events = [((today, 5), (today, 10)),
+                           ((tomorrow, 0), (tomorrow, 30))]
         self.assertEqual(expected_events[0], events[0])
+        self.assertEqual(expected_events[1], events[1])
 
     def test_c(self):
-        """Test enumerate_events returns an empty list with an empty time series."""
-        self.assertEqual([], list(enumerate_events(TimeseriesStub())))
+        """Test the case that the time series contains an empty time series"""
+        today = datetime(2010,12,2)
+        precipitation = TimeseriesStub()
+        precipitation.add_value(today, 5)
+        evaporation = TimeseriesStub()
+        events = [event for event in enumerate_events(precipitation, evaporation)]
+
+        expected_events = [((today, 5), (today, 0))]
+        self.assertEqual(expected_events[0], events[0])
+
 
     def test_d(self):
-        """Test enumerate_events returns the intersection of dates."""
-        event = (datetime(2011, 1, 3), 0.0)
-        always_zero = TimeseriesStub((datetime.min, 0.0), (datetime.max, 0.0))
-        enumerated_events = list(enumerate_events(TimeseriesStub(event), always_zero))
-        expected_events = [(event, event)]
-        self.assertEqual(expected_events, enumerated_events)
+        """Test the case that the time series contain different dates and an empty time series"""
+        today = datetime(2010,12,2)
+        tomorrow = datetime(2010,12,3)
+        precipitation = TimeseriesStub()
+        precipitation.add_value(today, 5)
+        evaporation = TimeseriesStub()
+        evaporation.add_value(today, 10)
+        evaporation.add_value(tomorrow, 30)
+        seepage = TimeseriesStub()
+        events = [event for event in enumerate_events(precipitation, evaporation, seepage)]
+
+        expected_events = [((today, 5), (today, 10), (today, 0)),
+                           ((tomorrow, 0), (tomorrow, 30), (tomorrow, 0))]
+        self.assertEqual(expected_events[0], events[0])
+        self.assertEqual(expected_events[1], events[1])
+
+    def test_e(self):
+        """Test enumerate_events returns an empty list with an empty time series."""
+        self.assertEqual([], list(enumerate_events(TimeseriesStub())))
 
