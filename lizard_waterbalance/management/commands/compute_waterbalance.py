@@ -36,6 +36,7 @@ from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import split_timeseries
+from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),
@@ -45,6 +46,16 @@ name2name = dict([("evaporation", "verdamping"),
                   ("seepage", "kwel"),
                   ("storage", "berging")])
 
+def retrieve_timeseries(timeseries_retriever, name, start_date, end_date):
+    timeseries = TimeseriesStub()
+    for event in timeseries_retriever.get_timeseries(name).events():
+        if event[0] < start_date:
+            continue
+        if event[0] < end_date:
+            timeseries.add_value(event[0], event[1])
+        else:
+            break
+    return timeseries
 
 class Command(BaseCommand):
     args = "<test-data-directory WaterbalanceArea-name start-date end-date>"
@@ -62,9 +73,9 @@ class Command(BaseCommand):
         area = WaterbalanceArea.objects.filter(name=area_name)[0]
         assert not area is None
 
-        area.retrieve_precipitation = lambda s,e: timeseries_retriever.get_timeseries("precipitation")
-        area.retrieve_evaporation = lambda s,e: timeseries_retriever.get_timeseries("evaporation")
-        area.retrieve_seepage = lambda s,e: timeseries_retriever.get_timeseries("seepage")
+        area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
+        area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
+        area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
 
         assert not area.open_water is None
 
@@ -75,7 +86,7 @@ class Command(BaseCommand):
         bucket2outcome, level_control = \
                         waterbalance_computer.compute(area, start_date, end_date)
 
-        f = open(join(directory, "intermediate-results.csv"), "w")
+        f = open(join(directory, "intermediate-small-results.csv"), "w")
         for bucket, outcome in bucket2outcome.items():
             self.write_timeseries(f, bucket.name, "afstroming", outcome.flow_off)
             (drainage_timeseries, timeseries) = split_timeseries(outcome.net_drainage)
@@ -89,7 +100,7 @@ class Command(BaseCommand):
         self.write_timeseries(f, "openwater", "pomp peilbeheer", level_control[1])
         f.close()
 
-        f = open(join(directory, "Bastiaan-results.csv"), "w")
+        f = open(join(directory, "Bastiaan-small-results.csv"), "w")
         f.write("bakje,jaar,maand,dag,berging,afstroming,netto drainage,kwel,netto neerslag\n")
         for bucket, outcome in bucket2outcome.items():
             for event_tuple in enumerate_events(outcome.storage,

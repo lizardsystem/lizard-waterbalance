@@ -34,7 +34,6 @@ from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpLine
 from lizard_waterbalance.models import PumpingStation
-from lizard_waterbalance.models import Timeserie
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.compute import BucketOutcome
@@ -47,7 +46,6 @@ from lizard_waterbalance.compute import compute_seepage
 from lizard_waterbalance.compute import compute_timeseries
 from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import total_daily_bucket_outcome
-from lizard_waterbalance.compute import LevelControlComputer
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseries import Timeseries
@@ -481,105 +479,6 @@ class PumpingStationAccessToPumpLinesTests(TestCase):
                                TimeseriesStub((datetime(2010, 12, 17), 20))]
         self.assertEqual(expected_timeseries, timeseries)
 
-class LevelControlTests(TestCase):
-    """Contains tests for the level control computation of an OpenWater.
-
-    The tests in this suite verify that LevelControlComputer computes the right
-    sluice error.
-
-    """
-
-    def setUp(self):
-        """Create the fixture for the tests in this suite."""
-        self.open_water = OpenWater()
-        self.open_water.surface = 100
-        self.open_water.init_water_level = 1.0
-        self.open_water.crop_evaporation_factor = 1.0
-        self.today = datetime(2010, 12, 17)
-        water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
-        self.open_water.retrieve_minimum_level = lambda : water_levels
-        self.open_water.retrieve_maximum_level = lambda : water_levels
-        self.buckets_summary = BucketsSummary()
-
-    def test_a(self):
-        """Test the case with precipitation on a single day."""
-        level_control = LevelControlComputer()
-        precipitation = TimeseriesStub((self.today, 2.0))
-        evaporation = TimeseriesStub((self.today, 0.0))
-        seepage = TimeseriesStub((self.today, 0.0))
-        timeseries = level_control.compute(self.open_water,
-                                           self.buckets_summary,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.2)))
-        self.assertEqual(expected_timeseries, timeseries)
-
-    def test_b(self):
-        """Test the case with precipitation on two days."""
-        level_control = LevelControlComputer()
-        tomorrow = self.today + timedelta(1)
-        precipitation = TimeseriesStub((self.today, 2.0), (tomorrow, 1.0))
-        evaporation = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
-        seepage = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
-        water_levels = TimeseriesWithMemoryStub((self.today, 1.0),
-                                                (tomorrow, 1.0))
-        self.open_water.retrieve_minimum_level = lambda : water_levels
-        self.open_water.retrieve_maximum_level = lambda : water_levels
-        timeseries = level_control.compute(self.open_water,
-                                           self.buckets_summary,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
-                               TimeseriesStub((self.today, -0.2), (tomorrow, -0.1)))
-        self.assertEqual(expected_timeseries, timeseries)
-
-    def test_c(self):
-        """Test the case with precipitation and evaporation on a single day."""
-        level_control = LevelControlComputer()
-        precipitation = TimeseriesStub((self.today, 2.0))
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.0))
-        timeseries = level_control.compute(self.open_water,
-                                           self.buckets_summary,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.1)))
-        self.assertEqual(expected_timeseries, timeseries)
-
-    def test_d(self):
-        """Test the case with precipitation, evaporation and seepage on a single day."""
-        level_control = LevelControlComputer()
-        precipitation = TimeseriesStub((self.today, 2.0))
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.5))
-        timeseries = level_control.compute(self.open_water,
-                                           self.buckets_summary,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.1500)))
-        self.assertEqual(expected_timeseries, timeseries)
-
-    def test_e(self):
-        """Test the case with evaporation on a single day."""
-        level_control = LevelControlComputer()
-        precipitation = TimeseriesStub((self.today, 0.0))
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.0))
-        timeseries = level_control.compute(self.open_water,
-                                           self.buckets_summary,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.1)),
-                               TimeseriesStub((self.today, 0.0)))
-        self.assertEqual(expected_timeseries, timeseries)
 
 def create_saveable_openwater():
     """Return an OpenWater that can be saved to the database.

@@ -27,7 +27,6 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.compute import BucketsSummary

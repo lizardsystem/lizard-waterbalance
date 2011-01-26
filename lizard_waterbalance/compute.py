@@ -26,20 +26,17 @@
 #
 #******************************************************************************
 
-from datetime import datetime
-from datetime import timedelta
-
 import logging
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import create_empty_timeseries
 from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
-from lizard_waterbalance.timeseriesstub import split_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
@@ -461,6 +458,8 @@ class WaterbalanceComputer:
 
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
+                                                            [],
+                                                            [],
                                                             precipitation,
                                                             evaporation,
                                                             seepage)
@@ -528,99 +527,6 @@ def total_daily_bucket_outcome(bucket2outcome):
         generator = ((event_tuple[0][0], create_bucket_to_daily_outcome(buckets, event_tuple_values(event_tuple))) \
                      for event_tuple in enumerate_events(*interesting_timeseries))
     return generator
-
-
-class LevelControlComputer:
-
-    def compute(self, open_water, buckets_summary,
-                precipitation, evaporation, seepage):
-        """Compute and return the pair of intake and pump time series.
-
-        This function returns the pair of TimeseriesStub(s) that consists of
-        the intake time series and pump time series for the given open water.
-
-        Parameters:
-        * open_water -- OpenWater for which to compute the level control
-        * buckets_summary -- BucketsSummary with the summed outcome of each bucket
-        * precipitation -- TimeseriesStub with the precipitation in [mm/day]
-        * evaporation -- TimeseriesStub with the evaporation in [mm/day]
-        * seepage -- TimeseriesStub with the (open water) seepage in [mm/day]
-
-        """
-        result = TimeseriesStub()
-        surface = open_water.surface
-        water_level = open_water.init_water_level
-
-        for values in self.enumerate_values(buckets_summary.totals, precipitation,
-                                            evaporation, seepage,
-                                            open_water.retrieve_minimum_level(),
-                                            open_water.retrieve_maximum_level()):
-            date = values[0]
-            buckets_total_value = values[1]
-            precipitation_value = values[2]
-            evaporation_value = values[3]
-            seepage_value = values[4]
-            minimum_level = values[5]
-            maximum_level = values[6]
-            incoming_value = self.compute_incoming_volume(surface,
-                                                          open_water.crop_evaporation_factor,
-                                                          water_level,
-                                                          buckets_total_value,
-                                                          precipitation_value,
-                                                          evaporation_value,
-                                                          seepage_value)
-
-            water_level += incoming_value / surface
-            level_control = self._compute_level_control(surface, water_level, minimum_level, maximum_level)
-            water_level += level_control / surface
-
-            result.add_value(date, level_control)
-            date += timedelta(1)
-        (pump_time_series, intake_time_series) = split_timeseries(result)
-        return (intake_time_series, pump_time_series)
-
-    def enumerate_values(self, buckets_totals, precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
-        generator = buckets_totals.events()
-        for event_tuple in enumerate_events(precipitation, evaporation, seepage, minimum_water_level, maximum_water_level):
-            precipitation_event = event_tuple[0]
-            evaporation_event = event_tuple[1]
-            seepage_event = event_tuple[2]
-            minimum_water_level_event = event_tuple[3]
-            maximum_water_level_event = event_tuple[4]
-            date = precipitation_event[0]
-            buckets_totals = next((d[1] for d in generator if d[0] == date), 0)
-            yield date, buckets_totals, precipitation_event[1], evaporation_event[1], seepage_event[1], minimum_water_level_event[1], maximum_water_level_event[1]
-
-    def compute_incoming_volume(self, surface, crop_evaporation_factor,
-                                 water_level, buckets_value, precipitation_value,
-                                 evaporation_value, seepage_value):
-        incoming_volume = buckets_value
-        precipitation = precipitation_value * surface
-        evaporation = -evaporation_value * surface * \
-                      crop_evaporation_factor
-        seepage = seepage_value * surface
-        incoming_volume += precipitation + evaporation + seepage
-        # all aforementioned time series are specified in [mm/day] but we need
-        # [m/day]: 1 [mm] = 0.001 [m]
-        return incoming_volume * 0.001
-
-    def _compute_level_control(self, surface, water_level, minimum_water_level, maximum_water_level):
-        """Compute and return the level control for the given date.
-
-        Parameters:
-        * surface -- surface of the open water in [m2]
-        * water_level -- uncorrected water level of the open water in [m]
-        * minimum_water_level -- minimum allowed water level
-        * maximum_water_level -- maximum allowed water level
-
-        """
-        if water_level > maximum_water_level:
-            level_control = -(water_level - maximum_water_level) * surface
-        elif water_level < minimum_water_level:
-            level_control = (minimum_water_level - water_level) * surface
-        else:
-            level_control = 0
-        return level_control
 
 
 class BucketSummarizer:
