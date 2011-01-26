@@ -187,20 +187,34 @@ class OpenWater(models.Model):
     def retrieve_pumping_stations(self):
         return []
 
-    def retrieve_incoming_timeseries(self):
-        """Return the list of time series of intakes."""
+    def retrieve_incoming_timeseries(self, only_input=False):
+        """Return the list of time series of intakes.
+
+        Parameter:
+        * only_input -- holds if only the input time series should be returned
+
+        """
         incoming_timeseries = []
         for pumping_station in self.retrieve_pumping_stations():
             if pumping_station.into:
+                if only_input and pumping_station.computed_level_control:
+                        continue
                 for timeseries in pumping_station.retrieve_timeseries():
                     incoming_timeseries.append(timeseries)
         return incoming_timeseries
 
-    def retrieve_outgoing_timeseries(self):
-        """Return the list of time series of pumps."""
+    def retrieve_outgoing_timeseries(self, only_input=False):
+        """Return the list of time series of pumps.
+
+        Parameter:
+        * only_input -- holds if only the input time series should be returned
+
+        """
         outgoing_timeseries = []
         for pumping_station in self.retrieve_pumping_stations():
             if not pumping_station.into:
+                if only_input and pumping_station.computed_level_control:
+                    continue
                 for timeseries in pumping_station.retrieve_timeseries():
                     outgoing_timeseries.append(timeseries)
         return outgoing_timeseries
@@ -349,6 +363,7 @@ class PumpingStation(models.Model):
     * open_water -- link to the OpenWater
     * into -- holds if and only if the pump pumps water into the open water
     * percentage -- percentage of water through this pump
+    * computed_level_control -- holds if this pump can be used for computed level control
 
     If this pump pumps water into (out of) the open water, the percentage is
     the percentage of incoming water that is pumped into (out of) the open
@@ -369,6 +384,9 @@ class PumpingStation(models.Model):
                                help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
     percentage = models.FloatField(verbose_name=_("percentage"),
                                    help_text=_("percentage inkomend of uitgaand water via deze pomp"))
+    computed_level_control = models.BooleanField(verbose_name=_("berekend"),
+                                                 default=False,
+                                                 help_text=_("aangevinkt als en alleen als de pomp gebruikt mag worden voor automatisch berekende peilhandhaving"))
 
     def __unicode__(self):
         return self.name

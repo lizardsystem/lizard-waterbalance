@@ -458,8 +458,8 @@ class WaterbalanceComputer:
 
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
-                                                            [],
-                                                            [],
+                                                            area.open_water.retrieve_incoming_timeseries(only_input=True),
+                                                            area.open_water.retrieve_outgoing_timeseries(only_input=True),
                                                             precipitation,
                                                             evaporation,
                                                             seepage)
