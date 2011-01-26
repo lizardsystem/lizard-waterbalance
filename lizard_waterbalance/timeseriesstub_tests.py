@@ -33,6 +33,7 @@ from unittest import TestCase
 
 from filereader import FileReaderStub
 from timeseriesstub import add_timeseries
+from timeseriesstub import create_empty_timeseries
 from timeseriesstub import create_from_file
 from timeseriesstub import enumerate_events
 from timeseriesstub import multiply_timeseries
@@ -168,6 +169,17 @@ class TimeseriesStubTestSuite(TestCase):
         splitted_timeseries = split_timeseries(timeserie)
         self.assertEqual(expected_negative_timeserie_events, list(splitted_timeseries[0].events()))
         self.assertEqual(expected_positive_timeserie_events, list(splitted_timeseries[1].events()))
+
+    def test_j(self):
+        """Test create_empty_timeseries on an empty timeseries."""
+        timeseries = TimeseriesStub()
+        self.assertEqual(TimeseriesStub(), create_empty_timeseries(timeseries))
+
+    def test_k(self):
+        """Test create_empty_timeseries on a non-empty timeseries."""
+        timeseries = TimeseriesStub((datetime(2011, 1, 26), 10))
+        expected_timeseries = TimeseriesStub((datetime(2011, 1, 26), 0.0))
+        self.assertEqual(expected_timeseries, create_empty_timeseries(timeseries))
 
 class TimeseriesWithMemoryTests(TestCase):
 

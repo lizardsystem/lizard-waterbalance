@@ -172,6 +172,8 @@ verhard,afstroming,2010,3,1,-64890.777900
 verhard,afstroming,2010,4,1,-20696.871000
 verhard,afstroming,2010,5,1,-65621.255700
 verhard,afstroming,2010,6,1,-15583.526400
+verhard,afstroming,2010,7,1,0.000000
+verhard,afstroming,2010,8,1,0.000000
 verhard,drainage,1996,1,1,-8887.479900
 verhard,drainage,1996,2,1,-10591.928100
 verhard,drainage,1996,3,1,-11322.405900
@@ -888,7 +890,9 @@ verhard,verdamping,2010,2,1,-4261.120500
 verhard,verdamping,2010,3,1,-33601.978800
 verhard,verdamping,2010,4,1,-77795.885700
 verhard,verdamping,2010,5,1,-79378.587600
-verhard,verdamping,2010,6,1,-114319.775700
+verhard,verdamping,2010,6,1,-118580.896200
+verhard,verdamping,2010,7,1,-137573.319000
+verhard,verdamping,2010,8,1,-62212.359300
 verhard,neerslag,1996,1,1,6330.807600
 verhard,neerslag,1996,2,1,57829.492500
 verhard,neerslag,1996,3,1,7426.524300
@@ -1063,6 +1067,8 @@ verhard,neerslag,2010,3,1,74752.228200
 verhard,neerslag,2010,4,1,24714.498900
 verhard,neerslag,2010,5,1,74265.243000
 verhard,neerslag,2010,6,1,18261.945000
+verhard,neerslag,2010,7,1,0.000000
+verhard,neerslag,2010,8,1,0.000000
 gedraineerd boven,afstroming,1996,1,1,0.000000
 gedraineerd boven,afstroming,1996,2,1,0.000000
 gedraineerd boven,afstroming,1996,3,1,0.000000
@@ -1237,8 +1243,10 @@ gedraineerd boven,afstroming,2010,3,1,0.000000
 gedraineerd boven,afstroming,2010,4,1,0.000000
 gedraineerd boven,afstroming,2010,5,1,0.000000
 gedraineerd boven,afstroming,2010,6,1,0.000000
-gedraineerd boven,drainage,1996,1,1,-2714.199074
-gedraineerd boven,drainage,1996,2,1,-285.505021
+gedraineerd boven,afstroming,2010,7,1,0.000000
+gedraineerd boven,afstroming,2010,8,1,0.000000
+gedraineerd boven,drainage,1996,1,1,-2738.087445
+gedraineerd boven,drainage,1996,2,1,-297.636047
 gedraineerd boven,drainage,1996,3,1,0.000000
 gedraineerd boven,drainage,1996,4,1,0.000000
 gedraineerd boven,drainage,1996,5,1,0.000000
@@ -1411,181 +1419,195 @@ gedraineerd boven,drainage,2010,3,1,0.000000
 gedraineerd boven,drainage,2010,4,1,0.000000
 gedraineerd boven,drainage,2010,5,1,0.000000
 gedraineerd boven,drainage,2010,6,1,0.000000
-gedraineerd boven,intrek,1996,1,1,13.890550
-gedraineerd boven,intrek,1996,2,1,1256.844542
-gedraineerd boven,intrek,1996,3,1,3230.176353
-gedraineerd boven,intrek,1996,4,1,2259.438052
-gedraineerd boven,intrek,1996,5,1,1535.728538
-gedraineerd boven,intrek,1996,6,1,1406.396418
-gedraineerd boven,intrek,1996,7,1,3339.982444
-gedraineerd boven,intrek,1996,8,1,3292.965690
-gedraineerd boven,intrek,1996,9,1,4582.078468
-gedraineerd boven,intrek,1996,10,1,8976.689952
-gedraineerd boven,intrek,1996,11,1,20400.788104
-gedraineerd boven,intrek,1996,12,1,33956.205615
-gedraineerd boven,intrek,1997,1,1,34983.674143
-gedraineerd boven,intrek,1997,2,1,33629.059353
-gedraineerd boven,intrek,1997,3,1,40659.026407
-gedraineerd boven,intrek,1997,4,1,39052.524322
-gedraineerd boven,intrek,1997,5,1,40716.405457
-gedraineerd boven,intrek,1997,6,1,39198.482886
-gedraineerd boven,intrek,1997,7,1,42560.361343
-gedraineerd boven,intrek,1997,8,1,42474.415613
-gedraineerd boven,intrek,1997,9,1,41136.223987
-gedraineerd boven,intrek,1997,10,1,46351.316191
-gedraineerd boven,intrek,1997,11,1,47028.260657
-gedraineerd boven,intrek,1997,12,1,52003.442720
-gedraineerd boven,intrek,1998,1,1,61326.190529
-gedraineerd boven,intrek,1998,2,1,56108.859622
-gedraineerd boven,intrek,1998,3,1,70425.425939
-gedraineerd boven,intrek,1998,4,1,72376.214715
-gedraineerd boven,intrek,1998,5,1,75002.648889
-gedraineerd boven,intrek,1998,6,1,76569.430328
-gedraineerd boven,intrek,1998,7,1,83023.395562
-gedraineerd boven,intrek,1998,8,1,82241.047819
-gedraineerd boven,intrek,1998,9,1,88731.036099
-gedraineerd boven,intrek,1998,10,1,99796.214440
-gedraineerd boven,intrek,1998,11,1,111898.361539
-gedraineerd boven,intrek,1998,12,1,119052.516453
-gedraineerd boven,intrek,1999,1,1,124231.694018
-gedraineerd boven,intrek,1999,2,1,114309.146775
-gedraineerd boven,intrek,1999,3,1,132286.866144
-gedraineerd boven,intrek,1999,4,1,128479.338164
-gedraineerd boven,intrek,1999,5,1,130950.252454
-gedraineerd boven,intrek,1999,6,1,126414.775298
-gedraineerd boven,intrek,1999,7,1,127639.333460
-gedraineerd boven,intrek,1999,8,1,125695.740814
-gedraineerd boven,intrek,1999,9,1,121789.200264
-gedraineerd boven,intrek,1999,10,1,132249.505717
-gedraineerd boven,intrek,1999,11,1,128323.813514
-gedraineerd boven,intrek,1999,12,1,138313.119700
-gedraineerd boven,intrek,2000,1,1,144044.756938
-gedraineerd boven,intrek,2000,2,1,136442.865683
-gedraineerd boven,intrek,2000,3,1,151567.679262
-gedraineerd boven,intrek,2000,4,1,144495.074300
-gedraineerd boven,intrek,2000,5,1,145701.817413
-gedraineerd boven,intrek,2000,6,1,139844.075485
-gedraineerd boven,intrek,2000,7,1,145455.022125
-gedraineerd boven,intrek,2000,8,1,144838.714616
-gedraineerd boven,intrek,2000,9,1,139587.176744
-gedraineerd boven,intrek,2000,10,1,147475.203681
-gedraineerd boven,intrek,2000,11,1,152568.231623
-gedraineerd boven,intrek,2000,12,1,164907.772580
-gedraineerd boven,intrek,2001,1,1,171078.360064
-gedraineerd boven,intrek,2001,2,1,157875.133030
-gedraineerd boven,intrek,2001,3,1,173872.676331
-gedraineerd boven,intrek,2001,4,1,168263.193633
-gedraineerd boven,intrek,2001,5,1,173290.056796
-gedraineerd boven,intrek,2001,6,1,167512.061408
-gedraineerd boven,intrek,2001,7,1,174364.572392
-gedraineerd boven,intrek,2001,8,1,175477.406395
-gedraineerd boven,intrek,2001,9,1,177678.318304
-gedraineerd boven,intrek,2001,10,1,187275.571082
-gedraineerd boven,intrek,2001,11,1,179869.187283
-gedraineerd boven,intrek,2001,12,1,190037.791657
-gedraineerd boven,intrek,2002,1,1,192604.091136
-gedraineerd boven,intrek,2002,2,1,179805.181339
-gedraineerd boven,intrek,2002,3,1,204440.505266
-gedraineerd boven,intrek,2002,4,1,192717.315380
-gedraineerd boven,intrek,2002,5,1,196215.117321
-gedraineerd boven,intrek,2002,6,1,185502.616783
-gedraineerd boven,intrek,2002,7,1,191198.057201
-gedraineerd boven,intrek,2002,8,1,195052.485102
-gedraineerd boven,intrek,2002,9,1,195045.260762
-gedraineerd boven,intrek,2002,10,1,199059.536946
-gedraineerd boven,intrek,2002,11,1,198033.742828
-gedraineerd boven,intrek,2002,12,1,203422.571833
-gedraineerd boven,intrek,2003,1,1,210263.388447
-gedraineerd boven,intrek,2003,2,1,189276.119897
-gedraineerd boven,intrek,2003,3,1,203937.554393
-gedraineerd boven,intrek,2003,4,1,191991.580773
-gedraineerd boven,intrek,2003,5,1,195387.783410
-gedraineerd boven,intrek,2003,6,1,186231.114214
-gedraineerd boven,intrek,2003,7,1,187004.708042
-gedraineerd boven,intrek,2003,8,1,180419.658164
-gedraineerd boven,intrek,2003,9,1,168678.518301
-gedraineerd boven,intrek,2003,10,1,174555.403254
-gedraineerd boven,intrek,2003,11,1,168447.849889
-gedraineerd boven,intrek,2003,12,1,176222.190983
-gedraineerd boven,intrek,2004,1,1,182691.528969
-gedraineerd boven,intrek,2004,2,1,178654.837962
-gedraineerd boven,intrek,2004,3,1,189160.628892
-gedraineerd boven,intrek,2004,4,1,180138.185097
-gedraineerd boven,intrek,2004,5,1,180520.894587
-gedraineerd boven,intrek,2004,6,1,169744.946489
-gedraineerd boven,intrek,2004,7,1,179618.440188
-gedraineerd boven,intrek,2004,8,1,180748.174129
-gedraineerd boven,intrek,2004,9,1,180989.798519
-gedraineerd boven,intrek,2004,10,1,188407.724756
-gedraineerd boven,intrek,2004,11,1,182373.747146
-gedraineerd boven,intrek,2004,12,1,188169.318657
-gedraineerd boven,intrek,2005,1,1,187894.065542
-gedraineerd boven,intrek,2005,2,1,169572.274808
-gedraineerd boven,intrek,2005,3,1,187805.647354
-gedraineerd boven,intrek,2005,4,1,179076.131359
-gedraineerd boven,intrek,2005,5,1,182252.509750
-gedraineerd boven,intrek,2005,6,1,172576.448666
-gedraineerd boven,intrek,2005,7,1,177117.280310
-gedraineerd boven,intrek,2005,8,1,181906.127066
-gedraineerd boven,intrek,2005,9,1,173964.364596
-gedraineerd boven,intrek,2005,10,1,177212.332895
-gedraineerd boven,intrek,2005,11,1,172287.542626
-gedraineerd boven,intrek,2005,12,1,185587.080841
-gedraineerd boven,intrek,2006,1,1,183201.936122
-gedraineerd boven,intrek,2006,2,1,162668.445081
-gedraineerd boven,intrek,2006,3,1,181535.738124
-gedraineerd boven,intrek,2006,4,1,174253.551434
-gedraineerd boven,intrek,2006,5,1,175738.548975
-gedraineerd boven,intrek,2006,6,1,167529.389124
-gedraineerd boven,intrek,2006,7,1,167235.375459
-gedraineerd boven,intrek,2006,8,1,175052.584056
-gedraineerd boven,intrek,2006,9,1,177560.257112
-gedraineerd boven,intrek,2006,10,1,180010.566837
-gedraineerd boven,intrek,2006,11,1,176187.412644
-gedraineerd boven,intrek,2006,12,1,186556.778738
-gedraineerd boven,intrek,2007,1,1,190783.645537
-gedraineerd boven,intrek,2007,2,1,173933.976590
-gedraineerd boven,intrek,2007,3,1,197329.914902
-gedraineerd boven,intrek,2007,4,1,186969.900486
-gedraineerd boven,intrek,2007,5,1,188845.970326
-gedraineerd boven,intrek,2007,6,1,183734.820665
-gedraineerd boven,intrek,2007,7,1,197405.059033
-gedraineerd boven,intrek,2007,8,1,196349.887319
-gedraineerd boven,intrek,2007,9,1,185359.302808
-gedraineerd boven,intrek,2007,10,1,188267.242156
-gedraineerd boven,intrek,2007,11,1,179979.703971
-gedraineerd boven,intrek,2007,12,1,189344.977759
-gedraineerd boven,intrek,2008,1,1,189291.045520
-gedraineerd boven,intrek,2008,2,1,177821.309506
-gedraineerd boven,intrek,2008,3,1,189001.899196
-gedraineerd boven,intrek,2008,4,1,183666.830375
-gedraineerd boven,intrek,2008,5,1,183834.540702
-gedraineerd boven,intrek,2008,6,1,173439.659132
-gedraineerd boven,intrek,2008,7,1,177658.729295
-gedraineerd boven,intrek,2008,8,1,181414.454814
-gedraineerd boven,intrek,2008,9,1,174802.502875
-gedraineerd boven,intrek,2008,10,1,184758.788060
-gedraineerd boven,intrek,2008,11,1,180152.664365
-gedraineerd boven,intrek,2008,12,1,187388.515599
-gedraineerd boven,intrek,2009,1,1,184472.285483
-gedraineerd boven,intrek,2009,2,1,166777.472336
-gedraineerd boven,intrek,2009,3,1,182146.570790
-gedraineerd boven,intrek,2009,4,1,173858.749136
-gedraineerd boven,intrek,2009,5,1,174849.071516
-gedraineerd boven,intrek,2009,6,1,166654.975833
-gedraineerd boven,intrek,2009,7,1,168012.781677
-gedraineerd boven,intrek,2009,8,1,163657.505437
-gedraineerd boven,intrek,2009,9,1,155745.526952
-gedraineerd boven,intrek,2009,10,1,160053.775575
-gedraineerd boven,intrek,2009,11,1,158205.838018
-gedraineerd boven,intrek,2009,12,1,169887.074447
-gedraineerd boven,intrek,2010,1,1,169892.326683
-gedraineerd boven,intrek,2010,2,1,154367.282939
-gedraineerd boven,intrek,2010,3,1,173045.181785
-gedraineerd boven,intrek,2010,4,1,165962.368305
-gedraineerd boven,intrek,2010,5,1,168716.451775
-gedraineerd boven,intrek,2010,6,1,154689.563321
-gedraineerd boven,kwel,1996,1,1,33277.185000
+gedraineerd boven,drainage,2010,7,1,0.000000
+gedraineerd boven,drainage,2010,8,1,0.000000
+gedraineerd boven,drainage,2010,9,1,0.000000
+gedraineerd boven,drainage,2010,10,1,0.000000
+gedraineerd boven,drainage,2010,11,1,0.000000
+gedraineerd boven,drainage,2010,12,1,0.000000
+gedraineerd boven,drainage,2011,1,1,0.000000
+gedraineerd boven,intrek,1996,1,1,10.005050
+gedraineerd boven,intrek,1996,2,1,1239.901873
+gedraineerd boven,intrek,1996,3,1,3198.036872
+gedraineerd boven,intrek,1996,4,1,2229.270174
+gedraineerd boven,intrek,1996,5,1,1505.491886
+gedraineerd boven,intrek,1996,6,1,1378.014644
+gedraineerd boven,intrek,1996,7,1,3311.535967
+gedraineerd boven,intrek,1996,8,1,3265.387953
+gedraineerd boven,intrek,1996,9,1,4556.192497
+gedraineerd boven,intrek,1996,10,1,8950.744968
+gedraineerd boven,intrek,1996,11,1,20376.434724
+gedraineerd boven,intrek,1996,12,1,33931.796717
+gedraineerd boven,intrek,1997,1,1,34960.010679
+gedraineerd boven,intrek,1997,2,1,33608.307669
+gedraineerd boven,intrek,1997,3,1,40636.719358
+gedraineerd boven,intrek,1997,4,1,39031.585706
+gedraineerd boven,intrek,1997,5,1,40695.419108
+gedraineerd boven,intrek,1997,6,1,39178.783951
+gedraineerd boven,intrek,1997,7,1,42540.617500
+gedraineerd boven,intrek,1997,8,1,42455.274737
+gedraineerd boven,intrek,1997,9,1,41118.257314
+gedraineerd boven,intrek,1997,10,1,46333.308559
+gedraineerd boven,intrek,1997,11,1,47011.357709
+gedraineerd boven,intrek,1997,12,1,51986.501238
+gedraineerd boven,intrek,1998,1,1,61309.766432
+gedraineerd boven,intrek,1998,2,1,56094.456502
+gedraineerd boven,intrek,1998,3,1,70409.943288
+gedraineerd boven,intrek,1998,4,1,72361.681852
+gedraineerd boven,intrek,1998,5,1,74988.082895
+gedraineerd boven,intrek,1998,6,1,76555.757891
+gedraineerd boven,intrek,1998,7,1,83009.691955
+gedraineerd boven,intrek,1998,8,1,82227.762713
+gedraineerd boven,intrek,1998,9,1,88718.565973
+gedraineerd boven,intrek,1998,10,1,99783.715885
+gedraineerd boven,intrek,1998,11,1,111886.629711
+gedraineerd boven,intrek,1998,12,1,119040.757881
+gedraineerd boven,intrek,1999,1,1,124220.294546
+gedraineerd boven,intrek,1999,2,1,114299.150004
+gedraineerd boven,intrek,1999,3,1,132276.120102
+gedraineerd boven,intrek,1999,4,1,128469.251341
+gedraineerd boven,intrek,1999,5,1,130940.142637
+gedraineerd boven,intrek,1999,6,1,126405.285670
+gedraineerd boven,intrek,1999,7,1,127629.822199
+gedraineerd boven,intrek,1999,8,1,125686.520022
+gedraineerd boven,intrek,1999,9,1,121780.545125
+gedraineerd boven,intrek,1999,10,1,132240.830846
+gedraineerd boven,intrek,1999,11,1,128315.670806
+gedraineerd boven,intrek,1999,12,1,138304.958429
+gedraineerd boven,intrek,2000,1,1,144036.844908
+gedraineerd boven,intrek,2000,2,1,136435.683000
+gedraineerd boven,intrek,2000,3,1,151560.228217
+gedraineerd boven,intrek,2000,4,1,144488.080342
+gedraineerd boven,intrek,2000,5,1,145694.807510
+gedraineerd boven,intrek,2000,6,1,139837.495607
+gedraineerd boven,intrek,2000,7,1,145448.427247
+gedraineerd boven,intrek,2000,8,1,144832.321142
+gedraineerd boven,intrek,2000,9,1,139581.175480
+gedraineerd boven,intrek,2000,10,1,147469.188735
+gedraineerd boven,intrek,2000,11,1,152562.585666
+gedraineerd boven,intrek,2000,12,1,164902.113752
+gedraineerd boven,intrek,2001,1,1,171072.874053
+gedraineerd boven,intrek,2001,2,1,157870.322071
+gedraineerd boven,intrek,2001,3,1,173867.504785
+gedraineerd boven,intrek,2001,4,1,168258.339337
+gedraineerd boven,intrek,2001,5,1,173285.191434
+gedraineerd boven,intrek,2001,6,1,167507.494513
+gedraineerd boven,intrek,2001,7,1,174359.995086
+gedraineerd boven,intrek,2001,8,1,175472.968877
+gedraineerd boven,intrek,2001,9,1,177674.153007
+gedraineerd boven,intrek,2001,10,1,187271.396289
+gedraineerd boven,intrek,2001,11,1,179865.268595
+gedraineerd boven,intrek,2001,12,1,190033.864035
+gedraineerd boven,intrek,2002,1,1,192600.283461
+gedraineerd boven,intrek,2002,2,1,179801.842198
+gedraineerd boven,intrek,2002,3,1,204436.915852
+gedraineerd boven,intrek,2002,4,1,192713.946159
+gedraineerd boven,intrek,2002,5,1,196211.740419
+gedraineerd boven,intrek,2002,6,1,185499.447039
+gedraineerd boven,intrek,2002,7,1,191194.880231
+gedraineerd boven,intrek,2002,8,1,195049.405155
+gedraineerd boven,intrek,2002,9,1,195042.369755
+gedraineerd boven,intrek,2002,10,1,199056.639348
+gedraineerd boven,intrek,2002,11,1,198031.022985
+gedraineerd boven,intrek,2002,12,1,203419.845789
+gedraineerd boven,intrek,2003,1,1,210260.745655
+gedraineerd boven,intrek,2003,2,1,189273.802299
+gedraineerd boven,intrek,2003,3,1,203935.063088
+gedraineerd boven,intrek,2003,4,1,191989.242299
+gedraineerd boven,intrek,2003,5,1,195385.439604
+gedraineerd boven,intrek,2003,6,1,186228.914190
+gedraineerd boven,intrek,2003,7,1,187002.503003
+gedraineerd boven,intrek,2003,8,1,180417.520465
+gedraineerd boven,intrek,2003,9,1,168676.511740
+gedraineerd boven,intrek,2003,10,1,174553.392119
+gedraineerd boven,intrek,2003,11,1,168445.962128
+gedraineerd boven,intrek,2003,12,1,176220.298918
+gedraineerd boven,intrek,2004,1,1,182689.694687
+gedraineerd boven,intrek,2004,2,1,178653.172767
+gedraineerd boven,intrek,2004,3,1,189158.901481
+gedraineerd boven,intrek,2004,4,1,180136.563656
+gedraineerd boven,intrek,2004,5,1,180519.269449
+gedraineerd boven,intrek,2004,6,1,169743.421045
+gedraineerd boven,intrek,2004,7,1,179616.911267
+gedraineerd boven,intrek,2004,8,1,180746.691900
+gedraineerd boven,intrek,2004,9,1,180988.407218
+gedraineerd boven,intrek,2004,10,1,188406.330283
+gedraineerd boven,intrek,2004,11,1,182372.438217
+gedraineerd boven,intrek,2004,12,1,188168.006745
+gedraineerd boven,intrek,2005,1,1,187892.793695
+gedraineerd boven,intrek,2005,2,1,169571.159461
+gedraineerd boven,intrek,2005,3,1,187804.448411
+gedraineerd boven,intrek,2005,4,1,179075.005965
+gedraineerd boven,intrek,2005,5,1,182251.381791
+gedraineerd boven,intrek,2005,6,1,172575.389902
+gedraineerd boven,intrek,2005,7,1,177116.219132
+gedraineerd boven,intrek,2005,8,1,181905.098296
+gedraineerd boven,intrek,2005,9,1,173963.398936
+gedraineerd boven,intrek,2005,10,1,177211.365033
+gedraineerd boven,intrek,2005,11,1,172286.634139
+gedraineerd boven,intrek,2005,12,1,185586.170282
+gedraineerd boven,intrek,2006,1,1,183201.053372
+gedraineerd boven,intrek,2006,2,1,162667.670952
+gedraineerd boven,intrek,2006,3,1,181534.905974
+gedraineerd boven,intrek,2006,4,1,174252.770332
+gedraineerd boven,intrek,2006,5,1,175737.766092
+gedraineerd boven,intrek,2006,6,1,167528.654267
+gedraineerd boven,intrek,2006,7,1,167234.638927
+gedraineerd boven,intrek,2006,8,1,175051.870018
+gedraineerd boven,intrek,2006,9,1,177559.586877
+gedraineerd boven,intrek,2006,10,1,180009.895074
+gedraineerd boven,intrek,2006,11,1,176186.782091
+gedraineerd boven,intrek,2006,12,1,186556.146746
+gedraineerd boven,intrek,2007,1,1,190783.032846
+gedraineerd boven,intrek,2007,2,1,173933.439291
+gedraineerd boven,intrek,2007,3,1,197329.337331
+gedraineerd boven,intrek,2007,4,1,186969.358347
+gedraineerd boven,intrek,2007,5,1,188845.426951
+gedraineerd boven,intrek,2007,6,1,183734.310623
+gedraineerd boven,intrek,2007,7,1,197404.547828
+gedraineerd boven,intrek,2007,8,1,196349.391726
+gedraineerd boven,intrek,2007,9,1,185358.837618
+gedraineerd boven,intrek,2007,10,1,188266.775905
+gedraineerd boven,intrek,2007,11,1,179979.266322
+gedraineerd boven,intrek,2007,12,1,189344.539113
+gedraineerd boven,intrek,2008,1,1,189290.620270
+gedraineerd boven,intrek,2008,2,1,177820.923456
+gedraineerd boven,intrek,2008,3,1,189001.498722
+gedraineerd boven,intrek,2008,4,1,183666.454469
+gedraineerd boven,intrek,2008,5,1,183834.163938
+gedraineerd boven,intrek,2008,6,1,173439.305481
+gedraineerd boven,intrek,2008,7,1,177658.374838
+gedraineerd boven,intrek,2008,8,1,181414.111182
+gedraineerd boven,intrek,2008,9,1,174802.180324
+gedraineerd boven,intrek,2008,10,1,184758.464773
+gedraineerd boven,intrek,2008,11,1,180152.360910
+gedraineerd boven,intrek,2008,12,1,187388.211453
+gedraineerd boven,intrek,2009,1,1,184471.990625
+gedraineerd boven,intrek,2009,2,1,166777.213760
+gedraineerd boven,intrek,2009,3,1,182146.292833
+gedraineerd boven,intrek,2009,4,1,173858.488231
+gedraineerd boven,intrek,2009,5,1,174848.810016
+gedraineerd boven,intrek,2009,6,1,166654.730375
+gedraineerd boven,intrek,2009,7,1,168012.535659
+gedraineerd boven,intrek,2009,8,1,163657.266932
+gedraineerd boven,intrek,2009,9,1,155745.303078
+gedraineerd boven,intrek,2009,10,1,160053.551191
+gedraineerd boven,intrek,2009,11,1,158205.627399
+gedraineerd boven,intrek,2009,12,1,169886.863348
+gedraineerd boven,intrek,2010,1,1,169892.122031
+gedraineerd boven,intrek,2010,2,1,154367.103469
+gedraineerd boven,intrek,2010,3,1,173044.988863
+gedraineerd boven,intrek,2010,4,1,165962.187218
+gedraineerd boven,intrek,2010,5,1,168716.270276
+gedraineerd boven,intrek,2010,6,1,159941.265551
+gedraineerd boven,intrek,2010,7,1,159684.091746
+gedraineerd boven,intrek,2010,8,1,153757.282259
+gedraineerd boven,intrek,2010,9,1,143324.784656
+gedraineerd boven,intrek,2010,10,1,142618.144913
+gedraineerd boven,intrek,2010,11,1,132868.981327
+gedraineerd boven,intrek,2010,12,1,132138.505474
+gedraineerd boven,intrek,2011,1,1,4177.014034
+gedraineerd boven,kwel,1996,1,1,34386.424500
 gedraineerd boven,kwel,1996,2,1,32167.945500
 gedraineerd boven,kwel,1996,3,1,34386.424500
 gedraineerd boven,kwel,1996,4,1,33277.185000
@@ -1758,7 +1780,14 @@ gedraineerd boven,kwel,2010,2,1,31058.706000
 gedraineerd boven,kwel,2010,3,1,34386.424500
 gedraineerd boven,kwel,2010,4,1,33277.185000
 gedraineerd boven,kwel,2010,5,1,34386.424500
-gedraineerd boven,kwel,2010,6,1,32167.945500
+gedraineerd boven,kwel,2010,6,1,33277.185000
+gedraineerd boven,kwel,2010,7,1,34386.424500
+gedraineerd boven,kwel,2010,8,1,34386.424500
+gedraineerd boven,kwel,2010,9,1,33277.185000
+gedraineerd boven,kwel,2010,10,1,34386.424500
+gedraineerd boven,kwel,2010,11,1,33277.185000
+gedraineerd boven,kwel,2010,12,1,34386.424500
+gedraineerd boven,kwel,2011,1,1,1109.239500
 gedraineerd boven,verdamping,1996,1,1,-10260.465375
 gedraineerd boven,verdamping,1996,2,1,-17193.212250
 gedraineerd boven,verdamping,1996,3,1,-24957.888750
@@ -1932,7 +1961,9 @@ gedraineerd boven,verdamping,2010,2,1,-8504.169500
 gedraineerd boven,verdamping,2010,3,1,-55646.848250
 gedraineerd boven,verdamping,2010,4,1,-65999.750250
 gedraineerd boven,verdamping,2010,5,1,-84764.385125
-gedraineerd boven,verdamping,2010,6,1,-106394.555375
+gedraineerd boven,verdamping,2010,6,1,-109629.837250
+gedraineerd boven,verdamping,2010,7,1,-104453.386250
+gedraineerd boven,verdamping,2010,8,1,-47235.115375
 gedraineerd boven,neerslag,1996,1,1,20243.620875
 gedraineerd boven,neerslag,1996,2,1,180806.038500
 gedraineerd boven,neerslag,1996,3,1,35680.537250
@@ -2107,6 +2138,8 @@ gedraineerd boven,neerslag,2010,3,1,241259.591250
 gedraineerd boven,neerslag,2010,4,1,98537.442250
 gedraineerd boven,neerslag,2010,5,1,245511.676000
 gedraineerd boven,neerslag,2010,6,1,75705.595875
+gedraineerd boven,neerslag,2010,7,1,0.000000
+gedraineerd boven,neerslag,2010,8,1,0.000000
 stedelijk,afstroming,1996,1,1,0.000000
 stedelijk,afstroming,1996,2,1,0.000000
 stedelijk,afstroming,1996,3,1,0.000000
@@ -2281,6 +2314,13 @@ stedelijk,afstroming,2010,3,1,0.000000
 stedelijk,afstroming,2010,4,1,0.000000
 stedelijk,afstroming,2010,5,1,0.000000
 stedelijk,afstroming,2010,6,1,0.000000
+stedelijk,afstroming,2010,7,1,0.000000
+stedelijk,afstroming,2010,8,1,0.000000
+stedelijk,afstroming,2010,9,1,0.000000
+stedelijk,afstroming,2010,10,1,0.000000
+stedelijk,afstroming,2010,11,1,0.000000
+stedelijk,afstroming,2010,12,1,0.000000
+stedelijk,afstroming,2011,1,1,0.000000
 stedelijk,drainage,1996,1,1,0.000000
 stedelijk,drainage,1996,2,1,0.000000
 stedelijk,drainage,1996,3,1,0.000000
@@ -2455,6 +2495,13 @@ stedelijk,drainage,2010,3,1,0.000000
 stedelijk,drainage,2010,4,1,0.000000
 stedelijk,drainage,2010,5,1,0.000000
 stedelijk,drainage,2010,6,1,0.000000
+stedelijk,drainage,2010,7,1,0.000000
+stedelijk,drainage,2010,8,1,0.000000
+stedelijk,drainage,2010,9,1,0.000000
+stedelijk,drainage,2010,10,1,0.000000
+stedelijk,drainage,2010,11,1,0.000000
+stedelijk,drainage,2010,12,1,0.000000
+stedelijk,drainage,2011,1,1,0.000000
 stedelijk,intrek,1996,1,1,0.000000
 stedelijk,intrek,1996,2,1,0.000000
 stedelijk,intrek,1996,3,1,0.000000
@@ -2629,6 +2676,13 @@ stedelijk,intrek,2010,3,1,0.000000
 stedelijk,intrek,2010,4,1,0.000000
 stedelijk,intrek,2010,5,1,0.000000
 stedelijk,intrek,2010,6,1,0.000000
+stedelijk,intrek,2010,7,1,0.000000
+stedelijk,intrek,2010,8,1,0.000000
+stedelijk,intrek,2010,9,1,0.000000
+stedelijk,intrek,2010,10,1,0.000000
+stedelijk,intrek,2010,11,1,0.000000
+stedelijk,intrek,2010,12,1,0.000000
+stedelijk,intrek,2011,1,1,0.000000
 stedelijk,kwel,1996,1,1,0.000000
 stedelijk,kwel,1996,2,1,0.000000
 stedelijk,kwel,1996,3,1,0.000000
@@ -2803,6 +2857,13 @@ stedelijk,kwel,2010,3,1,0.000000
 stedelijk,kwel,2010,4,1,0.000000
 stedelijk,kwel,2010,5,1,0.000000
 stedelijk,kwel,2010,6,1,0.000000
+stedelijk,kwel,2010,7,1,0.000000
+stedelijk,kwel,2010,8,1,0.000000
+stedelijk,kwel,2010,9,1,0.000000
+stedelijk,kwel,2010,10,1,0.000000
+stedelijk,kwel,2010,11,1,0.000000
+stedelijk,kwel,2010,12,1,0.000000
+stedelijk,kwel,2011,1,1,0.000000
 stedelijk,verdamping,1996,1,1,0.000000
 stedelijk,verdamping,1996,2,1,0.000000
 stedelijk,verdamping,1996,3,1,0.000000
@@ -2977,6 +3038,13 @@ stedelijk,verdamping,2010,3,1,0.000000
 stedelijk,verdamping,2010,4,1,0.000000
 stedelijk,verdamping,2010,5,1,0.000000
 stedelijk,verdamping,2010,6,1,0.000000
+stedelijk,verdamping,2010,7,1,0.000000
+stedelijk,verdamping,2010,8,1,0.000000
+stedelijk,verdamping,2010,9,1,0.000000
+stedelijk,verdamping,2010,10,1,0.000000
+stedelijk,verdamping,2010,11,1,0.000000
+stedelijk,verdamping,2010,12,1,0.000000
+stedelijk,verdamping,2011,1,1,0.000000
 stedelijk,neerslag,1996,1,1,0.000000
 stedelijk,neerslag,1996,2,1,0.000000
 stedelijk,neerslag,1996,3,1,0.000000
@@ -3151,7 +3219,14 @@ stedelijk,neerslag,2010,3,1,0.000000
 stedelijk,neerslag,2010,4,1,0.000000
 stedelijk,neerslag,2010,5,1,0.000000
 stedelijk,neerslag,2010,6,1,0.000000
-landelijk,afstroming,1996,1,1,-805694.431100
+stedelijk,neerslag,2010,7,1,0.000000
+stedelijk,neerslag,2010,8,1,0.000000
+stedelijk,neerslag,2010,9,1,0.000000
+stedelijk,neerslag,2010,10,1,0.000000
+stedelijk,neerslag,2010,11,1,0.000000
+stedelijk,neerslag,2010,12,1,0.000000
+stedelijk,neerslag,2011,1,1,0.000000
+landelijk,afstroming,1996,1,1,-806284.467300
 landelijk,afstroming,1996,2,1,0.000000
 landelijk,afstroming,1996,3,1,0.000000
 landelijk,afstroming,1996,4,1,0.000000
@@ -3160,7 +3235,7 @@ landelijk,afstroming,1996,6,1,0.000000
 landelijk,afstroming,1996,7,1,0.000000
 landelijk,afstroming,1996,8,1,0.000000
 landelijk,afstroming,1996,9,1,0.000000
-landelijk,afstroming,1996,10,1,-16979.356710
+landelijk,afstroming,1996,10,1,-16970.937081
 landelijk,afstroming,1996,11,1,-397764.169976
 landelijk,afstroming,1996,12,1,-82223.725045
 landelijk,afstroming,1997,1,1,0.000000
@@ -3325,16 +3400,23 @@ landelijk,afstroming,2010,3,1,-46307.678953
 landelijk,afstroming,2010,4,1,0.000000
 landelijk,afstroming,2010,5,1,0.000000
 landelijk,afstroming,2010,6,1,0.000000
-landelijk,drainage,1996,1,1,-119568.410218
-landelijk,drainage,1996,2,1,-89928.101692
-landelijk,drainage,1996,3,1,-77968.704386
-landelijk,drainage,1996,4,1,-13854.259648
+landelijk,afstroming,2010,7,1,0.000000
+landelijk,afstroming,2010,8,1,0.000000
+landelijk,afstroming,2010,9,1,0.000000
+landelijk,afstroming,2010,10,1,0.000000
+landelijk,afstroming,2010,11,1,0.000000
+landelijk,afstroming,2010,12,1,0.000000
+landelijk,afstroming,2011,1,1,0.000000
+landelijk,drainage,1996,1,1,-121998.184152
+landelijk,drainage,1996,2,1,-88981.586504
+landelijk,drainage,1996,3,1,-77415.667047
+landelijk,drainage,1996,4,1,-13660.608602
 landelijk,drainage,1996,5,1,0.000000
 landelijk,drainage,1996,6,1,0.000000
-landelijk,drainage,1996,7,1,-1150.373897
-landelijk,drainage,1996,8,1,-124.581916
-landelijk,drainage,1996,9,1,-2721.202705
-landelijk,drainage,1996,10,1,-65647.845243
+landelijk,drainage,1996,7,1,-1141.774431
+landelijk,drainage,1996,8,1,-123.391372
+landelijk,drainage,1996,9,1,-2719.299608
+landelijk,drainage,1996,10,1,-65640.514725
 landelijk,drainage,1996,11,1,-122352.740324
 landelijk,drainage,1996,12,1,-116300.518951
 landelijk,drainage,1997,1,1,-83781.306240
@@ -3499,15 +3581,22 @@ landelijk,drainage,2010,3,1,-107967.279706
 landelijk,drainage,2010,4,1,-55879.785639
 landelijk,drainage,2010,5,1,-31640.685709
 landelijk,drainage,2010,6,1,-3204.032264
+landelijk,drainage,2010,7,1,0.000000
+landelijk,drainage,2010,8,1,0.000000
+landelijk,drainage,2010,9,1,0.000000
+landelijk,drainage,2010,10,1,0.000000
+landelijk,drainage,2010,11,1,-1114.391115
+landelijk,drainage,2010,12,1,-11309.356943
+landelijk,drainage,2011,1,1,-514.586329
 landelijk,intrek,1996,1,1,0.000000
 landelijk,intrek,1996,2,1,0.000000
 landelijk,intrek,1996,3,1,0.000000
-landelijk,intrek,1996,4,1,8067.367289
-landelijk,intrek,1996,5,1,30939.270566
-landelijk,intrek,1996,6,1,52497.654385
-landelijk,intrek,1996,7,1,20699.543357
-landelijk,intrek,1996,8,1,36890.020261
-landelijk,intrek,1996,9,1,8366.089931
+landelijk,intrek,1996,4,1,8162.426107
+landelijk,intrek,1996,5,1,31100.537404
+landelijk,intrek,1996,6,1,52581.842782
+landelijk,intrek,1996,7,1,20737.969636
+landelijk,intrek,1996,8,1,36913.968488
+landelijk,intrek,1996,9,1,8377.310380
 landelijk,intrek,1996,10,1,0.000000
 landelijk,intrek,1996,11,1,0.000000
 landelijk,intrek,1996,12,1,0.000000
@@ -3672,8 +3761,15 @@ landelijk,intrek,2010,2,1,0.000000
 landelijk,intrek,2010,3,1,0.000000
 landelijk,intrek,2010,4,1,545.712352
 landelijk,intrek,2010,5,1,2538.246807
-landelijk,intrek,2010,6,1,16983.949171
-landelijk,kwel,1996,1,1,26551.629000
+landelijk,intrek,2010,6,1,19122.435450
+landelijk,intrek,2010,7,1,112238.694561
+landelijk,intrek,2010,8,1,134038.271862
+landelijk,intrek,2010,9,1,72460.479130
+landelijk,intrek,2010,10,1,27869.254044
+landelijk,intrek,2010,11,1,3434.898775
+landelijk,intrek,2010,12,1,0.000000
+landelijk,intrek,2011,1,1,0.000000
+landelijk,kwel,1996,1,1,27436.683300
 landelijk,kwel,1996,2,1,25666.574700
 landelijk,kwel,1996,3,1,27436.683300
 landelijk,kwel,1996,4,1,26551.629000
@@ -3846,7 +3942,14 @@ landelijk,kwel,2010,2,1,24781.520400
 landelijk,kwel,2010,3,1,27436.683300
 landelijk,kwel,2010,4,1,26551.629000
 landelijk,kwel,2010,5,1,27436.683300
-landelijk,kwel,2010,6,1,25666.574700
+landelijk,kwel,2010,6,1,26551.629000
+landelijk,kwel,2010,7,1,27436.683300
+landelijk,kwel,2010,8,1,27436.683300
+landelijk,kwel,2010,9,1,26551.629000
+landelijk,kwel,2010,10,1,27436.683300
+landelijk,kwel,2010,11,1,26551.629000
+landelijk,kwel,2010,12,1,27436.683300
+landelijk,kwel,2011,1,1,885.054300
 landelijk,verdamping,1996,1,1,-22421.375600
 landelijk,verdamping,1996,2,1,-27141.665200
 landelijk,verdamping,1996,3,1,-70804.344000
@@ -4020,7 +4123,14 @@ landelijk,verdamping,2010,2,1,-10325.633500
 landelijk,verdamping,2010,3,1,-81424.995600
 landelijk,verdamping,2010,4,1,-183427.503675
 landelijk,verdamping,2010,5,1,-180919.849825
-landelijk,verdamping,2010,6,1,-224213.756000
+landelijk,verdamping,2010,6,1,-231957.981125
+landelijk,verdamping,2010,7,1,-250027.839750
+landelijk,verdamping,2010,8,1,-113065.686825
+landelijk,verdamping,2010,9,1,0.000000
+landelijk,verdamping,2010,10,1,0.000000
+landelijk,verdamping,2010,11,1,0.000000
+landelijk,verdamping,2010,12,1,0.000000
+landelijk,verdamping,2011,1,1,0.000000
 landelijk,neerslag,1996,1,1,15340.941200
 landelijk,neerslag,1996,2,1,140133.597500
 landelijk,neerslag,1996,3,1,17996.104100
@@ -4195,351 +4305,390 @@ landelijk,neerslag,2010,3,1,181141.113400
 landelijk,neerslag,2010,4,1,62322.573625
 landelijk,neerslag,2010,5,1,182984.976525
 landelijk,neerslag,2010,6,1,47940.441250
+landelijk,neerslag,2010,7,1,0.000000
+landelijk,neerslag,2010,8,1,0.000000
+landelijk,neerslag,2010,9,1,0.000000
+landelijk,neerslag,2010,10,1,0.000000
+landelijk,neerslag,2010,11,1,0.000000
+landelijk,neerslag,2010,12,1,0.000000
+landelijk,neerslag,2011,1,1,0.000000
 openwater,inlaat peilbeheer,1996,1,1,0.000000
 openwater,inlaat peilbeheer,1996,2,1,0.000000
 openwater,inlaat peilbeheer,1996,3,1,0.000000
-openwater,inlaat peilbeheer,1996,4,1,18967.622824
-openwater,inlaat peilbeheer,1996,5,1,8362.680601
-openwater,inlaat peilbeheer,1996,6,1,26271.563862
-openwater,inlaat peilbeheer,1996,7,1,11153.204144
-openwater,inlaat peilbeheer,1996,8,1,70331.807994
-openwater,inlaat peilbeheer,1996,9,1,77703.856375
-openwater,inlaat peilbeheer,1996,10,1,91257.036093
-openwater,inlaat peilbeheer,1996,11,1,32465.632160
-openwater,inlaat peilbeheer,1996,12,1,40397.642016
+openwater,inlaat peilbeheer,1996,4,1,18966.972732
+openwater,inlaat peilbeheer,1996,5,1,8362.581388
+openwater,inlaat peilbeheer,1996,6,1,26271.479752
+openwater,inlaat peilbeheer,1996,7,1,11153.191524
+openwater,inlaat peilbeheer,1996,8,1,70331.808261
+openwater,inlaat peilbeheer,1996,9,1,77703.859989
+openwater,inlaat peilbeheer,1996,10,1,91257.042666
+openwater,inlaat peilbeheer,1996,11,1,32465.635411
+openwater,inlaat peilbeheer,1996,12,1,40397.645935
 openwater,inlaat peilbeheer,1997,1,1,0.000000
 openwater,inlaat peilbeheer,1997,2,1,0.000000
 openwater,inlaat peilbeheer,1997,3,1,0.000000
-openwater,inlaat peilbeheer,1997,4,1,7394.889929
-openwater,inlaat peilbeheer,1997,5,1,3622.320214
-openwater,inlaat peilbeheer,1997,6,1,21381.907777
-openwater,inlaat peilbeheer,1997,7,1,4903.305017
-openwater,inlaat peilbeheer,1997,8,1,101127.186165
-openwater,inlaat peilbeheer,1997,9,1,113924.557812
-openwater,inlaat peilbeheer,1997,10,1,83114.548657
-openwater,inlaat peilbeheer,1997,11,1,56740.255615
-openwater,inlaat peilbeheer,1997,12,1,24244.580627
+openwater,inlaat peilbeheer,1997,4,1,7394.912353
+openwater,inlaat peilbeheer,1997,5,1,3622.326913
+openwater,inlaat peilbeheer,1997,6,1,21381.919667
+openwater,inlaat peilbeheer,1997,7,1,4903.310783
+openwater,inlaat peilbeheer,1997,8,1,101127.206092
+openwater,inlaat peilbeheer,1997,9,1,113924.565598
+openwater,inlaat peilbeheer,1997,10,1,83114.554449
+openwater,inlaat peilbeheer,1997,11,1,56740.259565
+openwater,inlaat peilbeheer,1997,12,1,24244.582273
 openwater,inlaat peilbeheer,1998,1,1,0.000000
 openwater,inlaat peilbeheer,1998,2,1,0.000000
 openwater,inlaat peilbeheer,1998,3,1,0.000000
 openwater,inlaat peilbeheer,1998,4,1,0.000000
-openwater,inlaat peilbeheer,1998,5,1,18215.501189
+openwater,inlaat peilbeheer,1998,5,1,18215.514857
 openwater,inlaat peilbeheer,1998,6,1,0.000000
-openwater,inlaat peilbeheer,1998,7,1,4163.046391
-openwater,inlaat peilbeheer,1998,8,1,64189.961638
-openwater,inlaat peilbeheer,1998,9,1,76947.502565
-openwater,inlaat peilbeheer,1998,10,1,41150.524026
-openwater,inlaat peilbeheer,1998,11,1,48880.334076
-openwater,inlaat peilbeheer,1998,12,1,16146.034842
+openwater,inlaat peilbeheer,1998,7,1,4163.058362
+openwater,inlaat peilbeheer,1998,8,1,64189.971999
+openwater,inlaat peilbeheer,1998,9,1,76947.506291
+openwater,inlaat peilbeheer,1998,10,1,41150.526051
+openwater,inlaat peilbeheer,1998,11,1,48880.336420
+openwater,inlaat peilbeheer,1998,12,1,16146.035596
 openwater,inlaat peilbeheer,1999,1,1,0.000000
 openwater,inlaat peilbeheer,1999,2,1,0.000000
 openwater,inlaat peilbeheer,1999,3,1,0.000000
-openwater,inlaat peilbeheer,1999,4,1,2887.146292
-openwater,inlaat peilbeheer,1999,5,1,15597.155358
-openwater,inlaat peilbeheer,1999,6,1,12734.556304
-openwater,inlaat peilbeheer,1999,7,1,24830.342353
-openwater,inlaat peilbeheer,1999,8,1,64831.447049
-openwater,inlaat peilbeheer,1999,9,1,105403.925643
-openwater,inlaat peilbeheer,1999,10,1,91628.912562
-openwater,inlaat peilbeheer,1999,11,1,65021.580054
+openwater,inlaat peilbeheer,1999,4,1,2887.151970
+openwater,inlaat peilbeheer,1999,5,1,15597.162852
+openwater,inlaat peilbeheer,1999,6,1,12734.562617
+openwater,inlaat peilbeheer,1999,7,1,24830.352800
+openwater,inlaat peilbeheer,1999,8,1,64831.451820
+openwater,inlaat peilbeheer,1999,9,1,105403.929115
+openwater,inlaat peilbeheer,1999,10,1,91628.915629
+openwater,inlaat peilbeheer,1999,11,1,65021.582222
 openwater,inlaat peilbeheer,1999,12,1,0.000000
 openwater,inlaat peilbeheer,2000,1,1,0.000000
 openwater,inlaat peilbeheer,2000,2,1,0.000000
 openwater,inlaat peilbeheer,2000,3,1,0.000000
 openwater,inlaat peilbeheer,2000,4,1,0.000000
-openwater,inlaat peilbeheer,2000,5,1,15465.387663
-openwater,inlaat peilbeheer,2000,6,1,12454.211021
+openwater,inlaat peilbeheer,2000,5,1,15465.392695
+openwater,inlaat peilbeheer,2000,6,1,12454.217824
 openwater,inlaat peilbeheer,2000,7,1,0.000000
-openwater,inlaat peilbeheer,2000,8,1,90381.930434
-openwater,inlaat peilbeheer,2000,9,1,85329.021568
-openwater,inlaat peilbeheer,2000,10,1,57931.413555
-openwater,inlaat peilbeheer,2000,11,1,16385.193005
-openwater,inlaat peilbeheer,2000,12,1,24274.482810
+openwater,inlaat peilbeheer,2000,8,1,90381.935826
+openwater,inlaat peilbeheer,2000,9,1,85329.023568
+openwater,inlaat peilbeheer,2000,10,1,57931.414918
+openwater,inlaat peilbeheer,2000,11,1,16385.193382
+openwater,inlaat peilbeheer,2000,12,1,24274.483356
 openwater,inlaat peilbeheer,2001,1,1,0.000000
 openwater,inlaat peilbeheer,2001,2,1,0.000000
 openwater,inlaat peilbeheer,2001,3,1,0.000000
 openwater,inlaat peilbeheer,2001,4,1,0.000000
-openwater,inlaat peilbeheer,2001,5,1,16178.186455
-openwater,inlaat peilbeheer,2001,6,1,6940.142784
-openwater,inlaat peilbeheer,2001,7,1,14791.997943
-openwater,inlaat peilbeheer,2001,8,1,88809.562502
-openwater,inlaat peilbeheer,2001,9,1,34457.026444
-openwater,inlaat peilbeheer,2001,10,1,92131.549418
-openwater,inlaat peilbeheer,2001,11,1,16502.979075
-openwater,inlaat peilbeheer,2001,12,1,8131.149712
+openwater,inlaat peilbeheer,2001,5,1,16178.191331
+openwater,inlaat peilbeheer,2001,6,1,6940.146131
+openwater,inlaat peilbeheer,2001,7,1,14792.000301
+openwater,inlaat peilbeheer,2001,8,1,88809.564503
+openwater,inlaat peilbeheer,2001,9,1,34457.026997
+openwater,inlaat peilbeheer,2001,10,1,92131.550899
+openwater,inlaat peilbeheer,2001,11,1,16502.979339
+openwater,inlaat peilbeheer,2001,12,1,8131.149840
 openwater,inlaat peilbeheer,2002,1,1,0.000000
 openwater,inlaat peilbeheer,2002,2,1,0.000000
 openwater,inlaat peilbeheer,2002,3,1,0.000000
-openwater,inlaat peilbeheer,2002,4,1,8229.771285
-openwater,inlaat peilbeheer,2002,5,1,5453.352105
-openwater,inlaat peilbeheer,2002,6,1,5744.708938
-openwater,inlaat peilbeheer,2002,7,1,7724.130197
-openwater,inlaat peilbeheer,2002,8,1,82017.843672
-openwater,inlaat peilbeheer,2002,9,1,113606.289376
-openwater,inlaat peilbeheer,2002,10,1,50186.532378
-openwater,inlaat peilbeheer,2002,11,1,40611.959469
-openwater,inlaat peilbeheer,2002,12,1,8090.350235
+openwater,inlaat peilbeheer,2002,4,1,8229.775246
+openwater,inlaat peilbeheer,2002,5,1,5453.355482
+openwater,inlaat peilbeheer,2002,6,1,5744.710735
+openwater,inlaat peilbeheer,2002,7,1,7724.132239
+openwater,inlaat peilbeheer,2002,8,1,82017.844959
+openwater,inlaat peilbeheer,2002,9,1,113606.290628
+openwater,inlaat peilbeheer,2002,10,1,50186.532938
+openwater,inlaat peilbeheer,2002,11,1,40611.959921
+openwater,inlaat peilbeheer,2002,12,1,8090.350322
 openwater,inlaat peilbeheer,2003,1,1,0.000000
 openwater,inlaat peilbeheer,2003,2,1,0.000000
-openwater,inlaat peilbeheer,2003,3,1,4052.384661
-openwater,inlaat peilbeheer,2003,4,1,11186.228213
-openwater,inlaat peilbeheer,2003,5,1,1864.699713
-openwater,inlaat peilbeheer,2003,6,1,32549.079079
-openwater,inlaat peilbeheer,2003,7,1,19941.011093
-openwater,inlaat peilbeheer,2003,8,1,93910.430269
-openwater,inlaat peilbeheer,2003,9,1,104353.965006
-openwater,inlaat peilbeheer,2003,10,1,83791.358229
-openwater,inlaat peilbeheer,2003,11,1,57317.151055
-openwater,inlaat peilbeheer,2003,12,1,24273.100826
+openwater,inlaat peilbeheer,2003,3,1,4052.386260
+openwater,inlaat peilbeheer,2003,4,1,11186.229932
+openwater,inlaat peilbeheer,2003,5,1,1864.700236
+openwater,inlaat peilbeheer,2003,6,1,32549.081207
+openwater,inlaat peilbeheer,2003,7,1,19941.013082
+openwater,inlaat peilbeheer,2003,8,1,93910.431723
+openwater,inlaat peilbeheer,2003,9,1,104353.965808
+openwater,inlaat peilbeheer,2003,10,1,83791.358877
+openwater,inlaat peilbeheer,2003,11,1,57317.151497
+openwater,inlaat peilbeheer,2003,12,1,24273.101010
 openwater,inlaat peilbeheer,2004,1,1,0.000000
 openwater,inlaat peilbeheer,2004,2,1,0.000000
 openwater,inlaat peilbeheer,2004,3,1,0.000000
-openwater,inlaat peilbeheer,2004,4,1,5243.173098
-openwater,inlaat peilbeheer,2004,5,1,22536.096644
-openwater,inlaat peilbeheer,2004,6,1,9425.744180
-openwater,inlaat peilbeheer,2004,7,1,2674.282017
-openwater,inlaat peilbeheer,2004,8,1,64172.918088
-openwater,inlaat peilbeheer,2004,9,1,88264.300896
-openwater,inlaat peilbeheer,2004,10,1,99704.793981
-openwater,inlaat peilbeheer,2004,11,1,16262.162500
-openwater,inlaat peilbeheer,2004,12,1,16181.553112
+openwater,inlaat peilbeheer,2004,4,1,5243.174177
+openwater,inlaat peilbeheer,2004,5,1,22536.098326
+openwater,inlaat peilbeheer,2004,6,1,9425.745204
+openwater,inlaat peilbeheer,2004,7,1,2674.282505
+openwater,inlaat peilbeheer,2004,8,1,64172.918856
+openwater,inlaat peilbeheer,2004,9,1,88264.301361
+openwater,inlaat peilbeheer,2004,10,1,99704.794521
+openwater,inlaat peilbeheer,2004,11,1,16262.162587
+openwater,inlaat peilbeheer,2004,12,1,16181.553196
 openwater,inlaat peilbeheer,2005,1,1,0.000000
 openwater,inlaat peilbeheer,2005,2,1,0.000000
 openwater,inlaat peilbeheer,2005,3,1,0.000000
 openwater,inlaat peilbeheer,2005,4,1,0.000000
-openwater,inlaat peilbeheer,2005,5,1,7533.744960
-openwater,inlaat peilbeheer,2005,6,1,17885.849332
-openwater,inlaat peilbeheer,2005,7,1,6101.330948
-openwater,inlaat peilbeheer,2005,8,1,74584.268029
-openwater,inlaat peilbeheer,2005,9,1,121171.265329
-openwater,inlaat peilbeheer,2005,10,1,101213.656556
-openwater,inlaat peilbeheer,2005,11,1,32803.532937
-openwater,inlaat peilbeheer,2005,12,1,32363.507929
+openwater,inlaat peilbeheer,2005,5,1,7533.746389
+openwater,inlaat peilbeheer,2005,6,1,17885.850357
+openwater,inlaat peilbeheer,2005,7,1,6101.331359
+openwater,inlaat peilbeheer,2005,8,1,74584.268326
+openwater,inlaat peilbeheer,2005,9,1,121171.265781
+openwater,inlaat peilbeheer,2005,10,1,101213.656930
+openwater,inlaat peilbeheer,2005,11,1,32803.533059
+openwater,inlaat peilbeheer,2005,12,1,32363.508046
 openwater,inlaat peilbeheer,2006,1,1,0.000000
 openwater,inlaat peilbeheer,2006,2,1,0.000000
 openwater,inlaat peilbeheer,2006,3,1,0.000000
-openwater,inlaat peilbeheer,2006,4,1,1166.204597
-openwater,inlaat peilbeheer,2006,5,1,16636.689535
-openwater,inlaat peilbeheer,2006,6,1,22629.441942
-openwater,inlaat peilbeheer,2006,7,1,41026.411647
-openwater,inlaat peilbeheer,2006,8,1,46615.948923
-openwater,inlaat peilbeheer,2006,9,1,131481.083637
-openwater,inlaat peilbeheer,2006,10,1,75258.864436
-openwater,inlaat peilbeheer,2006,11,1,40655.450984
+openwater,inlaat peilbeheer,2006,4,1,1166.204984
+openwater,inlaat peilbeheer,2006,5,1,16636.689942
+openwater,inlaat peilbeheer,2006,6,1,22629.442776
+openwater,inlaat peilbeheer,2006,7,1,41026.412267
+openwater,inlaat peilbeheer,2006,8,1,46615.949037
+openwater,inlaat peilbeheer,2006,9,1,131481.083972
+openwater,inlaat peilbeheer,2006,10,1,75258.864631
+openwater,inlaat peilbeheer,2006,11,1,40655.451089
 openwater,inlaat peilbeheer,2006,12,1,0.000000
 openwater,inlaat peilbeheer,2007,1,1,0.000000
 openwater,inlaat peilbeheer,2007,2,1,0.000000
 openwater,inlaat peilbeheer,2007,3,1,0.000000
-openwater,inlaat peilbeheer,2007,4,1,29964.535506
-openwater,inlaat peilbeheer,2007,5,1,9397.455964
-openwater,inlaat peilbeheer,2007,6,1,5810.987683
+openwater,inlaat peilbeheer,2007,4,1,29964.536233
+openwater,inlaat peilbeheer,2007,5,1,9397.456298
+openwater,inlaat peilbeheer,2007,6,1,5810.987906
 openwater,inlaat peilbeheer,2007,7,1,0.000000
-openwater,inlaat peilbeheer,2007,8,1,87480.676767
-openwater,inlaat peilbeheer,2007,9,1,86189.418864
-openwater,inlaat peilbeheer,2007,10,1,91827.856517
-openwater,inlaat peilbeheer,2007,11,1,16258.868641
-openwater,inlaat peilbeheer,2007,12,1,24271.451341
+openwater,inlaat peilbeheer,2007,8,1,87480.677152
+openwater,inlaat peilbeheer,2007,9,1,86189.419019
+openwater,inlaat peilbeheer,2007,10,1,91827.856683
+openwater,inlaat peilbeheer,2007,11,1,16258.868670
+openwater,inlaat peilbeheer,2007,12,1,24271.451383
 openwater,inlaat peilbeheer,2008,1,1,0.000000
 openwater,inlaat peilbeheer,2008,2,1,0.000000
 openwater,inlaat peilbeheer,2008,3,1,0.000000
-openwater,inlaat peilbeheer,2008,4,1,2274.751763
-openwater,inlaat peilbeheer,2008,5,1,23142.076189
-openwater,inlaat peilbeheer,2008,6,1,25422.089233
-openwater,inlaat peilbeheer,2008,7,1,6032.200019
-openwater,inlaat peilbeheer,2008,8,1,58643.298701
-openwater,inlaat peilbeheer,2008,9,1,86174.720352
-openwater,inlaat peilbeheer,2008,10,1,74508.132636
-openwater,inlaat peilbeheer,2008,11,1,24473.512629
-openwater,inlaat peilbeheer,2008,12,1,24271.944166
+openwater,inlaat peilbeheer,2008,4,1,2274.752038
+openwater,inlaat peilbeheer,2008,5,1,23142.076591
+openwater,inlaat peilbeheer,2008,6,1,25422.089599
+openwater,inlaat peilbeheer,2008,7,1,6032.200089
+openwater,inlaat peilbeheer,2008,8,1,58643.298778
+openwater,inlaat peilbeheer,2008,9,1,86174.720460
+openwater,inlaat peilbeheer,2008,10,1,74508.132730
+openwater,inlaat peilbeheer,2008,11,1,24473.512660
+openwater,inlaat peilbeheer,2008,12,1,24271.944195
 openwater,inlaat peilbeheer,2009,1,1,0.000000
 openwater,inlaat peilbeheer,2009,2,1,0.000000
 openwater,inlaat peilbeheer,2009,3,1,0.000000
-openwater,inlaat peilbeheer,2009,4,1,10444.457321
-openwater,inlaat peilbeheer,2009,5,1,8391.851025
-openwater,inlaat peilbeheer,2009,6,1,22896.022514
-openwater,inlaat peilbeheer,2009,7,1,5764.581781
-openwater,inlaat peilbeheer,2009,8,1,95367.002860
-openwater,inlaat peilbeheer,2009,9,1,112426.779865
-openwater,inlaat peilbeheer,2009,10,1,91442.560752
-openwater,inlaat peilbeheer,2009,11,1,16304.189326
-openwater,inlaat peilbeheer,2009,12,1,32446.226601
+openwater,inlaat peilbeheer,2009,4,1,10444.457609
+openwater,inlaat peilbeheer,2009,5,1,8391.851203
+openwater,inlaat peilbeheer,2009,6,1,22896.022768
+openwater,inlaat peilbeheer,2009,7,1,5764.582027
+openwater,inlaat peilbeheer,2009,8,1,95367.003030
+openwater,inlaat peilbeheer,2009,9,1,112426.779962
+openwater,inlaat peilbeheer,2009,10,1,91442.560831
+openwater,inlaat peilbeheer,2009,11,1,16304.189341
+openwater,inlaat peilbeheer,2009,12,1,32446.226629
 openwater,inlaat peilbeheer,2010,1,1,0.000000
 openwater,inlaat peilbeheer,2010,2,1,0.000000
 openwater,inlaat peilbeheer,2010,3,1,0.000000
-openwater,inlaat peilbeheer,2010,4,1,14089.084743
-openwater,inlaat peilbeheer,2010,5,1,11164.096196
-openwater,inlaat peilbeheer,2010,6,1,20708.807027
-openwater,pomp peilbeheer,1996,1,1,-2091.801638
-openwater,pomp peilbeheer,1996,2,1,-18975.859877
-openwater,pomp peilbeheer,1996,3,1,-1369.056787
+openwater,inlaat peilbeheer,2010,4,1,14089.084888
+openwater,inlaat peilbeheer,2010,5,1,11164.096289
+openwater,inlaat peilbeheer,2010,6,1,21990.146883
+openwater,inlaat peilbeheer,2010,7,1,41490.471420
+openwater,inlaat peilbeheer,2010,8,1,60067.001313
+openwater,inlaat peilbeheer,2010,9,1,0.000000
+openwater,inlaat peilbeheer,2010,10,1,0.000000
+openwater,inlaat peilbeheer,2010,11,1,0.000000
+openwater,inlaat peilbeheer,2010,12,1,0.000000
+openwater,inlaat peilbeheer,2011,1,1,0.000000
+openwater,inlaat peilbeheer,2011,2,1,0.000000
+openwater,inlaat peilbeheer,2011,3,1,0.000000
+openwater,inlaat peilbeheer,2011,4,1,0.000000
+openwater,inlaat peilbeheer,2011,5,1,0.000000
+openwater,inlaat peilbeheer,2011,6,1,0.000000
+openwater,inlaat peilbeheer,2011,7,1,0.000000
+openwater,inlaat peilbeheer,2011,8,1,76496.660000
+openwater,inlaat peilbeheer,2011,9,1,120784.200000
+openwater,inlaat peilbeheer,2011,10,1,0.000000
+openwater,pomp peilbeheer,1996,1,1,-2209.362284
+openwater,pomp peilbeheer,1996,2,1,-18976.857499
+openwater,pomp peilbeheer,1996,3,1,-1369.281924
 openwater,pomp peilbeheer,1996,4,1,0.000000
 openwater,pomp peilbeheer,1996,5,1,0.000000
-openwater,pomp peilbeheer,1996,6,1,-1387.885198
-openwater,pomp peilbeheer,1996,7,1,-5617.913783
-openwater,pomp peilbeheer,1996,8,1,-46607.742323
-openwater,pomp peilbeheer,1996,9,1,-92110.461687
-openwater,pomp peilbeheer,1996,10,1,-118704.943703
-openwater,pomp peilbeheer,1996,11,1,-102732.125511
-openwater,pomp peilbeheer,1996,12,1,-62027.201488
-openwater,pomp peilbeheer,1997,1,1,-7746.817427
-openwater,pomp peilbeheer,1997,2,1,-32712.956261
-openwater,pomp peilbeheer,1997,3,1,-5839.021221
+openwater,pomp peilbeheer,1996,6,1,-1387.888711
+openwater,pomp peilbeheer,1996,7,1,-5617.919743
+openwater,pomp peilbeheer,1996,8,1,-46607.740150
+openwater,pomp peilbeheer,1996,9,1,-92110.452538
+openwater,pomp peilbeheer,1996,10,1,-118704.940080
+openwater,pomp peilbeheer,1996,11,1,-102732.104408
+openwater,pomp peilbeheer,1996,12,1,-62027.180999
+openwater,pomp peilbeheer,1997,1,1,-7746.793763
+openwater,pomp peilbeheer,1997,2,1,-32712.935510
+openwater,pomp peilbeheer,1997,3,1,-5839.002465
 openwater,pomp peilbeheer,1997,4,1,0.000000
-openwater,pomp peilbeheer,1997,5,1,-5784.411132
-openwater,pomp peilbeheer,1997,6,1,-6583.001919
-openwater,pomp peilbeheer,1997,7,1,-4232.679215
-openwater,pomp peilbeheer,1997,8,1,-62447.867701
-openwater,pomp peilbeheer,1997,9,1,-120654.910647
-openwater,pomp peilbeheer,1997,10,1,-103639.730767
-openwater,pomp peilbeheer,1997,11,1,-82575.872315
-openwater,pomp peilbeheer,1997,12,1,-56479.063384
-openwater,pomp peilbeheer,1998,1,1,-41987.899312
-openwater,pomp peilbeheer,1998,2,1,-3660.568480
-openwater,pomp peilbeheer,1998,3,1,-47200.460294
-openwater,pomp peilbeheer,1998,4,1,-22738.534604
+openwater,pomp peilbeheer,1997,5,1,-5784.394778
+openwater,pomp peilbeheer,1997,6,1,-6582.994757
+openwater,pomp peilbeheer,1997,7,1,-4232.670893
+openwater,pomp peilbeheer,1997,8,1,-62447.862184
+openwater,pomp peilbeheer,1997,9,1,-120654.900466
+openwater,pomp peilbeheer,1997,10,1,-103639.718552
+openwater,pomp peilbeheer,1997,11,1,-82575.859362
+openwater,pomp peilbeheer,1997,12,1,-56479.048088
+openwater,pomp peilbeheer,1998,1,1,-41987.883410
+openwater,pomp peilbeheer,1998,2,1,-3660.553555
+openwater,pomp peilbeheer,1998,3,1,-47200.453743
+openwater,pomp peilbeheer,1998,4,1,-22738.512095
 openwater,pomp peilbeheer,1998,5,1,0.000000
-openwater,pomp peilbeheer,1998,6,1,-35069.629018
+openwater,pomp peilbeheer,1998,6,1,-35069.613940
 openwater,pomp peilbeheer,1998,7,1,0.000000
-openwater,pomp peilbeheer,1998,8,1,-58866.984661
-openwater,pomp peilbeheer,1998,9,1,-123598.756006
-openwater,pomp peilbeheer,1998,10,1,-116433.589271
-openwater,pomp peilbeheer,1998,11,1,-84208.570421
-openwater,pomp peilbeheer,1998,12,1,-53351.634029
-openwater,pomp peilbeheer,1999,1,1,-38059.719327
-openwater,pomp peilbeheer,1999,2,1,-26302.879047
-openwater,pomp peilbeheer,1999,3,1,-30303.462022
-openwater,pomp peilbeheer,1999,4,1,-11301.681296
-openwater,pomp peilbeheer,1999,5,1,-6955.148834
-openwater,pomp peilbeheer,1999,6,1,-8087.783327
+openwater,pomp peilbeheer,1998,8,1,-58866.979555
+openwater,pomp peilbeheer,1998,9,1,-123598.747261
+openwater,pomp peilbeheer,1998,10,1,-116433.578797
+openwater,pomp peilbeheer,1998,11,1,-84208.561034
+openwater,pomp peilbeheer,1998,12,1,-53351.623024
+openwater,pomp peilbeheer,1999,1,1,-38059.709015
+openwater,pomp peilbeheer,1999,2,1,-26302.867963
+openwater,pomp peilbeheer,1999,3,1,-30303.452987
+openwater,pomp peilbeheer,1999,4,1,-11301.675177
+openwater,pomp peilbeheer,1999,5,1,-6955.146539
+openwater,pomp peilbeheer,1999,6,1,-8087.780766
 openwater,pomp peilbeheer,1999,7,1,0.000000
-openwater,pomp peilbeheer,1999,8,1,-63352.169626
-openwater,pomp peilbeheer,1999,9,1,-129871.185373
-openwater,pomp peilbeheer,1999,10,1,-100973.172907
-openwater,pomp peilbeheer,1999,11,1,-91975.165459
-openwater,pomp peilbeheer,1999,12,1,-69246.782834
-openwater,pomp peilbeheer,2000,1,1,-22206.439430
-openwater,pomp peilbeheer,2000,2,1,-40830.610439
-openwater,pomp peilbeheer,2000,3,1,-23115.209106
-openwater,pomp peilbeheer,2000,4,1,-3326.184656
-openwater,pomp peilbeheer,2000,5,1,-8469.165054
+openwater,pomp peilbeheer,1999,8,1,-63352.165177
+openwater,pomp peilbeheer,1999,9,1,-129871.180190
+openwater,pomp peilbeheer,1999,10,1,-100973.167299
+openwater,pomp peilbeheer,1999,11,1,-91975.159484
+openwater,pomp peilbeheer,1999,12,1,-69246.774673
+openwater,pomp peilbeheer,2000,1,1,-22206.431518
+openwater,pomp peilbeheer,2000,2,1,-40830.603256
+openwater,pomp peilbeheer,2000,3,1,-23115.202366
+openwater,pomp peilbeheer,2000,4,1,-3326.178565
+openwater,pomp peilbeheer,2000,5,1,-8469.161686
 openwater,pomp peilbeheer,2000,6,1,0.000000
-openwater,pomp peilbeheer,2000,7,1,-23632.356740
-openwater,pomp peilbeheer,2000,8,1,-65492.008183
-openwater,pomp peilbeheer,2000,9,1,-109117.621369
-openwater,pomp peilbeheer,2000,10,1,-100554.120274
-openwater,pomp peilbeheer,2000,11,1,-77168.027159
-openwater,pomp peilbeheer,2000,12,1,-76609.288044
-openwater,pomp peilbeheer,2001,1,1,-30473.436887
-openwater,pomp peilbeheer,2001,2,1,-35166.960155
-openwater,pomp peilbeheer,2001,3,1,-19454.429871
-openwater,pomp peilbeheer,2001,4,1,-19598.300563
-openwater,pomp peilbeheer,2001,5,1,-6214.292944
-openwater,pomp peilbeheer,2001,6,1,-22353.336391
-openwater,pomp peilbeheer,2001,7,1,-14076.789439
-openwater,pomp peilbeheer,2001,8,1,-83829.631862
-openwater,pomp peilbeheer,2001,9,1,-113572.956617
-openwater,pomp peilbeheer,2001,10,1,-100705.000441
-openwater,pomp peilbeheer,2001,11,1,-61447.583955
-openwater,pomp peilbeheer,2001,12,1,-46292.394753
-openwater,pomp peilbeheer,2002,1,1,-37163.950577
-openwater,pomp peilbeheer,2002,2,1,-63217.525690
-openwater,pomp peilbeheer,2002,3,1,-7765.020712
-openwater,pomp peilbeheer,2002,4,1,-7749.866049
+openwater,pomp peilbeheer,2000,7,1,-23632.350984
+openwater,pomp peilbeheer,2000,8,1,-65492.006341
+openwater,pomp peilbeheer,2000,9,1,-109117.617368
+openwater,pomp peilbeheer,2000,10,1,-100554.115621
+openwater,pomp peilbeheer,2000,11,1,-77168.021889
+openwater,pomp peilbeheer,2000,12,1,-76609.282931
+openwater,pomp peilbeheer,2001,1,1,-30473.431925
+openwater,pomp peilbeheer,2001,2,1,-35166.954820
+openwater,pomp peilbeheer,2001,3,1,-19454.425193
+openwater,pomp peilbeheer,2001,4,1,-19598.295854
+openwater,pomp peilbeheer,2001,5,1,-6214.292316
+openwater,pomp peilbeheer,2001,6,1,-22353.335171
+openwater,pomp peilbeheer,2001,7,1,-14076.787220
+openwater,pomp peilbeheer,2001,8,1,-83829.629426
+openwater,pomp peilbeheer,2001,9,1,-113572.953005
+openwater,pomp peilbeheer,2001,10,1,-100704.997747
+openwater,pomp peilbeheer,2001,11,1,-61447.580300
+openwater,pomp peilbeheer,2001,12,1,-46292.390953
+openwater,pomp peilbeheer,2002,1,1,-37163.946891
+openwater,pomp peilbeheer,2002,2,1,-63217.522230
+openwater,pomp peilbeheer,2002,3,1,-7765.018269
+openwater,pomp peilbeheer,2002,4,1,-7749.865494
 openwater,pomp peilbeheer,2002,5,1,0.000000
-openwater,pomp peilbeheer,2002,6,1,-2087.568417
-openwater,pomp peilbeheer,2002,7,1,-10783.510463
-openwater,pomp peilbeheer,2002,8,1,-126420.391392
-openwater,pomp peilbeheer,2002,9,1,-111240.724964
-openwater,pomp peilbeheer,2002,10,1,-97091.592480
-openwater,pomp peilbeheer,2002,11,1,-76004.120495
-openwater,pomp peilbeheer,2002,12,1,-40125.450655
-openwater,pomp peilbeheer,2003,1,1,-52730.553725
-openwater,pomp peilbeheer,2003,2,1,-7422.601128
-openwater,pomp peilbeheer,2003,3,1,-2911.257730
-openwater,pomp peilbeheer,2003,4,1,-270.496648
-openwater,pomp peilbeheer,2003,5,1,-17461.208283
+openwater,pomp peilbeheer,2002,6,1,-2087.567148
+openwater,pomp peilbeheer,2002,7,1,-10783.509426
+openwater,pomp peilbeheer,2002,8,1,-126420.389398
+openwater,pomp peilbeheer,2002,9,1,-111240.723326
+openwater,pomp peilbeheer,2002,10,1,-97091.590141
+openwater,pomp peilbeheer,2002,11,1,-76004.118228
+openwater,pomp peilbeheer,2002,12,1,-40125.448016
+openwater,pomp peilbeheer,2003,1,1,-52730.551166
+openwater,pomp peilbeheer,2003,2,1,-7422.600292
+openwater,pomp peilbeheer,2003,3,1,-2911.255271
+openwater,pomp peilbeheer,2003,4,1,-270.496490
+openwater,pomp peilbeheer,2003,5,1,-17461.206000
 openwater,pomp peilbeheer,2003,6,1,0.000000
-openwater,pomp peilbeheer,2003,7,1,-4182.418717
-openwater,pomp peilbeheer,2003,8,1,-56243.583844
-openwater,pomp peilbeheer,2003,9,1,-104370.386712
-openwater,pomp peilbeheer,2003,10,1,-112155.503449
-openwater,pomp peilbeheer,2003,11,1,-84657.165686
-openwater,pomp peilbeheer,2003,12,1,-66516.489043
-openwater,pomp peilbeheer,2004,1,1,-62510.180834
-openwater,pomp peilbeheer,2004,2,1,-29995.396681
-openwater,pomp peilbeheer,2004,3,1,-10016.849927
-openwater,pomp peilbeheer,2004,4,1,-2437.072172
+openwater,pomp peilbeheer,2003,7,1,-4182.418429
+openwater,pomp peilbeheer,2003,8,1,-56243.583160
+openwater,pomp peilbeheer,2003,9,1,-104370.385508
+openwater,pomp peilbeheer,2003,10,1,-112155.502087
+openwater,pomp peilbeheer,2003,11,1,-84657.164240
+openwater,pomp peilbeheer,2003,12,1,-66516.487335
+openwater,pomp peilbeheer,2004,1,1,-62510.178999
+openwater,pomp peilbeheer,2004,2,1,-29995.395243
+openwater,pomp peilbeheer,2004,3,1,-10016.848413
+openwater,pomp peilbeheer,2004,4,1,-2437.071349
 openwater,pomp peilbeheer,2004,5,1,0.000000
-openwater,pomp peilbeheer,2004,6,1,-10018.757529
-openwater,pomp peilbeheer,2004,7,1,-26747.042946
-openwater,pomp peilbeheer,2004,8,1,-90776.887844
-openwater,pomp peilbeheer,2004,9,1,-113552.480820
-openwater,pomp peilbeheer,2004,10,1,-116794.238847
-openwater,pomp peilbeheer,2004,11,1,-48650.152820
-openwater,pomp peilbeheer,2004,12,1,-39332.274813
-openwater,pomp peilbeheer,2005,1,1,-22491.237816
-openwater,pomp peilbeheer,2005,2,1,-27997.608608
-openwater,pomp peilbeheer,2005,3,1,-14809.424123
-openwater,pomp peilbeheer,2005,4,1,-11371.611434
+openwater,pomp peilbeheer,2004,6,1,-10018.757125
+openwater,pomp peilbeheer,2004,7,1,-26747.041704
+openwater,pomp peilbeheer,2004,8,1,-90776.887130
+openwater,pomp peilbeheer,2004,9,1,-113552.479894
+openwater,pomp peilbeheer,2004,10,1,-116794.237993
+openwater,pomp peilbeheer,2004,11,1,-48650.151598
+openwater,pomp peilbeheer,2004,12,1,-39332.273585
+openwater,pomp peilbeheer,2005,1,1,-22491.236544
+openwater,pomp peilbeheer,2005,2,1,-27997.607572
+openwater,pomp peilbeheer,2005,3,1,-14809.422960
+openwater,pomp peilbeheer,2005,4,1,-11371.610603
 openwater,pomp peilbeheer,2005,5,1,0.000000
-openwater,pomp peilbeheer,2005,6,1,-944.182952
-openwater,pomp peilbeheer,2005,7,1,-34907.760704
-openwater,pomp peilbeheer,2005,8,1,-77528.700272
-openwater,pomp peilbeheer,2005,9,1,-123018.180266
-openwater,pomp peilbeheer,2005,10,1,-116440.901470
-openwater,pomp peilbeheer,2005,11,1,-84361.109202
-openwater,pomp peilbeheer,2005,12,1,-59646.692417
-openwater,pomp peilbeheer,2006,1,1,-12955.521039
-openwater,pomp peilbeheer,2006,2,1,-21931.271150
-openwater,pomp peilbeheer,2006,3,1,-25446.338734
-openwater,pomp peilbeheer,2006,4,1,-5971.706679
-openwater,pomp peilbeheer,2006,5,1,-12596.280346
+openwater,pomp peilbeheer,2005,6,1,-944.182811
+openwater,pomp peilbeheer,2005,7,1,-34907.760054
+openwater,pomp peilbeheer,2005,8,1,-77528.699540
+openwater,pomp peilbeheer,2005,9,1,-123018.179752
+openwater,pomp peilbeheer,2005,10,1,-116440.900877
+openwater,pomp peilbeheer,2005,11,1,-84361.108416
+openwater,pomp peilbeheer,2005,12,1,-59646.691624
+openwater,pomp peilbeheer,2006,1,1,-12955.520269
+openwater,pomp peilbeheer,2006,2,1,-21931.270264
+openwater,pomp peilbeheer,2006,3,1,-25446.337955
+openwater,pomp peilbeheer,2006,4,1,-5971.706233
+openwater,pomp peilbeheer,2006,5,1,-12596.280070
 openwater,pomp peilbeheer,2006,6,1,0.000000
-openwater,pomp peilbeheer,2006,7,1,-1713.577476
-openwater,pomp peilbeheer,2006,8,1,-137624.639676
-openwater,pomp peilbeheer,2006,9,1,-107904.649978
-openwater,pomp peilbeheer,2006,10,1,-111879.832405
-openwater,pomp peilbeheer,2006,11,1,-74754.551326
-openwater,pomp peilbeheer,2006,12,1,-38215.602248
-openwater,pomp peilbeheer,2007,1,1,-53735.071916
-openwater,pomp peilbeheer,2007,2,1,-29592.560110
-openwater,pomp peilbeheer,2007,3,1,-29009.708011
+openwater,pomp peilbeheer,2006,7,1,-1713.577453
+openwater,pomp peilbeheer,2006,8,1,-137624.638983
+openwater,pomp peilbeheer,2006,9,1,-107904.649643
+openwater,pomp peilbeheer,2006,10,1,-111879.831928
+openwater,pomp peilbeheer,2006,11,1,-74754.550800
+openwater,pomp peilbeheer,2006,12,1,-38215.601616
+openwater,pomp peilbeheer,2007,1,1,-53735.071304
+openwater,pomp peilbeheer,2007,2,1,-29592.559573
+openwater,pomp peilbeheer,2007,3,1,-29009.707618
 openwater,pomp peilbeheer,2007,4,1,0.000000
-openwater,pomp peilbeheer,2007,5,1,-22986.865745
-openwater,pomp peilbeheer,2007,6,1,-32698.933809
-openwater,pomp peilbeheer,2007,7,1,-32344.674315
-openwater,pomp peilbeheer,2007,8,1,-61763.903869
-openwater,pomp peilbeheer,2007,9,1,-94098.088037
-openwater,pomp peilbeheer,2007,10,1,-90876.238168
-openwater,pomp peilbeheer,2007,11,1,-55277.965327
-openwater,pomp peilbeheer,2007,12,1,-56140.661427
-openwater,pomp peilbeheer,2008,1,1,-44348.195911
-openwater,pomp peilbeheer,2008,2,1,-10684.371147
-openwater,pomp peilbeheer,2008,3,1,-36360.318266
-openwater,pomp peilbeheer,2008,4,1,-3742.659802
+openwater,pomp peilbeheer,2007,5,1,-22986.865536
+openwater,pomp peilbeheer,2007,6,1,-32698.933522
+openwater,pomp peilbeheer,2007,7,1,-32344.673836
+openwater,pomp peilbeheer,2007,8,1,-61763.903726
+openwater,pomp peilbeheer,2007,9,1,-94098.087727
+openwater,pomp peilbeheer,2007,10,1,-90876.237867
+openwater,pomp peilbeheer,2007,11,1,-55277.964918
+openwater,pomp peilbeheer,2007,12,1,-56140.661031
+openwater,pomp peilbeheer,2008,1,1,-44348.195486
+openwater,pomp peilbeheer,2008,2,1,-10684.370761
+openwater,pomp peilbeheer,2008,3,1,-36360.317878
+openwater,pomp peilbeheer,2008,4,1,-3742.659726
 openwater,pomp peilbeheer,2008,5,1,0.000000
 openwater,pomp peilbeheer,2008,6,1,0.000000
-openwater,pomp peilbeheer,2008,7,1,-29068.352993
-openwater,pomp peilbeheer,2008,8,1,-57460.261751
-openwater,pomp peilbeheer,2008,9,1,-118401.806124
-openwater,pomp peilbeheer,2008,10,1,-101380.827426
-openwater,pomp peilbeheer,2008,11,1,-65713.721643
-openwater,pomp peilbeheer,2008,12,1,-42947.054562
-openwater,pomp peilbeheer,2009,1,1,-27634.578433
-openwater,pomp peilbeheer,2009,2,1,-20178.411070
-openwater,pomp peilbeheer,2009,3,1,-16918.377909
+openwater,pomp peilbeheer,2008,7,1,-29068.352765
+openwater,pomp peilbeheer,2008,8,1,-57460.261428
+openwater,pomp peilbeheer,2008,9,1,-118401.805909
+openwater,pomp peilbeheer,2008,10,1,-101380.827196
+openwater,pomp peilbeheer,2008,11,1,-65713.721371
+openwater,pomp peilbeheer,2008,12,1,-42947.054287
+openwater,pomp peilbeheer,2009,1,1,-27634.578204
+openwater,pomp peilbeheer,2009,2,1,-20178.410754
+openwater,pomp peilbeheer,2009,3,1,-16918.377649
 openwater,pomp peilbeheer,2009,4,1,0.000000
-openwater,pomp peilbeheer,2009,5,1,-2351.830337
-openwater,pomp peilbeheer,2009,6,1,-884.290057
+openwater,pomp peilbeheer,2009,5,1,-2351.830295
+openwater,pomp peilbeheer,2009,6,1,-884.290024
 openwater,pomp peilbeheer,2009,7,1,0.000000
-openwater,pomp peilbeheer,2009,8,1,-65105.586696
-openwater,pomp peilbeheer,2009,9,1,-114989.608932
-openwater,pomp peilbeheer,2009,10,1,-107887.317750
-openwater,pomp peilbeheer,2009,11,1,-78716.460056
-openwater,pomp peilbeheer,2009,12,1,-68991.663919
-openwater,pomp peilbeheer,2010,1,1,-26155.805511
-openwater,pomp peilbeheer,2010,2,1,-35417.754843
-openwater,pomp peilbeheer,2010,3,1,-17295.220439
-openwater,pomp peilbeheer,2010,4,1,-2456.436283
-openwater,pomp peilbeheer,2010,5,1,-11701.154517
+openwater,pomp peilbeheer,2009,8,1,-65105.586627
+openwater,pomp peilbeheer,2009,9,1,-114989.608805
+openwater,pomp peilbeheer,2009,10,1,-107887.317605
+openwater,pomp peilbeheer,2009,11,1,-78716.459859
+openwater,pomp peilbeheer,2009,12,1,-68991.663735
+openwater,pomp peilbeheer,2010,1,1,-26155.805306
+openwater,pomp peilbeheer,2010,2,1,-35417.754664
+openwater,pomp peilbeheer,2010,3,1,-17295.220246
+openwater,pomp peilbeheer,2010,4,1,-2456.436259
+openwater,pomp peilbeheer,2010,5,1,-11701.154422
 openwater,pomp peilbeheer,2010,6,1,0.000000
+openwater,pomp peilbeheer,2010,7,1,0.000000
+openwater,pomp peilbeheer,2010,8,1,-31435.789262
+openwater,pomp peilbeheer,2010,9,1,-3828.354097
+openwater,pomp peilbeheer,2010,10,1,-3903.475193
+openwater,pomp peilbeheer,2010,11,1,-3747.758322
+openwater,pomp peilbeheer,2010,12,1,-3853.816943
+openwater,pomp peilbeheer,2011,1,1,-4150.221389
+openwater,pomp peilbeheer,2011,2,1,0.000000
+openwater,pomp peilbeheer,2011,3,1,0.000000
+openwater,pomp peilbeheer,2011,4,1,0.000000
+openwater,pomp peilbeheer,2011,5,1,0.000000
+openwater,pomp peilbeheer,2011,6,1,0.000000
+openwater,pomp peilbeheer,2011,7,1,0.000000
+openwater,pomp peilbeheer,2011,8,1,-64418.240000
+openwater,pomp peilbeheer,2011,9,1,-120784.200000
+openwater,pomp peilbeheer,2011,10,1,-8052.280000

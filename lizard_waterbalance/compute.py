@@ -36,6 +36,7 @@ from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
+from lizard_waterbalance.timeseriesstub import create_empty_timeseries
 from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import split_timeseries
@@ -263,7 +264,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #   - the porosity of the upper bucket is always 1.0
     #   - the storage of the upper bucket can not be below the minimum storage
 
-    upper_seepage = TimeseriesStub()
+    upper_seepage = create_empty_timeseries(seepage)
     bucket.porosity, tmp = 1.0, bucket.porosity
     bucket.drainage_fraction, bucket.upper_drainage_fraction = \
                               bucket.upper_drainage_fraction, bucket.drainage_fraction
@@ -284,8 +285,8 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     # we then compute the lower bucket:
     #  - the lower bucket does not have precipitation, evaporation and does not
     #    have flow off
-    lower_precipitation = TimeseriesStub()
-    lower_evaporation = TimeseriesStub()
+    lower_precipitation = create_empty_timeseries(precipitation)
+    lower_evaporation = create_empty_timeseries(evaporation)
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,
                                        lower_evaporation,
@@ -299,13 +300,13 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
 
+
 def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage, compute):
 
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
-    always_zero = TimeseriesStub()
-    upper_seepage = always_zero
+    upper_seepage = create_empty_timeseries(seepage)
 
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
@@ -334,7 +335,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # lower_precipitation is specified in [m3/day] but should be specified in
     # [mm/day]
     lower_precipitation = multiply_timeseries(lower_precipitation, 1000.0 / bucket.surface)
-    lower_evaporation = always_zero
+    lower_evaporation = create_empty_timeseries(evaporation)
     assert len(list(lower_precipitation.events())) > 0
     lower_outcome = compute_timeseries(bucket,
                                        lower_precipitation,

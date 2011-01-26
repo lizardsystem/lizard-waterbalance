@@ -208,7 +208,7 @@ def enumerate_events(*timeseries_list):
     no_events_are_present = False
     while not no_events_are_present:
         no_events_are_present = True
-        to_yield = [(next_start, 0)] * timeseries_count
+        to_yield = [(next_start, 0.0)] * timeseries_count
         for index, earliest_event in enumerate(earliest_event_list):
             if not earliest_event is None:
                 no_events_are_present = False
@@ -245,6 +245,21 @@ def enumerate_merged_events(timeseries_a, timeseries_b):
             yield event_a[0], event_a[1], 0
         for event in events_a:
             yield event[0], event[1], 0
+
+def create_empty_timeseries(timeseries):
+    """Return the empty TimeseriesStub that starts on the same day as the given time series.
+
+    If the given time series is non-empty, this function returns a
+    TimeseriesStub with a single event that starts on the day as the given time
+    series and which has value 0.0. If the given time series is empty, this
+    function returns an empty TimeseriesStub.
+
+    """
+    empty_timeseries = TimeseriesStub()
+    event = next(timeseries.events(), None)
+    if not event is None:
+        empty_timeseries.add_value(event[0], 0.0)
+    return empty_timeseries
 
 def add_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the sum of the given time series."""
