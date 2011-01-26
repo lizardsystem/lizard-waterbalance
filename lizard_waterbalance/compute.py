@@ -439,26 +439,6 @@ class WaterbalanceComputer:
         if not previous_timeseries is None:
             previous_timeseries.delete()
 
-        if area.open_water.storage is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.storage = new_timeseries
-        previous_timeseries = area.open_water.storage.volume
-        volume_timeseries = self.storage_computer.compute(area.open_water.surface,
-                                                          area.open_water.init_water_level,
-                                                          buckets_summary,
-                                                          area.open_water.retrieve_incoming_timeseries(),
-                                                          area.open_water.retrieve_outgoing_timeseries(),
-                                                          precipitation,
-                                                          evaporation,
-                                                          seepage)
-        area.open_water.storage.volume = store(volume_timeseries)
-        area.open_water.storage.volume.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-
-        area.open_water.save()
-
         incoming_timeseries = []
         for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
@@ -470,6 +450,25 @@ class WaterbalanceComputer:
             outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
+        if area.open_water.storage is None:
+            new_timeseries = WaterbalanceTimeserie()
+            new_timeseries.save()
+            area.open_water.storage = new_timeseries
+        previous_timeseries = area.open_water.storage.volume
+        volume_timeseries = self.storage_computer.compute(area.open_water.surface,
+                                                          area.open_water.init_water_level,
+                                                          buckets_summary,
+                                                          incoming_timeseries,
+                                                          outgoing_timeseries,
+                                                          precipitation,
+                                                          evaporation,
+                                                          seepage)
+        area.open_water.storage.volume = store(volume_timeseries)
+        area.open_water.storage.volume.save()
+        if not previous_timeseries is None:
+            previous_timeseries.delete()
+
+        area.open_water.save()
 
         minimum_level_timeseries = TimeseriesRestrictedStub(timeseries=area.open_water.retrieve_minimum_level(),
                                                             start_date=start_date,
