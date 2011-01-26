@@ -388,6 +388,11 @@ class PumpingStation(models.Model):
                                                  default=False,
                                                  help_text=_("aangevinkt als en alleen als de pomp gebruikt mag worden voor automatisch berekende peilhandhaving"))
 
+    level_control = models.ForeignKey(WaterbalanceTimeserie,
+                                      verbose_name=_("peilhandhaving"),
+                                      help_text=_("tijdserie naar berekende peilhandhaving"),
+                                      null=True, blank=True, related_name='+')
+
     def __unicode__(self):
         return self.name
 

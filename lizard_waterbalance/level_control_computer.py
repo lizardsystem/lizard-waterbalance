@@ -35,6 +35,7 @@ from lizard_waterbalance.timeseriesstub import TimeseriesStub
 class LevelControlComputer:
 
     def compute(self, open_water, buckets_summary,
+                minimum_level_timeseries, maximum_level_timeseries,
                 intakes_timeseries, pumps_timeseries, precipitation,
                 evaporation, seepage):
         """Compute and return the pair of intake and pump time series.
@@ -61,8 +62,8 @@ class LevelControlComputer:
         timeseries_list += [precipitation]
         timeseries_list += [evaporation]
         timeseries_list += [seepage]
-        timeseries_list += [open_water.retrieve_minimum_level()]
-        timeseries_list += [open_water.retrieve_maximum_level()]
+        timeseries_list += [minimum_level_timeseries]
+        timeseries_list += [maximum_level_timeseries]
         timeseries_list += intakes_timeseries[:]
         timeseries_list += pumps_timeseries[:]
 

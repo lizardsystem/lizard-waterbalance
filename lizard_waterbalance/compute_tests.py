@@ -637,6 +637,7 @@ class WaterbalanceComputerTests(TestCase):
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
+        computer.level_control_storage = Mock()
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getAllCalls()
         self.assertEqual(1, len(calls))
@@ -647,6 +648,7 @@ class WaterbalanceComputerTests(TestCase):
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
+        computer.level_control_storage = Mock()
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
         self.assertEqual(self.buckets, calls[0].getParam(0))
@@ -656,6 +658,7 @@ class WaterbalanceComputerTests(TestCase):
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
+        computer.level_control_storage = Mock()
         computer.compute(self.area, start, start + timedelta(1))
         calls = self.buckets_computer.getNamedCalls("compute")
         self.assertEqual(self.precipitation, calls[0].getParam(1))
@@ -667,6 +670,7 @@ class WaterbalanceComputerTests(TestCase):
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
+        computer.level_control_storage = Mock()
         result = computer.compute(self.area, start, start + timedelta(1))
         self.assertEqual(self.buckets_result, result[0])
 
@@ -675,6 +679,7 @@ class WaterbalanceComputerTests(TestCase):
         start = datetime(2010, 12, 21)
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
+        computer.level_control_storage = Mock()
         result = computer.compute(self.area, start, start + timedelta(1))
         self.assertEqual(self.level_result, result[1])
 
@@ -691,6 +696,7 @@ class WaterbalanceComputerTests(TestCase):
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
         computer.buckets_summarizer = Mock({"compute": buckets_summary})
+        computer.level_control_storage = Mock()
         result = computer.compute(self.area, today, today + timedelta(1))
         result # to silence pyflakes
         wb_timeserie = self.area.open_water.undrained
@@ -708,6 +714,7 @@ class WaterbalanceComputerTests(TestCase):
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
         computer.buckets_summarizer = Mock({"compute": buckets_summary})
+        computer.level_control_storage = Mock()
         result = computer.compute(self.area, today, today + timedelta(1))
         result # to silence pyflakes
 
@@ -732,6 +739,7 @@ class WaterbalanceComputerTests(TestCase):
         computer = WaterbalanceComputer(self.buckets_computer,
                                         self.level_control_computer)
         computer.buckets_summarizer = Mock({"compute": buckets_summary})
+        computer.level_control_storage = Mock()
         result = computer.compute(self.area, today, today + timedelta(1))
         result # to silence pyflakes
 

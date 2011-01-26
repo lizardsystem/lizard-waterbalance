@@ -31,6 +31,7 @@ import logging
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.level_control_computer import LevelControlComputer
+from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
@@ -39,6 +40,7 @@ from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
 
 
 class BucketOutcome:
@@ -373,7 +375,8 @@ class WaterbalanceComputer:
         else:
             self.level_control_computer = level_control_computer
         self.buckets_summarizer = BucketsSummarizer()
-        self.storage_computer= StorageComputer()
+        self.storage_computer = StorageComputer()
+        self.level_control_storage = LevelControlStorage()
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -456,13 +459,38 @@ class WaterbalanceComputer:
 
         area.open_water.save()
 
+        incoming_timeseries = []
+        for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
+            incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
+                                                                start_date=start_date,
+                                                                end_date=end_date))
+
+        outgoing_timeseries = []
+        for timeseries in area.open_water.retrieve_outgoing_timeseries(only_input=True):
+            outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
+                                                                start_date=start_date,
+                                                                end_date=end_date))
+
+        minimum_level_timeseries = TimeseriesRestrictedStub(timeseries=area.open_water.retrieve_minimum_level(),
+                                                            start_date=start_date,
+                                                            end_date=end_date)
+
+        maximum_level_timeseries = TimeseriesRestrictedStub(timeseries=area.open_water.retrieve_maximum_level(),
+                                                            start_date=start_date,
+                                                            end_date=end_date)
+
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
-                                                            area.open_water.retrieve_incoming_timeseries(only_input=True),
-                                                            area.open_water.retrieve_outgoing_timeseries(only_input=True),
+                                                            minimum_level_timeseries,
+                                                            maximum_level_timeseries,
+                                                            incoming_timeseries,
+                                                            outgoing_timeseries,
                                                             precipitation,
                                                             evaporation,
                                                             seepage)
+
+        self.level_control_storage.store(level_control, area.open_water.pumping_stations.all())
+
         return (bucket2outcome, level_control)
 
 
