@@ -175,6 +175,26 @@ class TimeseriesWithMemoryStub(TimeseriesStub):
             previous_value = value
             date_to_yield = date + timedelta(1)
 
+class TimeseriesRestrictedStub(TimeseriesStub):
+
+    def __init__(self, *args, **kwargs):
+        self.timeseries = kwargs["timeseries"]
+        del kwargs["timeseries"]
+        self.start_date = kwargs["start_date"]
+        del kwargs["start_date"]
+        self.end_date = kwargs["end_date"]
+        del kwargs["end_date"]
+        TimeseriesStub.__init__(self, *args, **kwargs)
+
+    def events(self):
+        for event in self.timeseries.events():
+            if event[0] < self.start_date:
+                continue
+            if event[0] < self.end_date:
+                yield event[0], event[1]
+            else:
+                break
+
 def enumerate_events(*timeseries_list):
     """Yield the events for all the days of the given time series.
 

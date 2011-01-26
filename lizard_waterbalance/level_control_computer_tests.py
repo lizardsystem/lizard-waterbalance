@@ -51,9 +51,7 @@ class LevelControlComputerTests(TestCase):
         self.open_water.init_water_level = 1.0
         self.open_water.crop_evaporation_factor = 1.0
         self.today = datetime(2010, 12, 17)
-        water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
-        self.open_water.retrieve_minimum_level = lambda : water_levels
-        self.open_water.retrieve_maximum_level = lambda : water_levels
+        self.water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
         self.buckets_summary = BucketsSummary()
 
     def test_a(self):
@@ -66,6 +64,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -90,6 +90,8 @@ class LevelControlComputerTests(TestCase):
         self.open_water.retrieve_maximum_level = lambda : water_levels
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           water_levels,
+                                           water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -109,6 +111,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -128,6 +132,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 0.5))
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -147,6 +153,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 0.0))
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -167,6 +175,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 2.0))
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -188,6 +198,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 2.0))
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,
@@ -209,6 +221,8 @@ class LevelControlComputerTests(TestCase):
         seepage = TimeseriesStub((self.today, 2.0))
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           self.water_levels,
+                                           self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries,
                                            precipitation,

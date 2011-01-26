@@ -40,6 +40,7 @@ from timeseriesstub import multiply_timeseries
 from timeseriesstub import split_timeseries
 from timeseriesstub import TimeseriesStub
 from timeseriesstub import TimeseriesWithMemoryStub
+from timeseriesstub import TimeseriesRestrictedStub
 
 class TimeseriesStubTestSuite(TestCase):
 
@@ -215,6 +216,20 @@ class TimeseriesWithMemoryTests(TestCase):
         events = [event for event in timeserie.events()]
         expected_events = [(today, 20), (tomorrow, 20), (day_after_tomorrow, 30)]
         self.assertEqual(expected_events, events)
+
+class TimeseriesStubRestrictedTest(TestCase):
+
+    def test_a(self):
+        timeseries = TimeseriesStub((datetime(2011, 1, 26), 0.0),
+                                    (datetime(2011, 2, 3), 10.0),
+                                    (datetime(2011, 2, 28), 0.0))
+        timeseries_restricted = TimeseriesRestrictedStub(timeseries=timeseries,
+                                                         start_date=datetime(2011, 2, 2),
+                                                         end_date=datetime(2011, 2, 5))
+        expected_timeseries = TimeseriesStub((datetime(2011, 2, 2), 0.0),
+                                             (datetime(2011, 2, 3), 10.0),
+                                             (datetime(2011, 2, 4), 0.0))
+        self.assertEqual(list(expected_timeseries.events()), list(timeseries_restricted.events()))
 
 
 class create_from_fileTestSuite(TestCase):
