@@ -381,7 +381,7 @@ class WaterbalanceComputer:
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
 
-        Paramaters:
+        Parameters:
         * area -- WaterbalanceArea for which to compute the time series
         * start_date -- first date of the time window (for ...)
         * end_date -- day after the last date of the time window (for ...)
@@ -465,6 +465,7 @@ class WaterbalanceComputer:
                                                           seepage)
         area.open_water.storage.volume = store(volume_timeseries)
         area.open_water.storage.volume.save()
+        area.open_water.storage.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()
 
