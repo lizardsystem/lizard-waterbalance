@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.1dev'
+version = '0.2'
 
 long_description = '\n\n'.join([
     open('README.txt').read(),
@@ -35,7 +35,7 @@ setup(name='lizard-waterbalance',
       author='P.C.J. Swinkels',
       author_email='pieter.swinkels@nelen-schuurmans.nl',
       url='',
-      license='GPL',
+      license='GPL3',
       packages=['lizard_waterbalance'],
       include_package_data=True,
       zip_safe=False,
