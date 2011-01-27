@@ -9,6 +9,7 @@ Changelog of lizard-waterbalance
 
 
 0.2 (2011-01-27)
+----------------
 
 - Test release
 
