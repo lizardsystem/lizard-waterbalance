@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.3 (unreleased)
+0.3 (2011-01-27)
 ----------------
 
 - Added a missing shape file.
