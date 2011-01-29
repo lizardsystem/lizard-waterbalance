@@ -5,8 +5,8 @@ REM Command file for Sphinx documentation
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
-set BUILDDIR=/Users/reinout/svn/nens/lizard-waterbalance/doc/build
-set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% /Users/reinout/svn/nens/lizard-waterbalance/doc/source
+set BUILDDIR=/home/pieter/projecten/sites/waterbalance/local_checkouts/lizard-waterbalance/doc/build
+set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% /home/pieter/projecten/sites/waterbalance/local_checkouts/lizard-waterbalance/doc/source
 if NOT "%PAPER%" == "" (
 	set ALLSPHINXOPTS=-D latex_paper_size=%PAPER% %ALLSPHINXOPTS%
 )

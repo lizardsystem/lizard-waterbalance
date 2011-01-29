@@ -156,6 +156,26 @@ class OpenWater(models.Model):
 
     # the computed time series are stored here
 
+    computed_precipitation = models.ForeignKey(WaterbalanceTimeserie,
+                                               verbose_name=_("berekende neerslag"),
+                                               help_text=_("tijdserie naar berekende neerslag"),
+                                               null=True, blank=True, related_name='+')
+
+    computed_evaporation = models.ForeignKey(WaterbalanceTimeserie,
+                                             verbose_name=_("berekende verdamping"),
+                                             help_text=_("tijdserie naar berekende verdamping"),
+                                             null=True, blank=True, related_name='+')
+
+    computed_seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                         verbose_name=_("berekende kwel"),
+                                         help_text=_("tijdserie naar berekende kwel"),
+                                         null=True, blank=True, related_name='+')
+
+    computed_infiltration = models.ForeignKey(WaterbalanceTimeserie,
+                                              verbose_name=_("berekende wegzijging"),
+                                              help_text=_("tijdserie naar berekende wegzijging"),
+                                              null=True, blank=True, related_name='+')
+
     undrained = models.ForeignKey(WaterbalanceTimeserie,
                                   verbose_name=_("Qsom ongedraineerd"),
                                   help_text=_("tijdserie naar Qsom ongedraineerd"),
@@ -512,3 +532,5 @@ class WaterbalanceLabel(models.Model):
 
     def __unicode__(self):
         return self.name
+
+

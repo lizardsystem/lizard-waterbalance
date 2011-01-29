@@ -34,6 +34,32 @@ from math import fabs
 
 from filereader import FileReader
 
+def monthly_events(timeseries):
+        """Return a generator to iterate over all monthly events.
+
+        A TimeseriesStub stores daily events. This generator aggregates these
+        daily events to monthly events that is placed at the first of the month
+        and whose value is the total value of the daily events for that month.
+
+        """
+        current_year = None
+        current_month = None
+        current_value = 0
+        for date, value in timeseries.events():
+            if current_month:
+                if date.year == current_year and date.month == current_month:
+                    current_value += value
+                elif date.year > current_year or date.month > current_month:
+                    yield datetime(current_year, current_month, 1), current_value
+                    current_year = date.year
+                    current_month = date.month
+                    current_value = value
+            else:
+                current_year = date.year
+                current_month = date.month
+                current_value = value
+        yield datetime(current_year, current_month, 1), current_value
+
 class TimeseriesStub:
     """Represents a time series.
 

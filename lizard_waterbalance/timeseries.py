@@ -25,10 +25,9 @@
 #
 #******************************************************************************
 
-from django.utils.translation import ugettext as _
-
 from lizard_waterbalance.models import Timeseries
 from lizard_waterbalance.models import TimeseriesEvent
+from lizard_waterbalance.models import WaterbalanceTimeserie
 
 def store(timeseries):
     """Stores and returns the given time series as a Timeseries.
@@ -46,4 +45,27 @@ def store(timeseries):
         db_timeseries_event.value = event[1]
         db_timeseries_event.save()
     return db_timeseries
+
+def store_waterbalance_timeserie(model, attribute_name, timeseries):
+    """Store the given volume timeserie in the database.
+
+    model is a Model with an attribute named attribute_name that refers to the
+    ForeignKey of a WaterbalanceTimeserie. This function stores the given time
+    series to the volume field of that WaterbalanceTimeserie.
+
+    If the aforementioned WaterbalanceTimeserie is None, this function creates
+    one. If the volume field of an already existing WaterbalanceTimeserie
+    already contains a Timeseries, this function deletes it.
+
+    """
+    waterbalance_timeserie = model.__getattribute__(attribute_name)
+    if  waterbalance_timeserie is None:
+        waterbalance_timeserie = WaterbalanceTimeserie()
+        waterbalance_timeserie.save()
+        model.__setattr__(attribute_name, waterbalance_timeserie)
+    previous_timeseries = waterbalance_timeserie.volume
+    waterbalance_timeserie.volume = store(timeseries)
+    waterbalance_timeserie.save()
+    if not previous_timeseries is None:
+        previous_timeseries.delete()
 

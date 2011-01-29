@@ -1,26 +1,494 @@
-verhard,afstroming,1996,1,1,-3287.150100
-verhard,drainage,1996,1,1,-4504.613100
+verhard,afstroming,1996,1,1,0.000000
+verhard,afstroming,1996,1,2,0.000000
+verhard,afstroming,1996,1,3,0.000000
+verhard,afstroming,1996,1,4,0.000000
+verhard,afstroming,1996,1,5,0.000000
+verhard,afstroming,1996,1,6,0.000000
+verhard,afstroming,1996,1,7,-2191.433400
+verhard,afstroming,1996,1,8,0.000000
+verhard,afstroming,1996,1,9,-365.238900
+verhard,afstroming,1996,1,10,-730.477800
+verhard,afstroming,1996,1,11,0.000000
+verhard,afstroming,1996,1,12,0.000000
+verhard,afstroming,1996,1,13,0.000000
+verhard,afstroming,1996,1,14,0.000000
+verhard,afstroming,1996,1,15,0.000000
+verhard,afstroming,1996,1,16,0.000000
+verhard,afstroming,1996,1,17,0.000000
+verhard,afstroming,1996,1,18,0.000000
+verhard,afstroming,1996,1,19,0.000000
+verhard,drainage,1996,1,1,0.000000
+verhard,drainage,1996,1,2,-36.523890
+verhard,drainage,1996,1,3,-69.395391
+verhard,drainage,1996,1,4,-98.979742
+verhard,drainage,1996,1,5,-125.605658
+verhard,drainage,1996,1,6,-149.568982
+verhard,drainage,1996,1,7,-171.135974
+verhard,drainage,1996,1,8,-190.546266
+verhard,drainage,1996,1,9,-208.015530
+verhard,drainage,1996,1,10,-223.737867
+verhard,drainage,1996,1,11,-309.192601
+verhard,drainage,1996,1,12,-365.238900
+verhard,drainage,1996,1,13,-365.238900
+verhard,drainage,1996,1,14,-365.238900
+verhard,drainage,1996,1,15,-365.238900
+verhard,drainage,1996,1,16,-365.238900
+verhard,drainage,1996,1,17,-365.238900
+verhard,drainage,1996,1,18,-365.238900
+verhard,drainage,1996,1,19,-365.238900
 verhard,intrek,1996,1,1,0.000000
-verhard,kwel,1996,1,1,6939.539100
-verhard,verdamping,1996,1,1,-4382.866800
-verhard,neerslag,1996,1,1,5843.822400
+verhard,intrek,1996,1,2,0.000000
+verhard,intrek,1996,1,3,0.000000
+verhard,intrek,1996,1,4,0.000000
+verhard,intrek,1996,1,5,0.000000
+verhard,intrek,1996,1,6,0.000000
+verhard,intrek,1996,1,7,0.000000
+verhard,intrek,1996,1,8,0.000000
+verhard,intrek,1996,1,9,0.000000
+verhard,intrek,1996,1,10,0.000000
+verhard,intrek,1996,1,11,0.000000
+verhard,intrek,1996,1,12,0.000000
+verhard,intrek,1996,1,13,0.000000
+verhard,intrek,1996,1,14,0.000000
+verhard,intrek,1996,1,15,0.000000
+verhard,intrek,1996,1,16,0.000000
+verhard,intrek,1996,1,17,0.000000
+verhard,intrek,1996,1,18,0.000000
+verhard,intrek,1996,1,19,0.000000
+verhard,kwel,1996,1,1,365.238900
+verhard,kwel,1996,1,2,365.238900
+verhard,kwel,1996,1,3,365.238900
+verhard,kwel,1996,1,4,365.238900
+verhard,kwel,1996,1,5,365.238900
+verhard,kwel,1996,1,6,365.238900
+verhard,kwel,1996,1,7,365.238900
+verhard,kwel,1996,1,8,365.238900
+verhard,kwel,1996,1,9,365.238900
+verhard,kwel,1996,1,10,365.238900
+verhard,kwel,1996,1,11,365.238900
+verhard,kwel,1996,1,12,365.238900
+verhard,kwel,1996,1,13,365.238900
+verhard,kwel,1996,1,14,365.238900
+verhard,kwel,1996,1,15,365.238900
+verhard,kwel,1996,1,16,365.238900
+verhard,kwel,1996,1,17,365.238900
+verhard,kwel,1996,1,18,365.238900
+verhard,kwel,1996,1,19,365.238900
+verhard,verdamping,1996,1,1,0.000000
+verhard,verdamping,1996,1,2,-243.492600
+verhard,verdamping,1996,1,3,-365.238900
+verhard,verdamping,1996,1,4,-243.492600
+verhard,verdamping,1996,1,5,-486.985200
+verhard,verdamping,1996,1,6,0.000000
+verhard,verdamping,1996,1,7,0.000000
+verhard,verdamping,1996,1,8,-121.746300
+verhard,verdamping,1996,1,9,0.000000
+verhard,verdamping,1996,1,10,0.000000
+verhard,verdamping,1996,1,11,0.000000
+verhard,verdamping,1996,1,12,-486.985200
+verhard,verdamping,1996,1,13,-486.985200
+verhard,verdamping,1996,1,14,-486.985200
+verhard,verdamping,1996,1,15,-486.985200
+verhard,verdamping,1996,1,16,-486.985200
+verhard,verdamping,1996,1,17,-243.492600
+verhard,verdamping,1996,1,18,-121.746300
+verhard,verdamping,1996,1,19,-121.746300
+verhard,neerslag,1996,1,1,0.000000
+verhard,neerslag,1996,1,2,0.000000
+verhard,neerslag,1996,1,3,0.000000
+verhard,neerslag,1996,1,4,0.000000
+verhard,neerslag,1996,1,5,0.000000
+verhard,neerslag,1996,1,6,1704.448200
+verhard,neerslag,1996,1,7,2921.911200
+verhard,neerslag,1996,1,8,0.000000
+verhard,neerslag,1996,1,9,486.985200
+verhard,neerslag,1996,1,10,730.477800
+verhard,neerslag,1996,1,11,0.000000
+verhard,neerslag,1996,1,12,0.000000
+verhard,neerslag,1996,1,13,0.000000
+verhard,neerslag,1996,1,14,0.000000
+verhard,neerslag,1996,1,15,0.000000
+verhard,neerslag,1996,1,16,0.000000
+verhard,neerslag,1996,1,17,0.000000
+verhard,neerslag,1996,1,18,0.000000
+verhard,neerslag,1996,1,19,0.000000
 gedraineerd boven,afstroming,1996,1,1,0.000000
-gedraineerd boven,drainage,1996,1,1,-2612.026022
-gedraineerd boven,intrek,1996,1,1,10.005050
-gedraineerd boven,kwel,1996,1,1,21075.550500
-gedraineerd boven,verdamping,1996,1,1,-6840.310250
-gedraineerd boven,neerslag,1996,1,1,18487.325000
+gedraineerd boven,afstroming,1996,1,2,0.000000
+gedraineerd boven,afstroming,1996,1,3,0.000000
+gedraineerd boven,afstroming,1996,1,4,0.000000
+gedraineerd boven,afstroming,1996,1,5,0.000000
+gedraineerd boven,afstroming,1996,1,6,0.000000
+gedraineerd boven,afstroming,1996,1,7,0.000000
+gedraineerd boven,afstroming,1996,1,8,0.000000
+gedraineerd boven,afstroming,1996,1,9,0.000000
+gedraineerd boven,afstroming,1996,1,10,0.000000
+gedraineerd boven,afstroming,1996,1,11,0.000000
+gedraineerd boven,afstroming,1996,1,12,0.000000
+gedraineerd boven,afstroming,1996,1,13,0.000000
+gedraineerd boven,afstroming,1996,1,14,0.000000
+gedraineerd boven,afstroming,1996,1,15,0.000000
+gedraineerd boven,afstroming,1996,1,16,0.000000
+gedraineerd boven,afstroming,1996,1,17,0.000000
+gedraineerd boven,afstroming,1996,1,18,0.000000
+gedraineerd boven,afstroming,1996,1,19,0.000000
+gedraineerd boven,drainage,1996,1,1,-1294.112750
+gedraineerd boven,drainage,1996,1,2,-646.871502
+gedraineerd boven,drainage,1996,1,3,-323.805682
+gedraineerd boven,drainage,1996,1,4,-163.104332
+gedraineerd boven,drainage,1996,1,5,-83.723040
+gedraineerd boven,drainage,1996,1,6,-44.862153
+gedraineerd boven,drainage,1996,1,7,-26.537948
+gedraineerd boven,drainage,1996,1,8,-15.245697
+gedraineerd boven,drainage,1996,1,9,-5.622819
+gedraineerd boven,drainage,1996,1,10,-1.414219
+gedraineerd boven,drainage,1996,1,11,0.000000
+gedraineerd boven,drainage,1996,1,12,0.000000
+gedraineerd boven,drainage,1996,1,13,0.000000
+gedraineerd boven,drainage,1996,1,14,0.000000
+gedraineerd boven,drainage,1996,1,15,0.000000
+gedraineerd boven,drainage,1996,1,16,-0.018748
+gedraineerd boven,drainage,1996,1,17,-1.127968
+gedraineerd boven,drainage,1996,1,18,-2.236080
+gedraineerd boven,drainage,1996,1,19,-3.343083
+gedraineerd boven,intrek,1996,1,1,0.000000
+gedraineerd boven,intrek,1996,1,2,0.000000
+gedraineerd boven,intrek,1996,1,3,0.000000
+gedraineerd boven,intrek,1996,1,4,0.000000
+gedraineerd boven,intrek,1996,1,5,0.000000
+gedraineerd boven,intrek,1996,1,6,0.000000
+gedraineerd boven,intrek,1996,1,7,0.000000
+gedraineerd boven,intrek,1996,1,8,0.000000
+gedraineerd boven,intrek,1996,1,9,0.000000
+gedraineerd boven,intrek,1996,1,10,0.000000
+gedraineerd boven,intrek,1996,1,11,0.919776
+gedraineerd boven,intrek,1996,1,12,2.685985
+gedraineerd boven,intrek,1996,1,13,3.104680
+gedraineerd boven,intrek,1996,1,14,2.203026
+gedraineerd boven,intrek,1996,1,15,1.091583
+gedraineerd boven,intrek,1996,1,16,0.000000
+gedraineerd boven,intrek,1996,1,17,0.000000
+gedraineerd boven,intrek,1996,1,18,0.000000
+gedraineerd boven,intrek,1996,1,19,0.000000
+gedraineerd boven,kwel,1996,1,1,1109.239500
+gedraineerd boven,kwel,1996,1,2,1109.239500
+gedraineerd boven,kwel,1996,1,3,1109.239500
+gedraineerd boven,kwel,1996,1,4,1109.239500
+gedraineerd boven,kwel,1996,1,5,1109.239500
+gedraineerd boven,kwel,1996,1,6,1109.239500
+gedraineerd boven,kwel,1996,1,7,1109.239500
+gedraineerd boven,kwel,1996,1,8,1109.239500
+gedraineerd boven,kwel,1996,1,9,1109.239500
+gedraineerd boven,kwel,1996,1,10,1109.239500
+gedraineerd boven,kwel,1996,1,11,1109.239500
+gedraineerd boven,kwel,1996,1,12,1109.239500
+gedraineerd boven,kwel,1996,1,13,1109.239500
+gedraineerd boven,kwel,1996,1,14,1109.239500
+gedraineerd boven,kwel,1996,1,15,1109.239500
+gedraineerd boven,kwel,1996,1,16,1109.239500
+gedraineerd boven,kwel,1996,1,17,1109.239500
+gedraineerd boven,kwel,1996,1,18,1109.239500
+gedraineerd boven,kwel,1996,1,19,1109.239500
+gedraineerd boven,verdamping,1996,1,1,0.000000
+gedraineerd boven,verdamping,1996,1,2,-554.619750
+gedraineerd boven,verdamping,1996,1,3,-831.929625
+gedraineerd boven,verdamping,1996,1,4,-554.619750
+gedraineerd boven,verdamping,1996,1,5,-1109.239500
+gedraineerd boven,verdamping,1996,1,6,0.000000
+gedraineerd boven,verdamping,1996,1,7,0.000000
+gedraineerd boven,verdamping,1996,1,8,-92.436625
+gedraineerd boven,verdamping,1996,1,9,0.000000
+gedraineerd boven,verdamping,1996,1,10,0.000000
+gedraineerd boven,verdamping,1996,1,11,0.000000
+gedraineerd boven,verdamping,1996,1,12,-1109.239500
+gedraineerd boven,verdamping,1996,1,13,-1109.239500
+gedraineerd boven,verdamping,1996,1,14,-369.746500
+gedraineerd boven,verdamping,1996,1,15,-369.746500
+gedraineerd boven,verdamping,1996,1,16,-369.746500
+gedraineerd boven,verdamping,1996,1,17,-184.873250
+gedraineerd boven,verdamping,1996,1,18,-92.436625
+gedraineerd boven,verdamping,1996,1,19,-92.436625
+gedraineerd boven,neerslag,1996,1,1,0.000000
+gedraineerd boven,neerslag,1996,1,2,0.000000
+gedraineerd boven,neerslag,1996,1,3,0.000000
+gedraineerd boven,neerslag,1996,1,4,0.000000
+gedraineerd boven,neerslag,1996,1,5,0.000000
+gedraineerd boven,neerslag,1996,1,6,5361.324250
+gedraineerd boven,neerslag,1996,1,7,9058.789250
+gedraineerd boven,neerslag,1996,1,8,0.000000
+gedraineerd boven,neerslag,1996,1,9,1571.422625
+gedraineerd boven,neerslag,1996,1,10,2310.915625
+gedraineerd boven,neerslag,1996,1,11,184.873250
+gedraineerd boven,neerslag,1996,1,12,0.000000
+gedraineerd boven,neerslag,1996,1,13,0.000000
+gedraineerd boven,neerslag,1996,1,14,0.000000
+gedraineerd boven,neerslag,1996,1,15,0.000000
+gedraineerd boven,neerslag,1996,1,16,0.000000
+gedraineerd boven,neerslag,1996,1,17,0.000000
+gedraineerd boven,neerslag,1996,1,18,0.000000
+gedraineerd boven,neerslag,1996,1,19,0.000000
 stedelijk,afstroming,1996,1,1,0.000000
+stedelijk,afstroming,1996,1,2,0.000000
+stedelijk,afstroming,1996,1,3,0.000000
+stedelijk,afstroming,1996,1,4,0.000000
+stedelijk,afstroming,1996,1,5,0.000000
+stedelijk,afstroming,1996,1,6,0.000000
+stedelijk,afstroming,1996,1,7,0.000000
+stedelijk,afstroming,1996,1,8,0.000000
+stedelijk,afstroming,1996,1,9,0.000000
+stedelijk,afstroming,1996,1,10,0.000000
+stedelijk,afstroming,1996,1,11,0.000000
+stedelijk,afstroming,1996,1,12,0.000000
+stedelijk,afstroming,1996,1,13,0.000000
+stedelijk,afstroming,1996,1,14,0.000000
+stedelijk,afstroming,1996,1,15,0.000000
+stedelijk,afstroming,1996,1,16,0.000000
+stedelijk,afstroming,1996,1,17,0.000000
+stedelijk,afstroming,1996,1,18,0.000000
+stedelijk,afstroming,1996,1,19,0.000000
 stedelijk,drainage,1996,1,1,0.000000
+stedelijk,drainage,1996,1,2,0.000000
+stedelijk,drainage,1996,1,3,0.000000
+stedelijk,drainage,1996,1,4,0.000000
+stedelijk,drainage,1996,1,5,0.000000
+stedelijk,drainage,1996,1,6,0.000000
+stedelijk,drainage,1996,1,7,0.000000
+stedelijk,drainage,1996,1,8,0.000000
+stedelijk,drainage,1996,1,9,0.000000
+stedelijk,drainage,1996,1,10,0.000000
+stedelijk,drainage,1996,1,11,0.000000
+stedelijk,drainage,1996,1,12,0.000000
+stedelijk,drainage,1996,1,13,0.000000
+stedelijk,drainage,1996,1,14,0.000000
+stedelijk,drainage,1996,1,15,0.000000
+stedelijk,drainage,1996,1,16,0.000000
+stedelijk,drainage,1996,1,17,0.000000
+stedelijk,drainage,1996,1,18,0.000000
+stedelijk,drainage,1996,1,19,0.000000
 stedelijk,intrek,1996,1,1,0.000000
+stedelijk,intrek,1996,1,2,0.000000
+stedelijk,intrek,1996,1,3,0.000000
+stedelijk,intrek,1996,1,4,0.000000
+stedelijk,intrek,1996,1,5,0.000000
+stedelijk,intrek,1996,1,6,0.000000
+stedelijk,intrek,1996,1,7,0.000000
+stedelijk,intrek,1996,1,8,0.000000
+stedelijk,intrek,1996,1,9,0.000000
+stedelijk,intrek,1996,1,10,0.000000
+stedelijk,intrek,1996,1,11,0.000000
+stedelijk,intrek,1996,1,12,0.000000
+stedelijk,intrek,1996,1,13,0.000000
+stedelijk,intrek,1996,1,14,0.000000
+stedelijk,intrek,1996,1,15,0.000000
+stedelijk,intrek,1996,1,16,0.000000
+stedelijk,intrek,1996,1,17,0.000000
+stedelijk,intrek,1996,1,18,0.000000
+stedelijk,intrek,1996,1,19,0.000000
 stedelijk,kwel,1996,1,1,0.000000
+stedelijk,kwel,1996,1,2,0.000000
+stedelijk,kwel,1996,1,3,0.000000
+stedelijk,kwel,1996,1,4,0.000000
+stedelijk,kwel,1996,1,5,0.000000
+stedelijk,kwel,1996,1,6,0.000000
+stedelijk,kwel,1996,1,7,0.000000
+stedelijk,kwel,1996,1,8,0.000000
+stedelijk,kwel,1996,1,9,0.000000
+stedelijk,kwel,1996,1,10,0.000000
+stedelijk,kwel,1996,1,11,0.000000
+stedelijk,kwel,1996,1,12,0.000000
+stedelijk,kwel,1996,1,13,0.000000
+stedelijk,kwel,1996,1,14,0.000000
+stedelijk,kwel,1996,1,15,0.000000
+stedelijk,kwel,1996,1,16,0.000000
+stedelijk,kwel,1996,1,17,0.000000
+stedelijk,kwel,1996,1,18,0.000000
+stedelijk,kwel,1996,1,19,0.000000
 stedelijk,verdamping,1996,1,1,0.000000
+stedelijk,verdamping,1996,1,2,0.000000
+stedelijk,verdamping,1996,1,3,0.000000
+stedelijk,verdamping,1996,1,4,0.000000
+stedelijk,verdamping,1996,1,5,0.000000
+stedelijk,verdamping,1996,1,6,0.000000
+stedelijk,verdamping,1996,1,7,0.000000
+stedelijk,verdamping,1996,1,8,0.000000
+stedelijk,verdamping,1996,1,9,0.000000
+stedelijk,verdamping,1996,1,10,0.000000
+stedelijk,verdamping,1996,1,11,0.000000
+stedelijk,verdamping,1996,1,12,0.000000
+stedelijk,verdamping,1996,1,13,0.000000
+stedelijk,verdamping,1996,1,14,0.000000
+stedelijk,verdamping,1996,1,15,0.000000
+stedelijk,verdamping,1996,1,16,0.000000
+stedelijk,verdamping,1996,1,17,0.000000
+stedelijk,verdamping,1996,1,18,0.000000
+stedelijk,verdamping,1996,1,19,0.000000
 stedelijk,neerslag,1996,1,1,0.000000
+stedelijk,neerslag,1996,1,2,0.000000
+stedelijk,neerslag,1996,1,3,0.000000
+stedelijk,neerslag,1996,1,4,0.000000
+stedelijk,neerslag,1996,1,5,0.000000
+stedelijk,neerslag,1996,1,6,0.000000
+stedelijk,neerslag,1996,1,7,0.000000
+stedelijk,neerslag,1996,1,8,0.000000
+stedelijk,neerslag,1996,1,9,0.000000
+stedelijk,neerslag,1996,1,10,0.000000
+stedelijk,neerslag,1996,1,11,0.000000
+stedelijk,neerslag,1996,1,12,0.000000
+stedelijk,neerslag,1996,1,13,0.000000
+stedelijk,neerslag,1996,1,14,0.000000
+stedelijk,neerslag,1996,1,15,0.000000
+stedelijk,neerslag,1996,1,16,0.000000
+stedelijk,neerslag,1996,1,17,0.000000
+stedelijk,neerslag,1996,1,18,0.000000
+stedelijk,neerslag,1996,1,19,0.000000
 landelijk,afstroming,1996,1,1,-806284.467300
-landelijk,drainage,1996,1,1,-87524.301554
+landelijk,afstroming,1996,1,2,0.000000
+landelijk,afstroming,1996,1,3,0.000000
+landelijk,afstroming,1996,1,4,0.000000
+landelijk,afstroming,1996,1,5,0.000000
+landelijk,afstroming,1996,1,6,0.000000
+landelijk,afstroming,1996,1,7,0.000000
+landelijk,afstroming,1996,1,8,0.000000
+landelijk,afstroming,1996,1,9,0.000000
+landelijk,afstroming,1996,1,10,0.000000
+landelijk,afstroming,1996,1,11,0.000000
+landelijk,afstroming,1996,1,12,0.000000
+landelijk,afstroming,1996,1,13,0.000000
+landelijk,afstroming,1996,1,14,0.000000
+landelijk,afstroming,1996,1,15,0.000000
+landelijk,afstroming,1996,1,16,0.000000
+landelijk,afstroming,1996,1,17,0.000000
+landelijk,afstroming,1996,1,18,0.000000
+landelijk,afstroming,1996,1,19,0.000000
+landelijk,drainage,1996,1,1,-20651.267000
+landelijk,drainage,1996,1,2,-4130.253400
+landelijk,drainage,1996,1,3,-4053.548694
+landelijk,drainage,1996,1,4,-3972.477720
+landelijk,drainage,1996,1,5,-3898.928528
+landelijk,drainage,1996,1,6,-3815.049595
+landelijk,drainage,1996,1,7,-3839.054757
+landelijk,drainage,1996,1,8,-3921.583436
+landelijk,drainage,1996,1,9,-3854.952491
+landelijk,drainage,1996,1,10,-3819.155976
+landelijk,drainage,1996,1,11,-3795.876114
+landelijk,drainage,1996,1,12,-3737.659678
+landelijk,drainage,1996,1,13,-3657.006122
+landelijk,drainage,1996,1,14,-3577.965638
+landelijk,drainage,1996,1,15,-3500.505963
+landelijk,drainage,1996,1,16,-3424.595482
+landelijk,drainage,1996,1,17,-3350.203210
+landelijk,drainage,1996,1,18,-3289.099508
+landelijk,drainage,1996,1,19,-3235.118242
 landelijk,intrek,1996,1,1,0.000000
-landelijk,kwel,1996,1,1,16816.031700
-landelijk,verdamping,1996,1,1,-10620.651600
-landelijk,neerslag,1996,1,1,14160.868800
+landelijk,intrek,1996,1,2,0.000000
+landelijk,intrek,1996,1,3,0.000000
+landelijk,intrek,1996,1,4,0.000000
+landelijk,intrek,1996,1,5,0.000000
+landelijk,intrek,1996,1,6,0.000000
+landelijk,intrek,1996,1,7,0.000000
+landelijk,intrek,1996,1,8,0.000000
+landelijk,intrek,1996,1,9,0.000000
+landelijk,intrek,1996,1,10,0.000000
+landelijk,intrek,1996,1,11,0.000000
+landelijk,intrek,1996,1,12,0.000000
+landelijk,intrek,1996,1,13,0.000000
+landelijk,intrek,1996,1,14,0.000000
+landelijk,intrek,1996,1,15,0.000000
+landelijk,intrek,1996,1,16,0.000000
+landelijk,intrek,1996,1,17,0.000000
+landelijk,intrek,1996,1,18,0.000000
+landelijk,intrek,1996,1,19,0.000000
+landelijk,kwel,1996,1,1,885.054300
+landelijk,kwel,1996,1,2,885.054300
+landelijk,kwel,1996,1,3,885.054300
+landelijk,kwel,1996,1,4,885.054300
+landelijk,kwel,1996,1,5,885.054300
+landelijk,kwel,1996,1,6,885.054300
+landelijk,kwel,1996,1,7,885.054300
+landelijk,kwel,1996,1,8,885.054300
+landelijk,kwel,1996,1,9,885.054300
+landelijk,kwel,1996,1,10,885.054300
+landelijk,kwel,1996,1,11,885.054300
+landelijk,kwel,1996,1,12,885.054300
+landelijk,kwel,1996,1,13,885.054300
+landelijk,kwel,1996,1,14,885.054300
+landelijk,kwel,1996,1,15,885.054300
+landelijk,kwel,1996,1,16,885.054300
+landelijk,kwel,1996,1,17,885.054300
+landelijk,kwel,1996,1,18,885.054300
+landelijk,kwel,1996,1,19,885.054300
+landelijk,verdamping,1996,1,1,0.000000
+landelijk,verdamping,1996,1,2,-590.036200
+landelijk,verdamping,1996,1,3,-885.054300
+landelijk,verdamping,1996,1,4,-590.036200
+landelijk,verdamping,1996,1,5,-1180.072400
+landelijk,verdamping,1996,1,6,0.000000
+landelijk,verdamping,1996,1,7,0.000000
+landelijk,verdamping,1996,1,8,-295.018100
+landelijk,verdamping,1996,1,9,0.000000
+landelijk,verdamping,1996,1,10,0.000000
+landelijk,verdamping,1996,1,11,0.000000
+landelijk,verdamping,1996,1,12,-1180.072400
+landelijk,verdamping,1996,1,13,-1180.072400
+landelijk,verdamping,1996,1,14,-1180.072400
+landelijk,verdamping,1996,1,15,-1180.072400
+landelijk,verdamping,1996,1,16,-1180.072400
+landelijk,verdamping,1996,1,17,-590.036200
+landelijk,verdamping,1996,1,18,-295.018100
+landelijk,verdamping,1996,1,19,-295.018100
+landelijk,neerslag,1996,1,1,0.000000
+landelijk,neerslag,1996,1,2,0.000000
+landelijk,neerslag,1996,1,3,0.000000
+landelijk,neerslag,1996,1,4,0.000000
+landelijk,neerslag,1996,1,5,0.000000
+landelijk,neerslag,1996,1,6,4130.253400
+landelijk,neerslag,1996,1,7,7080.434400
+landelijk,neerslag,1996,1,8,0.000000
+landelijk,neerslag,1996,1,9,1180.072400
+landelijk,neerslag,1996,1,10,1770.108600
+landelijk,neerslag,1996,1,11,0.000000
+landelijk,neerslag,1996,1,12,0.000000
+landelijk,neerslag,1996,1,13,0.000000
+landelijk,neerslag,1996,1,14,0.000000
+landelijk,neerslag,1996,1,15,0.000000
+landelijk,neerslag,1996,1,16,0.000000
+landelijk,neerslag,1996,1,17,0.000000
+landelijk,neerslag,1996,1,18,0.000000
+landelijk,neerslag,1996,1,19,0.000000
 openwater,inlaat peilbeheer,1996,1,1,0.000000
-openwater,pomp peilbeheer,1996,1,1,-1904.525753
+openwater,inlaat peilbeheer,1996,1,2,0.000000
+openwater,inlaat peilbeheer,1996,1,3,0.000000
+openwater,inlaat peilbeheer,1996,1,4,0.000000
+openwater,inlaat peilbeheer,1996,1,5,0.000000
+openwater,inlaat peilbeheer,1996,1,6,0.000000
+openwater,inlaat peilbeheer,1996,1,7,0.000000
+openwater,inlaat peilbeheer,1996,1,8,0.000000
+openwater,inlaat peilbeheer,1996,1,9,0.000000
+openwater,inlaat peilbeheer,1996,1,10,0.000000
+openwater,inlaat peilbeheer,1996,1,11,0.000000
+openwater,inlaat peilbeheer,1996,1,12,0.000000
+openwater,inlaat peilbeheer,1996,1,13,0.000000
+openwater,inlaat peilbeheer,1996,1,14,0.000000
+openwater,inlaat peilbeheer,1996,1,15,0.000000
+openwater,inlaat peilbeheer,1996,1,16,0.000000
+openwater,inlaat peilbeheer,1996,1,17,0.000000
+openwater,inlaat peilbeheer,1996,1,18,0.000000
+openwater,inlaat peilbeheer,1996,1,19,0.000000
+openwater,pomp peilbeheer,1996,1,1,-949.014047
+openwater,pomp peilbeheer,1996,1,2,-45.075049
+openwater,pomp peilbeheer,1996,1,3,-4.446750
+openwater,pomp peilbeheer,1996,1,4,-44.495962
+openwater,pomp peilbeheer,1996,1,5,0.000000
+openwater,pomp peilbeheer,1996,1,6,-652.300138
+openwater,pomp peilbeheer,1996,1,7,-1093.285962
+openwater,pomp peilbeheer,1996,1,8,-84.650175
+openwater,pomp peilbeheer,1996,1,9,-286.263630
+openwater,pomp peilbeheer,1996,1,10,-367.127386
+openwater,pomp peilbeheer,1996,1,11,-124.888349
+openwater,pomp peilbeheer,1996,1,12,0.000000
+openwater,pomp peilbeheer,1996,1,13,0.000000
+openwater,pomp peilbeheer,1996,1,14,0.000000
+openwater,pomp peilbeheer,1996,1,15,0.000000
+openwater,pomp peilbeheer,1996,1,16,0.000000
+openwater,pomp peilbeheer,1996,1,17,0.000000
+openwater,pomp peilbeheer,1996,1,18,0.000000
+openwater,pomp peilbeheer,1996,1,19,-30.691706

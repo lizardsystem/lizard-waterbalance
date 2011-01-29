@@ -32,6 +32,8 @@ from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_storage import LevelControlStorage
+from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
+from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
 from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseriesstub import add_timeseries
@@ -375,6 +377,8 @@ class WaterbalanceComputer:
         else:
             self.level_control_computer = level_control_computer
         self.buckets_summarizer = BucketsSummarizer()
+        self.vertical_timeseries_computer = VerticalTimeseriesComputer()
+        self.vertical_timeseries_storage = VerticalTimeseriesStorage()
         self.storage_computer = StorageComputer()
         self.level_control_storage = LevelControlStorage()
 
@@ -438,6 +442,14 @@ class WaterbalanceComputer:
         area.open_water.flow_off.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()
+
+        vertical_timeseries = self.vertical_timeseries_computer.compute(area.open_water.surface,
+                                                                        area.open_water.crop_evaporation_factor,
+                                                                        precipitation,
+                                                                        evaporation,
+                                                                        seepage)
+        self.vertical_timeseries_storage.store(vertical_timeseries,
+                                               area.open_water)
 
         incoming_timeseries = []
         for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
@@ -558,7 +570,7 @@ def total_daily_bucket_outcome(bucket2outcome):
 
 
 class BucketSummarizer:
-    """Computes the SingleDayBucketSummary.
+    """Computes the SingleDayBucketsSummary.
 
     Instance variables:
     * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
@@ -570,11 +582,26 @@ class BucketSummarizer:
     def compute(self):
         """Compute and return the SingleDayBucketsSummary."""
         summary = SingleDayBucketsSummary()
-        summary.hardened = self.compute_sum_hardened()
-        summary.drained = self.compute_sum_drained()
-        summary.undrained = self.compute_sum_undrained_net_drainage()
-        summary.flow_off = self.compute_sum_undrained_flow_off()
-        summary.infiltration = self.compute_sum_infiltration()
+
+        # Note that the time series computed for each bucket are computed from
+        # the point of view the bucket:
+        #   - a positive total means water flows to the buckets from the open
+        #     water
+        #   - a negative value means water flows from the buckets to the open
+        #     water
+        # So to get the volume that flows from the buckets to the open water we
+        # have to negate the bucket total.
+
+        summary.hardened = -self.compute_sum_hardened()
+        summary.drained = -self.compute_sum_drained()
+        summary.undrained = -self.compute_sum_undrained_net_drainage()
+        summary.flow_off = -self.compute_sum_undrained_flow_off()
+        summary.infiltration = -self.compute_sum_infiltration()
+        summary.totals = summary.hardened + \
+                         summary.drained + \
+                         summary.undrained + \
+                         summary.flow_off + \
+                         summary.infiltration
         return summary
 
     def compute_sum_hardened(self):
