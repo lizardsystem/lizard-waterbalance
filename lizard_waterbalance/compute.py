@@ -404,47 +404,14 @@ class WaterbalanceComputer:
 
         buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
 
-        if area.open_water.undrained is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.undrained = new_timeseries
-        previous_timeseries = area.open_water.undrained.volume
-        area.open_water.undrained.volume = store(buckets_summary.undrained)
-        area.open_water.undrained.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-        area.open_water.save()
-
-        if area.open_water.drained is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.drained = new_timeseries
-        previous_timeseries = area.open_water.drained.volume
-        area.open_water.drained.volume = store(buckets_summary.drained)
-        area.open_water.drained.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-
-        if area.open_water.hardened is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.hardened = new_timeseries
-        previous_timeseries = area.open_water.hardened.volume
-        area.open_water.hardened.volume = store(buckets_summary.hardened)
-        area.open_water.hardened.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-
-        if area.open_water.flow_off is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.flow_off = new_timeseries
-        previous_timeseries = area.open_water.flow_off.volume
-        area.open_water.flow_off.volume = store(buckets_summary.flow_off)
-        area.open_water.flow_off.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-
+        store_waterbalance_timeserie(area.open_water, "undrained",
+                                     buckets_summary.undrained)
+        store_waterbalance_timeserie(area.open_water, "drained",
+                                     buckets_summary.drained)
+        store_waterbalance_timeserie(area.open_water, "hardened",
+                                     buckets_summary.hardened)
+        store_waterbalance_timeserie(area.open_water, "flow_off",
+                                     buckets_summary.flow_off)
         store_waterbalance_timeserie(area.open_water, "indraft",
                                      buckets_summary.indraft)
 
@@ -467,24 +434,6 @@ class WaterbalanceComputer:
             outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
-        # if area.open_water.storage is None:
-        #     new_timeseries = WaterbalanceTimeserie()
-        #     new_timeseries.save()
-        #     area.open_water.storage = new_timeseries
-        # previous_timeseries = area.open_water.storage.volume
-        # volume_timeseries = self.storage_computer.compute(area.open_water.surface,
-        #                                                   area.open_water.init_water_level,
-        #                                                   buckets_summary,
-        #                                                   incoming_timeseries,
-        #                                                   outgoing_timeseries,
-        #                                                   precipitation,
-        #                                                   evaporation,
-        #                                                   seepage)
-        # area.open_water.storage.volume = store(volume_timeseries)
-        # area.open_water.storage.volume.save()
-        # area.open_water.storage.save()
-        # if not previous_timeseries is None:
-        #     previous_timeseries.delete()
 
         minimum_level_timeseries = TimeseriesRestrictedStub(timeseries=area.open_water.retrieve_minimum_level(),
                                                             start_date=start_date,
