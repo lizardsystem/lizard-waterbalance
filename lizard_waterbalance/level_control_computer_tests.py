@@ -59,20 +59,19 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         intakes_timeseries = []
         pumps_timeseries = []
-        precipitation = TimeseriesStub((self.today, 2.0))
-        evaporation = TimeseriesStub((self.today, 0.0))
-        seepage = TimeseriesStub((self.today, 0.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
+                                           pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.2)))
+                               TimeseriesStub((self.today, -2.0)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_b(self):
@@ -81,45 +80,43 @@ class LevelControlComputerTests(TestCase):
         tomorrow = self.today + timedelta(1)
         intakes_timeseries = []
         pumps_timeseries = []
-        precipitation = TimeseriesStub((self.today, 2.0), (tomorrow, 1.0))
-        evaporation = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
-        seepage = TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 2.0), (tomorrow, 1.0)),
+                               TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
+                               TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
+                               TimeseriesStub((self.today, 0.0), (tomorrow, 0.0))]
         water_levels = TimeseriesWithMemoryStub((self.today, 1.0),
                                                 (tomorrow, 1.0))
         self.open_water.retrieve_minimum_level = lambda : water_levels
         self.open_water.retrieve_maximum_level = lambda : water_levels
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           vertical_timeseries,
                                            water_levels,
                                            water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
+                                           pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
-                               TimeseriesStub((self.today, -0.2), (tomorrow, -0.1)))
+                               TimeseriesStub((self.today, -2.0), (tomorrow, -1.0)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_c(self):
         """Test the case with precipitation and evaporation on a single day."""
         level_control = LevelControlComputer()
-        precipitation = TimeseriesStub((self.today, 2.0))
         intakes_timeseries = []
         pumps_timeseries = []
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, -1.0)),
+                               TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
+                                           pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.1)))
+                               TimeseriesStub((self.today, -1.0)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_d(self):
@@ -127,20 +124,19 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         intakes_timeseries = []
         pumps_timeseries = []
-        precipitation = TimeseriesStub((self.today, 2.0))
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.5))
+        vertical_timeseries = [TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, -1.0)),
+                               TimeseriesStub((self.today, 0.5)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
+                                           pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -0.1500)))
+                               TimeseriesStub((self.today, -1.5)))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_e(self):
@@ -148,19 +144,18 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         intakes_timeseries = []
         pumps_timeseries = []
-        precipitation = TimeseriesStub((self.today, 0.0))
-        evaporation = TimeseriesStub((self.today, 1.0))
-        seepage = TimeseriesStub((self.today, 0.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, -1.0)),
+                               TimeseriesStub((self.today, 0.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 0.1)),
+                                           pumps_timeseries)
+        expected_timeseries = (TimeseriesStub((self.today, 1.0)),
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries, timeseries)
 
@@ -170,20 +165,19 @@ class LevelControlComputerTests(TestCase):
         buckets_summary = BucketsSummary()
         intakes_timeseries = [TimeseriesStub((self.today, 10))]
         pumps_timeseries = []
-        precipitation = TimeseriesStub((self.today, 8.0))
-        evaporation = TimeseriesStub((self.today, 4.0))
-        seepage = TimeseriesStub((self.today, 2.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
+                               TimeseriesStub((self.today, -4.0)),
+                               TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
+                                           pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -10.6)))
+                               TimeseriesStub((self.today, -16.0)))
         self.assertEqual(expected_timeseries[0], timeseries[0])
         self.assertEqual(expected_timeseries[1], timeseries[1])
 
@@ -193,19 +187,18 @@ class LevelControlComputerTests(TestCase):
         buckets_summary = BucketsSummary()
         intakes_timeseries = []
         pumps_timeseries = [TimeseriesStub((self.today, 10))]
-        precipitation = TimeseriesStub((self.today, 8.0))
-        evaporation = TimeseriesStub((self.today, 4.0))
-        seepage = TimeseriesStub((self.today, 2.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
+                               TimeseriesStub((self.today, -4.0)),
+                               TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 9.4)),
+                                           pumps_timeseries)
+        expected_timeseries = (TimeseriesStub((self.today, 4.0)),
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries[0], timeseries[0])
         self.assertEqual(expected_timeseries[1], timeseries[1])
@@ -216,19 +209,18 @@ class LevelControlComputerTests(TestCase):
         buckets_summary = BucketsSummary()
         intakes_timeseries = []
         pumps_timeseries = [TimeseriesStub((self.today, 10)), TimeseriesStub((self.today, 10))]
-        precipitation = TimeseriesStub((self.today, 8.0))
-        evaporation = TimeseriesStub((self.today, 4.0))
-        seepage = TimeseriesStub((self.today, 2.0))
+        vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
+                               TimeseriesStub((self.today, -4.0)),
+                               TimeseriesStub((self.today, 2.0)),
+                               TimeseriesStub((self.today, 0.0))]
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
+                                           vertical_timeseries,
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
-                                           pumps_timeseries,
-                                           precipitation,
-                                           evaporation,
-                                           seepage)
-        expected_timeseries = (TimeseriesStub((self.today, 19.4)),
+                                           pumps_timeseries)
+        expected_timeseries = (TimeseriesStub((self.today, 14.0)),
                                TimeseriesStub((self.today, 0.0)))
         self.assertEqual(expected_timeseries[0], timeseries[0])
         self.assertEqual(expected_timeseries[1], timeseries[1])

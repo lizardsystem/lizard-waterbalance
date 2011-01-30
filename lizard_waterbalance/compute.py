@@ -78,11 +78,11 @@ class SingleDayBucketsSummary:
     """Stores the interesting values of a single day summed over all buckets.
 
     Instance variables:
-    * hardened -- single day value of *Qsom verhard*
-    * drained -- single day value of *Qsom gedraineerdonder*
-    * undrained -- single day value of *Qsom ongedraineerd*
-    * flow off -- single day value of *Qsom afst*
-    * indraft -- single day of *Qsom intrek*
+    * hardened -- single day value of in [m3] *Qsom verhard*
+    * drained -- single day value in [m3] of *Qsom gedraineerdonder*
+    * undrained -- single day value in [m3] of *Qsom ongedraineerd*
+    * flow off -- single day value in [m3] of *Qsom afst*
+    * indraft -- single day of in [m3] *Qsom intrek*
 
     """
     def total(self):
@@ -96,11 +96,12 @@ class BucketsSummary:
     """Stores the total time series computed for all buckets.
 
     Instance variables:
-    * hardened -- time series for *Qsom verhard*
-    * drained -- time series for *Qsom gedraineerdonder*
-    * undrained -- time series for *Qsom ongedraineerd*
-    * flow off -- time series for *Qsom afst*
-    * indraft -- time series for *Qsom intrek*
+    * totals -- totals time series in [m3/day] of the other time series
+    * hardened -- time series in [m3/day] for *Qsom verhard*
+    * drained -- time series in [m3/day] for *Qsom gedraineerdonder*
+    * undrained -- time series in [m3/day] for *Qsom ongedraineerd*
+    * flow off -- time series in [m3/day] for *Qsom afst*
+    * indraft -- time series in [m3/day] for *Qsom intrek*
 
     """
     def __init__(self):
@@ -497,13 +498,11 @@ class WaterbalanceComputer:
 
         level_control = self.level_control_computer.compute(area.open_water,
                                                             buckets_summary,
+                                                            vertical_timeseries,
                                                             minimum_level_timeseries,
                                                             maximum_level_timeseries,
                                                             incoming_timeseries,
-                                                            outgoing_timeseries,
-                                                            precipitation,
-                                                            evaporation,
-                                                            seepage)
+                                                            outgoing_timeseries)
 
         self.level_control_storage.store(level_control, area.open_water.pumping_stations.all())
 

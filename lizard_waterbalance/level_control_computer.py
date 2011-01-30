@@ -34,10 +34,9 @@ from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 class LevelControlComputer:
 
-    def compute(self, open_water, buckets_summary,
+    def compute(self, open_water, buckets_summary, vertical_timeseries,
                 minimum_level_timeseries, maximum_level_timeseries,
-                intakes_timeseries, pumps_timeseries, precipitation,
-                evaporation, seepage):
+                intakes_timeseries, pumps_timeseries):
         """Compute and return the pair of intake and pump time series.
 
         This function returns the pair of TimeseriesStub(s) that consists of
@@ -48,9 +47,9 @@ class LevelControlComputer:
         * buckets_summary -- BucketsSummary with the summed buckets outcome
         * intakes_timeseries -- list of intake timeseries in [m3/day]
         * pumps_timeseries -- list of pump timeseries in [m3/day]
-        * precipitation -- precipitation time series in [mm/day]
-        * evaporation -- evaporation time series in [mm/day]
-        * seepage -- seepage time series in [mm/day]
+        * vertical_timeseries -- list of time series [precipitation,
+          evaporation, seepage, infiltration], where each time series is
+          specified in [m3/day]
 
         """
         result = TimeseriesStub()
@@ -59,9 +58,7 @@ class LevelControlComputer:
 
         timeseries_list = []
         timeseries_list += [buckets_summary.totals]
-        timeseries_list += [precipitation]
-        timeseries_list += [evaporation]
-        timeseries_list += [seepage]
+        timeseries_list += vertical_timeseries
         timeseries_list += [minimum_level_timeseries]
         timeseries_list += [maximum_level_timeseries]
         timeseries_list += intakes_timeseries[:]
@@ -74,18 +71,17 @@ class LevelControlComputer:
             precipitation_value = event_tuple[1][1]
             evaporation_value = event_tuple[2][1]
             seepage_value = event_tuple[3][1]
-            minimum_level = event_tuple[4][1]
-            maximum_level = event_tuple[5][1]
-            incoming_value = self.compute_incoming_volume(surface,
-                                                          open_water.crop_evaporation_factor,
-                                                          water_level,
-                                                          buckets_total_value,
+            infiltration_value = event_tuple[4][1]
+            minimum_level = event_tuple[5][1]
+            maximum_level = event_tuple[6][1]
+            incoming_value = self.compute_incoming_volume(buckets_total_value,
                                                           precipitation_value,
                                                           evaporation_value,
-                                                          seepage_value)
+                                                          seepage_value,
+                                                          infiltration_value)
 
             water_level += incoming_value / surface
-            for intake_event in event_tuple[6:index_first_pump_event]:
+            for intake_event in event_tuple[7:index_first_pump_event]:
                 water_level += intake_event[1] / surface
             for pump_event in event_tuple[index_first_pump_event:]:
                 water_level -= pump_event[1] / surface
@@ -97,18 +93,16 @@ class LevelControlComputer:
         (pump_time_series, intake_time_series) = split_timeseries(result)
         return (intake_time_series, pump_time_series)
 
-    def compute_incoming_volume(self, surface, crop_evaporation_factor,
-                                 water_level, buckets_value, precipitation_value,
-                                 evaporation_value, seepage_value):
+    def compute_incoming_volume(self, buckets_value, precipitation_value,
+                                evaporation_value, seepage_value,
+                                infiltration_value):
+
         incoming_volume = buckets_value
-        precipitation = precipitation_value * surface
-        evaporation = -evaporation_value * surface * \
-                      crop_evaporation_factor
-        seepage = seepage_value * surface
-        incoming_volume += precipitation + evaporation + seepage
-        # all aforementioned time series are specified in [mm/day] but we need
-        # [m/day]: 1 [mm] = 0.001 [m]
-        return incoming_volume * 0.001
+        incoming_volume += precipitation_value
+        incoming_volume += evaporation_value
+        incoming_volume += seepage_value
+        incoming_volume += infiltration_value
+        return incoming_volume
 
     def _compute_level_control(self, surface, water_level, minimum_water_level, maximum_water_level):
         """Compute and return the level control for the given date.

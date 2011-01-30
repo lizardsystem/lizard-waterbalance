@@ -35,7 +35,7 @@ class VerticalTimeseriesStorage:
 
         Parameters:
         * vertical_timeseries -- list of time series [precipitation,
-          evaporation, seepage, infiltation], where each time series is
+          evaporation, seepage, infiltration], where each time series is
           specified in [m3/day]
         * open_water -- OpenWater that will contain the time series
 
