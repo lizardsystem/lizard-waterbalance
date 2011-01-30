@@ -56,7 +56,7 @@ class StorageComputer:
         timeseries_list += [buckets_summary.drained]
         timeseries_list += [buckets_summary.undrained]
         timeseries_list += [buckets_summary.flow_off]
-        timeseries_list += [buckets_summary.infiltration]
+        timeseries_list += [buckets_summary.indraft]
         timeseries_list += intakes_timeseries[:]
         timeseries_list += pumps_timeseries[:]
         timeseries_list += [precipitation, evaporation, seepage]

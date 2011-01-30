@@ -81,7 +81,7 @@ class SingleDayBucketsSummary:
     * drained -- single day value of *Qsom gedraineerdonder*
     * undrained -- single day value of *Qsom ongedraineerd*
     * flow off -- single day value of *Qsom afst*
-    * infiltration -- single day of *Qsom intrek*
+    * indraft -- single day of *Qsom intrek*
 
     """
     def total(self):
@@ -89,7 +89,7 @@ class SingleDayBucketsSummary:
                self.drained +\
                self.undrained +\
                self.flow_off +\
-               self.infiltration
+               self.indraft
 
 class BucketsSummary:
     """Stores the total time series computed for all buckets.
@@ -99,7 +99,7 @@ class BucketsSummary:
     * drained -- time series for *Qsom gedraineerdonder*
     * undrained -- time series for *Qsom ongedraineerd*
     * flow off -- time series for *Qsom afst*
-    * infiltration -- time series for *Qsom intrek*
+    * indraft -- time series for *Qsom intrek*
 
     """
     def __init__(self):
@@ -108,7 +108,7 @@ class BucketsSummary:
         self.drained = TimeseriesStub()
         self.undrained = TimeseriesStub()
         self.flow_off = TimeseriesStub()
-        self.infiltration = TimeseriesStub()
+        self.indraft = TimeseriesStub()
 
 class OpenWaterOutcome:
     """Stores the time series that are computed for an OpenWater.
@@ -175,7 +175,7 @@ def compute_net_drainage(bucket, previous_volume):
     """Return the net drainage of today.
 
     With net drainage, we mean the volume difference caused by drainage and
-    infiltration.
+    indraft.
 
     Parameters:
     * bucket -- bucket for which to compute the net drainage
@@ -596,12 +596,12 @@ class BucketSummarizer:
         summary.drained = -self.compute_sum_drained()
         summary.undrained = -self.compute_sum_undrained_net_drainage()
         summary.flow_off = -self.compute_sum_undrained_flow_off()
-        summary.infiltration = -self.compute_sum_infiltration()
+        summary.indraft = -self.compute_sum_indraft()
         summary.totals = summary.hardened + \
                          summary.drained + \
                          summary.undrained + \
                          summary.flow_off + \
-                         summary.infiltration
+                         summary.indraft
         return summary
 
     def compute_sum_hardened(self):
@@ -638,7 +638,7 @@ class BucketSummarizer:
                 sum += outcome[0]
         return sum
 
-    def compute_sum_infiltration(self):
+    def compute_sum_indraft(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
@@ -667,5 +667,5 @@ class BucketsSummarizer:
             buckets_summary.drained.add_value(date, daily_summary.drained)
             buckets_summary.undrained.add_value(date, daily_summary.undrained)
             buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
-            buckets_summary.infiltration.add_value(date, daily_summary.infiltration)
+            buckets_summary.indraft.add_value(date, daily_summary.indraft)
         return buckets_summary

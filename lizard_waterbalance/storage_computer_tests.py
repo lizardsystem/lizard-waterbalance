@@ -113,7 +113,7 @@ class StorageComputerTests(TestCase):
         buckets_summary.drained  = TimeseriesStub((today, 6))
         buckets_summary.undrained = TimeseriesStub((today, 9))
         buckets_summary.flow_off = TimeseriesStub((today, 12))
-        buckets_summary.infiltration = TimeseriesStub((today, -3))
+        buckets_summary.indraft = TimeseriesStub((today, -3))
         intakes_timeseries = [TimeseriesStub((today, 10))]
         pumps_timeseries = [TimeseriesStub((today, 5))]
         precipitation = TimeseriesStub((today, 8))
