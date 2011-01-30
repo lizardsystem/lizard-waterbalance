@@ -45,6 +45,7 @@ class LevelControlComputerTests(TestCase):
         self.open_water.surface = 100
         self.open_water.init_water_level = 1.0
         self.open_water.crop_evaporation_factor = 1.0
+        self.open_water.bottom_height = 0.9
         self.today = datetime(2010, 12, 17)
         self.water_levels = TimeseriesWithMemoryStub((self.today, 1.0))
         self.buckets_summary = BucketsSummary()
@@ -234,6 +235,7 @@ class StorageTests(TestCase):
         self.open_water.surface = 100
         self.open_water.init_water_level = 1.0
         self.open_water.crop_evaporation_factor = 1.0
+        self.open_water.bottom_height = 0.9
         self.today = datetime(2010, 12, 17)
         self.minimum_water_levels = TimeseriesWithMemoryStub((self.today, 0.98))
         self.maximum_water_levels = TimeseriesWithMemoryStub((self.today, 1.02))
@@ -259,10 +261,8 @@ class StorageTests(TestCase):
                                            self.maximum_water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
-        expected_timeseries = (TimeseriesStub((self.today, 2.0)),
-                               TimeseriesStub((self.today, 0.0)))
-        self.assertEqual(expected_timeseries[0], timeseries[2])
-        self.assertEqual(expected_timeseries[1], timeseries[3])
+        expected_timeseries = TimeseriesStub((self.today, 12.0))
+        self.assertEqual(expected_timeseries, timeseries[2])
 
     def test_b(self):
         """Test the case with precipitation on a single day.
@@ -284,10 +284,8 @@ class StorageTests(TestCase):
                                            self.maximum_water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
-        expected_timeseries = (TimeseriesStub((self.today, 2.0)),
-                               TimeseriesStub((self.today, 0.0)))
-        self.assertEqual(expected_timeseries[0], timeseries[2])
-        self.assertEqual(expected_timeseries[1], timeseries[3])
+        expected_timeseries = TimeseriesStub((self.today, 12.0))
+        self.assertEqual(expected_timeseries, timeseries[2])
 
     def test_c(self):
         """Test the case with evaporation on a single day.
@@ -309,10 +307,8 @@ class StorageTests(TestCase):
                                            self.maximum_water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
-        expected_timeseries = (TimeseriesStub((self.today, 0.0)),
-                               TimeseriesStub((self.today, -2.0)))
-        self.assertEqual(expected_timeseries[0], timeseries[2])
-        self.assertEqual(expected_timeseries[1], timeseries[3])
+        expected_timeseries = TimeseriesStub((self.today, 8.0))
+        self.assertEqual(expected_timeseries, timeseries[2])
 
     def test_d(self):
         """Test the case with precipitation on two days.
@@ -340,13 +336,9 @@ class StorageTests(TestCase):
                                            maximum_water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
-        expected_timeseries = (TimeseriesStub((self.today, 2.0),
-                                              (tomorrow, 0.0)),
-                               TimeseriesStub((self.today, 0.0),
-                                              (tomorrow, 0.0)))
-        self.assertEqual(expected_timeseries[0], timeseries[2])
-        self.assertEqual(expected_timeseries[1], timeseries[3])
-
+        expected_timeseries = TimeseriesStub((self.today, 12.0),
+                                             (tomorrow, 12.0))
+        self.assertEqual(expected_timeseries, timeseries[2])
 
     def test_e(self):
         """Test the case with both precipitation and evaporation on two days.
@@ -371,9 +363,6 @@ class StorageTests(TestCase):
                                            maximum_water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
-        expected_timeseries = (TimeseriesStub((self.today, 2.0),
-                                              (tomorrow, 0.0)),
-                               TimeseriesStub((self.today, 0.0),
-                                              (tomorrow, -4.0)))
-        self.assertEqual(expected_timeseries[0], timeseries[2])
-        self.assertEqual(expected_timeseries[1], timeseries[3])
+        expected_timeseries = TimeseriesStub((self.today, 12.0),
+                                             (tomorrow, 8.0))
+        self.assertEqual(expected_timeseries, timeseries[2])

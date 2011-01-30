@@ -506,8 +506,6 @@ class WaterbalanceComputer:
 
         storage = level_control[2]
         store_waterbalance_timeserie(area.open_water, "storage", storage)
-        storage = level_control[3]
-        store_waterbalance_timeserie(area.open_water, "negative_storage", storage)
 
         area.open_water.save()
 

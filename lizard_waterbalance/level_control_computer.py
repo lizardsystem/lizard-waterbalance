@@ -91,14 +91,13 @@ class LevelControlComputer:
             level_control = self._compute_level_control(surface, water_level, minimum_level, maximum_level)
             water_level += level_control / surface
 
-            storage_value = incoming_value + level_control
+            storage_value = (water_level - open_water.bottom_height) * surface
             storage.add_value(date, storage_value)
 
             result.add_value(date, level_control)
             date += timedelta(1)
         (pump_time_series, intake_time_series) = split_timeseries(result)
-        (negative_storage_timeseries, storage_timeseries) = split_timeseries(storage)
-        return (intake_time_series, pump_time_series, storage_timeseries, negative_storage_timeseries)
+        return (intake_time_series, pump_time_series, storage)
 
     def compute_incoming_volume(self, buckets_value, precipitation_value,
                                 evaporation_value, seepage_value,

@@ -135,6 +135,9 @@ class OpenWater(models.Model):
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
                                   help_text=_("oppervlakte in vierkante meters"))
     crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
+    bottom_height = models.FloatField(verbose_name=_("bodemhoogte"),
+                                      help_text=_("bodemhoogte in meters boven NAP"),
+                                      null=True, blank=True)
     minimum_level = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("ondergrens"),
                                       help_text=_("tijdserie naar ondergrens peil in meters"),
@@ -205,11 +208,6 @@ class OpenWater(models.Model):
                                 verbose_name=_("berging"),
                                 help_text=_("tijdserie naar berekende berging"),
                                 null=True, blank=True, related_name='+')
-
-    negative_storage = models.ForeignKey(WaterbalanceTimeserie,
-                                         verbose_name=_("berging"),
-                                         help_text=_("tijdserie naar berekende negatieve berging"),
-                                         null=True, blank=True, related_name='+')
 
     def __unicode__(self):
         return self.slug
