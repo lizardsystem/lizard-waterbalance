@@ -492,6 +492,7 @@ def create_saveable_openwater():
     open_water.surface = 0
     open_water.crop_evaporation_factor = 0.0
     open_water.init_water_level = 0.0
+    open_water.bottom_height = 0.0
     return open_water
 
 def create_saveable_bucket():

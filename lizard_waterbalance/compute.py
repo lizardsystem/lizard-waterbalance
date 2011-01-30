@@ -30,11 +30,11 @@ import logging
 
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
-from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 from lizard_waterbalance.timeseriesstub import add_timeseries
@@ -381,8 +381,8 @@ class WaterbalanceComputer:
         self.buckets_summarizer = BucketsSummarizer()
         self.vertical_timeseries_computer = VerticalTimeseriesComputer()
         self.vertical_timeseries_storage = VerticalTimeseriesStorage()
-        self.storage_computer = StorageComputer()
         self.level_control_storage = LevelControlStorage()
+        self.fraction_computer = FractionComputer()
 
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
@@ -455,6 +455,17 @@ class WaterbalanceComputer:
 
         storage = level_control[2]
         store_waterbalance_timeserie(area.open_water, "storage", storage)
+
+        balance_intake_timeseries = level_control[0]
+        balance_pump_timeseries = level_control[1]
+        fraction = self.fraction_computer.compute(area.open_water,
+                                                  buckets_summary,
+                                                  vertical_timeseries,
+                                                  storage,
+                                                  incoming_timeseries,
+                                                  balance_intake_timeseries,
+                                                  outgoing_timeseries,
+                                                  balance_pump_timeseries)
 
         area.open_water.save()
 
