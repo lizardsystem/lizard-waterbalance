@@ -36,6 +36,7 @@ from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesC
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
 from lizard_waterbalance.storage_computer import StorageComputer
 from lizard_waterbalance.timeseries import store
+from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import create_empty_timeseries
 from lizard_waterbalance.timeseriesstub import enumerate_events
@@ -442,6 +443,9 @@ class WaterbalanceComputer:
         area.open_water.flow_off.save()
         if not previous_timeseries is None:
             previous_timeseries.delete()
+
+        store_waterbalance_timeserie(area.open_water, "indraft",
+                                     buckets_summary.indraft)
 
         vertical_timeseries = self.vertical_timeseries_computer.compute(area.open_water.surface,
                                                                         area.open_water.crop_evaporation_factor,

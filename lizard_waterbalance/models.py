@@ -196,6 +196,11 @@ class OpenWater(models.Model):
                                  help_text=_("tijdserie naar Qsom afstroming"),
                                  null=True, blank=True, related_name='+')
 
+    indraft = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("Qsom intrek"),
+                                help_text=_("tijdserie naar Qsom intrek"),
+                                null=True, blank=True, related_name='+')
+
     storage = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("berging"),
                                 help_text=_("tijdserie naar berekende berging"),
