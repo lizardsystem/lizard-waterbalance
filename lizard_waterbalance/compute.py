@@ -467,26 +467,24 @@ class WaterbalanceComputer:
             outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
-        if area.open_water.storage is None:
-            new_timeseries = WaterbalanceTimeserie()
-            new_timeseries.save()
-            area.open_water.storage = new_timeseries
-        previous_timeseries = area.open_water.storage.volume
-        volume_timeseries = self.storage_computer.compute(area.open_water.surface,
-                                                          area.open_water.init_water_level,
-                                                          buckets_summary,
-                                                          incoming_timeseries,
-                                                          outgoing_timeseries,
-                                                          precipitation,
-                                                          evaporation,
-                                                          seepage)
-        area.open_water.storage.volume = store(volume_timeseries)
-        area.open_water.storage.volume.save()
-        area.open_water.storage.save()
-        if not previous_timeseries is None:
-            previous_timeseries.delete()
-
-        area.open_water.save()
+        # if area.open_water.storage is None:
+        #     new_timeseries = WaterbalanceTimeserie()
+        #     new_timeseries.save()
+        #     area.open_water.storage = new_timeseries
+        # previous_timeseries = area.open_water.storage.volume
+        # volume_timeseries = self.storage_computer.compute(area.open_water.surface,
+        #                                                   area.open_water.init_water_level,
+        #                                                   buckets_summary,
+        #                                                   incoming_timeseries,
+        #                                                   outgoing_timeseries,
+        #                                                   precipitation,
+        #                                                   evaporation,
+        #                                                   seepage)
+        # area.open_water.storage.volume = store(volume_timeseries)
+        # area.open_water.storage.volume.save()
+        # area.open_water.storage.save()
+        # if not previous_timeseries is None:
+        #     previous_timeseries.delete()
 
         minimum_level_timeseries = TimeseriesRestrictedStub(timeseries=area.open_water.retrieve_minimum_level(),
                                                             start_date=start_date,
@@ -504,7 +502,14 @@ class WaterbalanceComputer:
                                                             incoming_timeseries,
                                                             outgoing_timeseries)
 
-        self.level_control_storage.store(level_control, area.open_water.pumping_stations.all())
+        self.level_control_storage.store(level_control[0:2], area.open_water.pumping_stations.all())
+
+        storage = level_control[2]
+        store_waterbalance_timeserie(area.open_water, "storage", storage)
+        storage = level_control[3]
+        store_waterbalance_timeserie(area.open_water, "negative_storage", storage)
+
+        area.open_water.save()
 
         return (bucket2outcome, level_control)
 

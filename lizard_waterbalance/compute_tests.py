@@ -619,7 +619,10 @@ class WaterbalanceComputerTests(TestCase):
     def setUp(self):
         self.buckets_result = {} # don't care
         self.buckets_computer = Mock({"compute": self.buckets_result})
-        self.level_result = 3  #  don't care
+        self.level_result = [TimeseriesStub(),
+                             TimeseriesStub(),
+                             TimeseriesStub(),
+                             TimeseriesStub()] # don't care
         self.level_control_computer = Mock({"compute": self.level_result})
         self.buckets = [Bucket(), Bucket()]
         self.area = WaterbalanceArea()

@@ -206,6 +206,11 @@ class OpenWater(models.Model):
                                 help_text=_("tijdserie naar berekende berging"),
                                 null=True, blank=True, related_name='+')
 
+    negative_storage = models.ForeignKey(WaterbalanceTimeserie,
+                                         verbose_name=_("berging"),
+                                         help_text=_("tijdserie naar berekende negatieve berging"),
+                                         null=True, blank=True, related_name='+')
+
     def __unicode__(self):
         return self.slug
 

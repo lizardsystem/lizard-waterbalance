@@ -49,9 +49,12 @@ class LevelControlComputer:
         * pumps_timeseries -- list of pump timeseries in [m3/day]
         * vertical_timeseries -- list of time series [precipitation,
           evaporation, seepage, infiltration], where each time series is
-          specified in [m3/day]
+          specified in [m3/day]TimeseriesStub((self.today, 2.0),
+                                              (tomorrow, 0.0)).
+
 
         """
+        storage = TimeseriesStub()
         result = TimeseriesStub()
         surface = 1.0 * open_water.surface
         water_level = open_water.init_water_level
@@ -88,10 +91,14 @@ class LevelControlComputer:
             level_control = self._compute_level_control(surface, water_level, minimum_level, maximum_level)
             water_level += level_control / surface
 
+            storage_value = incoming_value + level_control
+            storage.add_value(date, storage_value)
+
             result.add_value(date, level_control)
             date += timedelta(1)
         (pump_time_series, intake_time_series) = split_timeseries(result)
-        return (intake_time_series, pump_time_series)
+        (negative_storage_timeseries, storage_timeseries) = split_timeseries(storage)
+        return (intake_time_series, pump_time_series, storage_timeseries, negative_storage_timeseries)
 
     def compute_incoming_volume(self, buckets_value, precipitation_value,
                                 evaporation_value, seepage_value,
