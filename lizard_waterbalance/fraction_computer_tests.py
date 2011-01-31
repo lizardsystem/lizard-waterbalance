@@ -123,7 +123,7 @@ class FractionComputerTests(TestCase):
                                               TimeseriesStub(), # don't care
                                               [], # don't care
                                               TimeseriesStub()) # don't care
-        expected_initial_fractions = TimeseriesStub((self.today, 8.0 / 10.0))
+        expected_initial_fractions = TimeseriesStub((self.today, 8.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
     def test_d(self):

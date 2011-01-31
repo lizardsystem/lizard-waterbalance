@@ -209,11 +209,46 @@ class OpenWater(models.Model):
                                 help_text=_("tijdserie naar berekende berging"),
                                 null=True, blank=True, related_name='+')
 
+    fractions_initial = models.ForeignKey(WaterbalanceTimeserie,
+                                          verbose_name=_("fracties initieel"),
+                                          help_text=_("tijdserie naar fracties initieel"),
+                                          null=True, blank=True, related_name='+')
+
+    fractions_precipitation = models.ForeignKey(WaterbalanceTimeserie,
+                                                verbose_name=_("fracties neerslag"),
+                                                help_text=_("tijdserie naar fracties neerslag"),
+                                                null=True, blank=True, related_name='+')
+
+    fractions_seepage = models.ForeignKey(WaterbalanceTimeserie,
+                                          verbose_name=_("fracties kwel"),
+                                          help_text=_("tijdserie naar fracties kwel"),
+                                          null=True, blank=True, related_name='+')
+
+    fractions_hardened = models.ForeignKey(WaterbalanceTimeserie,
+                                           verbose_name=_("fracties verhard"),
+                                           help_text=_("tijdserie naar fracties verhard"),
+                                           null=True, blank=True, related_name='+')
+
+    fractions_drained = models.ForeignKey(WaterbalanceTimeserie,
+                                          verbose_name=_("fracties gedraineerd"),
+                                          help_text=_("tijdserie naar fracties gedraineerd"),
+                                          null=True, blank=True, related_name='+')
+
+    fractions_undrained = models.ForeignKey(WaterbalanceTimeserie,
+                                            verbose_name=_("fracties ongedraineerd"),
+                                            help_text=_("tijdserie naar fracties ongedraineerd"),
+                                            null=True, blank=True, related_name='+')
+
+    fractions_flow_off = models.ForeignKey(WaterbalanceTimeserie,
+                                           verbose_name=_("fracties afstroming"),
+                                           help_text=_("tijdserie naar fracties afstroming"),
+                                           null=True, blank=True, related_name='+')
+
     def __unicode__(self):
         return self.slug
 
     def retrieve_pumping_stations(self):
-        return []
+        return self.pumping_stations.all()
 
     def retrieve_incoming_timeseries(self, only_input=False):
         """Return the list of time series of intakes.
@@ -432,7 +467,7 @@ class PumpingStation(models.Model):
         return result
 
     def retrieve_pump_lines(self):
-        pass
+        return self.pump_lines.all()
 
 class PumpLine(models.Model):
     """Represents a *pomplijn*.
@@ -450,7 +485,7 @@ class PumpLine(models.Model):
     timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
 
     def retrieve_timeseries(self):
-        pass
+        return self.timeserie
 
 
 class WaterbalanceArea(models.Model):

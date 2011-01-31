@@ -83,6 +83,9 @@ class Command(BaseCommand):
         area.open_water.retrieve_maximum_level = lambda : timeseries_retriever.get_timeseries("maximum level")
 
         waterbalance_computer = WaterbalanceComputer()
+
+        waterbalance_computer.retrieve_incoming_timeseries = lambda o: [timeseries_retriever.get_timeseries("dijklek"), timeseries_retriever.get_timeseries("Inlaat Vecht")]
+
         bucket2outcome, level_control = \
                         waterbalance_computer.compute(area, start_date, end_date)
 

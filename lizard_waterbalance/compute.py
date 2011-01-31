@@ -384,6 +384,9 @@ class WaterbalanceComputer:
         self.level_control_storage = LevelControlStorage()
         self.fraction_computer = FractionComputer()
 
+    def retrieve_incoming_timeseries(self, open_water):
+        return open_water.retrieve_incoming_timeseries(only_input=True)
+
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
 
@@ -424,7 +427,7 @@ class WaterbalanceComputer:
                                                area.open_water)
 
         incoming_timeseries = []
-        for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
+        for timeseries in self.retrieve_incoming_timeseries(area.open_water):
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
@@ -458,14 +461,29 @@ class WaterbalanceComputer:
 
         balance_intake_timeseries = level_control[0]
         balance_pump_timeseries = level_control[1]
-        fraction = self.fraction_computer.compute(area.open_water,
-                                                  buckets_summary,
-                                                  vertical_timeseries,
-                                                  storage,
-                                                  incoming_timeseries,
-                                                  balance_intake_timeseries,
-                                                  outgoing_timeseries,
-                                                  balance_pump_timeseries)
+        fractions = self.fraction_computer.compute(area.open_water,
+                                                   buckets_summary,
+                                                   vertical_timeseries,
+                                                   storage,
+                                                   incoming_timeseries,
+                                                   balance_intake_timeseries,
+                                                   outgoing_timeseries,
+                                                   balance_pump_timeseries)
+
+        store_waterbalance_timeserie(area.open_water, "fractions_initial",
+                                     fractions[0])
+        store_waterbalance_timeserie(area.open_water, "fractions_precipitation",
+                                     fractions[1])
+        store_waterbalance_timeserie(area.open_water, "fractions_seepage",
+                                     fractions[2])
+        store_waterbalance_timeserie(area.open_water, "fractions_hardened",
+                                     fractions[3])
+        store_waterbalance_timeserie(area.open_water, "fractions_drained",
+                                     fractions[4])
+        store_waterbalance_timeserie(area.open_water, "fractions_undrained",
+                                     fractions[5])
+        store_waterbalance_timeserie(area.open_water, "fractions_flow_off",
+                                     fractions[6])
 
         area.open_water.save()
 

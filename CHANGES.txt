@@ -5,7 +5,11 @@ Changelog of lizard-waterbalance
 0.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Implemented the ground work for the waterbalance summary screen.
+
+- Implemented the ground work for the waterbalance fraction graph.
+
+- The fraction calculation time series are stored in the database.
 
 
 0.3 (2011-01-27)

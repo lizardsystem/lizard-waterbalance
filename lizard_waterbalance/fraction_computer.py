@@ -110,6 +110,8 @@ class FractionComputer:
             date = event_tuple[0][0]
             event_values = [event[1] for event in event_tuple]
 
+            # print list(enumerate(event_values))
+
             initial = self.compute_fraction(event_values, previous_initial,
                                            previous_storage)
             fractions_initial.add_value(date, initial)
@@ -193,10 +195,10 @@ class FractionComputer:
                 fraction = 0.0
         else:
             delta_out = self.delta_out(event_values)
-            fraction = previous_fraction * (previous_storage - delta_out)
+            fraction = max(0.0, previous_fraction * (previous_storage - delta_out))
             if not additional_term is None:
                 fraction += additional_term
-            fraction /= storage
+            fraction /= storage + delta_out
         return fraction
 
     def initial_storage(self, open_water):
@@ -204,8 +206,8 @@ class FractionComputer:
                (open_water.init_water_level - open_water.bottom_height)
 
     def delta_out(self, event_values):
-        return event_values[self.index_evaporation] + \
-               event_values[self.index_infiltration] + \
-               event_values[self.index_indraft] + \
+        return - event_values[self.index_evaporation] - \
+               event_values[self.index_infiltration] - \
+               event_values[self.index_indraft] - \
                event_values[self.index_balance_pump]
 
