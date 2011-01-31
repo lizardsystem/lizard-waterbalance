@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.4 (unreleased)
+0.4 (2011-01-31)
 ----------------
 
 - Implemented the ground work for the waterbalance summary screen.
