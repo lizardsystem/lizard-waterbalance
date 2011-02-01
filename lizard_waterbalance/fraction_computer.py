@@ -104,13 +104,12 @@ class FractionComputer:
         self.index_infiltration = 8
         self.index_storage = 9
         self.index_balance_intake = self.index_storage + len(intakes_timeseries)
+        self.index_first_pump = self.index_balance_intake + 1
         self.index_balance_pump = -1
 
         for event_tuple in enumerate_events(*timeseries_list):
             date = event_tuple[0][0]
             event_values = [event[1] for event in event_tuple]
-
-            # print list(enumerate(event_values))
 
             initial = self.compute_fraction(event_values, previous_initial,
                                            previous_storage)
@@ -187,27 +186,26 @@ class FractionComputer:
 
     def compute_fraction(self, event_values, previous_fraction, previous_storage,
                         additional_term=None):
-        storage = event_values[self.index_storage]
-        if abs(storage) < 1e-6:
+        incoming = self.total_incoming(event_values)
+        if abs(previous_storage + incoming) < 1e-6:
             if additional_term is None:
                 fraction = 1.0
             else:
                 fraction = 0.0
         else:
-            delta_out = self.delta_out(event_values)
-            fraction = max(0.0, previous_fraction * (previous_storage - delta_out))
-            if not additional_term is None:
-                fraction += additional_term
-            fraction /= storage + delta_out
+            if additional_term is None:
+                additional_term = 0.0
+            fraction = previous_fraction * previous_storage + additional_term
+            fraction /= (previous_storage + incoming)
         return fraction
 
     def initial_storage(self, open_water):
         return 1.0 * open_water.surface * \
                (open_water.init_water_level - open_water.bottom_height)
 
-    def delta_out(self, event_values):
-        return - event_values[self.index_evaporation] - \
-               event_values[self.index_infiltration] - \
-               event_values[self.index_indraft] - \
-               event_values[self.index_balance_pump]
+    def total_incoming(self, event_values):
+        incoming_values = event_values[0:self.index_first_pump]
+        del incoming_values[self.index_storage]
+        del incoming_values[self.index_indraft]
+        return sum(incoming_values)
 

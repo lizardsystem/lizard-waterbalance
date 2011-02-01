@@ -470,6 +470,10 @@ class WaterbalanceComputer:
                                                    outgoing_timeseries,
                                                    balance_pump_timeseries)
 
+        # for event_tuple in enumerate_events(*fractions):
+        #     values = [event[1] for event in event_tuple]
+        #     print sum(values)
+
         store_waterbalance_timeserie(area.open_water, "fractions_initial",
                                      fractions[0])
         store_waterbalance_timeserie(area.open_water, "fractions_precipitation",

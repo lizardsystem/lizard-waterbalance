@@ -105,40 +105,63 @@ class FractionComputerTests(TestCase):
     def test_c(self):
         """Test the initial fraction on a single day.
 
-        We test the case that there is delta out on the first day.
+        We test the case that there is volume incoming on the first day.
 
         """
         storage = TimeseriesStub((self.today, 10.0))
         fraction_computer = FractionComputer()
         mock_initial_storage = Mock({"initial_storage": 10.0})
         fraction_computer.initial_storage = mock_initial_storage.initial_storage
-        mock_delta_out = Mock({"delta_out": 2.0})
-        fraction_computer.delta_out = mock_delta_out.delta_out
-        storage = TimeseriesStub((self.today, 10.0))
+        mock_total_incoming = Mock({"total_incoming": 2.0})
+        fraction_computer.total_incoming = mock_total_incoming.total_incoming
         fractions = fraction_computer.compute(self.open_water,
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
-                                              storage,
+                                              storage, # don't care
                                               [], # don't care
                                               TimeseriesStub(), # don't care
                                               [], # don't care
                                               TimeseriesStub()) # don't care
-        expected_initial_fractions = TimeseriesStub((self.today, 8.0 / 12.0))
+        expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0))
+        self.assertEqual(expected_initial_fractions, fractions[0])
+
+    def test_ca(self):
+        """Test the initial fraction on a single day.
+
+        We test the case that there is volume incoming and volume outging on
+        the first day.
+
+        """
+        storage = TimeseriesStub((self.today, 11.0))
+        fraction_computer = FractionComputer()
+        mock_initial_storage = Mock({"initial_storage": 10.0})
+        fraction_computer.initial_storage = mock_initial_storage.initial_storage
+        mock_total_incoming = Mock({"total_incoming": 2.0})
+        fraction_computer.total_incoming = mock_total_incoming.total_incoming
+        fractions = fraction_computer.compute(self.open_water,
+                                              BucketsSummary(),
+                                              [TimeseriesStub()] * 4, # don't care
+                                              storage, # don't care
+                                              [], # don't care
+                                              TimeseriesStub(), # don't care
+                                              [], # don't care
+                                              TimeseriesStub()) # don't care
+        expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
     def test_d(self):
         """Test the initial fraction on two days.
 
-        We test the case that there is no delta out.
+        We test the case that there is no volume incoming.
 
         """
         tomorrow = self.today + timedelta(1)
-        storage = TimeseriesStub((self.today, 10.0), (tomorrow, 12.0))
+        storage = TimeseriesStub((self.today, 10.0), (tomorrow, 10.0))
         fraction_computer = FractionComputer()
         mock_initial_storage = Mock({"initial_storage": 10.0})
         fraction_computer.initial_storage = mock_initial_storage.initial_storage
-        mock_delta_out = Mock({"delta_out": 0.0})
-        fraction_computer.delta_out = mock_delta_out.delta_out
+        mock_total_incoming = Mock({"total_incoming": 0.0})
+        fraction_computer.total_incoming = mock_total_incoming.total_incoming
 
         fractions = fraction_computer.compute(self.open_water,
                                               BucketsSummary(),
@@ -149,7 +172,62 @@ class FractionComputerTests(TestCase):
                                               [], # don't care
                                               TimeseriesStub()) # don't care
         expected_initial_fractions = TimeseriesStub((self.today, 1.0),
-                                                    (tomorrow, 10.0 / 12.0))
+                                                    (tomorrow, 1.0))
+        self.assertEqual(expected_initial_fractions, fractions[0])
+
+    def test_db(self):
+        """Test the initial fraction on two days.
+
+        We test the case that there is volume incoming on both days both no
+        volume outgoing.
+
+        """
+        tomorrow = self.today + timedelta(1)
+        storage = TimeseriesStub((self.today, 12.0), (tomorrow, 14.0))
+        fraction_computer = FractionComputer()
+        mock_initial_storage = Mock({"initial_storage": 10.0})
+        fraction_computer.initial_storage = mock_initial_storage.initial_storage
+        mock_total_incoming = Mock({"total_incoming": 2.0})
+        fraction_computer.total_incoming = mock_total_incoming.total_incoming
+
+        fractions = fraction_computer.compute(self.open_water,
+                                              BucketsSummary(),
+                                              [TimeseriesStub()] * 4, # don't care
+                                              storage,
+                                              [], # don't care
+                                              TimeseriesStub(), # don't care
+                                              [], # don't care
+                                              TimeseriesStub()) # don't care
+        expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0),
+                                                    (tomorrow, 10.0 / 14.0))
+        self.assertEqual(list(expected_initial_fractions.events()), list(fractions[0].events()))
+
+    def test_dc(self):
+        """Test the initial fraction on two days.
+
+        We test the case that there is volume incoming and volume outgoing on
+        both days.
+
+        """
+        tomorrow = self.today + timedelta(1)
+        storage = TimeseriesStub((self.today, 11.0), (tomorrow, 13.0))
+        fraction_computer = FractionComputer()
+        mock_initial_storage = Mock({"initial_storage": 10.0})
+        fraction_computer.initial_storage = mock_initial_storage.initial_storage
+        mock_total_incoming = Mock({"total_incoming": 2.0})
+        fraction_computer.total_incoming = mock_total_incoming.total_incoming
+
+        fractions = fraction_computer.compute(self.open_water,
+                                              BucketsSummary(),
+                                              [TimeseriesStub()] * 4, # don't care
+                                              storage,
+                                              [], # don't care
+                                              TimeseriesStub(), # don't care
+                                              [], # don't care
+                                              TimeseriesStub()) # don't care
+        initial_fraction = 10.0 / 12.0
+        expected_initial_fractions = TimeseriesStub((self.today, initial_fraction),
+                                                    (tomorrow, (initial_fraction * 11.0) / 13.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
     def test_e(self):
@@ -164,9 +242,7 @@ class FractionComputerTests(TestCase):
         fraction_computer = FractionComputer()
         mock_initial_storage = Mock({"initial_storage": 10.0})
         fraction_computer.initial_storage = mock_initial_storage.initial_storage
-        mock_delta_out = Mock({"delta_out": 0.0})
-        fraction_computer.delta_out = mock_delta_out.delta_out
-        storage = TimeseriesStub((self.today, 10.0))
+        storage = TimeseriesStub((self.today, 12.0))
         intakes_timeseries = [TimeseriesStub((self.today, 2.0))]
         fractions = fraction_computer.compute(self.open_water,
                                               BucketsSummary(),
@@ -176,7 +252,7 @@ class FractionComputerTests(TestCase):
                                               TimeseriesStub(), # don't care
                                               [], # don't care
                                               TimeseriesStub()) # don't care
-        expected_initial_fractions = TimeseriesStub((self.today, 2.0 / 10.0))
+        expected_initial_fractions = TimeseriesStub((self.today, 2.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[7])
 
     def test_f(self):
@@ -191,9 +267,7 @@ class FractionComputerTests(TestCase):
         fraction_computer = FractionComputer()
         mock_initial_storage = Mock({"initial_storage": 10.0})
         fraction_computer.initial_storage = mock_initial_storage.initial_storage
-        mock_delta_out = Mock({"delta_out": 0.0})
-        fraction_computer.delta_out = mock_delta_out.delta_out
-        storage = TimeseriesStub((self.today, 10.0))
+        storage = TimeseriesStub((self.today, 16.0))
         intakes_timeseries = [TimeseriesStub((self.today, 2.0)),
                               TimeseriesStub((self.today, 4.0))]
         fractions = fraction_computer.compute(self.open_water,
@@ -204,7 +278,7 @@ class FractionComputerTests(TestCase):
                                               TimeseriesStub(), # don't care
                                               [], # don't care
                                               TimeseriesStub()) # don't care
-        expected_initial_fractions = (TimeseriesStub((self.today, 2.0 / 10.0)),
-                                      TimeseriesStub((self.today, 4.0 / 10.0)))
+        expected_initial_fractions = (TimeseriesStub((self.today, 2.0 / 16.0)),
+                                      TimeseriesStub((self.today, 4.0 / 16.0)))
         self.assertEqual(expected_initial_fractions[0], fractions[7])
         self.assertEqual(expected_initial_fractions[1], fractions[8])

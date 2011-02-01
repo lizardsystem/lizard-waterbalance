@@ -60,6 +60,40 @@ def monthly_events(timeseries):
                 current_value = value
         yield datetime(current_year, current_month, 1), current_value
 
+def average_monthly_events(timeseries):
+        """Return a generator to iterate over all average monthly events.
+
+        A TimeseriesStub stores daily events. This generator aggregates these
+        daily events to monthly events that is placed at the first of the month
+        and whose value is the total value of the daily events for that month.
+
+        """
+        current_year = None
+        current_month = None
+        current_value = 0
+	value_count = 0
+        for date, value in timeseries.events():
+            if current_month:
+                if date.year == current_year and date.month == current_month:
+                    current_value += value
+		    value_count += 1
+                elif date.year > current_year or date.month > current_month:
+		    average_value = (1.0 * current_value) / value_count
+		    yield datetime(current_year, current_month, 1), average_value
+                    current_year = date.year
+                    current_month = date.month
+                    current_value = value
+		    value_count = 1
+            else:
+                current_year = date.year
+                current_month = date.month
+                current_value = value
+		value_count = 1
+	if value_count > 0:
+		average_value = (1.0 * current_value) / value_count
+		datetime(current_year, current_month, 1), average_value
+		yield datetime(current_year, current_month, 1), average_value
+
 class TimeseriesStub:
     """Represents a time series.
 
