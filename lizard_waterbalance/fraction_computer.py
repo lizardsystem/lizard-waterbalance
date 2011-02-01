@@ -182,7 +182,7 @@ class FractionComputer:
                (open_water.init_water_level - open_water.bottom_height)
 
     def total_incoming(self, event_values):
-        incoming_values = event_values[0:]
+        incoming_values = event_values[:]
         del incoming_values[self.index_storage]
         del incoming_values[self.index_indraft]
         return sum(incoming_values)
