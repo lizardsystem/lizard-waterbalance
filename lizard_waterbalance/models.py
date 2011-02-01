@@ -250,6 +250,11 @@ class OpenWater(models.Model):
     def retrieve_pumping_stations(self):
         return self.pumping_stations.all()
 
+    def retrieve_intakes(self):
+        """Return the list of intakes."""
+        return [intake for intake in self.retrieve_pumping_stations() \
+                if intake.into]
+
     def retrieve_incoming_timeseries(self, only_input=False):
         """Return the list of time series of intakes.
 

@@ -35,7 +35,6 @@ from mock import ReturnValues
 from lizard_waterbalance.compute import BucketsSummary
 from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.timeseriesstub import TimeseriesWithMemoryStub
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
@@ -62,17 +61,11 @@ class FractionComputerTests(TestCase):
                                TimeseriesStub()]
         storage = TimeseriesStub((self.today, 10.0))
         intakes_timeseries = []
-        balance_intake_timeseries = TimeseriesStub()
-        pumps_timeseries = []
-        balance_pump_timeseries = TimeseriesStub()
         fractions = fraction_computer.compute(self.open_water,
                                               buckets_summary,
                                               vertical_timeseries,
                                               storage,
-                                              intakes_timeseries,
-                                              balance_intake_timeseries,
-                                              pumps_timeseries,
-                                              balance_pump_timeseries)
+                                              intakes_timeseries)
         expected_initial_fractions = TimeseriesStub((self.today, 1.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
@@ -95,10 +88,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              []) # don't care
         expected_initial_fractions = TimeseriesStub((self.today, 1.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
@@ -118,10 +108,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage, # don't care
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              [])
         expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
@@ -142,10 +129,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage, # don't care
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              [])
         expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
 
@@ -167,10 +151,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              [])
         expected_initial_fractions = TimeseriesStub((self.today, 1.0),
                                                     (tomorrow, 1.0))
         self.assertEqual(expected_initial_fractions, fractions[0])
@@ -194,10 +175,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              [])
         expected_initial_fractions = TimeseriesStub((self.today, 10.0 / 12.0),
                                                     (tomorrow, 10.0 / 14.0))
         self.assertEqual(list(expected_initial_fractions.events()), list(fractions[0].events()))
@@ -221,10 +199,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              [], # don't care
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              [])
         initial_fraction = 10.0 / 12.0
         expected_initial_fractions = TimeseriesStub((self.today, initial_fraction),
                                                     (tomorrow, (initial_fraction * 11.0) / 13.0))
@@ -248,10 +223,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              intakes_timeseries,
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              intakes_timeseries)
         expected_initial_fractions = TimeseriesStub((self.today, 2.0 / 12.0))
         self.assertEqual(expected_initial_fractions, fractions[7])
 
@@ -274,10 +246,7 @@ class FractionComputerTests(TestCase):
                                               BucketsSummary(),
                                               [TimeseriesStub()] * 4, # don't care
                                               storage,
-                                              intakes_timeseries,
-                                              TimeseriesStub(), # don't care
-                                              [], # don't care
-                                              TimeseriesStub()) # don't care
+                                              intakes_timeseries)
         expected_initial_fractions = (TimeseriesStub((self.today, 2.0 / 16.0)),
                                       TimeseriesStub((self.today, 4.0 / 16.0)))
         self.assertEqual(expected_initial_fractions[0], fractions[7])

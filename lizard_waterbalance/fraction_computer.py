@@ -35,10 +35,7 @@ from lizard_waterbalance.timeseriesstub import TimeseriesStub
 class FractionComputer:
 
     def compute(self, open_water, buckets_summary, vertical_timeseries,
-                storage_timeseries, intakes_timeseries,
-                balance_intake_timeseries, pumps_timeseries,
-                balance_pump_timeseries):
-
+                storage_timeseries, intakes_timeseries):
         """Compute and return the fraction series.
 
         This function returns the pair of TimeseriesStub(s) that consists of
@@ -52,10 +49,6 @@ class FractionComputer:
           specified in [m3/day]
         * storage_timeseries -- storage time series in [m3/day]
         * intakes_timeseries -- list of intake timeseries in [m3/day]
-        * balance_intake_timeseries -- level control intake time serie in
-          [m3/day]
-        * balance_pump_timeseries -- level control intake time serie in
-          [m3/day]
 
         """
         fractions_initial = TimeseriesStub()
@@ -66,7 +59,6 @@ class FractionComputer:
         fractions_undrained = TimeseriesStub()
         fractions_flow_off = TimeseriesStub()
         fractions_intakes = [TimeseriesStub() for timeseries in intakes_timeseries]
-        fractions_balance_intake = TimeseriesStub()
 
         previous_initial = 1.0
         previous_precipitation = 0.0
@@ -76,7 +68,6 @@ class FractionComputer:
         previous_undrained = 0.0
         previous_flow_off = 0.0
         previous_intakes = [0.0 for timeseries in intakes_timeseries]
-        previous_balance_intake = 0.0
 
         previous_storage = self.initial_storage(open_water)
 
@@ -89,9 +80,6 @@ class FractionComputer:
         timeseries_list += vertical_timeseries
         timeseries_list.append(storage_timeseries)
         timeseries_list += intakes_timeseries
-        timeseries_list.append(balance_intake_timeseries)
-        timeseries_list += pumps_timeseries
-        timeseries_list.append(balance_pump_timeseries)
 
         self.index_hardened = 0
         self.index_drained = 1
@@ -103,9 +91,6 @@ class FractionComputer:
         self.index_seepage = 7
         self.index_infiltration = 8
         self.index_storage = 9
-        self.index_balance_intake = self.index_storage + len(intakes_timeseries)
-        self.index_first_pump = self.index_balance_intake + 1
-        self.index_balance_pump = -1
 
         for event_tuple in enumerate_events(*timeseries_list):
             date = event_tuple[0][0]
@@ -167,13 +152,6 @@ class FractionComputer:
                     fractions_intakes[index].add_value(date, intake)
                     previous_intakes[index] = intake
 
-            balance_intake = self.compute_fraction(event_values,
-                                                   previous_balance_intake,
-                                                   previous_storage,
-                                                   event_values[self.index_balance_intake])
-            fractions_balance_intake.add_value(date, balance_intake)
-            previous_balance_intake = balance_intake
-
             previous_storage = event_values[self.index_storage]
 
         return [fractions_initial,
@@ -182,7 +160,7 @@ class FractionComputer:
                 fractions_hardened,
                 fractions_drained,
                 fractions_undrained,
-                fractions_flow_off] + fractions_intakes + [fractions_balance_intake]
+                fractions_flow_off] + fractions_intakes
 
     def compute_fraction(self, event_values, previous_fraction, previous_storage,
                         additional_term=None):
@@ -204,7 +182,7 @@ class FractionComputer:
                (open_water.init_water_level - open_water.bottom_height)
 
     def total_incoming(self, event_values):
-        incoming_values = event_values[0:self.index_first_pump]
+        incoming_values = event_values[0:]
         del incoming_values[self.index_storage]
         del incoming_values[self.index_indraft]
         return sum(incoming_values)

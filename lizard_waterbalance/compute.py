@@ -387,6 +387,10 @@ class WaterbalanceComputer:
     def retrieve_incoming_timeseries(self, open_water):
         return open_water.retrieve_incoming_timeseries(only_input=True)
 
+    def retrieve_intakes(self, open_water):
+        """Retrieve and return the list of intakes."""
+        return open_water.retrieve_intakes()
+
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
 
@@ -427,7 +431,7 @@ class WaterbalanceComputer:
                                                area.open_water)
 
         incoming_timeseries = []
-        for timeseries in self.retrieve_incoming_timeseries(area.open_water):
+        for intake, timeseries in self.retrieve_incoming_timeseries(area.open_water):
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
@@ -459,16 +463,11 @@ class WaterbalanceComputer:
         storage = level_control[2]
         store_waterbalance_timeserie(area.open_water, "storage", storage)
 
-        balance_intake_timeseries = level_control[0]
-        balance_pump_timeseries = level_control[1]
         fractions = self.fraction_computer.compute(area.open_water,
                                                    buckets_summary,
                                                    vertical_timeseries,
                                                    storage,
-                                                   incoming_timeseries,
-                                                   balance_intake_timeseries,
-                                                   outgoing_timeseries,
-                                                   balance_pump_timeseries)
+                                                   incoming_timeseries)
 
         # for event_tuple in enumerate_events(*fractions):
         #     values = [event[1] for event in event_tuple]
