@@ -586,4 +586,38 @@ class WaterbalanceLabel(models.Model):
     def __unicode__(self):
         return self.name
 
+class Concentration(models.Model):
+    """Specifies the type, name and concentrations of a specific substance.
 
+    Instance variables:
+    * substance -- name of the substance
+    * flow_name -- name of the flow to which the concentration applies
+    * minimum -- minimum concentration in [mg/m3]
+    * increment -- maximum allowed concentration above the minimum in [mg/m3]
+    * area -- WaterbalanceArea for which this concentration is defined
+
+    """
+    class Meta:
+        verbose_name = _("Concentratie")
+        verbose_name_plural = _("Concentraties")
+
+    SUBSTANCE_CHLORIDE = 0
+    SUBSTANCE_PHOSPHATE = 1
+    SUBSTANCES = ((SUBSTANCE_CHLORIDE, "chloride"),
+                  (SUBSTANCE_PHOSPHATE, "fosfaat"))
+
+    substance = models.IntegerField(choices=SUBSTANCES,
+                                    default=SUBSTANCE_CHLORIDE,
+                                    verbose_name=_("stof"))
+    flow_name = models.CharField(max_length=64, verbose_name=_("naam"),
+                                 help_text=_("naam van de waterstroom van deze concentratie"))
+    minimum = models.IntegerField(verbose_name=_("minimum"),
+                                 help_text=_("minimum concentratie in [mg/l]"))
+    increment = models.IntegerField(verbose_name=_("increment"),
+                                    help_text=_("maximum extra concentratie boven het minimum in [mg/l]"),
+                                    null=True, blank=True)
+    area = models.ForeignKey(WaterbalanceArea, related_name='concentrations',
+                             verbose_name=_("Waterbalans gebied"))
+
+    def __unicode__(self):
+        return u"%s - %s" % (unicode(self.flow_name), unicode(self.area.name))
