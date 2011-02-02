@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.5 (unreleased)
+0.5 (2011-02-02)
 ----------------
 
 - The fractions are also computed and stored for the intakes and pumps.
