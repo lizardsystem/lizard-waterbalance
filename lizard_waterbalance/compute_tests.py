@@ -49,9 +49,8 @@ from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
 from lizard_waterbalance.timeseries import Timeseries
-from lizard_waterbalance.timeseriesstub import enumerate_events
+from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
-from lizard_waterbalance.timeseriesstub import TimeseriesWithMemoryStub
 
 
 bucket_column_names = [
@@ -890,6 +889,94 @@ class TotalDailyBucketOutcomeTests(TestCase):
         self.assertEqual([20.0, 40.0], outcomes[1][1][bucket0])
         self.assertEqual([50.0, 70.0], outcomes[0][1][bucket1])
         self.assertEqual([60.0, 80.0], outcomes[1][1][bucket1])
+
+class RetrieveIntakesTimeseriesTests(TestCase):
+
+    def test_a(self):
+        "Test when there are no intakes and no pumps."""
+        open_water = create_saveable_openwater()
+
+        waterbalance_computer = WaterbalanceComputer()
+        intakes, intakes_timeseries = \
+                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
+
+        self.assertEqual([], intakes)
+        self.assertEqual([], intakes_timeseries)
+
+    def test_b(self):
+        """Test when there is a single intake.
+
+        The intake cannot be used for level control.
+        """
+        open_water = create_saveable_openwater()
+        open_water.save()
+        intake = PumpingStation()
+        intake.open_water = open_water
+        intake.name = "Inlaat Vecht"
+        intake.into = True
+        intake.computed_level_control = False
+        intake.percentage = 100 # don't care but obligatory
+        intake.save()
+
+        waterbalance_computer = WaterbalanceComputer()
+        intakes, intakes_timeseries = \
+                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
+
+        self.assertEqual([intake.pk], [intake.pk for intake in intakes])
+
+    def test_c(self):
+        """Test when there is a single intake.
+
+        The intake can be used for level control.
+        """
+        open_water = create_saveable_openwater()
+        open_water.save()
+        intake = PumpingStation()
+        intake.open_water = open_water
+        intake.name = "Inlaat Vecht"
+        intake.into = True
+        intake.computed_level_control = True
+        intake.percentage = 100 # don't care but obligatory
+        intake.save()
+        timeseries = TimeseriesStub((datetime(2011, 2, 1), 10.0))
+        store_waterbalance_timeserie(intake, "level_control", timeseries)
+        intake.save()
+
+        waterbalance_computer = WaterbalanceComputer()
+        intakes, intakes_timeseries = \
+                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
+
+        self.assertEqual([intake.pk], [intake.pk for intake in intakes])
+        self.assertEqual([timeseries], intakes_timeseries)
+
+    def test_d(self):
+        """Test retrieve_incoming_timeseries.
+
+        There are three intakes whith two of them a fixed intake.
+        """
+        intakes = [0] * 3
+        intakes_timeseries = [0] * 3
+        intakes[0] = PumpingStation()
+        intakes[0].into = True
+        intakes[0].computed_level_control = False
+        intakes_timeseries[0] = TimeseriesStub((datetime(2011, 2, 1), 10.0))
+        intakes[1] = PumpingStation()
+        intakes[1].into = True
+        intakes[1].computed_level_control = True
+        intakes_timeseries[1] = TimeseriesStub((datetime(2011, 2, 1), 20.0))
+        intakes[2] = PumpingStation()
+        intakes[2].into = True
+        intakes[2].computed_level_control = False
+        intakes_timeseries[2] = TimeseriesStub((datetime(2011, 2, 1), 30.0))
+
+        waterbalance_computer = WaterbalanceComputer()
+        waterbalance_computer.retrieve_intakes_timeseries = lambda o: (intakes, intakes_timeseries)
+
+        expected_timeseries = [TimeseriesStub((datetime(2011, 2, 1), 10.0)),
+                               TimeseriesStub((datetime(2011, 2, 1), 30.0))]
+
+        timeseries = waterbalance_computer.retrieve_incoming_timeseries(OpenWater())
+        self.assertEqual(expected_timeseries, timeseries)
 
 
 

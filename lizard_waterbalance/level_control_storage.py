@@ -26,8 +26,7 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.models import WaterbalanceTimeserie
-from lizard_waterbalance.timeseries import store
+from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
@@ -59,13 +58,5 @@ class LevelControlStorage:
             if timeseries is None:
                 continue
 
-            if pumping_station.level_control is None:
-                wb_timeserie = WaterbalanceTimeserie()
-                wb_timeserie.save()
-                pumping_station.level_control = wb_timeserie
-            previous_timeseries = pumping_station.level_control.volume
-            pumping_station.level_control.volume = store(timeseries)
-            pumping_station.level_control.save()
+            store_waterbalance_timeserie(pumping_station, "level_control", timeseries)
             pumping_station.save()
-            if not previous_timeseries is None:
-                previous_timeseries.delete()

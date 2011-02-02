@@ -32,6 +32,7 @@ from os.path import join
 from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import WaterbalanceComputer
+from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseriesstub import enumerate_events
@@ -84,7 +85,15 @@ class Command(BaseCommand):
 
         waterbalance_computer = WaterbalanceComputer()
 
-        waterbalance_computer.retrieve_incoming_timeseries = lambda o: [timeseries_retriever.get_timeseries("dijklek"), timeseries_retriever.get_timeseries("Inlaat Vecht")]
+        intakes = [PumpingStation.objects.get(name__iexact="dijklek"),
+                   PumpingStation.objects.get(name__iexact="Inlaat Vecht"),
+                   PumpingStation.objects.get(name__iexact="inlaat peilbeheer")]
+        intakes_timeseries = [timeseries_retriever.get_timeseries("dijklek"),
+                              timeseries_retriever.get_timeseries("Inlaat Vecht"),
+                              TimeseriesStub()]
+
+        waterbalance_computer.pumping_station2timeseries[intakes[0].name] = intakes_timeseries[0]
+        waterbalance_computer.pumping_station2timeseries[intakes[1].name] = intakes_timeseries[1]
 
         bucket2outcome, level_control = \
                         waterbalance_computer.compute(area, start_date, end_date)

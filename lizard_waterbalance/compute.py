@@ -29,13 +29,11 @@
 import logging
 
 from lizard_waterbalance.models import Bucket
-from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
-from lizard_waterbalance.timeseries import store
 from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import create_empty_timeseries
@@ -384,13 +382,7 @@ class WaterbalanceComputer:
         self.level_control_storage = LevelControlStorage()
         self.fraction_computer = FractionComputer()
 
-    def retrieve_incoming_timeseries(self, open_water):
-        return open_water.retrieve_incoming_timeseries(only_input=True)
-
-    def retrieve_intakes(self, open_water):
-        """Retrieve and return the list of intakes."""
-        return open_water.retrieve_intakes()
-
+        self.pumping_station2timeseries = {}
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
 
@@ -431,7 +423,7 @@ class WaterbalanceComputer:
                                                area.open_water)
 
         incoming_timeseries = []
-        for intake, timeseries in self.retrieve_incoming_timeseries(area.open_water):
+        for timeseries in self.retrieve_incoming_timeseries(area.open_water):
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
@@ -458,20 +450,23 @@ class WaterbalanceComputer:
                                                             incoming_timeseries,
                                                             outgoing_timeseries)
 
+
         self.level_control_storage.store(level_control[0:2], area.open_water.pumping_stations.all())
 
         storage = level_control[2]
         store_waterbalance_timeserie(area.open_water, "storage", storage)
 
+        intakes, tmp_timeseries = self.retrieve_intakes_timeseries(area.open_water)
+        intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,
+                                                       start_date=start_date,
+                                                       end_date=end_date) for timeseries in tmp_timeseries]
         fractions = self.fraction_computer.compute(area.open_water,
                                                    buckets_summary,
                                                    vertical_timeseries,
-                                                   storage,
-                                                   incoming_timeseries)
+                                                   storage, intakes_timeseries)
 
         # for event_tuple in enumerate_events(*fractions):
-        #     values = [event[1] for event in event_tuple]
-        #     print sum(values)
+        #     print sum((event[1] for event in event_tuple))
 
         store_waterbalance_timeserie(area.open_water, "fractions_initial",
                                      fractions[0])
@@ -487,10 +482,48 @@ class WaterbalanceComputer:
                                      fractions[5])
         store_waterbalance_timeserie(area.open_water, "fractions_flow_off",
                                      fractions[6])
+        for index, intake in enumerate(intakes):
+            store_waterbalance_timeserie(intake, "fractions", fractions[7 + index])
+            intake.save()
 
         area.open_water.save()
 
         return (bucket2outcome, level_control)
+
+    def retrieve_intakes_timeseries(self, open_water):
+        """Return the pair of lists of intakes and their timeseries.
+
+        Parameter:
+        * open_water -- OpenWater to which the intakes belong
+        """
+        intakes = []
+        intakes_timeseries = []
+        for pumping_station in open_water.pumping_stations.all():
+            if pumping_station.into:
+                intakes.append(pumping_station)
+                if pumping_station.computed_level_control:
+                    if pumping_station.level_control is None:
+                        timeseries = TimeseriesStub()
+                    else:
+                        timeseries = pumping_station.level_control.volume
+                else:
+                    # big ugly hack
+                    timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
+                intakes_timeseries.append(timeseries)
+        return intakes, intakes_timeseries
+
+    def retrieve_incoming_timeseries(self, open_water):
+        """Return the volume timeseries of the intakes with a fixed throughput.
+
+        Parameter:
+        * open_water -- OpenWater to which the intakes belong
+        """
+        incoming_timeseries = []
+        intakes, intakes_timeseries = self.retrieve_intakes_timeseries(open_water)
+        for intake, timeseries in zip(intakes, intakes_timeseries):
+            if intake.into and not intake.computed_level_control:
+                incoming_timeseries.append(timeseries)
+        return incoming_timeseries
 
 
 class BucketsComputer:

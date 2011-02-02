@@ -461,6 +461,11 @@ class PumpingStation(models.Model):
                                       help_text=_("tijdserie naar berekende peilhandhaving"),
                                       null=True, blank=True, related_name='+')
 
+    fractions = models.ForeignKey(WaterbalanceTimeserie,
+                                  verbose_name=_("fracties"),
+                                  help_text=_("tijdserie naar berekende fracties"),
+                                  null=True, blank=True, related_name='+')
+
     def __unicode__(self):
         return self.name
 
