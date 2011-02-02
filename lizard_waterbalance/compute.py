@@ -508,7 +508,10 @@ class WaterbalanceComputer:
                         timeseries = pumping_station.level_control.volume
                 else:
                     # big ugly hack
-                    timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
+                    if self.pumping_station2timeseries:
+                        timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
+                    else:
+                        timeseries = pumping_station.retrieve_timeseries()
                 intakes_timeseries.append(timeseries)
         return intakes, intakes_timeseries
 

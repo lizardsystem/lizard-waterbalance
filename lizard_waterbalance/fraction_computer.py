@@ -68,6 +68,7 @@ class FractionComputer:
         previous_undrained = 0.0
         previous_flow_off = 0.0
         previous_intakes = [0.0 for timeseries in intakes_timeseries]
+        intakes = [0.0 for timeseries in intakes_timeseries]
 
         previous_storage = self.initial_storage(open_water)
 
@@ -98,61 +99,83 @@ class FractionComputer:
 
             initial = self.compute_fraction(event_values, previous_initial,
                                            previous_storage)
-            fractions_initial.add_value(date, initial)
-            previous_initial = initial
 
             precipitation = self.compute_fraction(event_values,
                                                   previous_precipitation,
                                                   previous_storage,
                                                   event_values[self.index_precipitation])
-            fractions_precipitation.add_value(date, precipitation)
-            previous_precipitation = precipitation
 
             seepage = self.compute_fraction(event_values,
                                             previous_seepage,
                                             previous_storage,
                                             event_values[self.index_seepage])
-            fractions_seepage.add_value(date, seepage)
-            previous_seepage = seepage
 
             hardened = self.compute_fraction(event_values,
                                              previous_hardened,
                                              previous_storage,
                                              event_values[self.index_hardened])
-            fractions_hardened.add_value(date, hardened)
-            previous_hardened = hardened
 
             drained = self.compute_fraction(event_values,
                                              previous_drained,
                                              previous_storage,
                                              event_values[self.index_drained])
-            fractions_drained.add_value(date, drained)
-            previous_drained = drained
 
             undrained = self.compute_fraction(event_values,
                                             previous_undrained,
                                             previous_storage,
                                             event_values[self.index_undrained])
-            fractions_undrained.add_value(date, undrained)
-            previous_undrained = undrained
 
             flow_off = self.compute_fraction(event_values,
                                              previous_flow_off,
                                              previous_storage,
                                              event_values[self.index_flow_off])
+
+            if len(intakes_timeseries) > 0:
+                for index, intake_timeserie in enumerate(intakes_timeseries):
+                    intakes[index] = self.compute_fraction(event_values,
+                                                           previous_intakes[index],
+                                                           previous_storage,
+                                                           event_values[self.index_storage + 1 + index])
+
+            # Due to rounding errors, the sum of the fractions is seldom equal
+            # to 1.0. As the fraction of the next day depends on the fraction
+            # of the previous day, this effect gets worse over time. To avoid
+            # this effect, we divide each fraction by the sum of fractions.
+
+            total_fractions = initial + precipitation + seepage + hardened + \
+                              drained + undrained + flow_off + sum(intakes)
+
+            initial /= total_fractions
+            precipitation /= total_fractions
+            seepage /= total_fractions
+            hardened /= total_fractions
+            drained /= total_fractions
+            undrained /= total_fractions
+            flow_off /= total_fractions
+            intakes = [intake / total_fractions for intake in intakes]
+
+            fractions_initial.add_value(date, initial)
+            previous_initial = initial
+            fractions_precipitation.add_value(date, precipitation)
+            previous_precipitation = precipitation
+            fractions_seepage.add_value(date, seepage)
+            previous_seepage = seepage
+            fractions_hardened.add_value(date, hardened)
+            previous_hardened = hardened
+            fractions_drained.add_value(date, drained)
+            previous_drained = drained
+            fractions_undrained.add_value(date, undrained)
+            previous_undrained = undrained
             fractions_flow_off.add_value(date, flow_off)
             previous_flow_off = flow_off
 
             if len(intakes_timeseries) > 0:
                 for index, intake_timeserie in enumerate(intakes_timeseries):
-                    intake = self.compute_fraction(event_values,
-                                                   previous_intakes[index],
-                                                   previous_storage,
-                                                   event_values[self.index_storage + 1 + index])
-                    fractions_intakes[index].add_value(date, intake)
-                    previous_intakes[index] = intake
+                    fractions_intakes[index].add_value(date, intakes[index])
+                    previous_intakes[index] = intakes[index]
 
             previous_storage = event_values[self.index_storage]
+
 
         return [fractions_initial,
                 fractions_precipitation,
