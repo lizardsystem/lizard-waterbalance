@@ -510,6 +510,8 @@ class WaterbalanceComputer:
                     # big ugly hack
                     if self.pumping_station2timeseries:
                         timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
+                        store_waterbalance_timeserie(pumping_station, "reference", timeseries)
+                        pumping_station.save()
                     else:
                         timeseries = pumping_station.retrieve_timeseries()
                 intakes_timeseries.append(timeseries)

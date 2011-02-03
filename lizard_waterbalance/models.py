@@ -456,6 +456,12 @@ class PumpingStation(models.Model):
                                                  default=False,
                                                  help_text=_("aangevinkt als en alleen als de pomp gebruikt mag worden voor automatisch berekende peilhandhaving"))
 
+
+    reference = models.ForeignKey(WaterbalanceTimeserie,
+                                  verbose_name=_("referentie"),
+                                  help_text=_("tijdserie naar referentie waarden"),
+                                  null=True, blank=True, related_name='+')
+
     level_control = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("peilhandhaving"),
                                       help_text=_("tijdserie naar berekende peilhandhaving"),
@@ -611,13 +617,14 @@ class Concentration(models.Model):
                                     verbose_name=_("stof"))
     flow_name = models.CharField(max_length=64, verbose_name=_("naam"),
                                  help_text=_("naam van de waterstroom van deze concentratie"))
-    minimum = models.IntegerField(verbose_name=_("minimum"),
-                                 help_text=_("minimum concentratie in [mg/l]"))
-    increment = models.IntegerField(verbose_name=_("increment"),
-                                    help_text=_("maximum extra concentratie boven het minimum in [mg/l]"),
-                                    null=True, blank=True)
+    minimum = models.FloatField(verbose_name=_("minimum"),
+                                help_text=_("minimum concentratie in [mg/l]"))
+    increment = models.FloatField(verbose_name=_("increment"),
+                                  help_text=_("maximum extra concentratie boven het minimum in [mg/l]"),
+                                  null=True, blank=True)
     area = models.ForeignKey(WaterbalanceArea, related_name='concentrations',
                              verbose_name=_("Waterbalans gebied"))
 
     def __unicode__(self):
-        return u"%s - %s" % (unicode(self.flow_name), unicode(self.area.name))
+        substance_name = next((substance[1] for substance in self.SUBSTANCES if substance[0] == self.substance), None)
+        return u"%s - %s" % (unicode(substance_name), unicode(self.flow_name))

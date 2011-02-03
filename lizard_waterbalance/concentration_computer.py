@@ -36,19 +36,29 @@ from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 class ConcentrationComputer:
 
-    def compute(self, timeseries_list, concentration_list):
+    def compute(self, fractions_list, storage, concentration_list):
         """Compute and return the concentration time series.
 
         Parameters:
-        * timeseries_list -- list of volume timeseries in [m3/day]
+        * fractions_list -- list of fractions timeseries in [0.0, 1.0]
+        * storage -- storage timeseries in [m3/day]
         * concentration_list -- list of concentration values in [mg/l]
 
         With respect to the input, concentration_list[i] specifies the amount
-        of substance per m3 that occurs in timeseries_list[i]. This method sums
+        of substance per m3 that occurs in storages. This method sums
         these amounts for each day and returns the resulting timeseries.
         """
+        volume_timeseries_list = []
+        for fractions in fractions_list:
+            volume_timeseries = TimeseriesStub()
+            for event_tuple in enumerate_events(fractions, storage):
+                date = event_tuple[0][0]
+                value = event_tuple[0][1] * event_tuple[1][1]
+                volume_timeseries.add_value(date, value)
+            volume_timeseries_list.append(volume_timeseries)
+
         timeseries = TimeseriesStub()
-        for event_tuple in enumerate_events(*timeseries_list):
+        for event_tuple in enumerate_events(*volume_timeseries_list):
             date = event_tuple[0][0]
             value = sum((event[1] * concentration for event, concentration in
                          zip(event_tuple, concentration_list)))

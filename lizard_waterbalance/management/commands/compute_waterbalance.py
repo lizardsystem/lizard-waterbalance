@@ -80,16 +80,16 @@ class Command(BaseCommand):
 
         assert not area.open_water is None
 
-        area.open_water.retrieve_minimum_level = lambda : timeseries_retriever.get_timeseries("minimum level")
-        area.open_water.retrieve_maximum_level = lambda : timeseries_retriever.get_timeseries("maximum level")
+        area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
+        area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
 
         waterbalance_computer = WaterbalanceComputer()
 
         intakes = [PumpingStation.objects.get(name__iexact="dijklek"),
                    PumpingStation.objects.get(name__iexact="Inlaat Vecht"),
                    PumpingStation.objects.get(name__iexact="inlaat peilbeheer")]
-        intakes_timeseries = [timeseries_retriever.get_timeseries("dijklek"),
-                              timeseries_retriever.get_timeseries("Inlaat Vecht"),
+        intakes_timeseries = [retrieve_timeseries(timeseries_retriever, "dijklek", start_date, end_date),
+                              retrieve_timeseries(timeseries_retriever, "Inlaat Vecht", start_date, end_date),
                               TimeseriesStub()]
 
         waterbalance_computer.pumping_station2timeseries[intakes[0].name] = intakes_timeseries[0]
