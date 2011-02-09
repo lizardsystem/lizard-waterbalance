@@ -45,8 +45,9 @@ class ConcentrationComputer:
         * concentration_list -- list of concentration values in [mg/l]
 
         With respect to the input, concentration_list[i] specifies the amount
-        of substance per m3 that occurs in storages. This method sums
-        these amounts for each day and returns the resulting timeseries.
+        of substance per m3 that occurs in storage. This method sums these
+        amounts for each day and returns the resulting timeseries.
+
         """
         volume_timeseries_list = []
         for fractions in fractions_list:

@@ -261,11 +261,11 @@ def enumerate_events(*timeseries_list):
     Parameter:
     * timeseries_list -- list of time series
 
-    Each of the given time series should specify values for a non-continous
-    ranges of dates. For each day present in a time series, this method yields
-    a tuple of events of all time series. If that day is present in a time
-    series, the tuple contains the corresponding event. If that day is not
-    present, the tuple contains an event with value 0 at that day.
+    Each of the given time series should specify values for possibly
+    non-continous ranges of dates. For each day present in a time series, this
+    method yields a tuple of events of all time series. If that day is present
+    in a time series, the tuple contains the corresponding event. If that day
+    is not present, the tuple contains an event with value 0 at that day.
 
     """
     next_start = datetime.max
