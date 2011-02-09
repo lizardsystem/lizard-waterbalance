@@ -5,8 +5,12 @@ Changelog of lizard-waterbalance
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Due to rounding errors, it was possible the different fractions did not add
+  up to 1.0.
 
+- The fraction distribution graph displays the chloride levels.
+
+- The phosphate impact graph can be shown.
 
 0.5 (2011-02-02)
 ----------------
