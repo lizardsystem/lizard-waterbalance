@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.6 (unreleased)
+0.6 (2011-02-09)
 ----------------
 
 - Due to rounding errors, it was possible the different fractions did not add
