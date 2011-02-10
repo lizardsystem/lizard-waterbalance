@@ -39,6 +39,7 @@ from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import create_empty_timeseries
 from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
+from lizard_waterbalance.timeseriesstub import split_timeseries
 from lizard_waterbalance.timeseriesstub import subtract_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
@@ -332,10 +333,15 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                               bucket.upper_indraft_fraction, bucket.indraft_fraction
 
     # we compute the lower bucket
-    lower_precipitation = add_timeseries(upper_outcome.flow_off, upper_outcome.net_drainage)
+    (drainage, indraft) = split_timeseries(upper_outcome.net_drainage)
+    # upper_outcome.flow_off and drainage are time series with only
+    # non-positive values as they take water away from the upper bucket
+    lower_precipitation = add_timeseries(upper_outcome.flow_off, drainage)
+    # As it is, lower_precipitation contains only non-positive values but it
+    # adds water to the bottom bucket, so we have to invert these values. Also,
     # lower_precipitation is specified in [m3/day] but should be specified in
     # [mm/day]
-    lower_precipitation = multiply_timeseries(lower_precipitation, 1000.0 / bucket.surface)
+    lower_precipitation = multiply_timeseries(lower_precipitation, -1000.0 / bucket.surface)
     lower_evaporation = create_empty_timeseries(evaporation)
     assert len(list(lower_precipitation.events())) > 0
     lower_outcome = compute_timeseries(bucket,
@@ -350,6 +356,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     outcome.seepage = lower_outcome.seepage
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
+
 
 def retrieve_net_intake(open_water):
 
