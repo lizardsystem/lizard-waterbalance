@@ -31,16 +31,26 @@ from lizard_waterbalance.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
-class LevelControlStorage:
+class LevelControlAssignment:
 
-    def store(self, level_control, pumping_stations):
-        """Computes and stores the computed level control time series.
+    def compute(self, level_control, pumping_stations):
+        """Computes and returns the computed level control time series.
 
         Parameters:
         * level_control -- pair of (total incoming, total outgoing) time series
         * pumping_stations -- list of PumpingStation(s) to handle the water flow
 
+        The total incoming and total outgoing level control volumes have to be
+        assigned to the intakes and pumps that can be used for level control. This
+        method computes that assignment and returns it as a dictionary of
+        PumpingStation to TimeseriesStub.
+
+        The keys of the returned dictionary are the intakes and pumps that can
+        be used for level control. The associated value is the level control
+        time series.
+
         """
+        assignment = {}
         (incoming_timeseries, outgoing_timeseries) = level_control
         for pumping_station in pumping_stations:
             timeseries = None
@@ -58,5 +68,46 @@ class LevelControlStorage:
             if timeseries is None:
                 continue
 
-            store_waterbalance_timeserie(pumping_station, "level_control", timeseries)
-            pumping_station.save()
+            assignment[pumping_station] = timeseries
+
+        return assignment
+
+class LevelControlStorage:
+    """Implements the storage of a level control assignment to the database.
+
+    Instance variables:
+    * store_timeserie -- function used to store a level control time series
+
+    """
+    def __init__(self, store_timeserie=store_waterbalance_timeserie):
+        """Set the function used to store a level control time series.
+
+        Parameter:
+        * store_timeserie -- function used to store a level control time series
+
+        """
+        self.store_timeserie = store_timeserie
+
+    def store(self, pumping_stations, assignment):
+        """Store the given level control assignment to the database.
+
+        Parameter:
+        * pumping_stations -- list of all PumpingStation's
+        * assignment -- dictionary of PumpingStation to TimeseriesStub
+
+        If a PumpingStation has a level control time series but should not be
+        used for level control, this method deletes that level control time
+        series.
+
+        """
+        for pumping_station in pumping_stations:
+            try:
+                timeseries = assignment[pumping_station]
+                self.store_timeserie(pumping_station, "level_control", timeseries)
+                pumping_station.save()
+            except KeyError:
+                waterbalance_timeserie = pumping_station.level_control
+                if not waterbalance_timeserie is None:
+                    pumping_station.level_control = None
+                    pumping_station.save()
+                    waterbalance_timeserie.delete()

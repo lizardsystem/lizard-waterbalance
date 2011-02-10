@@ -31,6 +31,7 @@ import logging
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import LevelControlComputer
+from lizard_waterbalance.level_control_storage import LevelControlAssignment
 from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
@@ -386,10 +387,12 @@ class WaterbalanceComputer:
         self.buckets_summarizer = BucketsSummarizer()
         self.vertical_timeseries_computer = VerticalTimeseriesComputer()
         self.vertical_timeseries_storage = VerticalTimeseriesStorage()
+        self.level_control_assignment = LevelControlAssignment()
         self.level_control_storage = LevelControlStorage()
         self.fraction_computer = FractionComputer()
 
         self.pumping_station2timeseries = {}
+
     def compute(self, area, start_date, end_date):
         """Return all waterbalance related time series for the given area.
 
@@ -457,8 +460,10 @@ class WaterbalanceComputer:
                                                             incoming_timeseries,
                                                             outgoing_timeseries)
 
-
-        self.level_control_storage.store(level_control[0:2], area.open_water.pumping_stations.all())
+        pumping_stations = area.open_water.pumping_stations.all()
+        level_control_assignment = self.level_control_assignment.compute(level_control[0:2],
+                                                           pumping_stations)
+        self.level_control_storage.store(pumping_stations, level_control_assignment)
 
         storage = level_control[2]
         store_waterbalance_timeserie(area.open_water, "storage", storage)
@@ -471,9 +476,6 @@ class WaterbalanceComputer:
                                                    buckets_summary,
                                                    vertical_timeseries,
                                                    storage, intakes_timeseries)
-
-        # for event_tuple in enumerate_events(*fractions):
-        #     print sum((event[1] for event in event_tuple))
 
         store_waterbalance_timeserie(area.open_water, "fractions_initial",
                                      fractions[0])

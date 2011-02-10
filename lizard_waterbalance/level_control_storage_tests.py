@@ -29,45 +29,53 @@
 from datetime import datetime
 from unittest import TestCase
 
+from lizard_waterbalance.level_control_storage import LevelControlAssignment
 from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import Timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
-class LevelControlStorageTests(TestCase):
+def create_pumping_station(into=None, computed_level_control=None, percentage=None):
+    """Create, store and return a new PumpingStation.
 
-    def create_pumping_station(self, into=None, computed_level_control=None, percentage=None):
-        """Create, store and return a new PumpingStation.
+    Parameters:
+    * into -- holds iff if the pumping station is an intake
+    * computed_level_control -- holds if the pumping station can be used for level control
+    * percentage -- percentage of all volume for this pumping station
 
-        Parameters:
-        * into -- holds iff if the pumping station is an intake
-        * computed_level_control -- holds if the pumping station can be used for level control
-        * percentage -- percentage of all volume for this pumping station
+    """
+    pumping_station = PumpingStation()
+    pumping_station.into = into
+    pumping_station.computed_level_control = computed_level_control
+    pumping_station.percentage = percentage
+    pumping_station.save()
+    return pumping_station
 
-        """
-        pumping_station = PumpingStation()
-        pumping_station.into = into
-        pumping_station.computed_level_control = computed_level_control
-        pumping_station.percentage = percentage
-        pumping_station.save()
-        return pumping_station
+class LevelControlAssignmmentTests(TestCase):
 
     def test_a(self):
-        """Test the case that both time series are empty."""
+        """Test the case that both time series are empty.
+
+        There is one intake available for level control.
+
+        """
         level_control = (TimeseriesStub(), TimeseriesStub())
         pumping_station = PumpingStation()
         pumping_station.into = True
         pumping_station.computed_level_control = True
         pumping_station.percentage = 100
         pumping_station.save()
-        storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage = LevelControlAssignment()
+
+        assignment = storage.compute(level_control, [pumping_station])
+        expected_assignment = {pumping_station: level_control[0]}
+        self.assertEqual(expected_assignment, assignment)
 
         # we retrieve the pumping station from the database
-        pk = pumping_station.pk
-        pumping_station = PumpingStation.objects.get(pk=pk)
+        # pk = pumping_station.pk
+        # pumping_station = PumpingStation.objects.get(pk=pk)
 
-        self.assertEqual([], list(pumping_station.level_control.volume.events()))
+        # self.assertEqual([], list(pumping_station.level_control.volume.events()))
 
     def test_b(self):
         """Test the case that only the outgoing time series is empty.
@@ -82,15 +90,19 @@ class LevelControlStorageTests(TestCase):
         pumping_station.computed_level_control = True
         pumping_station.percentage = 100
         pumping_station.save()
-        storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage = LevelControlAssignment()
+        storage.compute(level_control, [pumping_station])
+
+        assignment = storage.compute(level_control, [pumping_station])
+        expected_assignment = {pumping_station: level_control[0]}
+        self.assertEqual(expected_assignment, assignment)
 
         # we retrieve the pumping station from the database
-        pk = pumping_station.pk
-        pumping_station = PumpingStation.objects.get(pk=pk)
+        # pk = pumping_station.pk
+        # pumping_station = PumpingStation.objects.get(pk=pk)
 
-        expected_events = [(today, 10.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # expected_events = [(today, 10.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
     def test_ba(self):
         """Test the case that only the outgoing time series is empty.
@@ -100,21 +112,23 @@ class LevelControlStorageTests(TestCase):
         """
         today = datetime(2011, 1, 26)
         level_control = (TimeseriesStub((today, 10.0)), TimeseriesStub())
-        pumping_stations = [self.create_pumping_station(into=True, computed_level_control=True, percentage=10.0),
-                            self.create_pumping_station(into=True, computed_level_control=True, percentage=90.0)]
+        pumping_stations = [create_pumping_station(into=True, computed_level_control=True, percentage=10.0),
+                            create_pumping_station(into=True, computed_level_control=True, percentage=90.0)]
 
-        storage = LevelControlStorage()
-        storage.store(level_control, pumping_stations)
-
+        storage = LevelControlAssignment()
+        assignment = storage.compute(level_control, pumping_stations)
+        expected_assignment = {pumping_stations[0]: TimeseriesStub((today, 1.0)),
+                               pumping_stations[1]: TimeseriesStub((today, 9.0))}
+        self.assertEqual(expected_assignment, assignment)
         # we retrieve the first intake from the database
-        pumping_station = PumpingStation.objects.get(pk=pumping_stations[0].pk)
-        expected_events = [(today, 1.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # pumping_station = PumpingStation.objects.get(pk=pumping_stations[0].pk)
+        # expected_events = [(today, 1.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
         # we retrieve the second intake from the database
-        pumping_station = PumpingStation.objects.get(pk=pumping_stations[1].pk)
-        expected_events = [(today, 9.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # pumping_station = PumpingStation.objects.get(pk=pumping_stations[1].pk)
+        # expected_events = [(today, 9.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
     def test_c(self):
         """Test no WaterbalanceTimeserie is created for a pumping station without level control.
@@ -130,12 +144,10 @@ class LevelControlStorageTests(TestCase):
         pumping_station.percentage = 100
         pumping_station.save()
 
-        self.assertTrue(pumping_station.level_control is None)
-
-        storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
-
-        self.assertTrue(pumping_station.level_control is None)
+        storage = LevelControlAssignment()
+        assignment = storage.compute(level_control, [pumping_station])
+        expected_assignment = {}
+        self.assertEqual(expected_assignment, assignment)
 
     def test_d(self):
         """Test the case that only the outgoing time series is empty.
@@ -151,15 +163,17 @@ class LevelControlStorageTests(TestCase):
         pumping_station.computed_level_control = True
         pumping_station.percentage = 100
         pumping_station.save()
-        storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage = LevelControlAssignment()
+        assignment = storage.compute(level_control, [pumping_station])
+        expected_assignment = {pumping_station: TimeseriesStub()}
+        self.assertEqual(expected_assignment, assignment)
 
         # we retrieve the pumping station from the database
-        pk = pumping_station.pk
-        pumping_station = PumpingStation.objects.get(pk=pk)
+        # pk = pumping_station.pk
+        # pumping_station = PumpingStation.objects.get(pk=pk)
 
-        expected_events = []
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # expected_events = []
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
     def test_e(self):
         """Test the case that both incoming and outgoing time series contain events.
@@ -174,15 +188,18 @@ class LevelControlStorageTests(TestCase):
         pumping_station.computed_level_control = True
         pumping_station.percentage = 100
         pumping_station.save()
-        storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage = LevelControlAssignment()
+
+        assignment = storage.compute(level_control, [pumping_station])
+        expected_assignment = {pumping_station: level_control[1]}
+        self.assertEqual(expected_assignment, assignment)
 
         # we retrieve the pumping station from the database
-        pk = pumping_station.pk
-        pumping_station = PumpingStation.objects.get(pk=pk)
+        # pk = pumping_station.pk
+        # pumping_station = PumpingStation.objects.get(pk=pk)
 
-        expected_events = [(today, 20.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # expected_events = [(today, 20.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
     def test_f(self):
         """Test the case that both incoming and outgoing time series contain events.
@@ -207,87 +224,84 @@ class LevelControlStorageTests(TestCase):
         pump_pk = pumping_station.pk
         pumping_stations.append(pumping_station)
 
-        storage = LevelControlStorage()
-        storage.store(level_control, pumping_stations)
+        storage = LevelControlAssignment()
+        assignment = storage.compute(level_control, pumping_stations)
+        expected_assignment = {pumping_stations[0]: level_control[0],
+                               pumping_stations[1]: level_control[1]}
+        self.assertEqual(expected_assignment, assignment)
 
         # we retrieve the intake pumping station from the database
-        pumping_station = PumpingStation.objects.get(pk=intake_pk)
-        expected_events = [(today, 10.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # pumping_station = PumpingStation.objects.get(pk=intake_pk)
+        # expected_events = [(today, 10.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
         # we retrieve the pump pumping station from the database
-        pumping_station = PumpingStation.objects.get(pk=pump_pk)
-        expected_events = [(today, -20.0)]
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        # pumping_station = PumpingStation.objects.get(pk=pump_pk)
+        # expected_events = [(today, -20.0)]
+        # self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
 
-    def test_g(self):
+class LevelControlStorageTests(TestCase):
+
+    def test_a(self):
         """Test that the WaterbalanceTimeserie of a PumpingStation is only created once.
 
         """
-        today = datetime(2011, 1, 26)
-        level_control = (TimeseriesStub((today, 10.0)), TimeseriesStub())
-        pumping_station = self.create_pumping_station(into=True, computed_level_control=True, percentage=10.0)
+        pumping_station = create_pumping_station(into=True, computed_level_control=True, percentage=10.0)
         intake_pk = pumping_station.pk
+
+        today = datetime(2011, 1, 26)
+        assignment = {pumping_station: TimeseriesStub((today, 10.0))}
 
         self.assertTrue(pumping_station.level_control is None)
 
         storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], assignment)
 
         self.assertFalse(pumping_station.level_control is None)
         level_control_pk = pumping_station.level_control.pk
 
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], assignment)
 
         # we retrieve the pump pumping station from the database
         pumping_station = PumpingStation.objects.get(pk=intake_pk)
         self.assertEqual(level_control_pk, pumping_station.level_control.pk)
 
-    def test_h(self):
-        """Test the case that only the outgoing time series is empty.
-
-        There is an intake available but not for level control.
+    def test_b(self):
+        """Test that a pumping station is not available for level control anymore.
 
         """
-        today = datetime(2011, 1, 26)
-        level_control = (TimeseriesStub((today, 10.0)), TimeseriesStub())
-        pumping_station = PumpingStation()
-        pumping_station.into = True
-        pumping_station.computed_level_control = True
-        pumping_station.percentage = 100
-        pumping_station.save()
+        pumping_station = create_pumping_station(into=True, computed_level_control=True, percentage=10.0)
         intake_pk = pumping_station.pk
 
+        today = datetime(2011, 1, 26)
+        assignment = {pumping_station: TimeseriesStub((today, 10.0))}
+
         storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], assignment)
 
         self.assertFalse(pumping_station.level_control is None)
 
-        pumping_station.computed_level_control = False
-        pumping_station.percentage = 100
-        pumping_station.save()
-
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], {})
 
         # we retrieve the pumping station from the database
         pumping_station = PumpingStation.objects.get(pk=intake_pk)
 
-        expected_events = []
-        self.assertEqual(expected_events, list(pumping_station.level_control.volume.events()))
+        self.assertEqual(None, pumping_station.level_control)
 
-    def test_i(self):
-        """Test that the number of Timeseries does not increase when one is recomputed.
+    def test_c(self):
+        """Test that the number of Timeseries does not increase when one is stored again.
 
         """
         today = datetime(2011, 1, 26)
-        level_control = (TimeseriesStub((today, 10.0)), TimeseriesStub())
-        pumping_station = self.create_pumping_station(into=True, computed_level_control=True, percentage=10.0)
+        pumping_station = create_pumping_station(into=True, computed_level_control=True, percentage=10.0)
+
+        assignment = {pumping_station: TimeseriesStub((today, 10.0))}
 
         storage = LevelControlStorage()
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], assignment)
 
         expected_timeseries_count = Timeseries.objects.count()
 
-        storage.store(level_control, [pumping_station])
+        storage.store([pumping_station], assignment)
 
         self.assertEqual(expected_timeseries_count, Timeseries.objects.count())
