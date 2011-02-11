@@ -58,44 +58,61 @@ def retrieve_timeseries(timeseries_retriever, name, start_date, end_date):
             break
     return timeseries
 
+def create_waterbalance_computer(area_slug, start_date, end_date, filename):
+    """Return a WaterbalanceArea and a WaterbalanceComputer for it
+
+    The Waterbalancecomputer has some of its input data hard coded.
+
+    Parameters:
+    * area_slug -- slug of the area to create
+    * start_date -- first day for which to retrieve events
+    * end-date -- day after the last day for which to retrieve events
+    * filename -- name of the file that contains the hard coded data
+
+    """
+    timeseries_retriever = TimeseriesRetriever()
+    timeseries_retriever.read_timeseries(filename)
+
+    area = WaterbalanceArea.objects.filter(slug=area_slug)[0]
+    assert not area is None
+
+    area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
+    area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
+    area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
+
+    assert not area.open_water is None
+
+    area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
+    area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
+
+    waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
+
+    intakes = [PumpingStation.objects.get(name__iexact="dijklek"),
+               PumpingStation.objects.get(name__iexact="Inlaat Vecht"),
+               PumpingStation.objects.get(name__iexact="inlaat peilbeheer")]
+    intakes_timeseries = [retrieve_timeseries(timeseries_retriever, "dijklek", start_date, end_date),
+                          retrieve_timeseries(timeseries_retriever, "Inlaat Vecht", start_date, end_date),
+                          TimeseriesStub()]
+
+    waterbalance_computer.pumping_station2timeseries[intakes[0].name] = intakes_timeseries[0]
+    waterbalance_computer.pumping_station2timeseries[intakes[1].name] = intakes_timeseries[1]
+
+    return area, waterbalance_computer
+
 class Command(BaseCommand):
     args = "<test-data-directory WaterbalanceArea-name start-date end-date>"
     help = "Calculates the water balance on the first open water."
 
     def handle(self, *args, **options):
         directory = args[0]
-        area_name = args[1]
+        area_slug = args[1]
         start_date = datetime.strptime(args[2], "%Y-%m-%d")
         end_date = datetime.strptime(args[3], "%Y-%m-%d")
 
-        timeseries_retriever = TimeseriesRetriever()
-        timeseries_retriever.read_timeseries(join(directory, "timeserie.csv"))
+        filename = join(directory, "timeserie.csv")
+        area, waterbalance_computer = create_waterbalance_computer(area_slug, start_date, end_date, filename)
 
-        area = WaterbalanceArea.objects.filter(name=area_name)[0]
-        assert not area is None
-
-        area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
-        area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
-        area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
-
-        assert not area.open_water is None
-
-        area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
-        area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
-
-        waterbalance_computer = WaterbalanceComputer()
-
-        intakes = [PumpingStation.objects.get(name__iexact="dijklek"),
-                   PumpingStation.objects.get(name__iexact="Inlaat Vecht"),
-                   PumpingStation.objects.get(name__iexact="inlaat peilbeheer")]
-        intakes_timeseries = [retrieve_timeseries(timeseries_retriever, "dijklek", start_date, end_date),
-                              retrieve_timeseries(timeseries_retriever, "Inlaat Vecht", start_date, end_date),
-                              TimeseriesStub()]
-
-        waterbalance_computer.pumping_station2timeseries[intakes[0].name] = intakes_timeseries[0]
-        waterbalance_computer.pumping_station2timeseries[intakes[1].name] = intakes_timeseries[1]
-
-        bucket2outcome, level_control = \
+        bucket2outcome, level_control, buckets_timeseries, vertical_timeseries, level_control_assignment, storage_timeseries, fraction_timeseries = \
                         waterbalance_computer.compute(area, start_date, end_date)
 
         f = open(join(directory, "intermediate-results.csv"), "w")

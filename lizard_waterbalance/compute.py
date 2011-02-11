@@ -375,7 +375,18 @@ def retrieve_net_intake(open_water):
 class WaterbalanceComputer:
 
     def __init__(self, buckets_computer=None,
-                 level_control_computer=None):
+                 level_control_computer=None,
+                 store_timeserie=store_waterbalance_timeserie):
+        """Set (among others) the function to store a time series.
+
+        Parameter (among others):
+        * store_timeserie -- function to store a time series
+
+        The store_timeserie argument should be a callable that stores a given
+        TimeseriesStub as the volume attribute of a WaterbalanceTimeserie.
+
+        """
+        self.store_timeserie = store_timeserie
         if buckets_computer is None:
             self.buckets_computer = BucketsComputer()
         else:
@@ -386,9 +397,9 @@ class WaterbalanceComputer:
             self.level_control_computer = level_control_computer
         self.buckets_summarizer = BucketsSummarizer()
         self.vertical_timeseries_computer = VerticalTimeseriesComputer()
-        self.vertical_timeseries_storage = VerticalTimeseriesStorage()
+        self.vertical_timeseries_storage = VerticalTimeseriesStorage(store_timeserie=self.store_timeserie)
         self.level_control_assignment = LevelControlAssignment()
-        self.level_control_storage = LevelControlStorage()
+        self.level_control_storage = LevelControlStorage(store_timeserie=self.store_timeserie)
         self.fraction_computer = FractionComputer()
 
         self.pumping_station2timeseries = {}
@@ -413,16 +424,22 @@ class WaterbalanceComputer:
 
         buckets_summary = self.buckets_summarizer.compute(bucket2outcome)
 
-        store_waterbalance_timeserie(area.open_water, "undrained",
+        self.store_timeserie(area.open_water, "undrained",
                                      buckets_summary.undrained)
-        store_waterbalance_timeserie(area.open_water, "drained",
+        self.store_timeserie(area.open_water, "drained",
                                      buckets_summary.drained)
-        store_waterbalance_timeserie(area.open_water, "hardened",
+        self.store_timeserie(area.open_water, "hardened",
                                      buckets_summary.hardened)
-        store_waterbalance_timeserie(area.open_water, "flow_off",
+        self.store_timeserie(area.open_water, "flow_off",
                                      buckets_summary.flow_off)
-        store_waterbalance_timeserie(area.open_water, "indraft",
+        self.store_timeserie(area.open_water, "indraft",
                                      buckets_summary.indraft)
+
+        buckets_timeseries = {"undrained": buckets_summary.undrained,
+                              "drained": buckets_summary.drained,
+                              "hardened": buckets_summary.hardened,
+                              "flow_off": buckets_summary.flow_off,
+                              "indraft": buckets_summary.indraft}
 
         vertical_timeseries = self.vertical_timeseries_computer.compute(area.open_water.surface,
                                                                         area.open_water.crop_evaporation_factor,
@@ -466,7 +483,7 @@ class WaterbalanceComputer:
         self.level_control_storage.store(pumping_stations, level_control_assignment)
 
         storage = level_control[2]
-        store_waterbalance_timeserie(area.open_water, "storage", storage)
+        self.store_timeserie(area.open_water, "storage", storage)
 
         intakes, tmp_timeseries = self.retrieve_intakes_timeseries(area.open_water)
         intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,
@@ -477,27 +494,36 @@ class WaterbalanceComputer:
                                                    vertical_timeseries,
                                                    storage, intakes_timeseries)
 
-        store_waterbalance_timeserie(area.open_water, "fractions_initial",
+        fraction_timeseries = {}
+        self.store_timeserie(area.open_water, "fractions_initial",
                                      fractions[0])
-        store_waterbalance_timeserie(area.open_water, "fractions_precipitation",
+        fraction_timeseries["fractions_initial"] = fractions[0]
+        self.store_timeserie(area.open_water, "fractions_precipitation",
                                      fractions[1])
-        store_waterbalance_timeserie(area.open_water, "fractions_seepage",
+        fraction_timeseries["fractions_precipitation"] = fractions[1]
+        self.store_timeserie(area.open_water, "fractions_seepage",
                                      fractions[2])
-        store_waterbalance_timeserie(area.open_water, "fractions_hardened",
+        fraction_timeseries["fractions_seepage"] = fractions[2]
+        self.store_timeserie(area.open_water, "fractions_hardened",
                                      fractions[3])
-        store_waterbalance_timeserie(area.open_water, "fractions_drained",
+        fraction_timeseries["fractions_hardened"] = fractions[3]
+        self.store_timeserie(area.open_water, "fractions_drained",
                                      fractions[4])
-        store_waterbalance_timeserie(area.open_water, "fractions_undrained",
+        fraction_timeseries["fractions_drained"] = fractions[4]
+        self.store_timeserie(area.open_water, "fractions_undrained",
                                      fractions[5])
-        store_waterbalance_timeserie(area.open_water, "fractions_flow_off",
+        fraction_timeseries["fractions_undrained"] = fractions[5]
+        self.store_timeserie(area.open_water, "fractions_flow_off",
                                      fractions[6])
+        fraction_timeseries["fractions_flow_off"] = fractions[6]
         for index, intake in enumerate(intakes):
-            store_waterbalance_timeserie(intake, "fractions", fractions[7 + index])
+            self.store_timeserie(intake, "fractions", fractions[7 + index])
             intake.save()
+            fraction_timeseries["fractions_%s" % intake.name] = fractions[7 + index]
 
         area.open_water.save()
 
-        return (bucket2outcome, level_control)
+        return (bucket2outcome, level_control, buckets_timeseries, vertical_timeseries, level_control_assignment, storage, fraction_timeseries)
 
     def retrieve_intakes_timeseries(self, open_water):
         """Return the pair of lists of intakes and their timeseries.
@@ -519,7 +545,7 @@ class WaterbalanceComputer:
                     # big ugly hack
                     if self.pumping_station2timeseries:
                         timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
-                        store_waterbalance_timeserie(pumping_station, "reference", timeseries)
+                        self.store_timeserie(pumping_station, "reference", timeseries)
                         pumping_station.save()
                     else:
                         timeseries = pumping_station.retrieve_timeseries()

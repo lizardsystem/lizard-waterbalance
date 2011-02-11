@@ -30,6 +30,18 @@ from lizard_waterbalance.timeseries import store_waterbalance_timeserie
 
 class VerticalTimeseriesStorage:
 
+    def __init__(self, store_timeserie=store_waterbalance_timeserie):
+        """Set the function to store a time series.
+
+        Parameter:
+        * store_timeserie -- function to store a time series
+
+        The store_timeserie argument should be a callable that stores a given
+        TimeseriesStub as the volume attribute of a WaterbalanceTimeserie.
+
+        """
+        self.store_timeserie = store_timeserie
+
     def store(self, vertical_timeseries, open_water):
         """Computes and stores the vertical time series in the database.
 
@@ -44,5 +56,5 @@ class VerticalTimeseriesStorage:
         for index, name in enumerate(names):
             attribute_name = "computed_" + name
             timeseries = vertical_timeseries[index]
-            store_waterbalance_timeserie(open_water, attribute_name, timeseries)
+            self.store_timeserie(open_water, attribute_name, timeseries)
         open_water.save()
