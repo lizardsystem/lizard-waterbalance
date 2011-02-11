@@ -112,7 +112,7 @@ class Command(BaseCommand):
         filename = join(directory, "timeserie.csv")
         area, waterbalance_computer = create_waterbalance_computer(area_slug, start_date, end_date, filename)
 
-        bucket2outcome, level_control, buckets_timeseries, vertical_timeseries, level_control_assignment, storage_timeseries, fraction_timeseries = \
+        bucket2outcome, level_control, waterbalance_outcome = \
                         waterbalance_computer.compute(area, start_date, end_date)
 
         f = open(join(directory, "intermediate-results.csv"), "w")
