@@ -14,6 +14,7 @@ Project documentation
 
    datamodel
    project
+   vip
 
 Indices and tables
 ==================
