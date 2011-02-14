@@ -391,6 +391,7 @@ class WaterbalanceOutcome:
         self.intake_fractions = {}
 
 class WaterbalanceComputer:
+    """Computes the waterbalance time series for a given area."""
 
     def __init__(self, buckets_computer=None,
                  level_control_computer=None,
@@ -398,6 +399,8 @@ class WaterbalanceComputer:
         """Set (among others) the function to store a time series.
 
         Parameter (among others):
+        * buckets_computer -- computer for the bucket time series
+        * level_control_computer -- computer for the level control
         * store_timeserie -- function to store a time series
 
         The store_timeserie argument should be a callable that stores a given
@@ -423,12 +426,17 @@ class WaterbalanceComputer:
         self.pumping_station2timeseries = {}
 
     def compute(self, area, start_date, end_date):
-        """Return all waterbalance related time series for the given area.
+        """Compute and return waterbalance related time series for the given area.
 
         Parameters:
         * area -- WaterbalanceArea for which to compute the time series
-        * start_date -- first date of the time window (for ...)
-        * end_date -- day after the last date of the time window (for ...)
+        * start_date -- first date to compute
+        * end_date -- day after the last date to compute
+
+        This method returns a tuple that contains
+          1. a dictionary of Bucket to BucketOutcome,
+          2. a TimeseriesStub with the daily discharge for the level control,
+          3. a computed WaterbalanceOutcome.
 
         """
         outcome = WaterbalanceOutcome()
