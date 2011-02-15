@@ -12,9 +12,10 @@ Project documentation
 .. toctree::
    :maxdepth: 2
 
-   datamodel
    project
+   datamodel
    vip
+   vocabulary
 
 Indices and tables
 ==================

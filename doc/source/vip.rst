@@ -2,6 +2,10 @@ Most important classes
 ======================
 
 The class WaterbalanceComputer is the main interface to the functionality of
-the Django application.
+the lizard_waterbalance application and especially its method 'compute':
 
-.. autoclass:: lizard_waterbalance.compute.WaterbalanceComputer
+.. automethod:: lizard_waterbalance.compute.WaterbalanceComputer.compute
+
+A BucketOutcome contains all the timeseries that are computed for a single Bucket:
+
+.. autoclass:: lizard_waterbalance.compute.BucketOutcome

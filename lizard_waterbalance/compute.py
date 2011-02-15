@@ -47,16 +47,23 @@ from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
 
 
 class BucketOutcome:
-    """Stores the time series that are computed for a Bucket.
+    """Contains the time series that are computed for a Bucket.
 
     Instance variables:
-    * storage -- time series for *berging*
-    * flow_off -- time series for *afstroming*
-    * net_drainage -- time series for *drainage* and *intrek*
-    * seepage -- time series for *kwel*
+      *storage*
+        time series for 'berging'
+      *flow_off*
+        time series for 'afstroming'
+      *net_drainage*
+        time series for the sum of 'drainage' and 'intrek'
+      *seepage*
+        time series for 'kwel'
+      *net_precipitation*
+        time series for the sum of 'neerslag' and 'verdamping'
 
-    The value of a net_drainage event is positive when there is water coming
-    into the bucket and negatice when there is water going out of the bucket.
+    The unit of each values of the time series is [m3/day]. A positive value
+    indicates water that goes into the bucket and a negative value indicates
+    water that goes out of the bucket.
 
     """
     def __init__(self):
@@ -426,17 +433,26 @@ class WaterbalanceComputer:
         self.pumping_station2timeseries = {}
 
     def compute(self, area, start_date, end_date):
-        """Compute and return waterbalance related time series for the given area.
+        """Compute the waterbalance-related time series for the given area.
 
-        Parameters:
-        * area -- WaterbalanceArea for which to compute the time series
-        * start_date -- first date to compute
-        * end_date -- day after the last date to compute
+        Args:
+          *area*
+            WaterbalanceArea for which to compute the time series
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
 
         This method returns a tuple that contains
           1. a dictionary of Bucket to BucketOutcome,
           2. a TimeseriesStub with the daily discharge for the level control,
           3. a computed WaterbalanceOutcome.
+
+        The WaterbalanceOutcome contains all the time series of the
+        waterbalance. The first two elements of the tuple are only returned for
+        debugging purposes. Especially the second element might be removed in a
+        later version.
 
         """
         outcome = WaterbalanceOutcome()
