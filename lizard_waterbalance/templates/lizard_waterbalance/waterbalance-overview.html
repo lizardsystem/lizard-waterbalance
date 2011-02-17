@@ -1,0 +1,27 @@
+{# Summary view: small map on the left to show selection; graphs on the right #}
+{% extends "lizard_map/wms.html" %}
+{% load workspaces %}
+
+{% block subtitle %} Waterbalans overzicht {% endblock %}
+
+{% block portal-tabs %}
+{{ block.super }}
+<div id="portal-tab-selected" data-selected="#portal-tab-waterbalance"></div>
+{% endblock portal-tabs %}
+
+{% block sidebar %}
+<div class="sidebarbox sidebarbox-stretched">
+  <h2>Waterbalans gebieden</h2>
+  <p>
+    Waterbalansen en stoffenconcentraties worden per gebied bekeken, dus u kunt
+    hier een keuze maken.
+  </p>
+  <ul class="without-bullets">
+    {% for waterbalance_area in waterbalance_areas %}
+    <li>
+      <a href="{{ waterbalance_area.get_absolute_url }}">{{ waterbalance_area.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

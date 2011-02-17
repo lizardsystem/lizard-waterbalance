@@ -575,7 +575,7 @@ class WaterbalanceArea(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('krw_waternet.waterbalance', (), {'area': str(self.slug)})
+        return ('waterbalance_area_summary', (), {'area': str(self.slug)})
 
     def retrieve_precipitation(self, start_date, end_date):
         return TimeseriesStub()

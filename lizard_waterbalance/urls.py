@@ -9,6 +9,28 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     (r'^admin/', include(admin.site.urls)),
+    # Waterbalance screens.
+    (r'^$',
+     'lizard_waterbalance.views.waterbalance_start',
+     {},
+     'waterbalance_start'),
+     (r'^summary/(?P<area>[^/]+)/$',
+     'lizard_waterbalance.views.waterbalance_area_summary',
+     {},
+     'waterbalance_area_summary',
+     ),
+    (r'^summary/(?P<area>.*)/(?P<graph_type>.*)/$',
+     'lizard_waterbalance.views.waterbalance_area_graphs',
+     {},
+     'waterbalance_area_graph'),
+    (r'^graphselect/$',
+     'lizard_waterbalance.views.graph_select',
+     {},
+     "waterbalance_graph_select"),
+    (r'^area_search/',
+     'lizard_waterbalance.views.waterbalance_shapefile_search',
+     {},
+     "waterbalance_area_search"),
     )
 
 

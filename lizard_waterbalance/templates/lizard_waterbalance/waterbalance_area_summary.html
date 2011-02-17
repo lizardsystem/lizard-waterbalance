@@ -1,0 +1,63 @@
+{# Waterbalance area summary view: small map on the left to show selection; graphs on the right #}
+{% extends "lizard_map/lizardgis.html" %}
+{% load markup i18n %}
+
+{% block subtitle %} {{ water_body.name }} {% endblock %}
+
+{% block portal-tabs %}
+{{ block.super }}
+<div id="portal-tab-selected" data-selected="#portal-tab-waterbalance"></div>
+{% endblock portal-tabs %}
+
+{% block sidebar %}
+<div class="sidebarbox sidebarbox-stretched">
+  <h2>
+    Info
+    <span class="ss_sprite ss_calendar_view_day sidebarbox-action-icon popup-trigger"
+          rel="#summary-datepicker">&nbsp;</span>
+  </h2>
+  <div>
+    <div class="date-popup popup popup-fat"
+         id="summary-datepicker">
+      <h1>Datumkeuze</h1>
+      <div>
+        <form action="{% url lizard_map.set_date_range %}"
+              method="post">
+          {% csrf_token %}
+          {{ date_range_form.as_p }}
+          <p><input type="submit" value="Nieuwe periode" /></p>
+        </form>
+      </div>
+    </div>
+    <dl>
+      <dt>Naam</dt>
+      <dd>{{ waterbalance_area.name }}</dd>
+      <dd>402614 m2</dd>
+    </dl>
+    <dl>
+      <dt>Bakjes</dt>
+      <dd>ongedraineerd: 2950181 m2</dd>
+      <dd>gedraineerd: 3697465 m2</dd>
+      <dd>verhard: 1217463 m2</dd>
+    </dl>
+  </div>
+  {{ graphtype_selection_form.as_p }}
+  <input type="hidden" name="area" value="{{ waterbalance_area.slug }}" id="area">
+  <input type="button" name="apply" value="{% trans "Apply" %}" id="apply">
+
+
+
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div id="evenly-spaced-vertical">
+  <div class="vertical-item img-use-my-size">
+    <a class="replace-with-image"
+       href="{% url waterbalance_area_graph area=waterbalance_area.slug graph_type=landelijk %}?name=openwater">
+      waterbalance area graph
+    </a>
+  </div>
+</div>
+{% endblock %}
