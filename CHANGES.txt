@@ -2,10 +2,10 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.8 (unreleased)
+0.8 (2011-02-17)
 ----------------
 
-- Nothing changed yet.
+- The waterbalance apps has been made better reusable.
 
 
 0.7 (2011-02-14)
