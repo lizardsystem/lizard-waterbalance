@@ -25,13 +25,13 @@
 #
 #******************************************************************************
 
-from datetime import datetime
-
-from django.contrib.contenttypes import generic
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from lizard_fewsunblobbed.models import Timeserie
+from lizard_fewsunblobbed.models import Filter
+from lizard_fewsunblobbed.models import Location
+from lizard_fewsunblobbed.models import Parameter
+from lizard_fewsunblobbed.models import Timeseriedata
 from lizard_map.models import ColorField
 
 from south.modelsinspector import add_ignored_fields
@@ -88,6 +88,40 @@ class TimeseriesEvent(models.Model):
 
     def __unicode__(self):
         return u'Event %s: (%s, %s)' % (self.timeseries, self.time, self.value)
+
+class TimeseriesFews(models.Model):
+    """Specifies a time series in a Fews unblobbed database.
+
+    A time series is a sequence of events, where an event is a value - date
+    time pair.
+
+    """
+    class Meta:
+        verbose_name = _("Timeseries Fews")
+        verbose_name_plural = _("Timeseries' Fews")
+
+    fews_parameter = models.ForeignKey(Parameter, verbose_name=_("parameter"),
+                                       help_text=_("parameter in FEWS unblobbed"),
+                                       null=True, blank=True, related_name='+')
+    fews_filter = models.ForeignKey(Filter, verbose_name=_("filter"),
+                                    help_text=_("filter in FEWS unblobbed"),
+                                    null=True, blank=True)
+    fews_location = models.ForeignKey(Location, verbose_name=_("locatie"),
+                                      help_text=_("locatie in FEWS unblobbed"),
+                                      null=True, blank=True, related_name='+')
+
+
+    # fews_timeseries = models.ForeignKey(Timeseriedata, related_name='+')
+
+    def events(self):
+        """Return a generator to iterate over all events.
+
+        The generator iterates over the events earliest date first.
+
+        """
+        pass
+        # for event in self.fews_timeseries.timeserie_data.all.objects.order_by('tsd_time'):
+        #     yield event.tsd_time, event.tsd_value
 
 
 class WaterbalanceTimeserie(models.Model):
