@@ -44,10 +44,14 @@ WATERBALANCE_HOMEPAGE_NAME = "Waterbalance homepage"
 CRUMB_HOMEPAGE = {'name': 'home', 'url': '/'}
 
 
-def waterbalance_graph_data(area, start_datetime, end_datetime, filename):
+def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=False):
     """Return the two items needed for drawing the waterbalance graphs."""
+    cache_key = '%s_%s_%s' % (area, start_datetime, end_datetime)
+    print cache_key
+    fews_data_filename = pkg_resources.resource_filename(
+        "lizard_waterbalance", "testdata/timeserie.csv")
     waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-        area, start_datetime, end_datetime, filename)
+        area, start_datetime, end_datetime, fews_data_filename)
     bucket2outcome, level_control, outcome = waterbalance_computer.compute(
         waterbalance_area, start_datetime, end_datetime)
     return waterbalance_area, outcome
@@ -328,8 +332,7 @@ def waterbalance_area_graph(request,
 
     width = 28
 
-    filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
     intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
 
@@ -402,8 +405,7 @@ def waterbalance_fraction_distribution(request,
 
     width = 28
 
-    filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -503,12 +505,7 @@ def waterbalance_phosphate_impact(request,
 
     width = 28
 
-    filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
-    waterbalance_area, waterbalance_computer = create_waterbalance_computer(area, start_datetime, end_datetime, filename)
-
-    bucket2outcome, level_control, outcome = \
-                    waterbalance_computer.compute(waterbalance_area, start_datetime, end_datetime)
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
