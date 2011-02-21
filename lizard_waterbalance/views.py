@@ -10,21 +10,28 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-
 from django.utils import simplejson
-
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.lines import Line2D
 import mapnik
-
 import pkg_resources
 
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
+from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.forms import GraphtypeSelectionForm
-
+from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
+from lizard_waterbalance.models import Concentration
+from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceLabel
+from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from lizard_waterbalance.timeseriesstub import average_monthly_events
+from lizard_waterbalance.timeseriesstub import create_from_file
+from lizard_waterbalance.timeseriesstub import monthly_events
+from lizard_waterbalance.timeseriesstub import multiply_timeseries
 
 # We use the following values to uniquely identify the workspaces for
 # 1. the general home page and
@@ -35,18 +42,6 @@ from lizard_waterbalance.forms import GraphtypeSelectionForm
 WATERBALANCE_HOMEPAGE_KEY = 2
 WATERBALANCE_HOMEPAGE_NAME = "Waterbalance homepage"
 CRUMB_HOMEPAGE = {'name': 'home', 'url': '/'}
-
-from lizard_waterbalance.concentration_computer import ConcentrationComputer
-from lizard_waterbalance.models import Concentration
-from lizard_waterbalance.models import PumpingStation
-from lizard_waterbalance.models import WaterbalanceArea
-from lizard_waterbalance.models import WaterbalanceLabel
-from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
-from lizard_waterbalance.timeseriesstub import average_monthly_events
-from lizard_waterbalance.timeseriesstub import create_from_file
-from lizard_waterbalance.timeseriesstub import monthly_events
-from lizard_waterbalance.timeseriesstub import multiply_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
 class TopHeight:
