@@ -3,10 +3,14 @@
 # Create your views here.
 
 import datetime
+import logging
 import random
+import time
 
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -43,18 +47,29 @@ WATERBALANCE_HOMEPAGE_KEY = 2
 WATERBALANCE_HOMEPAGE_NAME = "Waterbalance homepage"
 CRUMB_HOMEPAGE = {'name': 'home', 'url': '/'}
 
+logger = logging.getLogger(__name__)
+
 
 def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=False):
-    """Return the two items needed for drawing the waterbalance graphs."""
+    """Return the outcome needed for drawing the waterbalance graphs."""
     cache_key = '%s_%s_%s' % (area, start_datetime, end_datetime)
-    print cache_key
-    fews_data_filename = pkg_resources.resource_filename(
-        "lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-        area, start_datetime, end_datetime, fews_data_filename)
-    bucket2outcome, level_control, outcome = waterbalance_computer.compute(
-        waterbalance_area, start_datetime, end_datetime)
-    return waterbalance_area, outcome
+    t1 = time.time()
+    result = cache.get(cache_key)
+    if (result is None) or recalculate:
+        fews_data_filename = pkg_resources.resource_filename(
+            "lizard_waterbalance", "testdata/timeserie.csv")
+        waterbalance_area, waterbalance_computer = create_waterbalance_computer(
+            area, start_datetime, end_datetime, fews_data_filename)
+        bucket2outcome, level_control, outcome = waterbalance_computer.compute(
+            waterbalance_area, start_datetime, end_datetime)
+        result = outcome
+        cache.set(cache_key, result, 8 * 60 * 60)
+        logger.debug("Stored waterbalance graph data in cache for %s", cache_key)
+    else:
+        logger.debug("Got waterbalance graph data from cache")
+    t2 = time.time()
+    logger.debug("Grabbing waterbalance data took %s seconds.", t2 - t1)
+    return result
 
 
 class TopHeight:
@@ -213,6 +228,7 @@ def indicator_graph(request,
         name = 'geen tijdreeks beschikbaar'
         timeseriedata = MockTimeSerieData()
 
+
 def waterbalance_start(request,
                        template='lizard_waterbalance/waterbalance-overview.html',
                        crumbs_prepend=None):
@@ -289,6 +305,7 @@ def get_timeseries(timeseries, start, end):
     return zip(*(e for e in monthly_events(timeseries) if e[0] >= start and e[0] < end))
     #return zip(*(e for e in timeseries.events() if e[0] >= start and e[0] < end))
 
+
 def get_average_timeseries(timeseries, start, end):
     """Return the events for the given timeseries in the given range.
 
@@ -301,9 +318,11 @@ def get_average_timeseries(timeseries, start, end):
     return zip(*(e for e in average_monthly_events(timeseries) if e[0] >= start and e[0] < end))
     #return zip(*(e for e in timeseries.events() if e[0] >= start and e[0] < end))
 
+
 def draw_bar(callable, axes, times, values, width, color, bottom):
 
     callable(times, values, width, color=color, bottom=bottom)
+
 
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name."""
@@ -332,7 +351,7 @@ def waterbalance_area_graph(request,
 
     width = 28
 
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
     intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
 
@@ -382,6 +401,7 @@ def waterbalance_area_graph(request,
     canvas.print_png(response)
     return response
 
+
 def waterbalance_fraction_distribution(request,
                                        name,
                                        area=None,
@@ -405,7 +425,8 @@ def waterbalance_fraction_distribution(request,
 
     width = 28
 
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -483,6 +504,7 @@ def waterbalance_fraction_distribution(request,
     canvas.print_png(response)
     return response
 
+
 def waterbalance_phosphate_impact(request,
                                   name,
                                   area=None,
@@ -505,7 +527,8 @@ def waterbalance_phosphate_impact(request,
 
     width = 28
 
-    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -646,5 +669,22 @@ def graph_select(request):
             graphs[key] = reverse('waterbalance_area_graph', args=args)
         json = simplejson.dumps(graphs)
         return HttpResponse(json, mimetype='application/json')
+    else:
+        return HttpResponse("false")
+
+
+def recalculate_graph_data(request, area=None):
+    """Recalculate the graph data by emptying the cache."""
+    if request.method == "POST":
+        start_datetime, end_datetime = (datetime.datetime(1996, 1, 1), 
+                                        datetime.datetime(2010, 6, 30))
+        outcome = waterbalance_graph_data(area, start_datetime, end_datetime,
+                                          recalculate=True)
+        # # Enable this later when there's ajax integration
+        # if request.is_ajax():
+        #     json = simplejson.dumps("Success")
+        #     return HttpResponse(json, mimetype='application/json')
+        return HttpResponseRedirect(
+            reverse('waterbalance_area_summary', kwargs={'area': area}))
     else:
         return HttpResponse("false")

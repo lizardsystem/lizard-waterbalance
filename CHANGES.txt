@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added caching for waterbalance area graph data, including button to
+  re-calculate that data.
 
 
 0.8 (2011-02-17)
