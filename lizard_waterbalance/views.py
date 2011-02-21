@@ -44,6 +44,15 @@ WATERBALANCE_HOMEPAGE_NAME = "Waterbalance homepage"
 CRUMB_HOMEPAGE = {'name': 'home', 'url': '/'}
 
 
+def waterbalance_graph_data(area, start_datetime, end_datetime, filename):
+    """Return the two items needed for drawing the waterbalance graphs."""
+    waterbalance_area, waterbalance_computer = create_waterbalance_computer(
+        area, start_datetime, end_datetime, filename)
+    bucket2outcome, level_control, outcome = waterbalance_computer.compute(
+        waterbalance_area, start_datetime, end_datetime)
+    return waterbalance_area, outcome
+
+
 class TopHeight:
     """Maintains the height of the top of each bar in a stacked bar chart.
 
@@ -320,10 +329,7 @@ def waterbalance_area_graph(request,
     width = 28
 
     filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, waterbalance_computer = create_waterbalance_computer(area, start_datetime, end_datetime, filename)
-
-    bucket2outcome, level_control, outcome = \
-                    waterbalance_computer.compute(waterbalance_area, start_datetime, end_datetime)
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
 
     intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
 
@@ -397,10 +403,7 @@ def waterbalance_fraction_distribution(request,
     width = 28
 
     filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
-    waterbalance_area, waterbalance_computer = create_waterbalance_computer(area, start_datetime, end_datetime, filename)
-
-    bucket2outcome, level_control, outcome = \
-                    waterbalance_computer.compute(waterbalance_area, start_datetime, end_datetime)
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -501,6 +504,7 @@ def waterbalance_phosphate_impact(request,
     width = 28
 
     filename = pkg_resources.resource_filename("lizard_waterbalance", "testdata/timeserie.csv")
+    waterbalance_area, outcome = waterbalance_graph_data(area, start_datetime, end_datetime, filename)
     waterbalance_area, waterbalance_computer = create_waterbalance_computer(area, start_datetime, end_datetime, filename)
 
     bucket2outcome, level_control, outcome = \
