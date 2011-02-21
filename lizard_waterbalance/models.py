@@ -125,24 +125,61 @@ class TimeseriesFews(models.Model):
 
 
 class WaterbalanceTimeserie(models.Model):
-    """Connects time series to a WaterbalanceLabel.
+    """Implements a time series.
+
+    The time series is stored in a FEWS unblobbed database or in the database
+    of the current Django project.
 
     Instance variables:
-    * label -- link to the WaterbalanceLabel that describes the time serie
-    * volume -- link to the volume time serie data
-    * chloride -- link to the chloride time serie data
-    * phosphate -- link to the phosphate time serie data
-    * nitrate -- link to the nitrate time serie data
-    * sulfate -- link to the sulfate time serie data
+      * name *
+        name of the time series
+      * use_fews *
+        holds iff the time series is stored in a FEWS unblobbed database
+      * fews_volume *
+        link to the time series when stored in a FEWS unblobbed database
+      * volume *
+        link to the time series when stored in the database of the current
+        Django project
+      * label *
+        link to the WaterbalanceLabel that describes the time serie
+      * chloride *
+        link to the chloride time serie data
+      * phosphate *
+        link to the phosphate time serie data
+      * nitrate *
+        link to the nitrate time serie data
+      * sulfate *
+        link to the sulfate time serie data
 
     """
+    class Meta:
+        verbose_name = _("Waterbalans tijdreeks")
+        verbose_name_plural = _("Waterbalans tijdreeksen")
+
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+                            max_length=64, null=True, blank=True)
+
     label = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
-    volume = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
+
+    use_fews = models.BooleanField(verbose_name=_("gebruik FEWS tijdreeks"))
+
+    fews_volume = models.ForeignKey(TimeseriesFews,
+                                    verbose_name=_("FEWS"),
+                                    help_text=_("tijdreeks opgeslagen in FEWS unblobbed database"),
+                                    null=True, blank=True, related_name='+')
+    volume = models.ForeignKey(Timeseries,
+                               verbose_name=_("standaard"),
+                               help_text=_("tijdreeks opgeslagen in eigen database"),
+                               null=True, blank=True, related_name='+')
+
     chloride = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
     phosphate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
     nitrate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
     sulfate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
 
+    def __unicode__(self):
+        return self.name
 
 class OpenWater(models.Model):
     """Represents the *open water*.

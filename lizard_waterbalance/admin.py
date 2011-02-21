@@ -3,6 +3,8 @@ from django.contrib import admin
 # from lizard_fewsunblobbed.models import Location
 # from lizard_fewsunblobbed.models import Timeserie
 
+from lizard_waterbalance.forms import WaterbalanceTimeserieForm
+
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import OpenWater
@@ -23,6 +25,9 @@ class TimeseriesFewsAdmin(admin.ModelAdmin):
     #         kwargs["queryset"] = Location.objects.filter(timeserie__in=timeseries)
     #     return super(TimeseriesFewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
+    form = WaterbalanceTimeserieForm
+
 admin.site.register(Bucket)
 admin.site.register(Concentration)
 admin.site.register(OpenWater)
@@ -33,4 +38,4 @@ admin.site.register(TimeseriesEvent)
 admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)
 admin.site.register(WaterbalanceArea)
 admin.site.register(WaterbalanceLabel)
-admin.site.register(WaterbalanceTimeserie)
+admin.site.register(WaterbalanceTimeserie, WaterbalanceTimeserieAdmin)
