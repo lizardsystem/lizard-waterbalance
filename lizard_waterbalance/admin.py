@@ -17,23 +17,31 @@ from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceLabel
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
+
+class TimeseriesEventInline(admin.TabularInline):
+    model = TimeseriesEvent
+
+
+class TimeseriesAdmin(admin.ModelAdmin):
+    inlines = [
+        TimeseriesEventInline,
+    ]
+
+
 class TimeseriesFewsAdmin(admin.ModelAdmin):
     raw_id_fields = ("fews_location",)
-    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    #     if db_field.name == "fews_location":
-    #         timeseries = Timeserie.objects.filter(parameterkey=110, filterkey=8)
-    #         kwargs["queryset"] = Location.objects.filter(timeserie__in=timeseries)
-    #     return super(TimeseriesFewsAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
     form = WaterbalanceTimeserieForm
+
 
 admin.site.register(Bucket)
 admin.site.register(Concentration)
 admin.site.register(OpenWater)
 admin.site.register(PumpLine)
 admin.site.register(PumpingStation)
-admin.site.register(Timeseries)
+admin.site.register(Timeseries, TimeseriesAdmin)
 admin.site.register(TimeseriesEvent)
 admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)
 admin.site.register(WaterbalanceArea)

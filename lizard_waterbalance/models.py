@@ -53,8 +53,12 @@ class Timeseries(models.Model):
 
     """
     class Meta:
-        verbose_name = _("Timeseries")
-        verbose_name_plural = _("Timeseries'")
+        verbose_name = _("Tijdreeks")
+        verbose_name_plural = _("Tijdreeksen")
+
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+                            max_length=64, null=True, blank=True)
 
     def events(self):
         """Return a generator to iterate over all events.
@@ -77,8 +81,8 @@ class TimeseriesEvent(models.Model):
 
     """
     class Meta:
-        verbose_name = _("Timeseries event")
-        verbose_name_plural = _("Timeseries events")
+        verbose_name = _("Tijdreeks event")
+        verbose_name_plural = _("Tijdreeks events")
         ordering = ["time"]
 
     time = models.DateTimeField()
@@ -97,8 +101,12 @@ class TimeseriesFews(models.Model):
 
     """
     class Meta:
-        verbose_name = _("Timeseries Fews")
-        verbose_name_plural = _("Timeseries' Fews")
+        verbose_name = _("tijdreeks FEWS")
+        verbose_name_plural = _("tijdreeksen FEWS")
+
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+                            max_length=64, null=True, blank=True)
 
     fews_parameter = models.ForeignKey(Parameter, verbose_name=_("parameter"),
                                        help_text=_("parameter in FEWS unblobbed"),
