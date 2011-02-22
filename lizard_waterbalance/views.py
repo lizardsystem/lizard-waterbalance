@@ -374,8 +374,7 @@ def waterbalance_area_graph(request,
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
-    start = datetime.datetime.today()
-    print start
+    t1 = time.time()
 
     intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
 
@@ -420,9 +419,8 @@ def waterbalance_area_graph(request,
                                bottom=bottom)
             top_height.stack_bars(times, values)
 
-    end = datetime.datetime.today()
-    print end
-    print end - start
+    t2 = time.time()
+    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
 
     canvas = FigureCanvas(krw_graph.figure)
     response = HttpResponse(content_type='image/png')
@@ -456,8 +454,7 @@ def waterbalance_fraction_distribution(request,
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
 
-    start = datetime.datetime.today()
-    print start
+    t1 = time.time()
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -530,9 +527,8 @@ def waterbalance_fraction_distribution(request,
 
     ax2.plot(times, values, 'kd')
 
-    end = datetime.datetime.today()
-    print end
-    print end - start
+    t2 = time.time()
+    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
 
     canvas = FigureCanvas(krw_graph.figure)
     response = HttpResponse(content_type='image/png')
