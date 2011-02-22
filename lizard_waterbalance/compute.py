@@ -497,7 +497,7 @@ class WaterbalanceComputer:
         outcome.open_water_timeseries["infiltration"] = vertical_timeseries[3]
 
         incoming_timeseries = []
-        for timeseries in self.retrieve_incoming_timeseries(area.open_water):
+        for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
@@ -591,19 +591,6 @@ class WaterbalanceComputer:
                     timeseries = pumping_station.retrieve_sum_timeseries()
                 intakes_timeseries.append(timeseries)
         return intakes, intakes_timeseries
-
-    def retrieve_incoming_timeseries(self, open_water):
-        """Return the volume timeseries of the intakes with a fixed throughput.
-
-        Parameter:
-        * open_water -- OpenWater to which the intakes belong
-        """
-        incoming_timeseries = []
-        intakes, intakes_timeseries = self.retrieve_intakes_timeseries(open_water)
-        for intake, timeseries in zip(intakes, intakes_timeseries):
-            if intake.into and not intake.computed_level_control:
-                incoming_timeseries.append(timeseries)
-        return incoming_timeseries
 
 
 class BucketsComputer:

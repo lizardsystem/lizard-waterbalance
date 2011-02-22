@@ -376,8 +376,6 @@ def waterbalance_area_graph(request,
 
     t1 = time.time()
 
-    intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
-
     incoming_bars = [
         ("verhard", outcome.open_water_timeseries["hardened"]),
         ("gedraineerd", outcome.open_water_timeseries["drained"]),
@@ -385,17 +383,29 @@ def waterbalance_area_graph(request,
         ("uitspoeling", outcome.open_water_timeseries["undrained"]),
         ("neerslag", outcome.open_water_timeseries["precipitation"]),
         ("kwel", outcome.open_water_timeseries["seepage"]),
-        ("inlaat peilbeheer", outcome.level_control_assignment[intake])
         ]
 
-    pump = PumpingStation.objects.get(name__iexact="pomp peilbeheer")
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
+    for intake in intakes.order_by('name'):
+        incoming_bars.append((intake.name, intake.retrieve_sum_timeseries()))
+
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
+    for intake in intakes.order_by('name'):
+        incoming_bars.append((intake.name, outcome.level_control_assignment[intake]))
 
     outgoing_bars = [
         ("intrek", outcome.open_water_timeseries["indraft"]),
         ("verdamping", outcome.open_water_timeseries["evaporation"]),
         ("wegzijging", outcome.open_water_timeseries["infiltration"]),
-        ("pomp peilbeheer", outcome.level_control_assignment[pump])
          ]
+
+    pumps = PumpingStation.objects.filter(into=False, computed_level_control=False)
+    for pump in pumps.order_by('name'):
+        outgoing_bars.append((pump.name, pump.retrieve_sum_timeseries()))
+
+    pumps = PumpingStation.objects.filter(into=False, computed_level_control=True)
+    for pump in pumps.order_by('name'):
+        outgoing_bars.append((pump.name, outcome.level_control_assignment[pump]))
 
     names = [bar[0] for bar in incoming_bars + outgoing_bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]

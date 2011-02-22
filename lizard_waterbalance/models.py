@@ -374,8 +374,8 @@ class OpenWater(models.Model):
             if pumping_station.into:
                 if only_input and pumping_station.computed_level_control:
                         continue
-                for timeseries in pumping_station.retrieve_timeseries():
-                    incoming_timeseries.append(timeseries)
+                timeseries = pumping_station.retrieve_sum_timeseries()
+                incoming_timeseries.append(timeseries)
         return incoming_timeseries
 
     def retrieve_outgoing_timeseries(self, only_input=False):
@@ -390,8 +390,8 @@ class OpenWater(models.Model):
             if not pumping_station.into:
                 if only_input and pumping_station.computed_level_control:
                     continue
-                for timeseries in pumping_station.retrieve_timeseries():
-                    outgoing_timeseries.append(timeseries)
+                timeseries = pumping_station.retrieve_sum_timeseries()
+                outgoing_timeseries.append(timeseries)
         return outgoing_timeseries
 
     def retrieve_minimum_level(self):
