@@ -10,26 +10,26 @@ jQuery.fn.reverse = function() {
 $(document).ready(function() {
     $('input#apply').click(function() {
         jQuery.ajax({
-          url: '/waterbalance/graphselect/',
-          type: 'POST',
-          dataType: 'json',
-          data: $('input[type=checkbox]:checked').reverse(),
-          success: function(data, textStatus, xhr) {
-              $('div#evenly-spaced-vertical').html("");
-              jQuery.each(data, function(index, val) {
-                  // console.log(val);
-                  div = $("<div/>").addClass('vertical-item').addClass('img-use-my-size');
-                  div.append($("<a/>").addClass('replace-with-image').attr('href', val));
-                  $('div#evenly-spaced-vertical').append(div);
-              });
-              restretchExistingElements();
-          },
-          complete: function(xhr, textStatus) {
-              return;
-          },
-          error: function(xhr, textStatus, errorThrown) {
-              return;
-          }
+            url: '/waterbalance/graphselect/',
+            type: 'POST',
+            dataType: 'json',
+            data: $('input[type=checkbox]:checked').reverse(),
+            success: function(data, textStatus, xhr) {
+                $('div#evenly-spaced-vertical').html("");
+                jQuery.each(data, function(index, val) {
+                    // console.log(val);
+                    div = $("<div/>").addClass('vertical-item').addClass('img-use-my-size');
+                    div.append($("<a/>").addClass('replace-with-image').attr('href', val));
+                    $('div#evenly-spaced-vertical').append(div);
+                });
+                restretchExistingElements();
+            },
+            complete: function(xhr, textStatus) {
+                return;
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                return;
+            }
         });
     });
 });
