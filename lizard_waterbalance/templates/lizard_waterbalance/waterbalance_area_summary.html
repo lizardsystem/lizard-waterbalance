@@ -49,10 +49,12 @@
       <dd>1217463 m2</dd>
     </dl>
     <form method="POST"
-          action="{% url waterbalance_graph_recalculate_data waterbalance_area.slug %}">
+          action="{% url waterbalance_graph_recalculate_data waterbalance_area.slug %}"
+          id="recalculate-form">
       {% csrf_token %}
       <input type="submit" 
-             value="Bereken grafiekdata opnieuw" />
+             value="Bereken grafiekdata opnieuw"
+             id="recalculate-submit"/>
     </form>
     <br />
     <!-- TODO: add ajax interaction instead of effectively reloading
