@@ -25,7 +25,6 @@ from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
-from lizard_waterbalance.forms import GraphtypeSelectionForm
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
@@ -46,6 +45,20 @@ from lizard_waterbalance.timeseriesstub import multiply_timeseries
 WATERBALANCE_HOMEPAGE_KEY = 2
 WATERBALANCE_HOMEPAGE_NAME = "Waterbalance homepage"
 CRUMB_HOMEPAGE = {'name': 'home', 'url': '/'}
+GRAPH_TYPES = (
+    ('waterbalans', u'Waterbalans'),
+    ('waterpeil', u'Waterpeil'),
+    ('waterpeil_met_sluitfout', u'Waterpeil met sluitfout'),
+    ('cumulatief_debiet', u'Cumulatief debiet'),
+    ('fracties_chloride', u'Fracties Chloride'),
+    ('fracties_fosfaat', u'Fracties Fosfaat'),
+    ('fosfaatbelasting', u'Fosfaatbelasting'),
+)
+IMPLEMENTED_GRAPH_TYPES = (
+    'waterbalans',
+    'fracties_chloride',
+    'fosfaatbelasting',
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -284,11 +297,19 @@ def waterbalance_area_summary(request,
                    'title': waterbalance_area.name,
                    'url': reverse('waterbalance_area_summary', kwargs=kwargs)})
 
-    graphtype_selection_form = GraphtypeSelectionForm()
+    graph_type_formitems = []
+    for index, (graph_type, name) in enumerate(GRAPH_TYPES):
+        formitem = {}
+        formitem['id'] = 'id_graph_type_%s' % index
+        formitem['value'] = graph_type
+        formitem['label'] = name
+        formitem['disabled'] = (graph_type not in IMPLEMENTED_GRAPH_TYPES)
+        graph_type_formitems.append(formitem)
+
     return render_to_response(
         template,
         {'waterbalance_area': waterbalance_area,
-         'graphtype_selection_form': graphtype_selection_form,
+         'graph_type_formitems': graph_type_formitems,
          'crumbs': crumbs},
         context_instance=RequestContext(request))
 
@@ -675,16 +696,20 @@ def graph_select(request):
     Processes ajax call, returns appropiate pngs.
     """
 
-    graphs = {}
+    graphs = []
     if request.is_ajax():
-        for index, graph_type in enumerate(request.POST.getlist('graphs')):
-            key = "graph%d" % (index + 1)
-            args = ["aetsveldsche-polder-oost", graph_type]
-            graphs[key] = reverse('waterbalance_area_graph', args=args)
+        area_slug = request.POST['area']
+        selected_graph_types = request.POST.getlist('graphs')
+        for graph_type, name in GRAPH_TYPES:
+            if not graph_type in selected_graph_types:
+                continue
+            graphs.append(reverse('waterbalance_area_graph', 
+                                  kwargs={'area': area_slug, 
+                                          'graph_type': graph_type}))
         json = simplejson.dumps(graphs)
         return HttpResponse(json, mimetype='application/json')
     else:
-        return HttpResponse("false")
+        return HttpResponse("Should not be run this way.")
 
 
 def recalculate_graph_data(request, area=None):

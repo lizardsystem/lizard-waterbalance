@@ -54,6 +54,7 @@
       <input type="submit" 
              value="Bereken grafiekdata opnieuw" />
     </form>
+    <br />
     <!-- TODO: add ajax interaction instead of effectively reloading
          this page upon submit. -->
   </div>
@@ -61,11 +62,32 @@
 <div class="sidebarbox sidebarbox-stretched">
   <h2>Grafieken</h2>
   <div>
-    <form>
-      <!-- TODO: turn this into a proper form -->
-      {{ graphtype_selection_form.as_p }}
-      <input type="hidden" name="area" value="{{ waterbalance_area.slug }}" id="area">
-      <input type="button" name="apply" value="Toon" id="apply">
+    <form method="POST"
+          action="{% url waterbalance_graph_select %}"
+          id="graphtype-select-form">
+      {% csrf_token %}
+      <ul class="without-bullets">
+        {% for formitem in graph_type_formitems %}
+        <li>
+          <input id="{{ formitem.id }}" 
+                 type="checkbox"
+                 value="{{ formitem.value }}" 
+                 name="graphs" 
+                 {% if formitem.disabled %}
+                 disabled="true"
+                 {% endif %}
+                 />
+          <label for="{{ formitem.id }}">
+            {{ formitem.label }}
+          </label>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <input type="hidden" 
+             name="area" 
+             value="{{ waterbalance_area.slug }}" />
+      <input type="submit" name="submit" value="Toon" id="graph-type-select-submit" />
     </form>
   </div>
 </div>
