@@ -25,6 +25,8 @@
 #
 #******************************************************************************
 
+from datetime import timedelta
+
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -60,15 +62,38 @@ class Timeseries(models.Model):
                             help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
                             max_length=64, null=True, blank=True)
 
-    def events(self):
+
+    def raw_events(self):
         """Return a generator to iterate over all events.
 
-        The generator iterates over the events in the order defined for
-        TimeseriesEvent.
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function does
+        not fill in the missing dates with value.
 
         """
         for event in self.timeseries_events.all():
             yield event.time, event.value
+
+    def events(self):
+        """Return a generator to iterate over all daily events.
+
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function fills
+        in the missing dates with the value on the latest known date.
+
+        """
+        date_to_yield = None # we initialize this variable to silence pyflakes
+        previous_value = 0
+        for event in self.timeseries_events.all():
+            date = event.time
+            value = event.value
+            if not date_to_yield is None:
+                while date_to_yield < date:
+                    yield date_to_yield, previous_value
+                    date_to_yield = date_to_yield + timedelta(1)
+            yield date, value
+            previous_value = value
+            date_to_yield = date + timedelta(1)
 
     def __unicode__(self):
         return self.name
@@ -369,10 +394,10 @@ class OpenWater(models.Model):
         return outgoing_timeseries
 
     def retrieve_minimum_level(self):
-        return TimeseriesStub()
+        return self.minimum_level.volume
 
     def retrieve_maximum_level(self):
-        return TimeseriesStub()
+        return self.maximum_level.volume
 
 class Bucket(models.Model):
     """Represents a *bakje*.

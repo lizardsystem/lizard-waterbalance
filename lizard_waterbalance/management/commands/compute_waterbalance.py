@@ -81,8 +81,8 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
 
     assert not area.open_water is None
 
-    area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
-    area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
+    # area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
+    # area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
 
     waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
 

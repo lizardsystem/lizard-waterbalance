@@ -61,5 +61,5 @@ class TimeseriesTests(TestCase):
         db_timeseries = store(TimeseriesStub(*events), raw=True)
         queryset = Timeseries.objects.filter(pk__exact=db_timeseries.pk)
         self.assertEqual(1, queryset.count())
-        db_events = list(queryset.get(pk=db_timeseries.pk).events())
+        db_events = list(queryset.get(pk=db_timeseries.pk).raw_events())
         self.assertEqual(events, db_events)
