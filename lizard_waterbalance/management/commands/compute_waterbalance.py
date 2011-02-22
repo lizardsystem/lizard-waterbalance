@@ -81,21 +81,7 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
 
     assert not area.open_water is None
 
-    # area.open_water.retrieve_minimum_level = lambda : retrieve_timeseries(timeseries_retriever, "minimum level", start_date, end_date)
-    # area.open_water.retrieve_maximum_level = lambda : retrieve_timeseries(timeseries_retriever, "maximum level", start_date, end_date)
-
     waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
-
-    # intakes = [PumpingStation.objects.get(name__iexact="dijklek"),
-    #            PumpingStation.objects.get(name__iexact="Inlaat Vecht"),
-    #            PumpingStation.objects.get(name__iexact="inlaat peilbeheer")]
-    # intakes_timeseries = [retrieve_timeseries(timeseries_retriever, "dijklek", start_date, end_date),
-    #                       retrieve_timeseries(timeseries_retriever, "Inlaat Vecht", start_date, end_date),
-    #                       TimeseriesStub()]
-
-    # waterbalance_computer.pumping_station2timeseries = {}
-    # waterbalance_computer.pumping_station2timeseries[intakes[0].name] = intakes_timeseries[0]
-    # waterbalance_computer.pumping_station2timeseries[intakes[1].name] = intakes_timeseries[1]
 
     return area, waterbalance_computer
 

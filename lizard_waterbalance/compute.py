@@ -430,8 +430,6 @@ class WaterbalanceComputer:
         self.level_control_storage = LevelControlStorage(store_timeserie=self.store_timeserie)
         self.fraction_computer = FractionComputer()
 
-        self.pumping_station2timeseries = None
-
     def compute(self, area, start_date, end_date):
         """Compute the waterbalance-related time series for the given area.
 
@@ -590,18 +588,7 @@ class WaterbalanceComputer:
                     else:
                         timeseries = pumping_station.level_control.volume
                 else:
-                    # big ugly hack
-                    if not self.pumping_station2timeseries is None:
-                        timeseries = self.pumping_station2timeseries[pumping_station.name]
-                        # actual_timeseries = pumping_station.retrieve_sum_timeseries()
-                        # for event, actual_event in enumerate_events(timeseries, actual_timeseries):
-                        #     if event[0] != actual_event[0] or event[1] != actual_event[1]:
-                        #         print pumping_station.name, event[0], event[1], actual_event[0], actual_event[1]
-                        #         exit(0)
-                        # self.store_timeserie(pumping_station, "reference", timeseries)
-                        # pumping_station.save()
-                    else:
-                        timeseries = pumping_station.retrieve_sum_timeseries()
+                    timeseries = pumping_station.retrieve_sum_timeseries()
                 intakes_timeseries.append(timeseries)
         return intakes, intakes_timeseries
 
