@@ -214,6 +214,14 @@ class WaterbalanceTimeserie(models.Model):
     nitrate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
     sulfate = models.ForeignKey(Timeseries, null=True, blank=True, related_name='+')
 
+    def get_timeseries(self):
+        """Returns the time series this WaterbalanceTimeserie refers to."""
+        if self.use_fews:
+            timeseries = self.fews_volume
+        else:
+            timeseries = self.volume
+        return timeseries
+
     def __unicode__(self):
         return self.name
 
@@ -395,10 +403,10 @@ class OpenWater(models.Model):
         return outgoing_timeseries
 
     def retrieve_minimum_level(self):
-        return self.minimum_level.volume
+        return self.minimum_level.get_timeseries()
 
     def retrieve_maximum_level(self):
-        return self.maximum_level.volume
+        return self.maximum_level.get_timeseries()
 
 class Bucket(models.Model):
     """Represents a *bakje*.
@@ -624,7 +632,7 @@ class PumpLine(models.Model):
                                   null=True, blank=True, related_name='+')
 
     def retrieve_timeseries(self):
-        return self.timeserie.volume
+        return self.timeserie.get_timeseries()
 
     def __unicode__(self):
         return self.name

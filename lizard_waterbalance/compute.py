@@ -586,7 +586,7 @@ class WaterbalanceComputer:
                     if pumping_station.level_control is None:
                         timeseries = TimeseriesStub()
                     else:
-                        timeseries = pumping_station.level_control.volume
+                        timeseries = pumping_station.level_control.get_timeseries()
                 else:
                     timeseries = pumping_station.retrieve_sum_timeseries()
                 intakes_timeseries.append(timeseries)

@@ -33,7 +33,7 @@
       <dt>Naam</dt>
       <dd>{{ waterbalance_area.name }}</dd>
       <dt>Oppervlak</dt>
-      <dd>402614 m2</dd>
+      <dd>{{ waterbalance_area.open_water.surface }} m2</dd>
     </dl>
   </div>
 </div>
@@ -52,7 +52,7 @@
           action="{% url waterbalance_graph_recalculate_data waterbalance_area.slug %}"
           id="recalculate-form">
       {% csrf_token %}
-      <input type="submit" 
+      <input type="submit"
              value="Bereken grafiekdata opnieuw"
              id="recalculate-submit"/>
     </form>
@@ -71,10 +71,10 @@
       <ul class="without-bullets">
         {% for formitem in graph_type_formitems %}
         <li>
-          <input id="{{ formitem.id }}" 
+          <input id="{{ formitem.id }}"
                  type="checkbox"
-                 value="{{ formitem.value }}" 
-                 name="graphs" 
+                 value="{{ formitem.value }}"
+                 name="graphs"
                  {% if formitem.disabled %}
                  disabled="true"
                  {% endif %}
@@ -86,8 +86,8 @@
         {% endfor %}
       </ul>
 
-      <input type="hidden" 
-             name="area" 
+      <input type="hidden"
+             name="area"
              value="{{ waterbalance_area.slug }}" />
       <input type="submit" name="submit" value="Toon" id="graph-type-select-submit" />
     </form>
