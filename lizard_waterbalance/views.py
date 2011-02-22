@@ -699,8 +699,8 @@ def graph_select(request):
         for graph_type, name in GRAPH_TYPES:
             if not graph_type in selected_graph_types:
                 continue
-            graphs.append(reverse('waterbalance_area_graph', 
-                                  kwargs={'area': area_slug, 
+            graphs.append(reverse('waterbalance_area_graph',
+                                  kwargs={'area': area_slug,
                                           'graph_type': graph_type}))
         json = simplejson.dumps(graphs)
         return HttpResponse(json, mimetype='application/json')
@@ -711,7 +711,7 @@ def graph_select(request):
 def recalculate_graph_data(request, area=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-        start_datetime, end_datetime = (datetime.datetime(1996, 1, 1), 
+        start_datetime, end_datetime = (datetime.datetime(1996, 1, 1),
                                         datetime.datetime(2010, 6, 30))
         outcome = waterbalance_graph_data(area, start_datetime, end_datetime,
                                           recalculate=True)

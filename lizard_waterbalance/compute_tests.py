@@ -460,8 +460,8 @@ class PumpingStationAccessToPumpLinesTests(TestCase):
         pump_lines[0].retrieve_timeseries = lambda : timeseries[0]
         pumping_station = PumpingStation()
         pumping_station.retrieve_pump_lines = lambda : pump_lines
-        timeseries = pumping_station.retrieve_timeseries()
-        expected_timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10))]
+        timeseries = pumping_station.retrieve_sum_timeseries()
+        expected_timeseries = TimeseriesStub((datetime(2010, 12, 17), 10))
         self.assertEqual(expected_timeseries, timeseries)
 
     def test_b(self):
@@ -473,9 +473,8 @@ class PumpingStationAccessToPumpLinesTests(TestCase):
         pump_lines[1].retrieve_timeseries = lambda : timeseries[1]
         pumping_station = PumpingStation()
         pumping_station.retrieve_pump_lines = lambda : pump_lines
-        timeseries = pumping_station.retrieve_timeseries()
-        expected_timeseries = [TimeseriesStub((datetime(2010, 12, 17), 10)),
-                               TimeseriesStub((datetime(2010, 12, 17), 20))]
+        timeseries = pumping_station.retrieve_sum_timeseries()
+        expected_timeseries = TimeseriesStub((datetime(2010, 12, 17), 30))
         self.assertEqual(expected_timeseries, timeseries)
 
 
@@ -627,6 +626,8 @@ class WaterbalanceComputerTests(TestCase):
         self.buckets = [Bucket(), Bucket()]
         self.area = WaterbalanceArea()
         self.area.open_water = create_saveable_openwater()
+        self.area.open_water.retrieve_minimum_level = lambda : TimeseriesStub()
+        self.area.open_water.retrieve_maximum_level = lambda : TimeseriesStub()
         self.area.retrieve_buckets = lambda : self.buckets
         self.precipitation = TimeseriesStub()
         self.evaporation = TimeseriesStub()
@@ -758,6 +759,8 @@ class StorageTests(TestCase):
     def setUp(self):
         self.area = WaterbalanceArea()
         self.area.open_water = create_saveable_openwater()
+        self.area.open_water.retrieve_minimum_level = lambda : TimeseriesStub()
+        self.area.open_water.retrieve_maximum_level = lambda : TimeseriesStub()
 
     def test_a(self):
         """Test WaterbalanceComputer.compute creates a storage time series when none exists.

@@ -56,7 +56,7 @@ class TimeseriesRetriever:
                                ("PS_1", "dijklek"),
                                ("PS_2", "inlaat peilbeheer")])
 
-        self.incomplete_timeseries = ["seepage", "minimum level", "maximum level"]
+        self.incomplete_timeseries = ["seepage", "minimum level", "maximum level", "Inlaat Vecht", "dijklek", "inlaat peilbeheer"]
 
     def read_timeseries(self, filename):
         """Retrieve the time series in the ASCII file with the given name."""

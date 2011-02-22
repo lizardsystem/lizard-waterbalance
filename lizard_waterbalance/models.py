@@ -39,6 +39,7 @@ from lizard_map.models import ColorField
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
+from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 # Create your models here.
@@ -581,11 +582,11 @@ class PumpingStation(models.Model):
     def __unicode__(self):
         return self.name
 
-    def retrieve_timeseries(self):
-        """Returns the list of TimeseriesStub(s) of each of its PumpLine(s)."""
-        result = []
+    def retrieve_sum_timeseries(self):
+        """Return the sum of the time series of each of its PumpLine(s)."""
+        result = TimeseriesStub()
         for pump_line in self.retrieve_pump_lines():
-            result.append(pump_line.retrieve_timeseries())
+            result = add_timeseries(result, pump_line.retrieve_timeseries())
         return result
 
     def retrieve_pump_lines(self):
@@ -623,7 +624,7 @@ class PumpLine(models.Model):
                                   null=True, blank=True, related_name='+')
 
     def retrieve_timeseries(self):
-        return self.timeserie
+        return self.timeserie.volume
 
     def __unicode__(self):
         return self.name

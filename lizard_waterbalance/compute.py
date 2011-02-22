@@ -430,7 +430,7 @@ class WaterbalanceComputer:
         self.level_control_storage = LevelControlStorage(store_timeserie=self.store_timeserie)
         self.fraction_computer = FractionComputer()
 
-        self.pumping_station2timeseries = {}
+        self.pumping_station2timeseries = None
 
     def compute(self, area, start_date, end_date):
         """Compute the waterbalance-related time series for the given area.
@@ -503,7 +503,6 @@ class WaterbalanceComputer:
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
-
         outgoing_timeseries = []
         for timeseries in area.open_water.retrieve_outgoing_timeseries(only_input=True):
             outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
@@ -592,12 +591,17 @@ class WaterbalanceComputer:
                         timeseries = pumping_station.level_control.volume
                 else:
                     # big ugly hack
-                    if self.pumping_station2timeseries:
-                        timeseries = self.pumping_station2timeseries[pumping_station.name] # pumping_station.retrieve_timeseries()
-                        self.store_timeserie(pumping_station, "reference", timeseries)
-                        pumping_station.save()
+                    if not self.pumping_station2timeseries is None:
+                        timeseries = self.pumping_station2timeseries[pumping_station.name]
+                        # actual_timeseries = pumping_station.retrieve_sum_timeseries()
+                        # for event, actual_event in enumerate_events(timeseries, actual_timeseries):
+                        #     if event[0] != actual_event[0] or event[1] != actual_event[1]:
+                        #         print pumping_station.name, event[0], event[1], actual_event[0], actual_event[1]
+                        #         exit(0)
+                        # self.store_timeserie(pumping_station, "reference", timeseries)
+                        # pumping_station.save()
                     else:
-                        timeseries = pumping_station.retrieve_timeseries()
+                        timeseries = pumping_station.retrieve_sum_timeseries()
                 intakes_timeseries.append(timeseries)
         return intakes, intakes_timeseries
 
