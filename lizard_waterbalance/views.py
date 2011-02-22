@@ -466,11 +466,6 @@ def waterbalance_fraction_distribution(request,
 
     t1 = time.time()
 
-    intakes = [0] * 3
-    intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
-    intakes[1] = PumpingStation.objects.get(name__iexact="Inlaat vecht")
-    intakes[2] = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
-
     chloride = Concentration.SUBSTANCE_CHLORIDE
 
     bars = [("berging", outcome.open_water_fractions["initial"], None),
@@ -492,16 +487,19 @@ def waterbalance_fraction_distribution(request,
             ("afstroming",
              outcome.open_water_fractions["flow_off"],
              waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact='afstroming').minimum),
-            ("dijklek",
-             outcome.intake_fractions[intakes[0]],
-             waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact='dijklek').minimum),
-            ("Inlaat Vecht",
-             outcome.intake_fractions[intakes[1]],
-             waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact='Inlaat Vecht').minimum),
-            ("inlaat peilbeheer",
-             outcome.intake_fractions[intakes[2]],
-             waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact='inlaat peilbeheer').minimum),
             ]
+
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
+    for intake in intakes.order_by('name'):
+        bars.append((intake.name,
+                     outcome.intake_fractions[intake],
+                     waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact=intake.name).minimum))
+
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
+    for intake in intakes.order_by('name'):
+        bars.append((intake.name,
+                     outcome.intake_fractions[intake],
+                     waterbalance_area.concentrations.get(substance__exact=chloride, flow_name__iexact=intake.name).minimum))
 
     names = [bar[0] for bar in bars] + ["chloride"]
     colors = ['#' + get_timeseries_label(name).color for name in names]
@@ -571,11 +569,6 @@ def waterbalance_phosphate_impact(request,
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
 
-    intakes = [0] * 3
-    intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
-    intakes[1] = PumpingStation.objects.get(name__iexact="Inlaat vecht")
-    intakes[2] = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
-
     phosphate = Concentration.SUBSTANCE_PHOSPHATE
 
     bars = [("neerslag (incr)", "neerslag (min)",
@@ -602,19 +595,24 @@ def waterbalance_phosphate_impact(request,
              outcome.open_water_fractions["flow_off"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').minimum),
-            ("dijklek (incr)", "dijklek (min)",
-             outcome.intake_fractions[intakes[0]],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='dijklek').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='dijklek').minimum),
-            ("Inlaat Vecht (incr)", "Inlaat Vecht (min)",
-             outcome.intake_fractions[intakes[1]],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='Inlaat Vecht').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='Inlaat Vecht').minimum),
-            ("inlaat peilbeheer (incr)", "inlaat peilbeheer (min)",
-             outcome.intake_fractions[intakes[2]],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='inlaat peilbeheer').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='inlaat peilbeheer').minimum),
             ]
+
+
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
+    for intake in intakes.order_by('name'):
+        bars.append((intake.name + " (incr)",
+                     intake.name + " (min)",
+                     outcome.intake_fractions[intake],
+                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+
+    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
+    for intake in intakes.order_by('name'):
+        bars.append((intake.name + " (incr)",
+                     intake.name + " (min)",
+                     outcome.intake_fractions[intake],
+                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
     names = [bar[0] for bar in bars] + [bar[1] for bar in bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
