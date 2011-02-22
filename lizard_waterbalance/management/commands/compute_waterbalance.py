@@ -22,7 +22,6 @@
 #******************************************************************************
 #
 # Initial programmer: Pieter Swinkels
-# Initial date:       2010-12-07
 #
 #******************************************************************************
 
@@ -149,6 +148,20 @@ class Command(BaseCommand):
                 net_precipitation = event_tuple[4][1]
                 f.write("%s,%d,%d,%d,%f,%f,%f,%f,%f\n" % (bucket.name, date.year, date.month, date.day, storage, flow_off, net_drainage, seepage, net_precipitation))
         f.close()
+
+        f = open(join(directory, "waterbalance-outcome.csv"), "w")
+
+        for key, timeseries in waterbalance_outcome.open_water_timeseries.iteritems():
+            self.write_timeseries(f, "open water timeseries", key, timeseries)
+
+        for key, timeseries in waterbalance_outcome.level_control_assignment.iteritems():
+            self.write_timeseries(f, "level control assignment", key, timeseries)
+
+        for key, timeseries in waterbalance_outcome.open_water_fractions.iteritems():
+            self.write_timeseries(f, "open water fractions", key, timeseries)
+
+        for key, timeseries in waterbalance_outcome.intake_fractions.iteritems():
+            self.write_timeseries(f, "intake fractions", key, timeseries)
 
         # f = open(join(directory, "outcome.csv"), "w")
         # for key, outcome in result.items():

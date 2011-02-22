@@ -70,6 +70,8 @@ class Timeseries(models.Model):
         for event in self.timeseries_events.all():
             yield event.time, event.value
 
+    def __unicode__(self):
+        return self.name
 
 class TimeseriesEvent(models.Model):
     """Specifies a single event, that is, a value - date time pair.
@@ -564,23 +566,42 @@ class PumpingStation(models.Model):
     def retrieve_pump_lines(self):
         return self.pump_lines.all()
 
+
 class PumpLine(models.Model):
     """Represents a *pomplijn*.
 
     Instance variables:
-    * pump -- link to the pump to which this pumpline belongs
-    * timeserie -- link to the time serie that contains the data
+      * name *
+        name of the pump line to help the user identify a PumpLine
+      * pumping_station *
+        link to the pumping station to which this pumpline belongs
+      * timeserie *
+        link to the time serie that contains the data
 
     """
     class Meta:
         verbose_name = _("Pomplijn")
         verbose_name_plural = _("Pomplijnen")
 
-    pump = models.ForeignKey(PumpingStation, related_name='pump_lines')
-    timeserie = models.ForeignKey(WaterbalanceTimeserie, related_name='+')
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om de pomplijn eenvoudig te herkennen"),
+                            max_length=64, null=True, blank=True)
+
+    pumping_station = models.ForeignKey(PumpingStation,
+                                        verbose_name=_("Pomp"),
+                                        help_text=_("pomp waartoe deze pomplijn behoort"),
+                                        related_name='pump_lines')
+
+    timeserie = models.ForeignKey(WaterbalanceTimeserie,
+                                  verbose_name=_("Tijdreeks"),
+                                  help_text=_("tijdreeks naar gepompte waarden"),
+                                  null=True, blank=True, related_name='+')
 
     def retrieve_timeseries(self):
         return self.timeserie
+
+    def __unicode__(self):
+        return self.name
 
 
 class WaterbalanceArea(models.Model):

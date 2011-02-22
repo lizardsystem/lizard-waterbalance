@@ -3,6 +3,7 @@ from django.contrib import admin
 # from lizard_fewsunblobbed.models import Location
 # from lizard_fewsunblobbed.models import Timeserie
 
+from lizard_waterbalance.forms import PumpingStationForm
 from lizard_waterbalance.forms import WaterbalanceTimeserieForm
 
 from lizard_waterbalance.models import Bucket
@@ -18,6 +19,17 @@ from lizard_waterbalance.models import WaterbalanceLabel
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
 
+class PumpLineInLine(admin.TabularInline):
+    model = PumpLine
+
+
+class PumpingStationAdmin(admin.ModelAdmin):
+    inlines = [
+        PumpLineInLine,
+        ]
+    form = PumpingStationForm
+
+
 class TimeseriesEventInline(admin.TabularInline):
     model = TimeseriesEvent
 
@@ -25,7 +37,7 @@ class TimeseriesEventInline(admin.TabularInline):
 class TimeseriesAdmin(admin.ModelAdmin):
     inlines = [
         TimeseriesEventInline,
-    ]
+        ]
 
 
 class TimeseriesFewsAdmin(admin.ModelAdmin):
@@ -40,7 +52,7 @@ admin.site.register(Bucket)
 admin.site.register(Concentration)
 admin.site.register(OpenWater)
 admin.site.register(PumpLine)
-admin.site.register(PumpingStation)
+admin.site.register(PumpingStation, PumpingStationAdmin)
 admin.site.register(Timeseries, TimeseriesAdmin)
 admin.site.register(TimeseriesEvent)
 admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)

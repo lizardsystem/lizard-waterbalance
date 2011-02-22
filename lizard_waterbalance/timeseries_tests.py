@@ -44,3 +44,22 @@ class TimeseriesTests(TestCase):
         self.assertEqual(1, queryset.count())
         db_events = list(queryset.get(pk=db_timeseries.pk).events())
         self.assertEqual(events, db_events)
+
+    def test_b(self):
+        events = [(datetime(2011, 1, 20), 10.0), (datetime(2011, 1, 22), 11.0)]
+        db_timeseries = store(TimeseriesStub(*events))
+        queryset = Timeseries.objects.filter(pk__exact=db_timeseries.pk)
+        self.assertEqual(1, queryset.count())
+        expected_events = [(datetime(2011, 1, 20), 10.0),
+                           (datetime(2011, 1, 21), 0.0),
+                           (datetime(2011, 1, 22), 11.0)]
+        db_events = list(queryset.get(pk=db_timeseries.pk).events())
+        self.assertEqual(expected_events, db_events)
+
+    def test_c(self):
+        events = [(datetime(2011, 1, 20), 10.0), (datetime(2011, 1, 22), 11.0)]
+        db_timeseries = store(TimeseriesStub(*events), raw=True)
+        queryset = Timeseries.objects.filter(pk__exact=db_timeseries.pk)
+        self.assertEqual(1, queryset.count())
+        db_events = list(queryset.get(pk=db_timeseries.pk).events())
+        self.assertEqual(events, db_events)

@@ -29,7 +29,7 @@ from lizard_waterbalance.models import Timeseries
 from lizard_waterbalance.models import TimeseriesEvent
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
-def store(timeseries):
+def store(timeseries, raw=False):
     """Stores and returns the given time series as a Timeseries.
 
     Parameters:
@@ -38,7 +38,11 @@ def store(timeseries):
     """
     db_timeseries = Timeseries()
     db_timeseries.save()
-    for event in timeseries.events():
+    if raw:
+        events = timeseries.raw_events()
+    else:
+        events = timeseries.events()
+    for event in events:
         db_timeseries_event = TimeseriesEvent()
         db_timeseries_event.timeseries = db_timeseries
         db_timeseries_event.time = event[0]
@@ -46,7 +50,7 @@ def store(timeseries):
         db_timeseries_event.save()
     return db_timeseries
 
-def store_waterbalance_timeserie(model, attribute_name, timeseries):
+def store_waterbalance_timeserie(model, attribute_name, timeseries, raw=False):
     """Store the given volume timeserie in the database.
 
     model is a Model with an attribute named attribute_name that refers to the
@@ -64,7 +68,7 @@ def store_waterbalance_timeserie(model, attribute_name, timeseries):
         waterbalance_timeserie.save()
         model.__setattr__(attribute_name, waterbalance_timeserie)
     previous_timeseries = waterbalance_timeserie.volume
-    waterbalance_timeserie.volume = store(timeseries)
+    waterbalance_timeserie.volume = store(timeseries, raw)
     waterbalance_timeserie.save()
     if not previous_timeseries is None:
         previous_timeseries.delete()

@@ -132,6 +132,17 @@ class TimeseriesStub:
         """
         self._events.append((date_time, value))
 
+    def raw_events(self):
+        """Return a generator to iterate over all daily events.
+
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function does not
+	fill in the missing dates with value.
+
+        """
+        for date, value in self._events:
+            yield date, value
+
     def events(self):
         """Return a generator to iterate over all daily events.
 

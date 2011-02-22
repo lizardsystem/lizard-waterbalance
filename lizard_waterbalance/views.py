@@ -353,6 +353,9 @@ def waterbalance_area_graph(request,
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
+    start = datetime.datetime.today()
+    print start
+
     intake = PumpingStation.objects.get(name__iexact="inlaat peilbeheer")
 
     incoming_bars = [
@@ -372,7 +375,7 @@ def waterbalance_area_graph(request,
         ("verdamping", outcome.open_water_timeseries["evaporation"]),
         ("wegzijging", outcome.open_water_timeseries["infiltration"]),
         ("pomp peilbeheer", outcome.level_control_assignment[pump])
-        ]
+         ]
 
     names = [bar[0] for bar in incoming_bars + outgoing_bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
@@ -395,6 +398,10 @@ def waterbalance_area_graph(request,
             krw_graph.axes.bar(times, values, width, color=color, edgecolor=color,
                                bottom=bottom)
             top_height.stack_bars(times, values)
+
+    end = datetime.datetime.today()
+    print end
+    print end - start
 
     canvas = FigureCanvas(krw_graph.figure)
     response = HttpResponse(content_type='image/png')
@@ -427,6 +434,9 @@ def waterbalance_fraction_distribution(request,
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+
+    start = datetime.datetime.today()
+    print start
 
     intakes = [0] * 3
     intakes[0] = PumpingStation.objects.get(name__iexact="dijklek")
@@ -498,6 +508,10 @@ def waterbalance_fraction_distribution(request,
     times, values = get_average_timeseries(substance_timeseries, start_datetime, end_datetime)
 
     ax2.plot(times, values, 'kd')
+
+    end = datetime.datetime.today()
+    print end
+    print end - start
 
     canvas = FigureCanvas(krw_graph.figure)
     response = HttpResponse(content_type='image/png')
