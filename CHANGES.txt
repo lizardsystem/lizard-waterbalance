@@ -5,6 +5,15 @@ Changelog of lizard-waterbalance
 0.9 (unreleased)
 ----------------
 
+- The Admin interface supports the selection of FEWS and non-FEWS timeseries.
+
+- The computation retrieves the non-FEWS timeseries from the database. Only the
+  FEWS timeseries are retrieved from the ASCII file.
+
+- Streamlined the Waterbalance summary page. The page has become more
+  user-friendly and does not show hardcoded data (except forthe FEWS
+  timeseries).
+
 - Added caching for waterbalance area graph data, including button to
   re-calculate that data.
 
