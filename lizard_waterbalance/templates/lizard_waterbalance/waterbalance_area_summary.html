@@ -41,12 +41,10 @@
   <h2>Bakjes</h2>
   <div>
     <dl>
-      <dt>Ongedraineerd</dt>
-      <dd>2950181 m2</dd>
-      <dt>Gedraineerd</dt>
-      <dd>3697465 m2</dd>
-      <dt>Verhard</dt>
-      <dd>1217463 m2</dd>
+      {% for bucket in waterbalance_area.open_water.buckets.all %}
+      <dt>{{ bucket.name }}</dt>
+      <dd>{{ bucket.surface }} m2</dd>
+      {% endfor %}
     </dl>
     <form method="POST"
           action="{% url waterbalance_graph_recalculate_data waterbalance_area.slug %}"
