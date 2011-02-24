@@ -33,7 +33,7 @@ from django.utils.translation import ugettext as _
 from lizard_fewsunblobbed.models import Filter
 from lizard_fewsunblobbed.models import Location
 from lizard_fewsunblobbed.models import Parameter
-from lizard_fewsunblobbed.models import Timeseriedata
+from lizard_fewsunblobbed.models import Timeserie
 from lizard_map.models import ColorField
 
 from south.modelsinspector import add_ignored_fields
@@ -141,13 +141,11 @@ class TimeseriesFews(models.Model):
                                        null=True, blank=True, related_name='+')
     fews_filter = models.ForeignKey(Filter, verbose_name=_("filter"),
                                     help_text=_("filter in FEWS unblobbed"),
-                                    null=True, blank=True)
+                                    null=True, blank=True,
+                                    related_name='+')
     fews_location = models.ForeignKey(Location, verbose_name=_("locatie"),
-                                      help_text=_("locatie in FEWS unblobbed"),
+                                      help_text=_("lkey van locatie in FEWS unblobbed"),
                                       null=True, blank=True, related_name='+')
-
-
-    # fews_timeseries = models.ForeignKey(Timeseriedata, related_name='+')
 
     def events(self):
         """Return a generator to iterate over all events.
@@ -155,9 +153,12 @@ class TimeseriesFews(models.Model):
         The generator iterates over the events earliest date first.
 
         """
-        pass
-        # for event in self.fews_timeseries.timeserie_data.all.objects.order_by('tsd_time'):
-        #     yield event.tsd_time, event.tsd_value
+        fews_timeseries = Timeserie.objects.get(parameterkey=self.fews_parameter.pkey,
+                                                filterkey=self.fews_filter.fkey,
+                                                location=self.fews_location.lkey)
+
+        for event in fews_timeseries.timeseriedata.all.order_by('tsd_time'):
+            yield event.tsd_time, event.tsd_value
 
 
 class WaterbalanceTimeserie(models.Model):
@@ -245,8 +246,9 @@ class OpenWater(models.Model):
     class Meta:
         verbose_name = _("Open water")
 
-    name = models.CharField(verbose_name=_("naam"), max_length=64)
-    slug = models.CharField(verbose_name=_("slug"), max_length=64)
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om het open water eenvoudig te herkennen"),
+                            max_length=64)
     surface = models.IntegerField(verbose_name=_("oppervlakte"),
                                   help_text=_("oppervlakte in vierkante meters"))
     crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
@@ -360,7 +362,7 @@ class OpenWater(models.Model):
                                            null=True, blank=True, related_name='+')
 
     def __unicode__(self):
-        return self.slug
+        return self.name
 
     def retrieve_pumping_stations(self):
         return self.pumping_stations.all()
@@ -654,17 +656,23 @@ class WaterbalanceArea(models.Model):
         verbose_name_plural = _("Waterbalans gebieden")
         ordering = ("name",)
 
-    name = models.CharField(max_length=80)
-    slug = models.SlugField(help_text=_("Name to construct the URL."))
+    name = models.CharField(verbose_name=_("naam"),
+                            help_text=_("naam om het waterbalans gebied te identificeren"),
+                            max_length=80)
+    slug = models.SlugField(help_text=_("naam om de URL te maken"))
     description = models.TextField(null=True,
                                    blank=True,
                                    help_text="You can use markdown")
 
     precipitation = models.ForeignKey(WaterbalanceTimeserie,
+                                      verbose_name=_("neerslag"),
+                                      help_text=_("tijdreeks naar neerslag in [mm/dag]"),
                                       related_name='+',
                                       null=True,
                                       blank=True)
     evaporation = models.ForeignKey(WaterbalanceTimeserie,
+                                    verbose_name=_("verdamping"),
+                                    help_text=_("tijdreeks naar verdamping in [mm/dag]"),
                                     related_name='+',
                                     null=True,
                                     blank=True)

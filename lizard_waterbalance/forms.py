@@ -1,10 +1,10 @@
 import django.forms as forms
 
-from lizard_fewsunblobbed.models import Parameter
 from lizard_fewsunblobbed.models import Filter
-from lizard_fewsunblobbed.models import Location
+from lizard_fewsunblobbed.models import Parameter
 
 from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import TimeseriesFews
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
 
@@ -21,6 +21,19 @@ class PumpingStationForm(forms.ModelForm):
         exclude = ['fractions']
 
 
+class TimeseriesFewsForm(forms.ModelForm):
+
+    class Meta:
+        model = TimeseriesFews
+    def __init__(self, *args, **kwargs):
+        super(TimeseriesFewsForm, self).__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['fews_parameter'].queryset = \
+                Parameter.objects.all().order_by('name')
+            self.fields['fews_filter'].queryset = \
+                Filter.objects.all().order_by('name')
+
+
 class WaterbalanceTimeserieForm(forms.ModelForm):
     """Implements the Admin form of a WaterbalanceTimeserie.
 
@@ -32,4 +45,3 @@ class WaterbalanceTimeserieForm(forms.ModelForm):
     class Meta:
         model = WaterbalanceTimeserie
         exclude = ['label', 'chloride', 'phosphate', 'nitrate', 'sulfate']
-

@@ -1,9 +1,7 @@
 from django.contrib import admin
 
-# from lizard_fewsunblobbed.models import Location
-# from lizard_fewsunblobbed.models import Timeserie
-
 from lizard_waterbalance.forms import PumpingStationForm
+from lizard_waterbalance.forms import TimeseriesFewsForm
 from lizard_waterbalance.forms import WaterbalanceTimeserieForm
 
 from lizard_waterbalance.models import Bucket
@@ -42,6 +40,7 @@ class TimeseriesAdmin(admin.ModelAdmin):
 
 class TimeseriesFewsAdmin(admin.ModelAdmin):
     raw_id_fields = ("fews_location",)
+    form = TimeseriesFewsForm
 
 
 class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
@@ -59,3 +58,4 @@ admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)
 admin.site.register(WaterbalanceArea)
 admin.site.register(WaterbalanceLabel)
 admin.site.register(WaterbalanceTimeserie, WaterbalanceTimeserieAdmin)
+
