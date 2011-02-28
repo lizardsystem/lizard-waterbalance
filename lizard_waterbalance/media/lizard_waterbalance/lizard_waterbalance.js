@@ -5,7 +5,7 @@ show_popup, nothingFoundPopup */
 
 
 function graph_type_select(event) {
-    var $form, url;
+    var $form, url, div;
     event.preventDefault();
     $form = $(this).parents("#graphtype-select-form");
     url = $form.attr("action");
@@ -13,16 +13,17 @@ function graph_type_select(event) {
         url: url,
         data: $form.serialize(),
         type: "POST",
-        success: function(data, textStatus, xhr) {
+        success: function (data, textStatus, xhr) {
             $('div#evenly-spaced-vertical').html("");
-            jQuery.each(data, function(index, val) {
+            $.each(data, function (index, val) {
                 // console.log(val);
                 div = $("<div/>").addClass('vertical-item').addClass('img-use-my-size');
                 div.append($("<a/>").addClass('replace-with-image').attr('href', val));
                 $('div#evenly-spaced-vertical').append(div);
             });
             restretchExistingElements();
-        }});
+        }
+    });
 }
 
 
@@ -40,11 +41,12 @@ function recalculate_action(event) {
         url: url,
         data: $form.serialize(),
         type: "POST",
-        success: function(data, textStatus, xhr) {
+        success: function (data, textStatus, xhr) {
             $button.attr("value", original_text);
             $button.removeAttr("disabled");
             restretchExistingElements();
-        }});
+        }
+    });
 }
 
 
@@ -62,14 +64,14 @@ function waterbalance_area_click_handler(x, y, map) {
     $("#map_OpenLayers_ViewPort").css("cursor", "progress");
     $.get(
         "/waterbalance/area_search/", { x: x, y: y },
-        function (data) {
+        function  (data) {
             $("#map_OpenLayers_ViewPort").css("cursor", "default");
             redirect_to_area(data);
         });
 }
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("input#graph-type-select-submit").click(graph_type_select);
     $("input#recalculate-submit").click(recalculate_action);
 });
