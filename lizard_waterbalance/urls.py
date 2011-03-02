@@ -34,9 +34,12 @@ urlpatterns = patterns(
     (r'^area_search/',
      'lizard_waterbalance.views.waterbalance_shapefile_search',
      {},
-     "waterbalance_area_search")
+     "waterbalance_area_search"),
+    (r'^search_fews_lkeys/',
+     'lizard_waterbalance.views.search_fews_lkeys',
+     {},
+     "waterbalance_search_fews_lkeys"),
     )
-
 
 if settings.DEBUG:
     # Add this also to the projects that use this application

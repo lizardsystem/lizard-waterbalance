@@ -719,8 +719,10 @@ def graph_select(request):
 def create_location_label(location):
     return location.name + ", pkey %d" % location.lkey
 
-def search_fews_lkeys(request, pkey=None, fkey=None):
+def search_fews_lkeys(request):
     if request.is_ajax():
+        pkey = request.POST['pkey']
+        fkey = request.POST['fkey']
         timeseries = Timeserie.objects.filter(parameterkey=pkey, filterkey=fkey)
         timeseries = timeseries.distinct().order_by("locationkey")
         lkeys = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
