@@ -34,7 +34,7 @@ urlpatterns = patterns(
     (r'^area_search/',
      'lizard_waterbalance.views.waterbalance_shapefile_search',
      {},
-     "waterbalance_area_search"),
+     "waterbalance_area_search")
     )
 
 

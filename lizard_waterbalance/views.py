@@ -20,12 +20,14 @@ from matplotlib.lines import Line2D
 import mapnik
 import pkg_resources
 
+from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
+from lizard_waterbalance.forms import TimeseriesFewsForm
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
@@ -711,6 +713,20 @@ def graph_select(request):
                                   kwargs={'area': area_slug,
                                           'graph_type': graph_type}))
         json = simplejson.dumps(graphs)
+        return HttpResponse(json, mimetype='application/json')
+    else:
+        return HttpResponse("Should not be run this way.")
+
+def create_location_label(location):
+    return location.name + ", pkey %d" % location.lkey
+
+def search_fews_lkeys(request, pkey=None, fkey=None):
+    if request.is_ajax():
+        timeseries = Timeserie.objects.filter(parameterkey=pkey, filterkey=fkey)
+        timeseries = timeseries.distinct().order_by("locationkey")
+        lkeys = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
+        print lkeys
+        json = simplejson.dumps(lkeys)
         return HttpResponse(json, mimetype='application/json')
     else:
         return HttpResponse("Should not be run this way.")

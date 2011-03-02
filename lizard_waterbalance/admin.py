@@ -39,7 +39,7 @@ class TimeseriesAdmin(admin.ModelAdmin):
 
 
 class TimeseriesFewsAdmin(admin.ModelAdmin):
-    raw_id_fields = ("fews_location",)
+    # raw_id_fields = ("fews_location",)
     form = TimeseriesFewsForm
 
 

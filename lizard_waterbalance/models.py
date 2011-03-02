@@ -136,16 +136,17 @@ class TimeseriesFews(models.Model):
                             help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
                             max_length=64, null=True, blank=True)
 
-    fews_parameter = models.ForeignKey(Parameter, verbose_name=_("parameter"),
-                                       help_text=_("parameter in FEWS unblobbed"),
-                                       null=True, blank=True, related_name='+')
-    fews_filter = models.ForeignKey(Filter, verbose_name=_("filter"),
-                                    help_text=_("filter in FEWS unblobbed"),
-                                    null=True, blank=True,
-                                    related_name='+')
-    fews_location = models.ForeignKey(Location, verbose_name=_("locatie"),
-                                      help_text=_("lkey van locatie in FEWS unblobbed"),
-                                      null=True, blank=True, related_name='+')
+    pkey = models.IntegerField(verbose_name=_("Parameter"),
+                               help_text=_("pkey van de parameter in FEWS unblobbed"),
+                               null=True, blank=True)
+
+    fkey = models.IntegerField(verbose_name=_("Filter"),
+                               help_text=_("fkey van de filter in FEWS unblobbed"),
+                               null=True, blank=True)
+
+    lkey = models.IntegerField(verbose_name=_("Location"),
+                               help_text=_("lkey van de locatie in FEWS unblobbed"),
+                               null=True, blank=True)
 
     def events(self):
         """Return a generator to iterate over all events.
@@ -153,9 +154,12 @@ class TimeseriesFews(models.Model):
         The generator iterates over the events earliest date first.
 
         """
-        fews_timeseries = Timeserie.objects.get(parameterkey=self.fews_parameter.pkey,
-                                                filterkey=self.fews_filter.fkey,
-                                                location=self.fews_location.lkey)
+        fews_parameter = Parameter.get(pkey=self.pkey)
+        fews_filter = Filter.get(fkey=self.fkey)
+        fews_location = Location.get(pkey=self.pkey)
+        fews_timeseries = Timeserie.objects.get(parameterkey=fews_parameter,
+                                                filterkey=fews_filter,
+                                                locationkey=fews_location)
 
         for event in fews_timeseries.timeseriedata.all.order_by('tsd_time'):
             yield event.tsd_time, event.tsd_value
