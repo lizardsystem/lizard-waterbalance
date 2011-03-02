@@ -148,6 +148,9 @@ class TimeseriesFews(models.Model):
                                help_text=_("lkey van de locatie in FEWS unblobbed"),
                                null=True, blank=True)
 
+    def __unicode__(self):
+        return self.name
+
     def events(self):
         """Return a generator to iterate over all events.
 
@@ -163,6 +166,7 @@ class TimeseriesFews(models.Model):
 
         for event in fews_timeseries.timeseriedata.all.order_by('tsd_time'):
             yield event.tsd_time, event.tsd_value
+
 
 
 class WaterbalanceTimeserie(models.Model):

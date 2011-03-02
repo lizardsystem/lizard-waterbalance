@@ -27,7 +27,6 @@ from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
-from lizard_waterbalance.forms import TimeseriesFewsForm
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
