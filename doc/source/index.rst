@@ -14,6 +14,7 @@ Project documentation
 
    project
    datamodel
+   admin
    vip
    vocabulary
 
