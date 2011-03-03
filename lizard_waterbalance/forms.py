@@ -26,25 +26,44 @@ class PumpingStationForm(forms.ModelForm):
 
 
 class TimeseriesFewsForm(forms.ModelForm):
+    """Implements the Admin form of a TimeSeriesFews.
+
+    You can find additional documentation for this form in
+    ../doc/source/admin.rst
+
+    Instance variables:
+      * name_parameter *
+        ChoiceField to select a lizard_fewsunblobbed.models.Parameter
+      * name_filter *
+        ChoiceField to select a lizard_fewsunblobbed.models.Filter
+      * name_location *
+        ChoiceField to select a lizard_fewsunblobbed.models.Location
+
+    """
 
     class Meta:
         model = TimeseriesFews
         exclude = ['pkey', 'fkey', 'lkey']
 
     name_parameter = forms.ChoiceField(label=_("Parameter"),
-                                       help_text=_("naam, pkey van de parameter in FEWS unblobbed"),
+                                       help_text=_("naam, pkey van de parameter"),
                                        choices=[])
 
     name_filter = forms.ChoiceField(label=_("Filter"),
-                                    help_text=_("naam, fkey van de filter in FEWS unblobbed"),
+                                    help_text=_("naam, fkey van de filter"),
                                     choices=[])
 
-    choices = []
     name_location = forms.CharField(label=_("Locatie"),
-                                    help_text=_("naam, lkey van de locatie in FEWS unblobbed"),
+                                    help_text=_("naam, lkey van de locatie"),
                                     widget=forms.Select)
 
     def __init__(self, *args, **kwargs):
+        """Initialize the form.
+
+        When the form is associated with a TimeseriesFews that is stored in the
+        database, this method initializes the form with the stored values.
+
+        """
         super(TimeseriesFewsForm, self).__init__(*args, **kwargs)
 
         choices =  [(parameter.pkey, "%s, pkey %d" % (parameter.name, parameter.pkey))
