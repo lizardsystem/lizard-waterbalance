@@ -88,7 +88,6 @@ class TimeseriesFewsForm(forms.ModelForm):
             timeseries = Timeserie.objects.filter(parameterkey=pkey.pkey, filterkey=fkey.id)
             timeseries = timeseries.distinct().order_by("locationkey")
             choices = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
-            print choices
             self.fields['name_location'].widget.choices = choices
             if not self.instance is None and not self.instance.lkey is None:
                 self.fields['name_location'].initial = str(self.instance.lkey)

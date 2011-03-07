@@ -560,7 +560,7 @@ def waterbalance_phosphate_impact(request,
     height = request.GET.get('height', 400)
     krw_graph = Graph(start_date, end_date, width, height)
 
-    krw_graph.suptitle("Fosfaatbelasting")
+    krw_graph.suptitle("Fosfaatbelasting, maandgemiddelde in [mg/m2/dag]")
 
     # Show line for today.
     krw_graph.add_today()
@@ -573,27 +573,27 @@ def waterbalance_phosphate_impact(request,
     phosphate = Concentration.SUBSTANCE_PHOSPHATE
 
     bars = [("neerslag (incr)", "neerslag (min)",
-             outcome.open_water_fractions["precipitation"],
+             outcome.open_water_timeseries["precipitation"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').minimum),
             ("kwel (incr)", "kwel (min)",
-             outcome.open_water_fractions["seepage"],
+             outcome.open_water_timeseries["seepage"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').minimum),
             ("verhard (incr)", "verhard (min)",
-             outcome.open_water_fractions["hardened"],
+             outcome.open_water_timeseries["hardened"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').minimum),
             ("gedraineerd (incr)", "gedraineerd (min)",
-             outcome.open_water_fractions["drained"],
+             outcome.open_water_timeseries["drained"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').minimum),
             ("ongedraineerd (incr)", "ongedraineerd (min)",
-             outcome.open_water_fractions["undrained"],
+             outcome.open_water_timeseries["undrained"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').minimum),
             ("afstroming (incr)", "afstroming (min)",
-             outcome.open_water_fractions["flow_off"],
+             outcome.open_water_timeseries["flow_off"],
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').minimum),
             ]
@@ -603,7 +603,7 @@ def waterbalance_phosphate_impact(request,
     for intake in intakes.order_by('name'):
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
-                     outcome.intake_fractions[intake],
+                     intake.retrieve_sum_timeseries(),
                      waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
                      waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
@@ -611,7 +611,7 @@ def waterbalance_phosphate_impact(request,
     for intake in intakes.order_by('name'):
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
-                     outcome.intake_fractions[intake],
+                     outcome.level_control_assignment[intake],
                      waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
                      waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
@@ -622,25 +622,29 @@ def waterbalance_phosphate_impact(request,
     krw_graph.legend_space()
     krw_graph.legend(handles, names)
 
-    top_height = TopHeight()
-
-    storage_timeseries = outcome.open_water_timeseries["storage"]
     open_water = waterbalance_area.open_water
-    surface_timeseries = multiply_timeseries(storage_timeseries, 1.0 / open_water.surface)
+
+    top_height = TopHeight()
 
     for index in range(2):
         for bar in bars:
             label = get_timeseries_label(bar[1-index])
-            fractions = bar[2]
+            discharge = bar[2]
+
             if index == 0:
                 concentration = bar[4]
             else:
                 concentration = bar[3] + bar[4]
+            # Concentration is specified in [mg/l] whereas discharge is
+            # specified in [m3/day]. The impact is specified in [mg/m2/day] so
+            # we first multiply the concentration by 1000 to specify it in
+            # [mg/m3] and then divide the result by the surface of the open
+            # water to specify it in [mg/m2/m3].
+            concentration = (concentration * 1000.0) / open_water.surface
 
-            substance_timeseries = ConcentrationComputer().compute([fractions],
-                                                                   surface_timeseries,
-                                                                   [concentration])
-            times, values = get_average_timeseries(substance_timeseries, start_datetime, end_datetime)
+            impact_timeseries = multiply_timeseries(discharge, concentration)
+
+            times, values = get_average_timeseries(impact_timeseries, start_datetime, end_datetime)
 
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color

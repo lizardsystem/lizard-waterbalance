@@ -157,14 +157,14 @@ class TimeseriesFews(models.Model):
         The generator iterates over the events earliest date first.
 
         """
-        fews_parameter = Parameter.get(pkey=self.pkey)
-        fews_filter = Filter.get(fkey=self.fkey)
-        fews_location = Location.get(pkey=self.pkey)
+        fews_parameter = Parameter.objects.get(pkey=self.pkey)
+        fews_filter = Filter.objects.get(id=self.fkey)
+        fews_location = Location.objects.get(lkey=self.lkey)
         fews_timeseries = Timeserie.objects.get(parameterkey=fews_parameter,
                                                 filterkey=fews_filter,
                                                 locationkey=fews_location)
 
-        for event in fews_timeseries.timeseriedata.all.order_by('tsd_time'):
+        for event in fews_timeseries.timeseriedata.all().order_by('tsd_time'):
             yield event.tsd_time, event.tsd_value
 
 
