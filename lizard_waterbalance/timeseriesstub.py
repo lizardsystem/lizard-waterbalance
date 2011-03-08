@@ -27,11 +27,18 @@
 #******************************************************************************
 
 import logging
+import itertools
 from datetime import datetime
 from datetime import timedelta
 from math import fabs
 
 from filereader import FileReader
+
+
+def _first_of_month(event):
+    """Return the first day of the month for an event."""
+    date, value = event
+    return datetime(date.year, date.month, 1)
 
 
 def monthly_events(timeseries):
@@ -45,20 +52,9 @@ def monthly_events(timeseries):
     current_year = None
     current_month = None
     current_value = 0
-    for date, value in timeseries.events():
-        if current_month:
-            if date.year == current_year and date.month == current_month:
-                current_value += value
-            elif date.year > current_year or date.month > current_month:
-                yield datetime(current_year, current_month, 1), current_value
-                current_year = date.year
-                current_month = date.month
-                current_value = value
-        else:
-            current_year = date.year
-            current_month = date.month
-            current_value = value
-    yield datetime(current_year, current_month, 1), current_value
+    for date, events in itertools.groupby(timeseries.events(), _first_of_month):
+        total = sum(value for (date, value) in events)
+        yield date, total
 
 
 def average_monthly_events(timeseries):
@@ -66,7 +62,7 @@ def average_monthly_events(timeseries):
 
     A TimeseriesStub stores daily events. This generator aggregates these
     daily events to monthly events that is placed at the first of the month
-    and whose value is the total value of the daily events for that month.
+    and whose value is the average value of the daily events for that month.
 
     """
     current_year = None
@@ -91,9 +87,9 @@ def average_monthly_events(timeseries):
             current_value = value
             value_count = 1
     if value_count > 0:
-            average_value = (1.0 * current_value) / value_count
-            datetime(current_year, current_month, 1), average_value
-            yield datetime(current_year, current_month, 1), average_value
+        average_value = (1.0 * current_value) / value_count
+        datetime(current_year, current_month, 1), average_value
+        yield datetime(current_year, current_month, 1), average_value
 
 
 class TimeseriesStub:
