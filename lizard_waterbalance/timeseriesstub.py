@@ -35,10 +35,38 @@ from math import fabs
 from filereader import FileReader
 
 
+def _first_of_day(event):
+    """Return the first moment of the day for an event."""
+    date, value = event
+    return datetime(date.year, date.month, date.day)
+
+
 def _first_of_month(event):
     """Return the first day of the month for an event."""
     date, value = event
     return datetime(date.year, date.month, 1)
+
+
+def _first_of_year(event):
+    """Return the first day of the year for an event."""
+    date, value = event
+    return datetime(date.year, 1, 1)
+
+
+def grouped_event_values(timeseries, period, average=False):
+    """Return iterator with totals for days/months/years for timeseries."""
+    groupers = {'year': _first_of_year,
+                'month': _first_of_month,
+                'day': _first_of_day}
+    grouper = groupers.get(period)
+    assert grouper is not None
+
+    for date, events in itertools.groupby(timeseries.events(), grouper):
+        if average:
+            result = sum(1.0 * value for (date, value) in events) / len(events)            
+        else:
+            result = sum(value for (date, value) in events)
+        yield date, result
 
 
 def monthly_events(timeseries):
@@ -49,9 +77,7 @@ def monthly_events(timeseries):
     and whose value is the total value of the daily events for that month.
 
     """
-    for date, events in itertools.groupby(timeseries.events(), _first_of_month):
-        total = sum(value for (date, value) in events)
-        yield date, total
+    return grouped_event_values(timeseries, 'month')
 
 
 def average_monthly_events(timeseries):
@@ -62,9 +88,7 @@ def average_monthly_events(timeseries):
     and whose value is the average value of the daily events for that month.
 
     """
-    for date, events in itertools.groupby(timeseries.events(), _first_of_month):
-        average = sum(1.0 * value for (date, value) in events) / len(events)
-        yield date, average
+    return grouped_event_values(timeseries, 'month', average=True)
 
 
 class TimeseriesStub:
