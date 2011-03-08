@@ -49,9 +49,6 @@ def monthly_events(timeseries):
     and whose value is the total value of the daily events for that month.
 
     """
-    current_year = None
-    current_month = None
-    current_value = 0
     for date, events in itertools.groupby(timeseries.events(), _first_of_month):
         total = sum(value for (date, value) in events)
         yield date, total
@@ -65,31 +62,9 @@ def average_monthly_events(timeseries):
     and whose value is the average value of the daily events for that month.
 
     """
-    current_year = None
-    current_month = None
-    current_value = 0
-    value_count = 0
-    for date, value in timeseries.events():
-        if current_month:
-            if date.year == current_year and date.month == current_month:
-                current_value += value
-                value_count += 1
-            elif date.year > current_year or date.month > current_month:
-                average_value = (1.0 * current_value) / value_count
-                yield datetime(current_year, current_month, 1), average_value
-                current_year = date.year
-                current_month = date.month
-                current_value = value
-                value_count = 1
-        else:
-            current_year = date.year
-            current_month = date.month
-            current_value = value
-            value_count = 1
-    if value_count > 0:
-        average_value = (1.0 * current_value) / value_count
-        datetime(current_year, current_month, 1), average_value
-        yield datetime(current_year, current_month, 1), average_value
+    for date, events in itertools.groupby(timeseries.events(), _first_of_month):
+        average = sum(1.0 * value for (date, value) in events) / len(events)
+        yield date, average
 
 
 class TimeseriesStub:
