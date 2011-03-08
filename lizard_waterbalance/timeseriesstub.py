@@ -27,12 +27,12 @@
 #******************************************************************************
 
 import logging
-
 from datetime import datetime
 from datetime import timedelta
 from math import fabs
 
 from filereader import FileReader
+
 
 def monthly_events(timeseries):
         """Return a generator to iterate over all monthly events.
@@ -93,6 +93,7 @@ def average_monthly_events(timeseries):
 		average_value = (1.0 * current_value) / value_count
 		datetime(current_year, current_month, 1), average_value
 		yield datetime(current_year, current_month, 1), average_value
+
 
 class TimeseriesStub:
     """Represents a time series.
@@ -200,6 +201,7 @@ class TimeseriesStub:
                     break
         return equal
 
+
 class TimeseriesWithMemoryStub(TimeseriesStub):
 
     def __init__(self, *args, **kwargs):
@@ -246,6 +248,7 @@ class TimeseriesWithMemoryStub(TimeseriesStub):
             previous_value = value
             date_to_yield = date + timedelta(1)
 
+
 class TimeseriesRestrictedStub(TimeseriesStub):
 
     def __init__(self, *args, **kwargs):
@@ -265,6 +268,7 @@ class TimeseriesRestrictedStub(TimeseriesStub):
                 yield event[0], event[1]
             else:
                 break
+
 
 def enumerate_events(*timeseries_list):
     """Yield the events for all the days of the given time series.
@@ -310,6 +314,7 @@ def enumerate_events(*timeseries_list):
         if not no_events_are_present:
             yield tuple(to_yield)
 
+
 def enumerate_merged_events(timeseries_a, timeseries_b):
     events_a = timeseries_a.events()
     events_b = timeseries_b.events()
@@ -337,6 +342,7 @@ def enumerate_merged_events(timeseries_a, timeseries_b):
         for event in events_a:
             yield event[0], event[1], 0
 
+
 def create_empty_timeseries(timeseries):
     """Return the empty TimeseriesStub that starts on the same day as the given time series.
 
@@ -352,6 +358,7 @@ def create_empty_timeseries(timeseries):
         empty_timeseries.add_value(event[0], 0.0)
     return empty_timeseries
 
+
 def add_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the sum of the given time series."""
     result = TimeseriesStub()
@@ -359,12 +366,14 @@ def add_timeseries(timeseries_a, timeseries_b):
         result.add_value(date, value_a + value_b)
     return result
 
+
 def subtract_timeseries(timeseries_a, timeseries_b):
     """Return the TimeseriesStub that is the difference of the given time series."""
     result = TimeseriesStub()
     for date, value_a, value_b in enumerate_merged_events(timeseries_a, timeseries_b):
         result.add_value(date, value_a - value_b)
     return result
+
 
 def multiply_timeseries(timeseries, value):
     """Return the the product of the given time series with the given value.
@@ -376,6 +385,7 @@ def multiply_timeseries(timeseries, value):
     for event in timeseries.events():
         product.add_value(event[0], event[1] * value)
     return product
+
 
 def split_timeseries(timeseries):
     """Return the 2-tuple of non-positive and non-negative time series.
@@ -403,6 +413,7 @@ def split_timeseries(timeseries):
             non_pos_timeseries.add_value(date, 0)
             non_neg_timeseries.add_value(date, 0)
     return (non_pos_timeseries, non_neg_timeseries)
+
 
 def create_from_file(filename, filereader=FileReader()):
     """Return a dictionary from bucket and open water name to bucket and open water outcome."""
