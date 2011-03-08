@@ -351,6 +351,27 @@ def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name."""
     return WaterbalanceLabel.objects.get(name__iexact=name)
 
+def retrieve_horizon(request):
+    """Return the start and end datetime.datetime on the horizontal axis.
+
+    The user selects the start and end date but not the date and time. This method returns
+    the start date at 00:00 and the end date at 23:59:59.
+
+    """
+    start_date, end_date = current_start_end_dates(request)
+    start_datetime = datetime.datetime(start_date.year,
+                                       start_date.month,
+                                       start_date.day,
+                                       0,
+                                       0,
+                                       0)
+    end_datetime = datetime.datetime(end_date.year,
+                                     end_date.month,
+                                     end_date.day,
+                                     23,
+                                     59,
+                                     59)
+    return start_datetime, end_datetime
 
 def waterbalance_area_graph(request,
                             name,
@@ -358,10 +379,9 @@ def waterbalance_area_graph(request,
                             graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
-    start_date, end_date = current_start_end_dates(request)
-    # start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(1996, 1, 20)
-    start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(2010, 6, 30) # datetime.datetime(1996, 12, 31)
-    start_date, end_date = start_datetime.date(), end_datetime.date()
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
 
     width = request.GET.get('width', 1600)
     height = request.GET.get('height', 400)
@@ -446,10 +466,9 @@ def waterbalance_fraction_distribution(request,
                                        graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
-    start_date, end_date = current_start_end_dates(request)
-    # start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(1996, 1, 20)
-    start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(2010, 6, 30) # datetime.datetime(1996, 12, 31)
-    start_date, end_date = start_datetime.date(), end_datetime.date()
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
 
     width = request.GET.get('width', 1600)
     height = request.GET.get('height', 400)
@@ -588,10 +607,9 @@ def waterbalance_phosphate_impact(request,
                                   graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
-    start_date, end_date = current_start_end_dates(request)
-    # start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(1996, 1, 20)
-    start_datetime, end_datetime = datetime.datetime(1996, 1, 1), datetime.datetime(2010, 6, 30) # datetime.datetime(1996, 12, 31)
-    start_date, end_date = start_datetime.date(), end_datetime.date()
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
 
     width = request.GET.get('width', 1600)
     height = request.GET.get('height', 400)
