@@ -33,9 +33,8 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceLabel
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
-from lizard_waterbalance.timeseriesstub import average_monthly_events
 from lizard_waterbalance.timeseriesstub import create_from_file
-from lizard_waterbalance.timeseriesstub import monthly_events
+from lizard_waterbalance.timeseriesstub import grouped_event_values
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 
 # We use the following values to uniquely identify the workspaces for
@@ -62,6 +61,9 @@ IMPLEMENTED_GRAPH_TYPES = (
     'fracties_fosfaat',
     'fosfaatbelasting',
     )
+BAR_WIDTH = {'year': 360,
+             'month': 28,
+             'day': 1}
 
 logger = logging.getLogger(__name__)
 
@@ -311,50 +313,57 @@ def waterbalance_area_summary(request,
         formitem['label'] = name
         formitem['disabled'] = (graph_type not in IMPLEMENTED_GRAPH_TYPES)
         graph_type_formitems.append(formitem)
+    periods = [('year', 'Per jaar', False),
+               ('month', 'Per maand', True),
+               ('day', 'Per dag', False)]
 
     return render_to_response(
         template,
         {'waterbalance_area': waterbalance_area,
          'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
+         'periods': periods,
          'crumbs': crumbs},
         context_instance=RequestContext(request))
 
 
-def get_timeseries(timeseries, start, end):
+def get_timeseries(timeseries, start, end, period='month'):
     """Return the events for the given timeseries in the given range.
 
     Parameters:
     * timeseries -- implementation of a time series that supports a method events()
     * start -- the earliest date (and/or time) of a returned event
     * end -- the latest date (and/or time) of a returned event
+    * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in monthly_events(timeseries) if e[0] >= start and e[0] < end))
-    #return zip(*(e for e in timeseries.events() if e[0] >= start and e[0] < end))
+    return zip(*(e for e in grouped_event_values(timeseries, period) 
+                 if e[0] >= start and e[0] < end))
 
 
-def get_average_timeseries(timeseries, start, end):
+def get_average_timeseries(timeseries, start, end, period='month'):
     """Return the events for the given timeseries in the given range.
 
     Parameters:
     * timeseries -- implementation of a time series that supports a method events()
     * start -- the earliest date (and/or time) of a returned event
     * end -- the latest date (and/or time) of a returned event
+    * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in average_monthly_events(timeseries) if e[0] >= start and e[0] < end))
-    #return zip(*(e for e in timeseries.events() if e[0] >= start and e[0] < end))
+    return zip(*(e for e in grouped_event_values(timeseries, period, average=True) 
+                 if e[0] >= start and e[0] < end))
 
 
-def draw_bar(callable, axes, times, values, width, color, bottom):
+def draw_bar(callable, axes, times, values, bar_width, color, bottom):
 
-    callable(times, values, width, color=color, bottom=bottom)
+    callable(times, values, bar_width, color=color, bottom=bottom)
 
 
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name."""
     return WaterbalanceLabel.objects.get(name__iexact=name)
+
 
 def retrieve_horizon(request):
     """Return the start and end datetime.datetime on the horizontal axis.
@@ -384,6 +393,7 @@ def waterbalance_area_graph(request,
                             graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
+    period = request.GET.get('period', 'month')
     start_datetime, end_datetime = retrieve_horizon(request)
     start_date = start_datetime.date()
     end_date = end_datetime.date() + datetime.timedelta(1)
@@ -397,7 +407,7 @@ def waterbalance_area_graph(request,
     # Show line for today.
     krw_graph.add_today()
 
-    width = 28
+    bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
 
@@ -445,14 +455,15 @@ def waterbalance_area_graph(request,
         top_height = TopHeight()
         for bar in bars:
             label = get_timeseries_label(bar[0])
-            times, values = get_timeseries(bar[1], start_datetime, end_datetime)
+            times, values = get_timeseries(bar[1], start_datetime, end_datetime,
+                                           period=period)
 
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
 
             color = '#' + label.color
             bottom = top_height.get_heights(times)
-            krw_graph.axes.bar(times, values, width, color=color, edgecolor=color,
+            krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
             top_height.stack_bars(times, values)
 
@@ -471,6 +482,7 @@ def waterbalance_fraction_distribution(request,
                                        graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
+    period = request.GET.get('period', 'month')
     start_datetime, end_datetime = retrieve_horizon(request)
     start_date = start_datetime.date()
     end_date = end_datetime.date() + datetime.timedelta(1)
@@ -495,7 +507,7 @@ def waterbalance_fraction_distribution(request,
     # Show line for today.
     krw_graph.add_today()
 
-    width = 28
+    bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
@@ -560,14 +572,15 @@ def waterbalance_fraction_distribution(request,
     for bar in bars:
 
         label = get_timeseries_label(bar[0])
-        times, values = get_average_timeseries(bar[1], start_datetime, end_datetime)
+        times, values = get_average_timeseries(bar[1], start_datetime, end_datetime,
+                                               period=period)
 
         # add the following keyword argument to give the bar edges the same
         # color as the bar itself: edgecolor='#' + label.color
 
         color = '#' + label.color
         bottom = top_height.get_heights(times)
-        krw_graph.axes.bar(times, values, width, color=color, edgecolor=color,
+        krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                            bottom=bottom)
         top_height.stack_bars(times, values)
 
@@ -578,7 +591,8 @@ def waterbalance_fraction_distribution(request,
     substance_timeseries = ConcentrationComputer().compute(fractions_list,
                                                            outcome.open_water_timeseries["storage"],
                                                            concentrations)
-    times, values = get_average_timeseries(substance_timeseries, start_datetime, end_datetime)
+    times, values = get_average_timeseries(substance_timeseries, start_datetime, end_datetime,
+                                           period=period)
 
     ax2.plot(times, values, 'k-')
 
@@ -590,7 +604,8 @@ def waterbalance_fraction_distribution(request,
             substance_timeseries = waterbalance_area.phosphate
         times, values = get_average_timeseries(substance_timeseries,
                                                start_datetime,
-                                               end_datetime)
+                                               end_datetime,
+                                               period=period)
         ax2.plot(times, values, 'k-')
     except AttributeError:
         logger.warning("Unable to retrieve measured time series for %s",
@@ -612,6 +627,7 @@ def waterbalance_phosphate_impact(request,
                                   graph_type=None):
     """Draw the graph for the given area and of the given type."""
 
+    period = request.GET.get('period', 'month')
     start_datetime, end_datetime = retrieve_horizon(request)
     start_date = start_datetime.date()
     end_date = end_datetime.date() + datetime.timedelta(1)
@@ -625,7 +641,7 @@ def waterbalance_phosphate_impact(request,
     # Show line for today.
     krw_graph.add_today()
 
-    width = 28
+    bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
@@ -704,14 +720,15 @@ def waterbalance_phosphate_impact(request,
 
             impact_timeseries = multiply_timeseries(discharge, concentration)
 
-            times, values = get_average_timeseries(impact_timeseries, start_datetime, end_datetime)
+            times, values = get_average_timeseries(impact_timeseries, start_datetime, end_datetime,
+                                                   period=period)
 
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
 
             color = '#' + label.color
             bottom = top_height.get_heights(times)
-            krw_graph.axes.bar(times, values, width, color=color, edgecolor=color,
+            krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
             top_height.stack_bars(times, values)
 
@@ -764,26 +781,32 @@ def waterbalance_shapefile_search(request):
 
 def graph_select(request):
     """
-    Processes ajax call, returns appropiate pngs.
+    Processes ajax call, return appropriate png urls.
     """
 
     graphs = []
     if request.is_ajax():
         area_slug = request.POST['area']
         selected_graph_types = request.POST.getlist('graphs')
+        period = request.POST['period']
+
         for graph_type, name in GRAPH_TYPES:
             if not graph_type in selected_graph_types:
                 continue
-            graphs.append(reverse('waterbalance_area_graph',
-                                  kwargs={'area': area_slug,
-                                          'graph_type': graph_type}))
+            url = (reverse('waterbalance_area_graph',
+                           kwargs={'area': area_slug,
+                                   'graph_type': graph_type}) +
+                   '?period=' + period)
+            graphs.append(url)
         json = simplejson.dumps(graphs)
         return HttpResponse(json, mimetype='application/json')
     else:
         return HttpResponse("Should not be run this way.")
 
+
 def create_location_label(location):
     return location.name + ", pkey %d" % location.lkey
+
 
 def search_fews_lkeys(request):
     if request.is_ajax():

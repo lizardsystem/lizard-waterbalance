@@ -84,6 +84,24 @@
         {% endfor %}
       </ul>
 
+      <ul class="without-bullets">
+        {% for period_id, period_label, checked in periods %}
+        <li>
+          <input id="period-id-{{ period_id }}"
+                 type="radio"
+                 value="{{ period_id }}"
+                 name="period"
+                 {% if checked %}
+                 checked="checked"
+                 {% endif %}
+                 />
+          <label for="period-id-{{ period_id }}">
+            {{ period_label }}
+          </label>
+        </li>
+        {% endfor %}
+      </ul>
+
       <input type="hidden"
              name="area"
              value="{{ waterbalance_area.slug }}" />
