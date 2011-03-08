@@ -652,11 +652,22 @@ class WaterbalanceArea(models.Model):
     """Represents the area of which we want to know the waterbalance.
 
     Instance variables:
-    * name -- name to show to the user
-    * slug -- unique name to construct the URL
-    * description -- general description
-    * precipitation -- link to time series for *neerslag* in [mm/day]
-    * evaporation -- link to time series for *verdamping* in [mm/day]
+      * name *
+        name of the area to help the user identify the WaterbalanceArea
+      * slug *
+        unique name to construct the URL
+      * description *
+        general description of the area
+      * precipitation *
+        link to time series for *neerslag* in [mm/day]
+      * evaporation *
+        link to time series for *verdamping* in [mm/day]
+      * chloride *
+        link to time series for *chloride* in [mg/l/dag]
+      * phosphate *
+        link to time series for *fosfaat* in [mg/l/dag]
+      * open_water *
+        link to the OpenWater of the current area
 
     """
     class Meta:
@@ -674,16 +685,29 @@ class WaterbalanceArea(models.Model):
 
     precipitation = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("neerslag"),
-                                      help_text=_("tijdreeks naar neerslag in [mm/dag]"),
+                                      help_text=_("meetreeks neerslag in [mm/dag]"),
                                       related_name='+',
                                       null=True,
                                       blank=True)
     evaporation = models.ForeignKey(WaterbalanceTimeserie,
                                     verbose_name=_("verdamping"),
-                                    help_text=_("tijdreeks naar verdamping in [mm/dag]"),
+                                    help_text=_("meetreeks verdamping in [mm/dag]"),
                                     related_name='+',
                                     null=True,
                                     blank=True)
+    chloride = models.ForeignKey(WaterbalanceTimeserie,
+                                 verbose_name=_("chloride"),
+                                 help_text=_("meetreeks chloride in [mg/l/dag]"),
+                                 related_name='+',
+                                 null=True,
+                                 blank=True)
+    phosphate = models.ForeignKey(WaterbalanceTimeserie,
+                                  verbose_name=_("fosfaat"),
+                                  help_text=_("meetreeks fosfaat in [mg/l/dag]"),
+                                  related_name='+',
+                                  null=True,
+                                  blank=True)
+
     open_water = models.ForeignKey(OpenWater, null=True, blank=True)
 
     def __unicode__(self):
