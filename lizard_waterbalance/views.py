@@ -24,6 +24,7 @@ from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
+from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
@@ -290,6 +291,9 @@ def waterbalance_area_summary(request,
     """
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
 
+    date_range_form = DateRangeForm(
+        current_start_end_dates(request, for_form=True))
+
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
@@ -311,6 +315,7 @@ def waterbalance_area_summary(request,
     return render_to_response(
         template,
         {'waterbalance_area': waterbalance_area,
+         'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
          'crumbs': crumbs},
         context_instance=RequestContext(request))
@@ -588,8 +593,8 @@ def waterbalance_fraction_distribution(request,
                                                end_datetime)
         ax2.plot(times, values, 'k-')
     except AttributeError:
-        logger.debug("Unable to retrieve measured time series for %s",
-                     substance_name)
+        logger.warning("Unable to retrieve measured time series for %s",
+                       substance_name)
 
     t2 = time.time()
 

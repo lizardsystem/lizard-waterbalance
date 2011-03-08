@@ -5,7 +5,15 @@ Changelog of lizard-waterbalance
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- The Admin interface to the selection of FEWS-timeseries has become more
+  user-friendly.
+
+- The user can select the graph "fractions phosphate".
+
+- The graph "phophate impact" is now computed on the incoming discharges
+  instead of the open water volume.
+
+- The date range selector for the horizontal axis of each graph functions.
 
 
 0.9 (2011-02-23)
