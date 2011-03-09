@@ -41,6 +41,7 @@ from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
 from lizard_waterbalance.timeseriesstub import add_timeseries
+from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 logger = logging.getLogger(__name__)
@@ -736,32 +737,43 @@ class WaterbalanceArea(models.Model):
         return ('waterbalance_area_summary', (), {'area': str(self.slug)})
 
     def retrieve_precipitation(self, start_date, end_date):
-        return TimeseriesStub()
-
-    def retrieve_evaporation(self, start_date, end_date):
-        return TimeseriesStub()
-
-    def retrieve_seepage(self, start_date, end_date):
-        open_water = self.open_water
-
-        exception_msg = ""
-        if open_water is None:
-            exception_msg = "No open water is defined for waterbalance area %s" % self.name
-        elif open_water.seepage is None:
-            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.name
-
-        if exception_msg != "":
+        if self.precipitation is None:
+            exception_msg = "No precipitation is defined for the waterbalance area %s" % self.name
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
+        timeseries = self.precipitation.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
 
-        return self.open_water.seepage.get_timeseries()
+    def retrieve_evaporation(self, start_date, end_date):
+        if self.evaporation is None:
+            exception_msg = "No evaporation is defined for the waterbalance area %s" % self.name
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = self.evaporation.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
+
+    def retrieve_seepage(self, start_date, end_date):
+        open_water = self._retrieve_open_water()
+        exception_msg = ""
+        if open_water.seepage is None:
+            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.name
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = self.open_water.seepage.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
+
+    def _retrieve_open_water(self):
+        exception_msg = ""
+        if self.open_water is None:
+            exception_msg = "No open water is defined for waterbalance area %s" % self.name
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        return self.open_water
 
     def retrieve_buckets(self):
-        if self.open_water is None:
-            buckets = []
-        else:
-            buckets = self.open_water.buckets.all()
-        return buckets
+        open_water = self._retrieve_open_water()
+
+        return open_water.buckets.all()
 
 
 class WaterbalanceLabel(models.Model):

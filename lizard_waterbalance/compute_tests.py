@@ -748,6 +748,9 @@ class StorageTests(TestCase):
 
     def setUp(self):
         self.area = WaterbalanceArea()
+        self.area.retrieve_precipitation = lambda s, e: TimeseriesStub()
+        self.area.retrieve_evaporation = lambda s, e: TimeseriesStub()
+        self.area.retrieve_seepage = lambda s, e: TimeseriesStub()
         self.area.open_water = create_saveable_openwater()
         self.area.open_water.retrieve_minimum_level = lambda : TimeseriesStub()
         self.area.open_water.retrieve_maximum_level = lambda : TimeseriesStub()
