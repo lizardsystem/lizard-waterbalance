@@ -18,7 +18,7 @@ from django.utils import simplejson
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.lines import Line2D
 import mapnik
-# import pkg_resources
+import pkg_resources
 
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
@@ -28,7 +28,7 @@ from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
-# from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
+from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation
@@ -66,8 +66,8 @@ IMPLEMENTED_GRAPH_TYPES = (
     'fosfaatbelasting',
     )
 BAR_WIDTH = {'year': 364,
-             'quarter': 88,
-             'month': 28,
+             'quarter': 90,
+             'month': 30,
              'day': 1}
 
 logger = logging.getLogger(__name__)
@@ -79,12 +79,12 @@ def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=Fals
     t1 = time.time()
     result = cache.get(cache_key)
     if (result is None) or recalculate:
-        # fews_data_filename = pkg_resources.resource_filename(
-        #     "lizard_waterbalance", "testdata/timeserie.csv")
-        # waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-        #     area, start_datetime, end_datetime, fews_data_filename)
-        waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
-        waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+        fews_data_filename = pkg_resources.resource_filename(
+            "lizard_waterbalance", "testdata/timeserie.csv")
+        waterbalance_area, waterbalance_computer = create_waterbalance_computer(
+            area, start_datetime, end_datetime, fews_data_filename)
+        # waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
+        # waterbalance_area = WaterbalanceArea.objects.get(slug=area)
         bucket2outcome, level_control, outcome = waterbalance_computer.compute(
             waterbalance_area, start_datetime, end_datetime)
         result = outcome
@@ -426,7 +426,7 @@ def waterbalance_area_graph(request,
     height = request.GET.get('height', 400)
     krw_graph = Graph(start_date, end_date, width, height)
 
-    krw_graph.suptitle("Waterbalans")
+    krw_graph.suptitle("Waterbalans [m3]")
 
     bar_width = BAR_WIDTH[period]
 
@@ -514,7 +514,7 @@ def waterbalance_water_level(request,
     title = "Waterpeil "
     if graph_type == "waterpeil_met_sluitfout":
         title += "met sluitfout "
-    krw_graph.suptitle(title + "in [m NAP]")
+    krw_graph.suptitle(title + "[m NAP]")
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_area = WaterbalanceArea.objects.get(slug=area)
@@ -711,7 +711,7 @@ def waterbalance_phosphate_impact(request,
     height = request.GET.get('height', 400)
     krw_graph = Graph(start_date, end_date, width, height)
 
-    krw_graph.suptitle("Fosfaatbelasting, maandgemiddelde in [mg/m2/dag]")
+    krw_graph.suptitle("Fosfaatbelasting [mg/m2]")
 
     bar_width = BAR_WIDTH[period]
 

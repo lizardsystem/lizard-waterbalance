@@ -403,7 +403,7 @@ class OpenWater(models.Model):
         for pumping_station in self.retrieve_pumping_stations():
             if pumping_station.into:
                 if only_input and pumping_station.computed_level_control:
-                        continue
+                    continue
                 timeseries = pumping_station.retrieve_sum_timeseries()
                 incoming_timeseries.append(timeseries)
         return incoming_timeseries
