@@ -33,6 +33,7 @@ from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_storage import LevelControlAssignment
 from lizard_waterbalance.level_control_storage import LevelControlStorage
+from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
 from lizard_waterbalance.timeseries import store_waterbalance_timeserie
@@ -532,6 +533,11 @@ class WaterbalanceComputer:
         self.store_timeserie(area.open_water, "storage", outcome.open_water_timeseries["storage"])
 
         outcome.open_water_timeseries["water level"] = level_control[3]
+
+        sluice_error = SluiceErrorComputer().compute(area.open_water,
+                                                     level_control[0:2],
+                                                     start_date, end_date)
+        outcome.open_water_timeseries["sluice error"] = sluice_error
 
         intakes, tmp_timeseries = self.retrieve_intakes_timeseries(area.open_water)
         intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,

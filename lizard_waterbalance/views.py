@@ -526,6 +526,18 @@ def waterbalance_water_level(request,
         ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
         ]
 
+    if graph_type == "waterpeil_met_sluitfout":
+        sluice_error = TimeseriesStub()
+        previous_year = None
+        for event in outcome.open_water_timeseries["sluice error"].events():
+            date = event[0]
+            if previous_year is None or previous_year < date.year:
+                value = 0
+                previous_year = date.year
+            value += (1.0 * event[1]) / waterbalance_area.open_water.surface
+            sluice_error.add_value(date, value)
+        bars.append(("sluitfout", sluice_error))
+
     names = [bar[0] for bar in bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]

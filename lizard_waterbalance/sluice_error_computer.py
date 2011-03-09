@@ -60,6 +60,8 @@ class SluiceErrorComputer:
         """
         sluice_error_timeseries = TimeseriesStub()
         self.open_water = open_water
+        self.start_date = start_date
+        self.end_date = end_date
         measured_timeseries = self._retrieve_measured_timeseries()
         computed_timeseries = self._retrieve_computed_timeseries(level_control)
         for events in enumerate_events(computed_timeseries, measured_timeseries):
@@ -82,5 +84,9 @@ class SluiceErrorComputer:
         timeseries += self.open_water.retrieve_outgoing_timeseries(only_input=only_input)
         for events in enumerate_events(*timeseries):
             date = events[0][0]
+            if date < self.start_date:
+                continue
+            if date >= self.end_date:
+                break
             net_timeseries.add_value(date, sum(e[1] for e in events))
         return net_timeseries
