@@ -63,7 +63,11 @@ def grouped_event_values(timeseries, period, average=False):
 
     for date, events in itertools.groupby(timeseries.events(), grouper):
         if average:
-            result = sum(1.0 * value for (date, value) in events) / len(events)            
+            # To be able to count the events, we make a list of the generated
+            # elements. There are ways to count them without having to make the list
+            # explicit but this is the easy way.
+            events = list(events)
+            result = sum(value for (date, value) in events) / (1.0 * len(events))
         else:
             result = sum(value for (date, value) in events)
         yield date, result
@@ -73,8 +77,9 @@ def monthly_events(timeseries):
     """Return a generator to iterate over all monthly events.
 
     A TimeseriesStub stores daily events. This generator aggregates these
-    daily events to monthly events that is placed at the first of the month
-    and whose value is the total value of the daily events for that month.
+    daily events to monthly events. Each monthly events takes place on the
+    first of the month and its value is the total value of the daily events
+    for that month.
 
     """
     return grouped_event_values(timeseries, 'month')
@@ -161,27 +166,12 @@ class TimeseriesStub:
         """Return a generator to iterate over all monthly events.
 
         A TimeseriesStub stores daily events. This generator aggregates these
-        daily events to monthly events that is placed at the first of the month
-        and whose value is the total value of the daily events for that month.
+        daily events to monthly events. Each monthly events takes place on the
+        first of the month and its value is the total value of the daily events
+        for that month.
 
         """
-        current_year = None
-        current_month = None
-        current_value = 0
-        for date, value in self.events():
-            if current_month:
-                if date.year == current_year and date.month == current_month:
-                    current_value += value
-                elif date.year > current_year or date.month > current_month:
-                    yield datetime(current_year, current_month, 1), current_value
-                    current_year = date.year
-                    current_month = date.month
-                    current_value = value
-            else:
-                current_year = date.year
-                current_month = date.month
-                current_value = value
-        yield datetime(current_year, current_month, 1), current_value
+        return grouped_event_values(self, 'month')
 
     def __eq__(self, other):
         """Return True iff the two given time series represent the same events."""

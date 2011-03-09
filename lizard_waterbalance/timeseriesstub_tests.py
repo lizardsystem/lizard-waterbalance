@@ -33,6 +33,7 @@ from unittest import TestCase
 
 from filereader import FileReaderStub
 from timeseriesstub import add_timeseries
+from timeseriesstub import average_monthly_events
 from timeseriesstub import create_empty_timeseries
 from timeseriesstub import create_from_file
 from timeseriesstub import enumerate_events
@@ -43,7 +44,6 @@ from timeseriesstub import TimeseriesWithMemoryStub
 from timeseriesstub import TimeseriesRestrictedStub
 
 class TimeseriesStubTestSuite(TestCase):
-
 
     def test_c(self):
         """Test the value on the first date & time is the first value."""
@@ -181,6 +181,47 @@ class TimeseriesStubTestSuite(TestCase):
         timeseries = TimeseriesStub((datetime(2011, 1, 26), 10))
         expected_timeseries = TimeseriesStub((datetime(2011, 1, 26), 0.0))
         self.assertEqual(expected_timeseries, create_empty_timeseries(timeseries))
+
+
+class average_monthly_events_Tests(TestCase):
+
+    def test_a(self):
+        """Test the aggregation of a single daily event to an average monthly event."""
+        timeserie = TimeseriesStub()
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        avg_monthly_events = [event for event in average_monthly_events(timeserie)]
+        expected_avg_monthly_events = [(datetime(2010, 12, 1), 20.0)]
+        self.assertEqual(expected_avg_monthly_events, avg_monthly_events)
+
+    def test_b(self):
+        """Test the aggregation of multiple daily events to an average monthly event.
+
+        The daily events lie within a single month.
+
+        """
+        timeserie = TimeseriesStub()
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        timeserie.add_value(datetime(2010, 12, 9), 30)
+        timeserie.add_value(datetime(2010, 12, 10),40)
+        avg_monthly_events = [event for event in average_monthly_events(timeserie)]
+        expected_avg_monthly_events = [(datetime(2010, 12, 1), 30.0)]
+        self.assertEqual(expected_avg_monthly_events, avg_monthly_events)
+
+    def test_c(self):
+        """Test the aggregation of multiple daily events to an average monthly event.
+
+        The daily events lie within two consecutive months.
+
+        """
+        timeserie = TimeseriesStub()
+        timeserie.add_value(datetime(2010, 12, 8), 20)
+        timeserie.add_value(datetime(2010, 12, 9), 30)
+        timeserie.add_value(datetime(2010, 12, 10),40)
+        timeserie.add_value(datetime(2011, 1, 1), 50)
+        avg_monthly_events = [event for event in average_monthly_events(timeserie)]
+        expected_avg_monthly_events = [(datetime(2010, 12, 1), 3.75),
+                                       (datetime(2011, 1, 1), 50.0)]
+        self.assertEqual(expected_avg_monthly_events, avg_monthly_events)
 
 class TimeseriesWithMemoryTests(TestCase):
 
