@@ -25,6 +25,7 @@
 #
 #******************************************************************************
 
+import logging
 from datetime import timedelta
 
 from django.db import models
@@ -42,7 +43,17 @@ add_ignored_fields(["^lizard_map\.models\.ColorField"])
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
+logger = logging.getLogger(__name__)
+
 # Create your models here.
+
+class IncompleteData(Exception):
+    """Implements the exception when the model is not completely defined."""
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
 
 
 class Timeseries(models.Model):
@@ -731,7 +742,19 @@ class WaterbalanceArea(models.Model):
         return TimeseriesStub()
 
     def retrieve_seepage(self, start_date, end_date):
-        return TimeseriesStub()
+        open_water = self.open_water
+
+        exception_msg = ""
+        if open_water is None:
+            exception_msg = "No open water is defined for waterbalance area %s" % self.name
+        elif open_water.seepage is None:
+            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.name
+
+        if exception_msg != "":
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+
+        return self.open_water.seepage.get_timeseries()
 
     def retrieve_buckets(self):
         if self.open_water is None:
