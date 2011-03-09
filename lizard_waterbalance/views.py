@@ -57,6 +57,7 @@ GRAPH_TYPES = (
 )
 IMPLEMENTED_GRAPH_TYPES = (
     'waterbalans',
+    'waterpeil',
     'fracties_chloride',
     'fracties_fosfaat',
     'fosfaatbelasting',
@@ -340,7 +341,7 @@ def get_timeseries(timeseries, start, end, period='month'):
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in grouped_event_values(timeseries, period) 
+    return zip(*(e for e in grouped_event_values(timeseries, period)
                  if e[0] >= start and e[0] < end))
 
 
@@ -354,7 +355,7 @@ def get_average_timeseries(timeseries, start, end, period='month'):
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in grouped_event_values(timeseries, period, average=True) 
+    return zip(*(e for e in grouped_event_values(timeseries, period, average=True)
                  if e[0] >= start and e[0] < end))
 
 
@@ -364,8 +365,19 @@ def draw_bar(callable, axes, times, values, bar_width, color, bottom):
 
 
 def get_timeseries_label(name):
-    """Return the WaterbalanceLabel wth the given name."""
-    return WaterbalanceLabel.objects.get(name__iexact=name)
+    """Return the WaterbalanceLabel wth the given name.
+
+    If no such label exists, we log the fact that nu such label exists and return
+    a dummy label.
+
+    """
+    try:
+        label = WaterbalanceLabel.objects.get(name__iexact=name)
+    except WaterbalanceLabel.DoesNotExist:
+        logger.warning("Unable to retrieve the WaterbalanceLabel '%s'", name)
+        label = WaterbalanceLabel()
+        label.color = "000000"
+    return label
 
 
 def retrieve_horizon(request):
@@ -406,9 +418,6 @@ def waterbalance_area_graph(request,
     krw_graph = Graph(start_date, end_date, width, height)
 
     krw_graph.suptitle("Waterbalans")
-
-    # Show line for today.
-    krw_graph.add_today()
 
     bar_width = BAR_WIDTH[period]
 
@@ -478,6 +487,60 @@ def waterbalance_area_graph(request,
     canvas.print_png(response)
     return response
 
+def waterbalance_water_level(request,
+                             name,
+                             area=None,
+                             graph_type=None):
+    """Draw the graph for the given area and of the given type."""
+
+    period = request.GET.get('period', 'month')
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
+
+    width = request.GET.get('width', 1600)
+    height = request.GET.get('height', 400)
+    krw_graph = Graph(start_date, end_date, width, height)
+
+    krw_graph.suptitle("Waterpeil in [m NAP]")
+
+    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+
+    t1 = time.time()
+
+    bars = [
+        ("waterpeil gemeten", waterbalance_area.water_level),
+        ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
+        ]
+
+    names = [bar[0] for bar in bars]
+    colors = ['#' + get_timeseries_label(name).color for name in names]
+    handles = [Line2D([], [], color=color, lw=4) for color in colors]
+
+    krw_graph.legend_space()
+    krw_graph.legend(handles, names)
+
+    for bar in bars:
+        label_name = bar[0]
+        label = get_timeseries_label(label_name)
+        try:
+            times, values = get_average_timeseries(bar[1], start_datetime,
+                                                   end_datetime, period=period)
+        except:
+            logger.warning("Unable to retrieve the time series for '%s'", label_name)
+            continue
+        color = '#' + label.color
+        krw_graph.axes.plot(times, values, color=color)
+
+    t2 = time.time()
+    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
+
+    canvas = FigureCanvas(krw_graph.figure)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
+
 
 def waterbalance_fraction_distribution(request,
                                        name,
@@ -506,9 +569,6 @@ def waterbalance_fraction_distribution(request,
     else:
         title += "fosfaat"
     krw_graph.suptitle(title)
-
-    # Show line for today.
-    krw_graph.add_today()
 
     bar_width = BAR_WIDTH[period]
 
@@ -641,9 +701,6 @@ def waterbalance_phosphate_impact(request,
 
     krw_graph.suptitle("Fosfaatbelasting, maandgemiddelde in [mg/m2/dag]")
 
-    # Show line for today.
-    krw_graph.add_today()
-
     bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
@@ -747,6 +804,8 @@ def waterbalance_area_graphs(request,
     name = request.GET.get('name', "landelijk")
     if graph_type == 'waterbalans':
         return waterbalance_area_graph(request, name, area, graph_type)
+    if graph_type == 'waterpeil':
+        return waterbalance_water_level(request, name, area, graph_type)
     elif graph_type == 'fracties_chloride':
         return waterbalance_fraction_distribution(request, name, area, graph_type)
     elif graph_type == 'fracties_fosfaat':
@@ -818,7 +877,6 @@ def search_fews_lkeys(request):
         timeseries = Timeserie.objects.filter(parameterkey=pkey, filterkey=fkey)
         timeseries = timeseries.distinct().order_by("locationkey")
         lkeys = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
-        print lkeys
         json = simplejson.dumps(lkeys)
         return HttpResponse(json, mimetype='application/json')
     else:
@@ -828,10 +886,9 @@ def search_fews_lkeys(request):
 def recalculate_graph_data(request, area=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-        start_datetime, end_datetime = (datetime.datetime(1996, 1, 1),
-                                        datetime.datetime(2010, 6, 30))
-        outcome = waterbalance_graph_data(area, start_datetime, end_datetime,
-                                          recalculate=True)
+        start_datetime, end_datetime = retrieve_horizon(request)
+        waterbalance_graph_data(area, start_datetime, end_datetime,
+                                recalculate=True)
         # # Enable this later when there's ajax integration
         # if request.is_ajax():
         #     json = simplejson.dumps("Success")

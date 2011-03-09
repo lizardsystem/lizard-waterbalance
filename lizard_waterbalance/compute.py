@@ -531,6 +531,8 @@ class WaterbalanceComputer:
         outcome.open_water_timeseries["storage"] = level_control[2]
         self.store_timeserie(area.open_water, "storage", outcome.open_water_timeseries["storage"])
 
+        outcome.open_water_timeseries["water level"] = level_control[3]
+
         intakes, tmp_timeseries = self.retrieve_intakes_timeseries(area.open_water)
         intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,

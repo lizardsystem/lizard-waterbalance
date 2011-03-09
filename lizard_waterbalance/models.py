@@ -683,6 +683,13 @@ class WaterbalanceArea(models.Model):
                                    blank=True,
                                    help_text="You can use markdown")
 
+    water_level = models.ForeignKey(WaterbalanceTimeserie,
+                                    verbose_name=_("waterstand"),
+                                    help_text=_("meetreeks waterstand in [m NAP]"),
+                                    related_name='+',
+                                    null=True,
+                                    blank=True)
+
     precipitation = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("neerslag"),
                                       help_text=_("meetreeks neerslag in [mm/dag]"),
@@ -749,7 +756,6 @@ class WaterbalanceLabel(models.Model):
     class Meta:
         verbose_name = _("Waterbalans label")
         verbose_name_plural = _("Waterbalans labels")
-        ordering = ("order_index",)
 
     TYPE_IN = 1
     TYPE_OUT = 2
@@ -761,7 +767,6 @@ class WaterbalanceLabel(models.Model):
     parent = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
     flow_type = models.IntegerField(choices=TYPES, default=TYPE_IN)
     color = ColorField()
-    order_index = models.IntegerField(unique=True)
 
     def __unicode__(self):
         return self.name
