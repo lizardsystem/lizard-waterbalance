@@ -5,9 +5,10 @@ Changelog of lizard-waterbalance
 0.10 (unreleased)
 -----------------
 
-- Added graph choice: display per year/month/day.
+- Added graph choice: display per year/quarter/month/day.
 
-- Made monthly totals/average more flexible by allowing year/month/day.
+- Made monthly totals/average more flexible by allowing
+  year/quarter/month/day instead of just month.
 
 - The Admin interface to the selection of FEWS-timeseries has become more
   user-friendly.

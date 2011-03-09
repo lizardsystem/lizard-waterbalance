@@ -61,7 +61,8 @@ IMPLEMENTED_GRAPH_TYPES = (
     'fracties_fosfaat',
     'fosfaatbelasting',
     )
-BAR_WIDTH = {'year': 360,
+BAR_WIDTH = {'year': 364,
+             'quarter': 88,
              'month': 28,
              'day': 1}
 
@@ -315,7 +316,9 @@ def waterbalance_area_summary(request,
         graph_type_formitems.append(formitem)
     periods = [('year', 'Per jaar', False),
                ('month', 'Per maand', True),
+               ('quarter', 'Per kwartaal', False),
                ('day', 'Per dag', False)]
+    # ^^^ True/False: whether it is the default radio button.  So month is.
 
     return render_to_response(
         template,

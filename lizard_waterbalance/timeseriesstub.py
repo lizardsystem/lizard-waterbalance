@@ -47,6 +47,29 @@ def _first_of_month(event):
     return datetime(date.year, date.month, 1)
 
 
+def _first_of_quarter(event):
+    """Return the first day of the quarter for an event.
+
+    The first day of a quarter is returned:
+
+      >>> dt = datetime(1972, 12, 25)
+      >>> _first_of_quarter((dt, 'reinout'))
+      datetime.datetime(1972, 10, 1, 0, 0)
+
+      >>> dt = datetime(1972, 10, 1)
+      >>> _first_of_quarter((dt, 'bla'))
+      datetime.datetime(1972, 10, 1, 0, 0)
+
+      >>> dt = datetime(1976, 01, 27)
+      >>> _first_of_quarter((dt, 'maurits'))
+      datetime.datetime(1976, 1, 1, 0, 0)
+
+    """
+    date, value = event
+    month = 1 + ((date.month -1) / 3 * 3)
+    return datetime(date.year, month, 1)
+
+
 def _first_of_year(event):
     """Return the first day of the year for an event."""
     date, value = event
@@ -57,6 +80,7 @@ def grouped_event_values(timeseries, period, average=False):
     """Return iterator with totals for days/months/years for timeseries."""
     groupers = {'year': _first_of_year,
                 'month': _first_of_month,
+                'quarter': _first_of_quarter,
                 'day': _first_of_day}
     grouper = groupers.get(period)
     assert grouper is not None
