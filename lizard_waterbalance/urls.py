@@ -2,9 +2,15 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
+from django.core.urlresolvers import reverse
 
 
 admin.autodiscover()
+
+crumbs_waterbalance = [
+    {'name': 'home', 'url': '/', 'title': 'hoofdpagina'},
+    # ^^^ Pretty hardcoded and Dutch.
+    ]
 
 urlpatterns = patterns(
     '',
@@ -12,11 +18,13 @@ urlpatterns = patterns(
     # Waterbalance screens.
     (r'^$',
      'lizard_waterbalance.views.waterbalance_start',
-     {},
+     {'crumbs_prepend': list(crumbs_waterbalance),
+      },
      'waterbalance_start'),
      (r'^summary/(?P<area>[^/]+)/$',
      'lizard_waterbalance.views.waterbalance_area_summary',
-     {},
+     {'crumbs_prepend': list(crumbs_waterbalance),
+      },
      'waterbalance_area_summary',
      ),
     (r'^summary/(?P<area>.*)/recalculate_graph_data/$',

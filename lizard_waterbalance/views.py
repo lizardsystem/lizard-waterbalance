@@ -265,7 +265,7 @@ def waterbalance_start(request,
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
-        crumbs = crumbs_prepend
+        crumbs = list(crumbs_prepend)
     crumbs.append({'name': 'Waterbalans overzicht',
                    'title': 'Waterbalans overzicht',
                    'url': reverse('waterbalance_start')})
@@ -301,7 +301,11 @@ def waterbalance_area_summary(request,
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
-        crumbs = crumbs_prepend
+        crumbs = list(crumbs_prepend)
+    crumbs.append({'name': 'Waterbalans overzicht',
+                   'title': 'Waterbalans overzicht',
+                   'url': reverse('waterbalance_start')})
+
     kwargs = {'area': waterbalance_area.slug}
     crumbs.append({'name': waterbalance_area.name,
                    'title': waterbalance_area.name,
