@@ -18,7 +18,8 @@ function graph_type_select(event) {
             $.each(data, function (index, val) {
                 // console.log(val);
                 div = $("<div/>").addClass('vertical-item').addClass('img-use-my-size');
-                div.append($("<a/>").addClass('replace-with-image').attr('href', val));
+                div.append($("<a/>").addClass('replace-with-image').attr('href', val).attr(
+                    'data-errormsg', 'Waarschijnlijk is niet alle data ingevuld'));
                 $('div#evenly-spaced-vertical').append(div);
             });
             restretchExistingElements();
@@ -69,7 +70,6 @@ function waterbalance_area_click_handler(x, y, map) {
             redirect_to_area(data);
         });
 }
-
 
 $(document).ready(function () {
     $("input#graph-type-select-submit").click(graph_type_select);
