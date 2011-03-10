@@ -172,13 +172,22 @@ class TimeseriesFews(models.Model):
         fews_parameter = Parameter.objects.get(pkey=self.pkey)
         fews_filter = Filter.objects.get(id=self.fkey)
         fews_location = Location.objects.get(lkey=self.lkey)
-        fews_timeseries = Timeserie.objects.get(parameterkey=fews_parameter,
-                                                filterkey=fews_filter,
-                                                locationkey=fews_location)
+
+        # the timestep is hardcoded for Waternet: "dag GMT+1"
+        timestep = "dag GMT+1"
+
+        try:
+            fews_timeseries = Timeserie.objects.get(timestep=timestep,
+                                                    parameterkey=fews_parameter,
+                                                    filterkey=fews_filter,
+                                                    locationkey=fews_location)
+        except Timeserie.DoesNotExist:
+            exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
 
         for event in fews_timeseries.timeseriedata.all().order_by('tsd_time'):
             yield event.tsd_time, event.tsd_value
-
 
 
 class WaterbalanceTimeserie(models.Model):
