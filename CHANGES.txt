@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.10 (unreleased)
+0.10 (2011-03-10)
 -----------------
 
 - Added graph choice: display per year/quarter/month/day.
@@ -13,7 +13,8 @@ Changelog of lizard-waterbalance
 - The Admin interface to the selection of FEWS-timeseries has become more
   user-friendly.
 
-- The user can select the graph "fractions phosphate".
+- The user can select the graphs "fractions phosphate", "water level" and
+  "water level with sluice error".
 
 - The graph "phophate impact" is now computed on the incoming discharges
   instead of the open water volume.

@@ -25,32 +25,29 @@
 #
 #******************************************************************************
 
-from datetime import datetime
-
 from lizard_waterbalance.timeseriesstub import add_timeseries
 from lizard_waterbalance.timeseriesstub import enumerate_events
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
 
 
 class SluiceErrorComputer:
+    "Implements the functionality to compute the sluice error."""
 
     def compute(self, open_water, level_control, start_date, end_date):
         """Compute and return the sluice error.
 
-        The sluice error on a specific day is defined as the sum of the computed
-        intake and pump values minus the sum of the measured intake and pump
-        values.
-
-        This function returns the TimeseriesStub that contains the sluice error
-        for each day in the given horizon.
+        The sluice error on a specific day is defined as the sum of the
+        computed intake and pump values minus the sum of the measured intake
+        and pump values. This function returns the TimeseriesStub that contains
+        the sluice error for each day in the given horizon.
 
         Parameters:
           * open_water *
             OpenWater for which to compute the level control
           * level_control *
-            pair of TimeseriesStub(s) where the first contains the total
-            computed discharges of level control intakes and the second the
-            total computed discharges of level control pumps
+            pair of TimeseriesStub(s) where the first TimeseriesStub contains
+            the total computed discharges of level control intakes and the
+            second the total computed discharges of level control pumps
           * start_date *
             the first date for which to compute the sluice error
           * end_date *
@@ -70,15 +67,37 @@ class SluiceErrorComputer:
         return sluice_error_timeseries
 
     def _retrieve_measured_timeseries(self):
+        """Return the single time series of measured incoming and outgoing volume."""
         return self._retrieve_net_timeseries(only_input=False)
 
     def _retrieve_computed_timeseries(self, level_control):
+        """Return the single time series of computed incoming and outgoing volume.
+
+        The computed time series of the intakes and pumps is the single time
+        series of total incoming and outgoing volume of the intakes and pumps
+        that are not used for level control summed with the level control.
+
+        """
         computed_timeseries = self._retrieve_net_timeseries(only_input=True)
         for timeseries in level_control:
             computed_timeseries = add_timeseries(computed_timeseries, timeseries)
         return computed_timeseries
 
     def _retrieve_net_timeseries(self, only_input):
+        """Return the time series of total incoming and outgoing volume.
+
+        Parameter:
+          * only_input *
+            holds if and only if only this method should only consider intakes
+            and pumps that are not used for level control
+
+        This method also uses the instance variables self.open_water,
+        self.start_date and self.end_date. Although these parameters could also
+        be passed as arguments, we decided to 'pass them' als instance
+        variables to allow for a shorter method signature.
+
+        """
+
         net_timeseries = TimeseriesStub()
         timeseries = self.open_water.retrieve_incoming_timeseries(only_input=only_input)
         timeseries += self.open_water.retrieve_outgoing_timeseries(only_input=only_input)
