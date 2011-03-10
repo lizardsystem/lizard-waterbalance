@@ -181,6 +181,27 @@ def compute_net_precipitation(bucket,
     return net_precipitation * bucket.surface / 1000.0
 
 
+
+def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
+    """Return the adjusted evaporation timeserie.
+
+    Parameters:
+    * evaporation_timeseries -- timeserie with evaporation [mm/day]
+
+    """
+    result = TimeseriesStub()
+    month_factor = [0.400, 0.933, 1.267, 1.300, 1.300, 1.310, 1.267, 1.193, 1.170, 0.900, 0.700, 0.000]
+
+
+    for evaporation_event in enumerate_events(evaporation_timeseries):
+        month_number = evaporation_event[0][0].month
+        factor = month_factor[month_number-1]
+        result.add_value(evaporation_event[0][0], evaporation_event[0][1]*factor)
+
+    return result
+
+
+
 def compute_net_drainage(bucket, previous_volume):
     """Return the net drainage of today.
 
@@ -196,7 +217,7 @@ def compute_net_drainage(bucket, previous_volume):
     if previous_volume > equi_volume:
         net_drainage = -previous_volume * bucket.drainage_fraction
     elif previous_volume < equi_volume:
-        net_drainage = -previous_volume * bucket.indraft_fraction
+        net_drainage = -previous_volume * bucket.indraft_fraction #klopt het minteken?
     else:
         net_drainage = 0
     return net_drainage
@@ -319,6 +340,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     #   - the upper bucket has some of its own attributes
     upper_seepage = create_empty_timeseries(seepage)
 
+    #BR: waarom worden er eigenschappen omgedraaid (dit is wat verwarrend)?
     bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
     bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
     bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
@@ -350,6 +372,9 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     # adds water to the bottom bucket, so we have to invert these values. Also,
     # lower_precipitation is specified in [m3/day] but should be specified in
     # [mm/day]
+
+    bucket.crop_evaporation_factor, tmp_crop_evaporation = 1, bucket.crop_evaporation_factor
+    bucket.min_crop_evaporation_factor, tmp_min_crop_evaporation = 1 , bucket.min_crop_evaporation_factor
     lower_precipitation = multiply_timeseries(lower_precipitation, -1000.0 / bucket.surface)
     lower_evaporation = create_empty_timeseries(evaporation)
     assert len(list(lower_precipitation.events())) > 0
@@ -358,10 +383,14 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                                        lower_evaporation,
                                        seepage,
                                        compute)
+
+    bucket.crop_evaporation_factor = tmp_crop_evaporation
+    bucket.min_crop_evaporation_factor = tmp_min_crop_evaporation
+
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
     outcome.flow_off = upper_outcome.flow_off
-    outcome.net_drainage = lower_outcome.net_drainage
+    outcome.net_drainage = add_timeseries(lower_outcome.flow_off, lower_outcome.net_drainage)
     outcome.seepage = lower_outcome.seepage
     outcome.net_precipitation = upper_outcome.net_precipitation
     return outcome
@@ -487,7 +516,7 @@ class WaterbalanceComputer:
         vertical_timeseries = self.vertical_timeseries_computer.compute(area.open_water.surface,
                                                                         area.open_water.crop_evaporation_factor,
                                                                         precipitation,
-                                                                        evaporation,
+                                                                        transform_evaporation_timeseries_penman_to_makkink(evaporation),
                                                                         seepage)
         self.vertical_timeseries_storage.store(vertical_timeseries,
                                                area.open_water)
