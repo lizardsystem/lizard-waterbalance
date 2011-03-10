@@ -2,6 +2,12 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
+0.11 (unreleased)
+-----------------
+
+- Nothing changed yet.
+
+
 0.10 (2011-03-10)
 -----------------
 
