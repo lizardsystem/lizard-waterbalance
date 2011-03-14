@@ -414,13 +414,13 @@ class OpenWater(models.Model):
         * only_input -- holds if only the input time series should be returned
 
         """
-        incoming_timeseries = []
+        incoming_timeseries = {}
         for pumping_station in self.retrieve_pumping_stations():
             if pumping_station.into:
                 if only_input and pumping_station.computed_level_control:
                     continue
                 timeseries = pumping_station.retrieve_sum_timeseries()
-                incoming_timeseries.append(timeseries)
+                incoming_timeseries[pumping_station.id] = timeseries
         return incoming_timeseries
 
     def retrieve_outgoing_timeseries(self, only_input=False):
@@ -430,13 +430,13 @@ class OpenWater(models.Model):
         * only_input -- holds if only the input time series should be returned
 
         """
-        outgoing_timeseries = []
+        outgoing_timeseries = {}
         for pumping_station in self.retrieve_pumping_stations():
             if not pumping_station.into:
                 if only_input and pumping_station.computed_level_control:
                     continue
                 timeseries = pumping_station.retrieve_sum_timeseries()
-                outgoing_timeseries.append(timeseries)
+                outgoing_timeseries[pumping_station.id] = timeseries
         return outgoing_timeseries
 
     def retrieve_minimum_level(self):

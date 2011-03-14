@@ -99,8 +99,8 @@ class SluiceErrorComputer:
         """
 
         net_timeseries = TimeseriesStub()
-        timeseries = self.open_water.retrieve_incoming_timeseries(only_input=only_input)
-        timeseries += self.open_water.retrieve_outgoing_timeseries(only_input=only_input)
+        timeseries = self.open_water.retrieve_incoming_timeseries(only_input=only_input).values()
+        timeseries += self.open_water.retrieve_outgoing_timeseries(only_input=only_input).values()
         for events in enumerate_events(*timeseries):
             date = events[0][0]
             if date < self.start_date:

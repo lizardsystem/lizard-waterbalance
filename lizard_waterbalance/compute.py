@@ -46,79 +46,10 @@ from timeseries.timeseriesstub import subtract_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
-
-class BucketOutcome:
-    """Contains the time series that are computed for a Bucket.
-
-    Instance variables:
-      *storage*
-        time series for 'berging'
-      *flow_off*
-        time series for 'afstroming'
-      *net_drainage*
-        time series for the sum of 'drainage' and 'intrek'
-      *seepage*
-        time series for 'kwel'
-      *net_precipitation*
-        time series for the sum of 'neerslag' and 'verdamping'
-
-    The unit of each values of the time series is [m3/day]. A positive value
-    indicates water that goes into the bucket and a negative value indicates
-    water that goes out of the bucket.
-
-    """
-    def __init__(self):
-
-        self.storage = TimeseriesStub()
-        self.flow_off = TimeseriesStub()
-        self.net_drainage = TimeseriesStub()
-        self.seepage = TimeseriesStub()
-        self.net_precipitation = TimeseriesStub()
-
-    def name2timeseries(self):
-        return {"storage": self.storage,
-                "flow_off": self.flow_off,
-                "net_drainage": self.net_drainage,
-                "seepage": self.seepage,
-                "net_precipitation": self.net_precipitation}
-
-class SingleDayBucketsSummary:
-    """Stores the interesting values of a single day summed over all buckets.
-
-    Instance variables:
-    * hardened -- single day value of in [m3] *Qsom verhard*
-    * drained -- single day value in [m3] of *Qsom gedraineerdonder*
-    * undrained -- single day value in [m3] of *Qsom ongedraineerd*
-    * flow off -- single day value in [m3] of *Qsom afst*
-    * indraft -- single day of in [m3] *Qsom intrek*
-
-    """
-    def total(self):
-        return self.hardened +\
-               self.drained +\
-               self.undrained +\
-               self.flow_off +\
-               self.indraft
-
-class BucketsSummary:
-    """Stores the total time series computed for all buckets.
-
-    Instance variables:
-    * totals -- totals time series in [m3/day] of the other time series
-    * hardened -- time series in [m3/day] for *Qsom verhard*
-    * drained -- time series in [m3/day] for *Qsom gedraineerdonder*
-    * undrained -- time series in [m3/day] for *Qsom ongedraineerd*
-    * flow off -- time series in [m3/day] for *Qsom afst*
-    * indraft -- time series in [m3/day] for *Qsom intrek*
-
-    """
-    def __init__(self):
-        self.totals = TimeseriesStub()
-        self.hardened = TimeseriesStub()
-        self.drained = TimeseriesStub()
-        self.undrained = TimeseriesStub()
-        self.flow_off = TimeseriesStub()
-        self.indraft = TimeseriesStub()
+from lizard_waterbalance.bucket_computer import BucketsComputer
+from lizard_waterbalance.bucket_summarizer import BucketSummarizer
+from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
+from lizard_waterbalance.concentration_computer import ConcentrationComputer
 
 class OpenWaterOutcome:
     """Stores the time series that are computed for an OpenWater.
@@ -138,49 +69,6 @@ class OpenWaterOutcome:
                 "evaporation": self.evaporation,
                 "seepage": self.seepage}
 
-def compute_seepage(bucket, seepage):
-    """Return the seepage of the given bucket on the given date.
-
-    Parameters:
-    * bucket -- bucket for which to compute the seepage
-    * date -- date for which to compute the seepage
-    * seepage -- seepage in [mm/day]
-
-    """
-    # with regard to the factor 0.001 in the next line, seepage is specified
-    # in [mm/day] but surface in [m]: 1 [mm] == 0.001 [m]
-    return (bucket.surface * seepage) / 1000.0
-
-
-def compute_net_precipitation(bucket,
-                              previous_volume,
-                              precipitation,
-                              evaporation):
-    """Return the net precipitation of today.
-
-    With net precipitation, we mean the volume difference caused by
-    precipitation and evaporation.
-
-    Parameters:
-    * bucket -- bucket for which to compute the net precipitation
-    * previous_volume -- water volume of the bucket the day before
-    * precipitation -- precipitation of today in [mm/day]
-    * evaporation -- evaporation of today in [mm/day]
-
-    """
-    equi_volume = bucket.equi_water_level * bucket.surface
-    if previous_volume > equi_volume:
-        evaporation_factor = bucket.crop_evaporation_factor
-    else:
-        evaporation_factor = bucket.min_crop_evaporation_factor
-
-    net_precipitation = precipitation - evaporation * evaporation_factor
-    # with regard to the factor 0.001 in the next line, precipitation and
-    # evaporation are specified in [mm/day] but surface in [m]: 1 [mm] == 0.001
-    # [m]
-    return net_precipitation * bucket.surface / 1000.0
-
-
 
 def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     """Return the adjusted evaporation timeserie.
@@ -199,201 +87,6 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
         result.add_value(evaporation_event[0][0], evaporation_event[0][1]*factor)
 
     return result
-
-
-
-def compute_net_drainage(bucket, previous_volume):
-    """Return the net drainage of today.
-
-    With net drainage, we mean the volume difference caused by drainage and
-    indraft.
-
-    Parameters:
-    * bucket -- bucket for which to compute the net drainage
-    * previous_volume -- water volume of the bucket the day before
-
-    """
-    equi_volume = bucket.equi_water_level * bucket.surface
-    if previous_volume > equi_volume:
-        net_drainage = -previous_volume * bucket.drainage_fraction
-    elif previous_volume < equi_volume:
-        net_drainage = -previous_volume * bucket.indraft_fraction #klopt het minteken?
-    else:
-        net_drainage = 0
-    return net_drainage
-
-def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow_below_minimum_storage=True):
-    """Compute and return the waterbalance of the given bucket.
-
-    This method computes for the given bucket the water storage, flow off, net
-    drainage, seepage and net precipitation and returns them as a quintuple.
-
-    Parameters:
-    * bucket -- bucket for which to compute the waterbalance
-    * previous_storage -- water storage of the bucket the day before in [m3]
-    * precipitation -- precipitation time series for the bucket in [mm/day]
-    * evaporation -- evaporation time series for the bucket in [mm/day]
-    * seepage -- seepage time series for the bucket in [mm/day]
-    * allow_below_minimum_storage -- holds iff the computed storage can be below the minimum storage
-
-    """
-    net_precipitation = compute_net_precipitation(bucket, previous_storage,
-                                                  precipitation, evaporation)
-    net_drainage = compute_net_drainage(bucket, previous_storage)
-    seepage = compute_seepage(bucket, seepage)
-
-    storage = previous_storage + net_precipitation + net_drainage + seepage
-    max_storage = bucket.max_water_level * bucket.surface * bucket.porosity
-    if storage > max_storage:
-        flow_off = max_storage - storage
-        storage = max_storage
-    else:
-        flow_off = 0
-
-    if not allow_below_minimum_storage:
-        storage = max(storage, bucket.min_water_level * bucket.surface)
-
-    return (storage, flow_off, net_drainage, seepage, net_precipitation)
-
-def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, allow_below_minimum_storage=True):
-    """Compute and return the waterbalance time series of the given bucket.
-
-    This method computes for the given bucket the time series that can be
-    stored in a BucketOutcome and returns them as a BucketOutcome.
-
-    Parameters:
-    * bucket -- bucket for which to compute the waterbalance
-    * precipitation -- precipitation time series in [mm/day]
-    * evaporation -- evaporation time series  in [mm/day]
-    * seepage -- seepage time series in [mm/day]
-    * compute -- function to compute the daily waterbalance
-    * allow_below_minimum_storage -- holds iff the computed storage can be below the minimum storage
-
-    """
-    outcome = BucketOutcome()
-    volume = bucket.init_water_level * bucket.surface
-    for triple in enumerate_events(precipitation, evaporation, seepage):
-        precipitation_event = triple[0]
-        event_date = precipitation_event[0]
-        evaporation_event = triple[1]
-        seepage_event = triple[2]
-        bucket_triple = compute(bucket, volume, precipitation_event[1],
-                                evaporation_event[1], seepage_event[1],
-                                allow_below_minimum_storage)
-        #note that bucket_triple is a quintuple now
-        volume = bucket_triple[0]
-        outcome.storage.add_value(event_date, volume)
-        outcome.flow_off.add_value(event_date, bucket_triple[1])
-        outcome.net_drainage.add_value(event_date, bucket_triple[2])
-        outcome.seepage.add_value(event_date, bucket_triple[3])
-        outcome.net_precipitation.add_value(event_date, bucket_triple[4])
-    return outcome
-
-def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
-
-    # we compute the upper bucket:
-    #   - the upper bucket does not have seepage
-    #   - the porosity of the upper bucket is always 1.0
-    #   - the storage of the upper bucket can not be below the minimum storage
-
-    upper_seepage = create_empty_timeseries(seepage)
-    bucket.porosity, tmp = 1.0, bucket.porosity
-    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
-                              bucket.upper_drainage_fraction, bucket.drainage_fraction
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
-                              bucket.upper_indraft_fraction, bucket.indraft_fraction
-    upper_outcome = compute_timeseries(bucket,
-                                       precipitation,
-                                       evaporation,
-                                       upper_seepage,
-                                       compute,
-                                       False)
-    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
-                              bucket.upper_drainage_fraction, bucket.drainage_fraction
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
-                              bucket.upper_indraft_fraction, bucket.indraft_fraction
-    bucket.porosity = tmp
-
-    # we then compute the lower bucket:
-    #  - the lower bucket does not have precipitation, evaporation and does not
-    #    have flow off
-    lower_precipitation = create_empty_timeseries(precipitation)
-    lower_evaporation = create_empty_timeseries(evaporation)
-    lower_outcome = compute_timeseries(bucket,
-                                       lower_precipitation,
-                                       lower_evaporation,
-                                       seepage,
-                                       compute)
-    outcome = BucketOutcome()
-    outcome.storage = upper_outcome.storage
-    outcome.flow_off = upper_outcome.flow_off
-    outcome.net_drainage = add_timeseries(lower_outcome.flow_off, lower_outcome.net_drainage)
-    outcome.seepage = lower_outcome.seepage
-    outcome.net_precipitation = upper_outcome.net_precipitation
-    return outcome
-
-
-def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage, compute):
-
-    # we first compute the upper bucket:
-    #   - the upper bucket does not have seepage
-    #   - the upper bucket has some of its own attributes
-    upper_seepage = create_empty_timeseries(seepage)
-
-    #BR: waarom worden er eigenschappen omgedraaid (dit is wat verwarrend)?
-    bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
-    bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
-    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
-                              bucket.upper_drainage_fraction, bucket.drainage_fraction
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
-                              bucket.upper_indraft_fraction, bucket.indraft_fraction
-    upper_outcome = compute_timeseries(bucket,
-                                       precipitation,
-                                       evaporation,
-                                       upper_seepage,
-                                       compute)
-    assert len(list(upper_outcome.flow_off.events())) > 0
-    assert len(list(upper_outcome.net_drainage.events())) > 0
-    bucket.porosity, bucket.upper_porosity = bucket.upper_porosity, bucket.porosity
-    bucket.crop_evaporation_factor, bucket.upper_crop_evaporation_factor = bucket.upper_crop_evaporation_factor, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, bucket.upper_min_crop_evaporation_factor = bucket.upper_min_crop_evaporation_factor, bucket.min_crop_evaporation_factor
-    bucket.drainage_fraction, bucket.upper_drainage_fraction = \
-                              bucket.upper_drainage_fraction, bucket.drainage_fraction
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = \
-                              bucket.upper_indraft_fraction, bucket.indraft_fraction
-
-    # we compute the lower bucket
-    (drainage, indraft) = split_timeseries(upper_outcome.net_drainage)
-    # upper_outcome.flow_off and drainage are time series with only
-    # non-positive values as they take water away from the upper bucket
-    lower_precipitation = add_timeseries(upper_outcome.flow_off, drainage)
-    # As it is, lower_precipitation contains only non-positive values but it
-    # adds water to the bottom bucket, so we have to invert these values. Also,
-    # lower_precipitation is specified in [m3/day] but should be specified in
-    # [mm/day]
-
-    bucket.crop_evaporation_factor, tmp_crop_evaporation = 1, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, tmp_min_crop_evaporation = 1 , bucket.min_crop_evaporation_factor
-    lower_precipitation = multiply_timeseries(lower_precipitation, -1000.0 / bucket.surface)
-    lower_evaporation = create_empty_timeseries(evaporation)
-    assert len(list(lower_precipitation.events())) > 0
-    lower_outcome = compute_timeseries(bucket,
-                                       lower_precipitation,
-                                       lower_evaporation,
-                                       seepage,
-                                       compute)
-
-    bucket.crop_evaporation_factor = tmp_crop_evaporation
-    bucket.min_crop_evaporation_factor = tmp_min_crop_evaporation
-
-    outcome = BucketOutcome()
-    outcome.storage = upper_outcome.storage
-    outcome.flow_off = upper_outcome.flow_off
-    outcome.net_drainage = add_timeseries(lower_outcome.flow_off, lower_outcome.net_drainage)
-    outcome.seepage = lower_outcome.seepage
-    outcome.net_precipitation = upper_outcome.net_precipitation
-    return outcome
 
 
 def retrieve_net_intake(open_water):
@@ -427,6 +120,480 @@ class WaterbalanceOutcome:
         self.open_water_fractions = {}
         self.intake_fractions = {}
 
+class WaterbalanceComputer2:
+    """Computes the waterbalance time series for a given area."""
+
+    def __init__(self, area,
+                 settings_loader=None,
+                 buckets_computer=BucketsComputer(),
+                 buckets_summarizer=BucketsSummarizer(),
+                 level_control_computer=LevelControlComputer(),
+                 level_control_assignment=LevelControlAssignment(),
+                 vertical_timeseries_computer=VerticalTimeseriesComputer(),
+                 concentration_computer=ConcentrationComputer(),
+                 fraction_computer=FractionComputer(),
+                 sluice_error_computer=SluiceErrorComputer()):
+        """Set (among others) the function to store a time series.
+
+        Parameter (among others):
+        *area*
+            WaterbalanceArea for which to compute the time series
+        
+        
+        * buckets_computer -- computer for the bucket time series
+        * level_control_computer -- computer for the level control
+        * store_timeserie -- function to store a time series
+
+        The store_timeserie argument should be a callable that stores a given
+        TimeseriesStub as the volume attribute of a WaterbalanceTimeserie.
+
+        """
+
+        self.area = area
+        
+        self.settings_loader=settings_loader,
+        
+        #all computation units
+        self.buckets_computer = buckets_computer
+        self.buckets_summarizer = buckets_summarizer
+        self.level_control_computer = level_control_computer
+        self.vertical_timeseries_computer = vertical_timeseries_computer
+        self.level_control_assignment = level_control_assignment
+        self.concentration_computer = concentration_computer
+        self.fraction_computer = fraction_computer
+        self.sluice_error_computer = sluice_error_computer
+        
+        self.input = {}
+        self.outcome = {}
+        
+        self.input_info = {}
+        self.outcome_info = {}
+
+        #kan deze niet weg of pas opgegeven bij samenvatten of opslaan?
+        # self.buckets_summarizer = BucketsSummarizer()
+        #self.vertical_timeseries_storage = VerticalTimeseriesStorage(store_timeserie=self.store_timeserie)
+        #self.store_timeserie = store_timeserie
+        #self.level_control_storage = LevelControlStorage(store_timeserie=self.store_timeserie)
+     
+    #TO DO
+    def get_input_timeseries(self, start_date, end_date):
+        """return (and collect) all input timeseries
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with all input timeseries.
+
+        """
+        if (self.input.has_key('timeseries') and self.input_info['timeseries']['start_date']==start_date and self.input_info['timeseries']['end_date']==end_date):
+            input_ts = self.input['timeseries']
+        else:
+            input_ts = {}
+            input_ts['precipitation'] = self.area.retrieve_precipitation(start_date, end_date)
+            input_ts['evaporation'] = self.area.retrieve_evaporation(start_date, end_date)
+            input_ts['seepage'] = self.area.retrieve_seepage(start_date, end_date) #for the time_being, officially part of each bucket + openwater
+        
+            input_ts['open_water'] = {}
+            input_ts['open_water']['minimum_level'] = TimeseriesRestrictedStub(timeseries=self.area.open_water.retrieve_minimum_level(),
+                                                            start_date=start_date,
+                                                            end_date=end_date)
+            input_ts['open_water']['maximum_level'] = TimeseriesRestrictedStub(timeseries=self.area.open_water.retrieve_maximum_level(),
+                                                            start_date=start_date,
+                                                            end_date=end_date)
+            input_ts['open_water']['seepage'] = input_ts['seepage'] #temp solution
+            
+            for bucket in self.area.retrieve_buckets():
+                input_ts[bucket.slug] = {}
+                input_ts[bucket.slug]['seepage'] = input_ts['seepage']# tmp solution: bucket.retrieve_seepage(start_date, end_date)
+            
+            input_ts['incoming_timeseries'] = {}
+            for slug, timeseries in self.area.open_water.retrieve_incoming_timeseries(only_input=True).iteritems():
+                input_ts['incoming_timeseries'][slug] = TimeseriesRestrictedStub(timeseries=timeseries,
+                                                                start_date=start_date,
+                                                                end_date=end_date)
+            
+            input_ts['outgoing_timeseries'] = {}
+            for slug, timeseries in self.area.open_water.retrieve_outgoing_timeseries(only_input=True).iteritems():
+                input_ts['outgoing_timeseries'][slug] = TimeseriesRestrictedStub(timeseries=timeseries,
+                                                                start_date=start_date,
+                                                                end_date=end_date)
+            
+            #store for later use (some kind of cache)
+            self.input['timeseries'] = input_ts
+            self.input_info['timeseries'] = {}
+            self.input_info['timeseries']['start_date'] = start_date
+            self.input_info['timeseries']['end_date'] = end_date
+        
+        return input_ts
+    
+    
+    def get_buckets_timeseries(self, start_date, end_date):
+        """return all outcome timeseries of all buckets
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with all calculated bucket timeseries.
+
+        """        
+        if (self.outcome.has_key('buckets') and self.outcome_info['buckets']['start_date']==start_date and self.outcome_info['buckets']['end_date']==end_date):
+            buckets_outcome = self.outcome['buckets']
+        else:
+            input = self.get_input_timeseries(start_date, end_date)
+        
+            buckets = self.area.retrieve_buckets()
+            buckets_outcome = self.buckets_computer.compute(buckets,
+                                                            input['precipitation'],
+                                                            input['evaporation'],
+                                                            input['seepage']) #start_date, end_date??? + seepage for each bucket. this for the time being
+            
+            #store for later use (some kind of cache)
+            self.outcome['buckets'] = buckets_outcome 
+            self.outcome_info['buckets'] = {}
+            self.outcome_info['buckets']['start_date'] = start_date
+            self.outcome_info['buckets']['end_date'] = end_date       
+       
+        return buckets_outcome
+    
+    def get_bucketflow_summary(self, start_date, end_date):
+        """summarize outcome buckets into labels
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with summarized timeseries.
+
+        At this moment there are some fixed labels with related to fixed flows of the bucket_flows
+        Has to change in the future
+        
+        """        
+
+        if (self.outcome.has_key('buckets_summary') and self.outcome_info['buckets_summary']['start_date']==start_date and self.outcome_info['buckets_summary']['end_date']==end_date):
+            buckets_summary = self.outcome['buckets_summary']
+        else:        
+            bucket_outcome = self.get_buckets_timeseries(start_date, end_date)
+            
+            buckets_summary = self.buckets_summarizer.compute(bucket_outcome)   
+            
+            #outcome = {"undrained": buckets_summary.undrained,
+            #          "drained": buckets_summary.drained,
+            #          "hardened": buckets_summary.hardened,
+            #          "flow_off": buckets_summary.flow_off,
+            #          "indraft": buckets_summary.indraft,
+            #          "totals":buckets_summary.totals}
+
+          
+            #store for later use (some kind of cache)
+            self.outcome['buckets_summary'] = buckets_summary
+            self.outcome_info['buckets_summary'] = {}
+            self.outcome_info['buckets_summary']['start_date'] = start_date
+            self.outcome_info['buckets_summary']['end_date'] = end_date
+
+        return buckets_summary
+         
+    def get_vertical_open_water_timeseries(self, start_date, end_date):
+        """return all timeseries directly related to openwater (vertical = rainfall, evaporation and seepage)
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with all flows directly related to open water (rainfall, evaporation and seepage).
+
+        """        
+        if (self.outcome.has_key('vertical_open_water') and self.outcome_info['vertical_open_water']['start_date']==start_date and self.outcome_info['vertical_open_water']['end_date']==end_date):
+             outcome = self.outcome['vertical_open_water']
+        else:
+            input = self.get_input_timeseries(start_date, end_date)
+         
+            vertical_timeseries = self.vertical_timeseries_computer.compute(self.area.open_water.surface,
+                                                                        self.area.open_water.crop_evaporation_factor,#??? = 1
+                                                                        input['precipitation'],
+                                                                        transform_evaporation_timeseries_penman_to_makkink(input['evaporation']), #place this function to VerticalComputer()
+                                                                        input['seepage'])#seepage nog general, but specific for buckets and openwater
+
+            outcome = {"precipitation":vertical_timeseries[0],
+                      "evaporation":vertical_timeseries[1],
+                      "seepage":vertical_timeseries[2],
+                      "infiltration":vertical_timeseries[3]}
+        
+            #store for later use (some kind of cache)
+            self.outcome['vertical_open_water'] = outcome
+            self.outcome_info['vertical_open_water'] = {}
+            self.outcome_info['vertical_open_water']['start_date'] = start_date
+            self.outcome_info['vertical_open_water']['end_date'] = end_date
+        
+        return outcome
+     
+    def get_level_control_timeseries(self, start_date, end_date):
+        """return all calculated flows for level_control ('peilhandhaving') and the resulting storage and level in open water
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with all flows directly related to open water (rainfall, evaporation and seepage).
+
+            TO DO: enddate startdate storage
+        """  
+              
+        if (self.outcome.has_key('level_control') and self.outcome_info['level_control']['start_date']==start_date and self.outcome_info['level_control']['end_date']==end_date):
+            return {'level_control':self.outcome['level_control'], 'open_water_cnt':self.outcome['open_water_cnt']}
+        else:        
+            input = self.get_input_timeseries(start_date, end_date)
+            buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+            vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
+        
+            #to do: label timeseries
+            intake_time_series, pump_time_series, storage, water_level_timeseries = self.level_control_computer.compute(
+                                                                self.area.open_water,
+                                                                buckets_summary,
+                                                                vertical_open_water_timeseries.values(),
+                                                                input['open_water']['minimum_level'],
+                                                                input['open_water']['maximum_level'],
+                                                                input['incoming_timeseries'].values(),
+                                                                input['outgoing_timeseries'].values())
+            
+        
+            #devide flow over punpingstation
+            pumping_stations = self.area.open_water.pumping_stations.all()
+            outcome = {}
+            outcome['level_control'] = self.level_control_assignment.compute((intake_time_series, pump_time_series), #to do: label timeseries
+                                                                             pumping_stations)
+            
+            outcome['level_control']['intake_time_series'] = intake_time_series
+            outcome['level_control']['pump_time_series'] = pump_time_series
+            
+            outcome['open_water_cnt'] = {}
+            outcome['open_water_cnt']['storage'] = storage
+            outcome['open_water_cnt']['water level'] = water_level_timeseries
+            
+            #cache
+            self.outcome['level_control'] = outcome['level_control']
+            self.outcome['open_water_cnt'] = outcome['open_water_cnt']
+            self.outcome_info['level_control'] = {}
+            self.outcome_info['level_control']['start_date'] = start_date
+            self.outcome_info['level_control']['end_date'] = end_date
+            return outcome
+    
+    #to do
+    def get_reference_timeseries(self, start_date, end_date):
+        """return (and collect) all timeseries, used for reference (measured flows at structures, waterlevel and concentrations) 
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with reference timeseries
+
+        """
+
+
+        
+        """
+        intakes = []
+        intakes_timeseries = []
+        for pumping_station in open_water.pumping_stations.all():
+            if pumping_station.into:
+                intakes.append(pumping_station)
+                if pumping_station.computed_level_control:
+                    if pumping_station.level_control is None:
+                        timeseries = TimeseriesStub()
+                    else:
+                        timeseries = pumping_station.level_control.get_timeseries()
+                else:
+                    timeseries = pumping_station.retrieve_sum_timeseries()
+                intakes_timeseries.append(timeseries)
+        return intakes, intakes_timeseries
+        """
+            
+            
+    def get_sluice_error_timeseries(self, start_date, end_date):
+        """return sluice error (sluitfout)
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with reference timeseries
+
+            TO DO: enddate startdate storage
+        """        
+        if (self.outcome.has_key('sluice_error') and self.outcome_info['sluice_error']['start_date']==start_date and self.outcome_info['sluice_error']['end_date']==end_date):
+            return self.outcome['sluice_error']
+        else:        
+            sluice_error = self.sluice_error_computer.compute(self.area.open_water,
+                                                     level_control[0:2],
+                                                     start_date, end_date) #??? input van kunstwerk metingen?
+            #cache
+            self.outcome['sluice_error'] = sluice_error
+            self.outcome_info['sluice_error'] = {}
+            self.outcome_info['sluice_error']['start_date'] = start_date
+            self.outcome_info['sluice_error']['end_date'] = end_date
+            
+        return sluice_error
+
+
+    def get_fraction_timeseries(self, start_date, end_date):
+        """return fractions in openwater
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary with reference timeseries
+
+            TO DO: enddate startdate storage
+        """           
+        if (self.outcome.has_key('fraction_water') and self.outcome_info['fraction_water']['start_date']==start_date and self.outcome_info['fraction_water']['end_date']==end_date):
+            return self.outcome['fraction_water']
+        else:  
+            input = self.get_input_timeseries(start_date, end_date)
+            buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+            vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
+            control = self.get_level_control_timeseries(start_date, end_date)
+         
+        
+            #intakes, tmp_timeseries = self.retrieve_intakes_timeseries(area.open_water)
+            #TO DO
+            intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,
+                                                       start_date=start_date,
+                                                       end_date=end_date) for timeseries in input['incoming_timeseries'].values()]
+        
+            fractions = self.fraction_computer.compute(self.area.open_water,
+                                                       buckets_summary,
+                                                       vertical_open_water_timeseries.values(),
+                                                       control['open_water_cnt']['storage'],
+                                                       intakes_timeseries)
+            
+            self.outcome['fraction_water'] = fractions
+            self.outcome_info['fraction_water'] = {}
+            self.outcome_info['fraction_water']['start_date'] = start_date
+            self.outcome_info['fraction_water']['end_date'] = end_date
+            
+            return fractions
+
+
+    def compute(self, start_date, end_date):
+        """Compute the waterbalance-related time series
+
+        Args:
+          *start_date*
+            date of the first day for which to compute the time series
+          *end_date*
+            date of the day *after* the last day for which to compute the time
+            series
+
+        This method returns a tuple that contains
+          1. a dictionary of Bucket to BucketOutcome,
+          2. a TimeseriesStub with the daily discharge for the level control,
+          3. a computed WaterbalanceOutcome.
+        """
+
+        #step 1. Get input timeseries
+        input = self.get_input_timeseries(start_date, end_date)
+        
+        #step 2. Calculate buckets
+        buckets = self.get_buckets_timeseries(start_date, end_date)
+
+        #step 3. Summarize according to labels
+        buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+        
+        #step 4. Get vertical timeseries
+        vertical_openwater = self.get_vertical_open_water_timeseries(start_date, end_date)
+        
+        #step 5. Get level control
+        level_control = self.get_level_control_timeseries(start_date, end_date)
+
+        #step 6. Get sluice_error
+        reference_timeseries = self.get_reference_timeseries(start_date, end_date)
+        sluice_error = self.get_sluice_error_timeseries(start_date, end_date)
+        
+        #step 7. Get fractions
+        fractions = self.get_fraction_timeseries(start_date, end_date)
+
+        #area.open_water.save() #???
+
+        return input, buckets, buckets_summary, vertical_openwater, level_control, reference_timeseries, sluice_error, fractions #uitbreiden
+    
+
+    
+    def store(self):
+        
+        self.store_timeserie(area.open_water, "undrained",
+                                     buckets_summary.undrained)
+        self.store_timeserie(area.open_water, "drained",
+                                     buckets_summary.drained)
+        self.store_timeserie(area.open_water, "hardened",
+                                     buckets_summary.hardened)
+        self.store_timeserie(area.open_water, "flow_off",
+                                     buckets_summary.flow_off)
+        self.store_timeserie(area.open_water, "indraft",
+                                     buckets_summary.indraft)
+        
+        
+        self.store_timeserie(area.open_water, "fractions_initial",
+                             fractions[0])
+        outcome.open_water_fractions["initial"] = fractions[0]
+        self.store_timeserie(area.open_water, "fractions_precipitation",
+                             fractions[1])
+        outcome.open_water_fractions["precipitation"] = fractions[1]
+        self.store_timeserie(area.open_water, "fractions_seepage",
+                             fractions[2])
+        outcome.open_water_fractions["seepage"] = fractions[2]
+        self.store_timeserie(area.open_water, "fractions_hardened",
+                             fractions[3])
+        outcome.open_water_fractions["hardened"] = fractions[3]
+        self.store_timeserie(area.open_water, "fractions_drained",
+                             fractions[4])
+        outcome.open_water_fractions["drained"] = fractions[4]
+        self.store_timeserie(area.open_water, "fractions_undrained",
+                             fractions[5])
+        outcome.open_water_fractions["undrained"] = fractions[5]
+        self.store_timeserie(area.open_water, "fractions_flow_off",
+                             fractions[6])
+        outcome.open_water_fractions["flow_off"] = fractions[6]
+        for index, intake in enumerate(intakes):
+            self.store_timeserie(intake, "fractions", fractions[7 + index])
+            intake.save()
+            outcome.intake_fractions[intake] = fractions[7 + index]
+    
+        self.vertical_timeseries_storage.store(vertical_timeseries,
+                                            area.open_water)
+    
+        self.level_control_storage.store(pumping_stations, outcome.level_control_assignment)
+        self.store_timeserie(area.open_water, "storage", outcome.open_water_timeseries["storage"])
+        
+        
+        
+        
 class WaterbalanceComputer:
     """Computes the waterbalance time series for a given area."""
 
@@ -527,12 +694,12 @@ class WaterbalanceComputer:
         outcome.open_water_timeseries["infiltration"] = vertical_timeseries[3]
 
         incoming_timeseries = []
-        for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True):
+        for timeseries in area.open_water.retrieve_incoming_timeseries(only_input=True).values():
             incoming_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
         outgoing_timeseries = []
-        for timeseries in area.open_water.retrieve_outgoing_timeseries(only_input=True):
+        for timeseries in area.open_water.retrieve_outgoing_timeseries(only_input=True).values():
             outgoing_timeseries.append(TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date))
@@ -628,168 +795,3 @@ class WaterbalanceComputer:
                     timeseries = pumping_station.retrieve_sum_timeseries()
                 intakes_timeseries.append(timeseries)
         return intakes, intakes_timeseries
-
-
-class BucketsComputer:
-
-    def __init__(self, bucket_computers=None):
-        if bucket_computers is None:
-            self.bucket_computers = {}
-            self.bucket_computers[Bucket.UNDRAINED_SURFACE] = compute_timeseries
-            self.bucket_computers[Bucket.HARDENED_SURFACE] = compute_timeseries_on_hardened_surface
-            self.bucket_computers[Bucket.DRAINED_SURFACE] = compute_timeseries_on_drained_surface
-        else:
-            self.bucket_computers = bucket_computers
-
-    def compute(self, buckets, precipitation, evaporation, seepage):
-        """Compute and return the waterbalance for the given buckets.
-
-        Parameters:
-        * buckets -- list of buckets connected to the open water
-        * precipitation -- TimesseriesStub for the precipitation
-        * evaporation -- TimesseriesStub for the evaporation
-        * seepage -- TimesseriesStub for the seepage
-
-        Return value:
-        * result -- dictionary of bucket to TimesseriesStub
-        """
-        result = {}
-        for bucket in buckets:
-            bucket_computer = self.bucket_computers[bucket.surface_type]
-            outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-            result[bucket] = outcome
-        return result
-
-
-def event_tuple_values(events):
-    """Return the list of event values from the given tuple of events."""
-    return [event[1] for event in events]
-
-def create_bucket_to_daily_outcome(buckets, daily_outcome):
-    assert len(buckets) * 2 == len(daily_outcome)
-    index = 0
-    bucket2daily_outcome = {}
-    for bucket in buckets:
-        bucket2daily_outcome[bucket] = [daily_outcome[index * 2], daily_outcome[index * 2 + 1]]
-        index = index + 1
-    return bucket2daily_outcome
-
-def total_daily_bucket_outcome(bucket2outcome):
-    """Return the total daily flow off and net drainage of all buckets
-
-    Parameters:
-    * bucket2outcome -- dictionary of Bucket to BucketOutcome
-
-    """
-    generator = ()
-    if len(bucket2outcome.keys()) > 0:
-        buckets, outcomes = zip(*((b, o) for (b, o) in bucket2outcome.items()))
-        interesting_timeseries = []
-        for outcome in outcomes:
-            interesting_timeseries.append(outcome.flow_off)
-            interesting_timeseries.append(outcome.net_drainage)
-        generator = ((event_tuple[0][0], create_bucket_to_daily_outcome(buckets, event_tuple_values(event_tuple))) \
-                     for event_tuple in enumerate_events(*interesting_timeseries))
-    return generator
-
-
-class BucketSummarizer:
-    """Computes the SingleDayBucketsSummary.
-
-    Instance variables:
-    * bucket2daily_outcome -- dictionary of Bucket to BucketOutcome
-    """
-    def __init__(self, bucket2daily_outcome={}):
-        """Set the dictionary of Bucket to BucketOutcome to the given one."""
-        self.bucket2daily_outcome = bucket2daily_outcome
-
-    def compute(self):
-        """Compute and return the SingleDayBucketsSummary."""
-        summary = SingleDayBucketsSummary()
-
-        # Note that the time series computed for each bucket are computed from
-        # the point of view the bucket:
-        #   - a positive total means water flows to the buckets from the open
-        #     water
-        #   - a negative value means water flows from the buckets to the open
-        #     water
-        # So to get the volume that flows from the buckets to the open water we
-        # have to negate the bucket total.
-
-        summary.hardened = -self.compute_sum_hardened()
-        summary.drained = -self.compute_sum_drained()
-        summary.undrained = -self.compute_sum_undrained_net_drainage()
-        summary.flow_off = -self.compute_sum_undrained_flow_off()
-        summary.indraft = -self.compute_sum_indraft()
-        summary.totals = summary.hardened + \
-                         summary.drained + \
-                         summary.undrained + \
-                         summary.flow_off + \
-                         summary.indraft
-        return summary
-
-    def compute_sum_hardened(self):
-        sum = 0.0
-        for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.HARDENED_SURFACE:
-                sum += outcome[0]
-        return sum
-
-    def compute_sum_drained(self):
-        sum = 0.0
-        for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.DRAINED_SURFACE:
-                sum += outcome[0]
-                net_drainage = outcome[1]
-                if net_drainage < 0:
-                    sum += net_drainage
-        return sum
-
-    def compute_sum_undrained_net_drainage(self):
-        sum = 0.0
-        for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.HARDENED_SURFACE or \
-               bucket.surface_type == Bucket.UNDRAINED_SURFACE:
-                net_drainage = outcome[1]
-                if net_drainage < 0:
-                    sum += net_drainage
-        return sum
-
-    def compute_sum_undrained_flow_off(self):
-        sum = 0.0
-        for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.UNDRAINED_SURFACE:
-                sum += outcome[0]
-        return sum
-
-    def compute_sum_indraft(self):
-        sum = 0.0
-        for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
-               bucket.surface_type == Bucket.HARDENED_SURFACE or \
-               bucket.surface_type == Bucket.DRAINED_SURFACE:
-                net_drainage = outcome[1]
-                if net_drainage > 0:
-                    sum += net_drainage
-        return sum
-
-
-class BucketsSummarizer:
-    """Computes the BucketSummary from the outcome of each bucket."""
-    def compute(self, bucket2outcome):
-        """Returns the BucketsSummary of the given buckets.
-
-        Parameters:
-        * bucket2outcome --dictionary of Bucket to BucketOutcome
-
-        """
-        buckets_summary = BucketsSummary()
-        for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
-            daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
-            buckets_summary.totals.add_value(date, daily_summary.total())
-            buckets_summary.hardened.add_value(date, daily_summary.hardened)
-            buckets_summary.drained.add_value(date, daily_summary.drained)
-            buckets_summary.undrained.add_value(date, daily_summary.undrained)
-            buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
-            buckets_summary.indraft.add_value(date, daily_summary.indraft)
-        return buckets_summary
