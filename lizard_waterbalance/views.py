@@ -182,32 +182,6 @@ class TopHeight:
         return heights
 
 
-class MonthlyDischarge:
-
-    def retrieve_incoming(self):
-        """Return the incoming monthly discharge.
-
-        This method returns the incoming monthly discharge as a dictionary of
-        parameter labels to a TimeseriesStub.
-
-        """
-        pass
-
-    def retrieve_outgoing(self):
-        """Return the outgoing monthly discharge.
-
-        This method returns the incoming monthly discharge as a dictionary of
-        parameter labels to a TimeseriesStub. In order to draw the plots for
-        the outgoing discharge in the opposite direction of the plots for the
-        incoming discharge, the sign of the values should be negative.
-
-        """
-        pass
-
-
-matplotlib_colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
-
-
 def indicator_graph(request,
                     area=None,
                     id=None):
