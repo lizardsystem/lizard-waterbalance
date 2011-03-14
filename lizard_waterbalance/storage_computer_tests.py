@@ -31,7 +31,7 @@ from unittest import TestCase
 
 from lizard_waterbalance.compute import BucketsSummary
 from lizard_waterbalance.storage_computer import StorageComputer
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 class StorageComputerTests(TestCase):
 

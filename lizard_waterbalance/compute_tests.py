@@ -48,9 +48,9 @@ from lizard_waterbalance.compute import retrieve_net_intake
 from lizard_waterbalance.compute import total_daily_bucket_outcome
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.mock import Mock
-from lizard_waterbalance.timeseries import Timeseries
-from lizard_waterbalance.timeseries import store_waterbalance_timeserie
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from lizard_waterbalance.models import Timeseries
+from lizard_waterbalance.store import store_waterbalance_timeserie
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 bucket_column_names = [

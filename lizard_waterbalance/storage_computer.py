@@ -26,8 +26,8 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.timeseriesstub import enumerate_events
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class StorageComputer:

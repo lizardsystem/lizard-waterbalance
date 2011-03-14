@@ -25,7 +25,7 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.timeseries import store_waterbalance_timeserie
+from lizard_waterbalance.store import store_waterbalance_timeserie
 
 
 class VerticalTimeseriesStorage:

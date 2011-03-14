@@ -29,7 +29,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 from lizard_waterbalance.vertical_timeseries_storage import VerticalTimeseriesStorage
 
 class VerticalTimeseriesStorageTests(TestCase):

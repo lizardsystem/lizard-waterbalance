@@ -31,7 +31,7 @@ from unittest import TestCase
 
 from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 def stub_empty_timeseries(only_input=False):
     """Return the empty list of volume timeseries.

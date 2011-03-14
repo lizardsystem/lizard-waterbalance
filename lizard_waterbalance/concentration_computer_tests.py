@@ -30,7 +30,7 @@ from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 class ConcentrationComputerTests(TestCase):
 

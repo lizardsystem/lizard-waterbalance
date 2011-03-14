@@ -18,6 +18,7 @@ install_requires = [
     'lizard-map',
     'lizard-shape',
     'lizard-ui >= 1.53',
+    'timeseries',
     'xlrd',
     ],
 

@@ -32,8 +32,8 @@ from unittest import TestCase
 from lizard_waterbalance.compute import BucketsSummary
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.timeseriesstub import TimeseriesWithMemoryStub
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesWithMemoryStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class LevelControlComputerTests(TestCase):

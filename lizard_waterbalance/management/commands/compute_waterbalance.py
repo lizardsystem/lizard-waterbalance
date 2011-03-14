@@ -34,9 +34,9 @@ from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
-from lizard_waterbalance.timeseriesstub import enumerate_events
-from lizard_waterbalance.timeseriesstub import split_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import split_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
 
 name2name = dict([("evaporation", "verdamping"),
                   ("flow_off", "afstroming"),

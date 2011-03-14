@@ -28,10 +28,10 @@
 
 from datetime import datetime
 
-from filereader import FileReader
-from timeseriesstub import TimeseriesStub
-from timeseriesstub import TimeseriesWithMemoryStub
+from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
+from filereader import FileReader
 
 class TimeseriesRetriever:
     """Retrieves the time series stored in an ASCII file.

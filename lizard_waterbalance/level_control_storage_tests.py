@@ -33,7 +33,7 @@ from lizard_waterbalance.level_control_storage import LevelControlAssignment
 from lizard_waterbalance.level_control_storage import LevelControlStorage
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import Timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 def create_pumping_station(into=None, computed_level_control=None, percentage=None):
     """Create, store and return a new PumpingStation.

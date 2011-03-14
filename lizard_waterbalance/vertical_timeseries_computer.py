@@ -25,9 +25,9 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.timeseriesstub import enumerate_events
-from lizard_waterbalance.timeseriesstub import split_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import split_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
 
 class VerticalTimeseriesComputer:
     """Implements the computation of the vertical time series of an open water.

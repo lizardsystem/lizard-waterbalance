@@ -35,7 +35,7 @@ from mock import ReturnValues
 from lizard_waterbalance.compute import BucketsSummary
 from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class FractionComputerTests(TestCase):

@@ -33,7 +33,7 @@ from django.core.management.base import BaseCommand
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from lizard_waterbalance.timeseries import store_waterbalance_timeserie
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class Command(BaseCommand):

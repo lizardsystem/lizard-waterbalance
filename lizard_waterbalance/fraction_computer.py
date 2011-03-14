@@ -27,9 +27,9 @@
 
 from datetime import timedelta
 
-from lizard_waterbalance.timeseriesstub import enumerate_events
-from lizard_waterbalance.timeseriesstub import split_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import split_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class FractionComputer:

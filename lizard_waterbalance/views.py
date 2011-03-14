@@ -32,9 +32,9 @@ from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceLabel
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
-from lizard_waterbalance.timeseriesstub import grouped_event_values
-from lizard_waterbalance.timeseriesstub import multiply_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import grouped_event_values
+from timeseries.timeseriesstub import multiply_timeseries
 
 import hotshot
 import os

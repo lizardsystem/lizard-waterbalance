@@ -40,9 +40,9 @@ from lizard_map.models import ColorField
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
-from lizard_waterbalance.timeseriesstub import add_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import add_timeseries
+from timeseries.timeseriesstub import TimeseriesRestrictedStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 logger = logging.getLogger(__name__)
 

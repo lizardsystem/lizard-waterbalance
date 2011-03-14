@@ -29,8 +29,8 @@ from datetime import datetime
 from unittest import TestCase
 
 from lizard_waterbalance.models import Timeseries
-from lizard_waterbalance.timeseries import store
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from lizard_waterbalance.store import store
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class TimeseriesTests(TestCase):

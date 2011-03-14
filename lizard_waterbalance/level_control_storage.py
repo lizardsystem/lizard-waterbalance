@@ -26,9 +26,9 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.timeseries import store_waterbalance_timeserie
-from lizard_waterbalance.timeseriesstub import multiply_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
+from lizard_waterbalance.store import store_waterbalance_timeserie
+from timeseries.timeseriesstub import multiply_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
 
 
 class LevelControlAssignment:
