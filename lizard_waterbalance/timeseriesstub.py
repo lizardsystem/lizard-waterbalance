@@ -28,6 +28,7 @@
 
 import logging
 import itertools
+
 from datetime import datetime
 from datetime import timedelta
 from math import fabs
@@ -284,13 +285,18 @@ def enumerate_events(*timeseries_list):
     """Yield the events for all the days of the given time series.
 
     Parameter:
-    * timeseries_list -- list of time series
+      * timeseries_list *
+        list of time series
 
     Each of the given time series should specify values for possibly
     non-continous ranges of dates. For each day present in a time series, this
     method yields a tuple of events of all time series. If that day is present
     in a time series, the tuple contains the corresponding event. If that day
     is not present, the tuple contains an event with value 0 at that day.
+
+    The description above only mentions dates. However, this method can handle
+    events whose 'date' include a time component *as long as* the 'date' object
+    supports an isocalendar() method as datetime.date and datetime.datetime do.
 
     """
     next_start = datetime.max
@@ -317,7 +323,7 @@ def enumerate_events(*timeseries_list):
         for index, earliest_event in enumerate(earliest_event_list):
             if not earliest_event is None:
                 no_events_are_present = False
-                if earliest_event[0] == next_start:
+                if earliest_event[0].isocalendar() == next_start.isocalendar():
                     to_yield[index] = earliest_event
                     earliest_event_list[index] = next(events_list[index], None)
         next_start = next_start + timedelta(1)
@@ -331,10 +337,10 @@ def enumerate_merged_events(timeseries_a, timeseries_b):
     event_a = next(events_a, None)
     event_b = next(events_b, None)
     while not event_a is None and not event_b is None:
-        if event_a[0] < event_b[0]:
+        if event_a[0].isocalendar() < event_b[0].isocalendar():
             yield event_a[0], event_a[1], 0
             event_a = next(events_a, None)
-        elif event_a[0] > event_b[0]:
+        elif event_a[0].isocalendar() > event_b[0].isocalendar():
             yield event_b[0], 0, event_b[1]
             event_b = next(events_b, None)
         else:

@@ -26,11 +26,9 @@ from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
-from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 from lizard_waterbalance.models import Concentration
-from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceLabel
@@ -38,6 +36,51 @@ from lizard_waterbalance.timeseriesstub import TimeseriesStub
 from lizard_waterbalance.timeseriesstub import create_from_file
 from lizard_waterbalance.timeseriesstub import grouped_event_values
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
+
+import hotshot
+import os
+
+try:
+    import settings
+    PROFILE_LOG_BASE = settings.PROFILE_LOG_BASE
+except:
+    PROFILE_LOG_BASE = "/tmp"
+
+
+def profile(log_file):
+    """Profile some callable.
+
+    This decorator uses the hotshot profiler to profile some callable (like
+    a view function or method) and dumps the profile data somewhere sensible
+    for later processing and examination.
+
+    It takes one argument, the profile log name. If it's a relative path, it
+    places it under the PROFILE_LOG_BASE. It also inserts a time stamp into the
+    file name, such that 'my_view.prof' become 'my_view-20100211T170321.prof',
+    where the time stamp is in UTC. This makes it easy to run and compare
+    multiple trials.
+    """
+
+    if not os.path.isabs(log_file):
+        log_file = os.path.join(PROFILE_LOG_BASE, log_file)
+
+    def _outer(f):
+        def _inner(*args, **kwargs):
+            # Add a timestamp to the profile output when the callable
+            # is actually called.
+            (base, ext) = os.path.splitext(log_file)
+            base = base + "-" + time.strftime("%Y%m%dT%H%M%S", time.gmtime())
+            final_log_file = base + ext
+
+            prof = hotshot.Profile(final_log_file)
+            try:
+                ret = prof.runcall(f, *args, **kwargs)
+            finally:
+                prof.close()
+            return ret
+
+        return _inner
+    return _outer
 
 # We use the following values to uniquely identify the workspaces for
 # 1. the general home page and
@@ -411,6 +454,7 @@ def retrieve_horizon(request):
                                      59)
     return start_datetime, end_datetime
 
+# @profile("waterbalance_area_graph.prof")
 def waterbalance_area_graph(request,
                             name,
                             area=None,
@@ -565,7 +609,7 @@ def waterbalance_water_level(request,
     canvas.print_png(response)
     return response
 
-
+#@profile("waterbalance_fraction_distribution.prof")
 def waterbalance_fraction_distribution(request,
                                        name,
                                        area=None,

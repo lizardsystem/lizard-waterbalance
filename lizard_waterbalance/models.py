@@ -173,18 +173,24 @@ class TimeseriesFews(models.Model):
         fews_filter = Filter.objects.get(id=self.fkey)
         fews_location = Location.objects.get(lkey=self.lkey)
 
-        # the timestep is hardcoded for Waternet: "dag GMT+1"
+        # the timestep is hardcoded for Waternet: "dag GMT+1" or "dag GMT-8"
         timestep = "dag GMT+1"
-
         try:
             fews_timeseries = Timeserie.objects.get(timestep=timestep,
                                                     parameterkey=fews_parameter,
                                                     filterkey=fews_filter,
                                                     locationkey=fews_location)
         except Timeserie.DoesNotExist:
-            exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
-            logger.warning(exception_msg)
-            raise IncompleteData(exception_msg)
+            timestep = "dag GMT-8"
+            try:
+                fews_timeseries = Timeserie.objects.get(timestep=timestep,
+                                                        parameterkey=fews_parameter,
+                                                        filterkey=fews_filter,
+                                                        locationkey=fews_location)
+            except Timeserie.DoesNotExist:
+                exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
+                logger.warning(exception_msg)
+                raise IncompleteData(exception_msg)
 
         for event in fews_timeseries.timeseriedata.all().order_by('tsd_time'):
             yield event.tsd_time, event.tsd_value
@@ -751,7 +757,9 @@ class WaterbalanceArea(models.Model):
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
         timeseries = self.precipitation.get_timeseries()
-        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
 
     def retrieve_evaporation(self, start_date, end_date):
         if self.evaporation is None:
@@ -759,7 +767,9 @@ class WaterbalanceArea(models.Model):
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
         timeseries = self.evaporation.get_timeseries()
-        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
 
     def retrieve_seepage(self, start_date, end_date):
         open_water = self._retrieve_open_water()
@@ -769,7 +779,9 @@ class WaterbalanceArea(models.Model):
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
         timeseries = self.open_water.seepage.get_timeseries()
-        return TimeseriesRestrictedStub(timeseries, start_date, end_date)
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
 
     def _retrieve_open_water(self):
         exception_msg = ""

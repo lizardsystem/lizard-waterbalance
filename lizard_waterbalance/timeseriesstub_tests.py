@@ -321,6 +321,15 @@ class enumerate_eventsTestSuite(TestCase):
                            ((tomorrow, 10), (tomorrow, 30), (tomorrow, 20))]
         self.assertEqual(expected_events, events)
 
+    def test_aa(self):
+        """Test the case with timeseries that have different times."""
+        today = datetime(2011, 11, 3, 0, 0)
+        later_today = datetime(2011, 11, 3, 9, 0)
+        timeseries = [TimeseriesStub((today, 2)),
+                      TimeseriesStub((later_today, 4))]
+        events = [event for event in enumerate_events(*timeseries)]
+        self.assertEqual([((today, 2), (later_today, 4))], events)
+
     def test_b(self):
         """Test the case that the time series contain different dates"""
         today = datetime(2010,12,2)
