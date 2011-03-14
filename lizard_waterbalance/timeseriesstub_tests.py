@@ -31,11 +31,9 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
-from filereader import FileReaderStub
 from timeseriesstub import add_timeseries
 from timeseriesstub import average_monthly_events
 from timeseriesstub import create_empty_timeseries
-from timeseriesstub import create_from_file
 from timeseriesstub import enumerate_events
 from timeseriesstub import multiply_timeseries
 from timeseriesstub import split_timeseries
@@ -271,35 +269,6 @@ class TimeseriesStubRestrictedTest(TestCase):
                                              (datetime(2011, 2, 3), 10.0),
                                              (datetime(2011, 2, 4), 0.0))
         self.assertEqual(list(expected_timeseries.events()), list(timeseries_restricted.events()))
-
-
-class create_from_fileTestSuite(TestCase):
-
-    def test_a(self):
-        filereader = FileReaderStub(["openwater,neerslag,1996,1,2,0.000000"])
-        result = create_from_file("dont care", filereader)
-        expected_timeserie = TimeseriesStub()
-        expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
-        expected_result = {}
-        expected_result["openwater"] = {}
-        expected_result["openwater"]["neerslag"] = expected_timeserie
-        self.assertEqual(expected_result, result)
-
-    def test_b(self):
-        filereader = FileReaderStub(["openwater,neerslag,1996,1,2,0.000000",
-                                     "landelijk,berging,1996,1,2,413025.340000"])
-        result = create_from_file("dont care", filereader)
-        expected_result = {}
-        expected_result["openwater"] = {}
-        expected_timeserie = TimeseriesStub()
-        expected_timeserie.add_value(datetime(1996, 1, 2), 0.0)
-        expected_result["openwater"]["neerslag"] = expected_timeserie
-        expected_result["landelijk"] = {}
-        expected_timeserie = TimeseriesStub()
-        expected_timeserie.add_value(datetime(1996, 1, 2), 413025.34)
-        expected_result["landelijk"]["berging"] = expected_timeserie
-        self.assertEqual(expected_result, result)
-
 
 class enumerate_eventsTestSuite(TestCase):
 

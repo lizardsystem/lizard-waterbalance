@@ -33,7 +33,6 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceLabel
 from lizard_waterbalance.timeseriesstub import TimeseriesStub
-from lizard_waterbalance.timeseriesstub import create_from_file
 from lizard_waterbalance.timeseriesstub import grouped_event_values
 from lizard_waterbalance.timeseriesstub import multiply_timeseries
 
@@ -207,83 +206,6 @@ class MonthlyDischarge:
 
 
 matplotlib_colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
-
-
-class MonthlyDischargeStub(MonthlyDischarge):
-
-    def retrieve_incoming(self):
-        incoming_discharge = {}
-        months = range(1, 12)
-        times = [datetime.date(2009, m, 1) for m in months]
-
-        timeseries = TimeseriesStub(0)
-        values = [random.randrange(5000, 10000) for m in months]
-        for time, value in zip(times, values):
-            timeseries.add_value(time, value)
-        incoming_discharge["inlaat"] = timeseries
-
-        timeseries = TimeseriesStub(0)
-        values = [random.randrange(5000, 10000) for m in months]
-        for time, value in zip(times, values):
-            timeseries.add_value(time, value)
-        incoming_discharge["neerslag"] = timeseries
-
-        return incoming_discharge
-
-    def retrieve_outgoing(self):
-        outgoing_discharge = {}
-        months = range(1, 12)
-        times = [datetime.date(2009, m, 1) for m in months]
-
-        timeseries = TimeseriesStub(0)
-        values = [-1 * random.randrange(500, 1500) for m in months]
-        for time, value in zip(times, values):
-            timeseries.add_value(time, value)
-        outgoing_discharge["sluitfout tov gemaal"] = timeseries
-
-        timeseries = TimeseriesStub(0)
-        values = [-1 * random.randrange(500, 1500) for m in months]
-        for time, value in zip(times, values):
-            timeseries.add_value(time, value)
-        outgoing_discharge["maalstaat"] = timeseries
-
-        return outgoing_discharge
-
-class MonthlyDischargeFromFile(MonthlyDischarge):
-
-    def __init__(self, name_to_extract, label2incoming):
-        self.name_to_extract = name_to_extract
-        self.label2incoming = label2incoming
-
-    def read_from_file(self, filename):
-
-        self.dictionary = create_from_file(filename)
-
-    def retrieve_incoming(self):
-
-        incoming_discharge = {}
-        for name, label2timeseries in self.dictionary.items():
-            if name == self.name_to_extract:
-                for label, timeseries in label2timeseries.items():
-                    try:
-                        if self.label2incoming[label]:
-                            incoming_discharge[label] = timeseries
-                    except KeyError:
-                        pass
-        return incoming_discharge
-
-    def retrieve_outgoing(self):
-
-        outgoing_discharge = {}
-        for name, label2timeseries in self.dictionary.items():
-            if name == self.name_to_extract:
-                for label, timeseries in label2timeseries.items():
-                    try:
-                        if not self.label2incoming[label]:
-                            outgoing_discharge[label] = timeseries
-                    except KeyError:
-                        pass
-        return outgoing_discharge
 
 
 def indicator_graph(request,

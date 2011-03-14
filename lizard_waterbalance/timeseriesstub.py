@@ -33,8 +33,6 @@ from datetime import datetime
 from datetime import timedelta
 from math import fabs
 
-from filereader import FileReader
-
 
 def _first_of_day(event):
     """Return the first moment of the day for an event."""
@@ -430,17 +428,3 @@ def split_timeseries(timeseries):
             non_neg_timeseries.add_value(date, 0)
     return (non_pos_timeseries, non_neg_timeseries)
 
-
-def create_from_file(filename, filereader=FileReader()):
-    """Return a dictionary from bucket and open water name to bucket and open water outcome."""
-    result = {}
-    filereader.open(filename)
-    for line in filereader.readlines():
-        name, label, year, month, day, value = line.split(',')
-        date = datetime(int(year), int(month), int(day))
-        value = float(value)
-        result.setdefault(name, {})
-        result[name].setdefault(label, TimeseriesStub())
-        result[name][label].add_value(date, value)
-    filereader.close()
-    return result
