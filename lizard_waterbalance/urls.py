@@ -47,6 +47,11 @@ urlpatterns = patterns(
      'lizard_waterbalance.views.search_fews_lkeys',
      {},
      "waterbalance_search_fews_lkeys"),
+    # Viewer
+    (r'^viewer/$',
+     'lizard_waterbalance.viewer.waterbalance_viewer',
+     {},
+     "waterbalance_viewer"),
     )
 
 if settings.DEBUG:

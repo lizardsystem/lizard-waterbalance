@@ -307,11 +307,6 @@ def get_average_timeseries(timeseries, start, end, period='month'):
                  if e[0] >= start and e[0] < end))
 
 
-def draw_bar(callable, axes, times, values, bar_width, color, bottom):
-
-    callable(times, values, bar_width, color=color, bottom=bottom)
-
-
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name.
 

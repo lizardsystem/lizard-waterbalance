@@ -1,0 +1,24 @@
+{% extends "lizard_map/wms.html" %}
+{% load workspaces %}{% load i18n %}
+
+{% block subtitle %} Waterbalance {% endblock %}
+
+{% block sidebar %}
+<div class="sidebarbox sidebarbox-stretched">
+  <h2>{% trans 'Waterbalance' %}
+  </h2>
+  <ul id="area-pane"
+      class="automatic-tree filetree pane">
+    <li class="workspace-acceptable"
+        data-adapter="adapter_waterbalance"
+        data-adapter-layer-json="{}">Parameter</li>
+  </ul>
+</div>
+
+{% for workspace in workspaces.user %}
+  {% workspace workspace %}
+{% empty %}
+No workspace
+{% endfor %}
+
+{% endblock %}

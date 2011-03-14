@@ -46,5 +46,9 @@ setup(name='lizard-waterbalance',
       extras_require = {'test': tests_require},
       entry_points={
           'console_scripts': [
-          ]},
+            ],
+          'lizard_map.adapter_class': [
+            'adapter_waterbalance = lizard_waterbalance.layers:AdapterWaterbalance',
+            ],
+          },
       )
