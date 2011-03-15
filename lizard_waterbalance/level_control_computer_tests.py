@@ -29,7 +29,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
-from lizard_waterbalance.compute import BucketsSummary
+from lizard_waterbalance.bucket_summarizer import BucketsSummary
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.models import OpenWater
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub

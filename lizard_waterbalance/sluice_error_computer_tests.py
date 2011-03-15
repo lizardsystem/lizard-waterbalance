@@ -43,13 +43,17 @@ def stub_empty_timeseries(only_input=False):
     return []
 
 def stuba_retrieve_incoming_timeseries(only_input=False):
-    """Return the list of volume timeseries on intakes.
+    """Return the dictionary of intake to measured time series.
 
     This function assumes there is a single intake that is not used for level
     control. This means that this function can ignore parameter only_input.
 
     """
-    return [TimeseriesStub((datetime(2011, 3, 9), 8))]
+    # We need to construct a dictionary of intake to time series. As we are not
+    # interested in the intake, we use the value 0 for the intake even though 0
+    # is not a valid PumpingStation. As long as we do not use 0 for an intake,
+    # we get away with it.
+    return {0: TimeseriesStub((datetime(2011, 3, 9), 8))}
 
 class TestCasesWithoutPumpingStations(TestCase):
 
@@ -148,16 +152,20 @@ class TestCasesWithaSingleIntake(TestCase):
 
 
 def stubb_retrieve_incoming_timeseries(only_input=False):
-    """Return the list of volume timeseries on intakes.
+    """Return the dictionary of intake to measured time series.
 
     This function assumes there is a single intake that is used for level
     control.
 
     """
-    timeseries = TimeseriesStub()
+    intake2timeseries = {}
     if not only_input:
-        timeseries.add_value(datetime(2011, 3, 9), 8)
-    return [timeseries]
+        # We need to construct a dictionary of intake to time series. As we are
+        # not interested in the intake, we use the value 0 for the intake even
+        # though 0 is not a valid PumpingStation. As long as we do not use 0
+        # for an intake, we get away with it.
+        intake2timeseries[0] = TimeseriesStub((datetime(2011, 3, 9), 8))
+    return intake2timeseries
 
 
 class TestCasesWithaSingleIntakeUsedForLevelControl(TestCase):
@@ -224,16 +232,20 @@ class TestCasesWithaSingleIntakeUsedForLevelControl(TestCase):
         self.assertEqual(expected_sluice_error, sluice_error)
 
 def stubb_retrieve_outgoing_timeseries(only_input=False):
-    """Return the list of volume timeseries on pumps.
+    """Return the dictionary of pump to measured time series.
 
     This function assumes there is a single pump that is used for level
     control.
 
     """
-    timeseries = TimeseriesStub()
+    intake2timeseries = {}
     if not only_input:
-        timeseries.add_value(datetime(2011, 3, 9), -6)
-    return [timeseries]
+        # We need to construct a dictionary of pump to time series. As we are
+        # not interested in the pump, we use the value 0 for the pump even
+        # though 0 is not a valid PumpingStation. As long as we do not use 0
+        # for an pump, we get away with it.
+        intake2timeseries[0] = TimeseriesStub((datetime(2011, 3, 9), -6))
+    return intake2timeseries
 
 class TestCasesWithaSingleIntakeAndSinglePumpBothUsedForLevelControl(TestCase):
 
