@@ -5,7 +5,13 @@ Changelog of lizard-waterbalance
 0.12 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- The Fews timeseries must have a timestep of "dag GMT+1" or "dag GMT-8" :).
+
+- The methods to enumerate the events of multiple time series could not handle
+  time series whose dates had different time stamps.
+
+- The time series functionality has been moved to the separate library
+  'timeseries'.
 
 
 0.11 (2011-03-10)
@@ -19,8 +25,8 @@ Changelog of lizard-waterbalance
 
 - Added graph choice: display per year/quarter/month/day.
 
-- Made monthly totals/average more flexible by allowing
-  year/quarter/month/day instead of just month.
+- Made monthly totals/average more flexible by allowing year/quarter/month/day
+  instead of just month.
 
 - The Admin interface to the selection of FEWS-timeseries has become more
   user-friendly.

@@ -20,4 +20,4 @@ Notes:
 
 - Watch out with making changes in one of the externals: others also use that
   product, probably, so don't make all sorts of tweaks for your particular
-  usecase without making sure it is OK.
+  use case without making sure it is OK.
