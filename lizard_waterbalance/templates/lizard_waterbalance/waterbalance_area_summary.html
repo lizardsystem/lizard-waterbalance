@@ -37,8 +37,16 @@
     </dl>
   </div>
 </div>
-<div class="sidebarbox">
-  <h2>Bakjes</h2>
+<div class="sidebarbox sidebarbox-stretched">
+  <h2>
+    <a class="ss_sprite ss_pencil sidebarbox-action-icon"
+       title="Bewerk instellingen"
+       id="activate-adjustment-form"
+       href="{% url waterbalance_area_edit waterbalance_area.slug %}">&nbsp;</a>
+    <span>
+      Bakjes
+    </span>
+  </h2>
   <div>
     <dl>
       {% for bucket in waterbalance_area.open_water.buckets.all %}
@@ -59,7 +67,7 @@
          this page upon submit. -->
   </div>
 </div>
-<div class="sidebarbox sidebarbox-stretched">
+<div class="sidebarbox">
   <h2>Grafieken</h2>
   <div>
     <form method="POST"
@@ -105,8 +113,10 @@
       <input type="hidden"
              name="area"
              value="{{ waterbalance_area.slug }}" />
-      <input type="submit" name="submit" value="Toon" id="graph-type-select-submit" />
+      <input type="submit" name="submit" value="Toon"
+             id="graph-type-select-submit" />
     </form>
+    <br />  <!-- br as the input button above sometimes lead to a scrollbar -->
   </div>
 </div>
 
@@ -116,5 +126,8 @@
 {% block content %}
 <div id="evenly-spaced-vertical">
   <p>Selecteer links grafieken.</p>
+</div>
+<div id="adjustment-form"
+     style="display: none;">
 </div>
 {% endblock %}

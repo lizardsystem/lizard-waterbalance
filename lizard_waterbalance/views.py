@@ -883,3 +883,45 @@ def recalculate_graph_data(request, area=None):
             reverse('waterbalance_area_summary', kwargs={'area': area}))
     else:
         return HttpResponse("false")
+
+
+def waterbalance_area_edit(request,
+                              area=None,
+                              template='lizard_waterbalance/waterbalance_area_edit.html',
+                              crumbs_prepend=None):
+    """Show the edit page of the named WaterbalanceArea.
+
+    Injected with ajax into the waterbalance_area_summary page.
+
+    Parameters:
+    * area -- name of the WaterbalanceArea whose summary has to be shown
+    * crumbs_prepend -- list of breadcrumbs
+
+    """
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+
+    date_range_form = DateRangeForm(
+        current_start_end_dates(request, for_form=True))
+
+    if crumbs_prepend is None:
+        crumbs = [{'name': 'home', 'url': '/'}]
+    else:
+        crumbs = list(crumbs_prepend)
+    crumbs.append({'name': 'Waterbalans overzicht',
+                   'title': 'Waterbalans overzicht',
+                   'url': reverse('waterbalance_start')})
+
+    kwargs = {'area': waterbalance_area.slug}
+    crumbs.append({'name': waterbalance_area.name,
+                   'title': waterbalance_area.name,
+                   'url': reverse('waterbalance_area_summary', kwargs=kwargs)})
+
+    crumbs.append({'name': 'bewerken',
+                   'title': None,
+                   'url': None})
+
+    return render_to_response(
+        template,
+        {'waterbalance_area': waterbalance_area,
+         'crumbs': crumbs},
+        context_instance=RequestContext(request))
