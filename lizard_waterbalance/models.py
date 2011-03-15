@@ -409,10 +409,17 @@ class OpenWater(models.Model):
                 if intake.into]
 
     def retrieve_incoming_timeseries(self, only_input=False):
-        """Return the list of time series of intakes.
+        """Return the dictionary of intake to measured time series.
 
         Parameter:
-        * only_input -- holds if only the input time series should be returned
+          * only_input *
+            If only_input holds, this method only returns the measured time
+            series of those intakes that are not used for level control,
+            otherwise this method returns the measured time series of all
+            intakes.
+
+        Note that the measured time series of an intake is the sum of the
+        measured time series of its pump lines.
 
         """
         incoming_timeseries = {}
@@ -421,14 +428,21 @@ class OpenWater(models.Model):
                 if only_input and pumping_station.computed_level_control:
                     continue
                 timeseries = pumping_station.retrieve_sum_timeseries()
-                incoming_timeseries[pumping_station.id] = timeseries
+                incoming_timeseries[pumping_station] = timeseries
         return incoming_timeseries
 
     def retrieve_outgoing_timeseries(self, only_input=False):
-        """Return the list of time series of pumps.
+        """Return the dictionary of pump to measured time series.
 
         Parameter:
-        * only_input -- holds if only the input time series should be returned
+          * only_input *
+            If only_input holds, this method only returns the measured time
+            series of those pumps that are not used for level control,
+            otherwise this method returns the measured time series of all
+            pumps.
+
+        Note that the measured time series of a pump is the sum of the measured
+        time series of its pump lines.
 
         """
         outgoing_timeseries = {}
@@ -437,7 +451,7 @@ class OpenWater(models.Model):
                 if only_input and pumping_station.computed_level_control:
                     continue
                 timeseries = pumping_station.retrieve_sum_timeseries()
-                outgoing_timeseries[pumping_station.id] = timeseries
+                outgoing_timeseries[pumping_station] = timeseries
         return outgoing_timeseries
 
     def retrieve_minimum_level(self):
