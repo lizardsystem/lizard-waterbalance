@@ -4,7 +4,6 @@
 
 import datetime
 import logging
-import random
 import time
 
 from django.core.urlresolvers import reverse

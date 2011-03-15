@@ -26,14 +26,15 @@
 #******************************************************************************
 
 from datetime import datetime
+from optparse import make_option
+from optparse import OptionParser
 from os.path import join
 import csv
-    
+
 from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from timeseries.timeseriesstub import enumerate_events
@@ -95,139 +96,139 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
 
 def export_table(area_slug, start_date, end_date, directory, input_directory):
 
-    
+
 
     #area_slug = 'aetsveldsche-polder-oost'
     #start_date = datetime(1996,1,1)
     #end_date = datetime(2010,1,1)
     #directory = 'c:\\_lizard\\krw-waternet\\local_checkouts\\lizard-waterbalance\\lizard_waterbalance\\testdata'
-    
+
     filename = join(input_directory, "timeserie.csv")
-    
-    
+
+
     timeseries_retriever = TimeseriesRetriever()
     timeseries_retriever.read_timeseries(filename)
-    
+
     area = WaterbalanceArea.objects.filter(slug=area_slug)[0]
-    
+
     area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
     area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
     area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
-    
+
     waterbalance_computer = WaterbalanceComputer2(area)
-    
+
     #tests
     input_ts = waterbalance_computer.get_input_timeseries(start_date, end_date)
-    
+
     buckets = waterbalance_computer.get_buckets_timeseries(start_date, end_date)
-    
+
     #step 3. Summarize according to labels
     buckets_summary = waterbalance_computer.get_bucketflow_summary(start_date, end_date)
-    
+
     #step 4. Get vertical timeseries
     vertical_openwater = waterbalance_computer.get_vertical_open_water_timeseries(start_date, end_date)
-    
+
     #step 5. Get level control
     level_control = waterbalance_computer.get_level_control_timeseries(start_date, end_date)
-    
+
     #step 6. Get sluice_error
     reference_timeseries = waterbalance_computer.get_reference_timeseries(start_date, end_date)
     #sluice_error = waterbalance_computer.get_sluice_error_timeseries(start_date, end_date)
-    
+
     #step 7. Get fractions
     fractions = waterbalance_computer.get_fraction_timeseries(start_date, end_date)
-    
+
     buckets_summary = {"undrained": buckets_summary.undrained,
                        "drained": buckets_summary.drained,
                        "hardened": buckets_summary.hardened,
                        "flow_off": buckets_summary.flow_off,
                        "indraft": buckets_summary.indraft,
                        "totals":buckets_summary.totals}
-    
+
     f = open(join(directory, "bastiaan-bucketoutcome.csv"), "w")
     csvf = csv.writer(f)
-    
+
     #combine cols of table
     header = ['year', 'month', 'day']
     data_cols = []
-    
+
     header+= ['input - precipitation', 'input - evaporation', 'input - seepage']
     data_cols.extend([input_ts['precipitation'], input_ts['evaporation'], input_ts['seepage']])
-    
+
     for bucket, outcome in buckets.iteritems():
         header.append(bucket.name + ' kwel')
         data_cols.append(outcome.seepage)
         header.append(bucket.name + ' netto neerslag')
         data_cols.append(outcome.net_precipitation)
         header.append(bucket.name + ' afstroming')
-        data_cols.append(outcome.flow_off)                 
+        data_cols.append(outcome.flow_off)
         header.append(bucket.name + ' drainage')
         data_cols.append(outcome.net_drainage)
         header.append(bucket.name + ' storage upper bucket')
         data_cols.append(outcome.storage)
-    
+
     for name, outcome in buckets_summary.iteritems():
         header.append('summary ' + name)
-        data_cols.append(outcome)                 
-    
+        data_cols.append(outcome)
+
     csvf.writerow(header)
-    
+
     for event_tuple in enumerate_events(*data_cols):
         row = []
         date = event_tuple[0][0]
         row.extend([date.year, date.month, date.day])
         row.extend([event[1] for event in event_tuple])
         csvf.writerow(row)
-                     
+
     f.close()
-           
+
     f = open(join(directory, "bastiaan-owbalanceoutcome.csv"), "w")
     csvf = csv.writer(f)
-    
+
     #combine cols of table
     header = ['year', 'month', 'day']
     data_cols = []
-    
+
     header+= ['bound - precipitation', 'bound - evaporation', 'bound - seepage']
     data_cols.extend([input_ts['precipitation'], input_ts['evaporation'], input_ts['seepage']])
-    
+
     for name, outcome in buckets_summary.iteritems():
         header.append('bucket_summary ' + name)
         data_cols.append(outcome)
-    
+
     for name, outcome in vertical_openwater.iteritems():
         header.append('ow ' + name)
-        data_cols.append(outcome)   
-    
+        data_cols.append(outcome)
+
     for name, timeserie in input_ts['outgoing_timeseries'].iteritems():
         header.append('fixed_out ' + str(name))
         data_cols.append(timeserie)
-    
+
     for name, timeserie in input_ts['incoming_timeseries'].iteritems():
         header.append('fixed_in ' + str(name))
         data_cols.append(timeserie)
-    
+
     header.append('peilh_in')
     data_cols.append(level_control['level_control']['intake_time_series'])
-        
+
     header.append('peilh_uit')
     data_cols.append(level_control['level_control']['pump_time_series'])
-    
+
     for name, timeserie in level_control['open_water_cnt'].iteritems():
         header.append('ow_result ' + name)
         data_cols.append(timeserie)
-   
+
     csvf.writerow(header)
-    
+
     for event_tuple in enumerate_events(*data_cols):
         row = []
         date = event_tuple[0][0]
         row.extend([date.year, date.month, date.day])
         row.extend([event[1] for event in event_tuple])
         csvf.writerow(row)
-                     
+
     f.close()
-        
+
 
 
 
@@ -235,27 +236,36 @@ def export_table(area_slug, start_date, end_date, directory, input_directory):
 
 
 class Command(BaseCommand):
-    args = "<test-data-directory WaterbalanceArea-name start-date end-date>"
+    args = "test-data-directory WaterbalanceArea-name start-date end-date"
     help = "Calculates the water balance on the first open water."
 
-    def handle(self, *args, **options):
-        method = 1 #hardcoded, option or remove other method?
-        directory = args[0]
-        area_slug = args[1]
-        start_date = datetime.strptime(args[2], "%Y-%m-%d")
-        end_date = datetime.strptime(args[3], "%Y-%m-%d")
+    option_list = BaseCommand.option_list + (
+        make_option("--multiple",
+                    action = "store_false",
+                    dest="export_table",
+                    default=True,
+                    help="store the results in multiple CSV files"),)
 
-        
-        if method == 1:
+    def handle(self, *args, **options):
+
+        parser = OptionParser(option_list=self.option_list)
+        (options, args) = parser.parse_args()
+
+        directory = args[1]
+        area_slug = args[2]
+        start_date = datetime.strptime(args[3], "%Y-%m-%d")
+        end_date = datetime.strptime(args[4], "%Y-%m-%d")
+
+        if options.export_table:
             export_table(area_slug, start_date, end_date, directory, directory)
         else:
             filename = join(directory, "timeserie.csv")
-            
+
             area, waterbalance_computer = create_waterbalance_computer(area_slug, start_date, end_date, filename)
-    
+
             bucket2outcome, level_control, waterbalance_outcome = \
                             waterbalance_computer.compute(area, start_date, end_date)
-    
+
             f = open(join(directory, "intermediate-results.csv"), "w")
             for bucket, outcome in bucket2outcome.items():
                 self.write_timeseries(f, bucket.name, "afstroming", outcome.flow_off)
@@ -269,7 +279,7 @@ class Command(BaseCommand):
             self.write_timeseries(f, "openwater", "inlaat peilbeheer", level_control[0])
             self.write_timeseries(f, "openwater", "pomp peilbeheer", level_control[1])
             f.close()
-    
+
             f = open(join(directory, "Bastiaan-results.csv"), "w")
             f.write("bakje,jaar,maand,dag,berging,afstroming,netto drainage,kwel,netto neerslag\n")
             for bucket, outcome in bucket2outcome.items():
@@ -290,21 +300,21 @@ class Command(BaseCommand):
                     net_precipitation = event_tuple[4][1]
                     f.write("%s,%d,%d,%d,%f,%f,%f,%f,%f\n" % (bucket.name, date.year, date.month, date.day, storage, flow_off, net_drainage, seepage, net_precipitation))
             f.close()
-    
+
             f = open(join(directory, "waterbalance-outcome.csv"), "w")
-    
+
             for key, timeseries in waterbalance_outcome.open_water_timeseries.iteritems():
                 self.write_timeseries(f, "open water timeseries", key, timeseries)
-    
+
             for key, timeseries in waterbalance_outcome.level_control_assignment.iteritems():
                 self.write_timeseries(f, "level control assignment", key, timeseries)
-    
+
             for key, timeseries in waterbalance_outcome.open_water_fractions.iteritems():
                 self.write_timeseries(f, "open water fractions", key, timeseries)
-    
+
             for key, timeseries in waterbalance_outcome.intake_fractions.iteritems():
                 self.write_timeseries(f, "intake fractions", key, timeseries)
-    
+
             # f = open(join(directory, "outcome.csv"), "w")
             # for key, outcome in result.items():
             #     for name, timeseries in outcome.name2timeseries().items():

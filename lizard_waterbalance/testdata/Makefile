@@ -1,5 +1,5 @@
 large: clean
-	time ../../../../bin/django compute_waterbalance . aetsveldsche-polder-oost 1996-01-01 2010-06-30
+	time ../../../../bin/django compute_waterbalance . aetsveldsche-polder-oost 1996-01-01 2010-06-30 --multiple
 	diff intermediate-results.csv expected-intermediate-results.csv
 	diff Bastiaan-results.csv expected-Bastiaan-results.csv
 	diff waterbalance-outcome.csv expected-waterbalance-outcome.csv
