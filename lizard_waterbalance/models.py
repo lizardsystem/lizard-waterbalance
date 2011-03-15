@@ -28,6 +28,7 @@
 import logging
 from datetime import timedelta
 
+from django.contrib.gis.db import models as gis_models
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -863,3 +864,35 @@ class Concentration(models.Model):
     def __unicode__(self):
         substance_name = next((substance[1] for substance in self.SUBSTANCES if substance[0] == self.substance), None)
         return u"%s - %s" % (unicode(substance_name), unicode(self.flow_name))
+
+
+class WaterbalanceShape(gis_models.Model):
+    """
+    Viewer model for the Waterbalance shapefile.
+
+    The shapefile was originally imported using shp2pgsql.
+    """
+    gid = gis_models.IntegerField(primary_key=True)
+    gaf_gaf_id = gis_models.BigIntegerField()
+    richting = gis_models.FloatField()
+    temp_id = gis_models.CharField(max_length=24)
+    objectid = gis_models.BigIntegerField()
+    gaf_id = gis_models.IntegerField()
+    gafident = gis_models.CharField(max_length=24)
+    gaf_gaf__1 = gis_models.BigIntegerField()
+    gafnaam = gis_models.CharField(max_length=50)
+    gafsoort = gis_models.CharField(max_length=50)
+    gafoppvl = gis_models.BigIntegerField()
+    gafbemal = gis_models.SmallIntegerField()
+    gafcode = gis_models.CharField(max_length=20)
+    osmomsch = gis_models.CharField(max_length=60)
+    iws_legrt = gis_models.BigIntegerField()
+    ha = gis_models.DecimalField(max_digits=65535, decimal_places=65535)
+    ha_int = gis_models.IntegerField()
+    hectare = gis_models.DecimalField(max_digits=65535, decimal_places=65535)
+    x = gis_models.DecimalField(max_digits=65535, decimal_places=65535)
+    y = gis_models.DecimalField(max_digits=65535, decimal_places=65535)
+    the_geom = gis_models.MultiPolygonField(srid=-1)
+    objects = gis_models.GeoManager()
+    class Meta:
+        db_table = u'waterbalance_shape'

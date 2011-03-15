@@ -1,10 +1,14 @@
 import logging
 import mapnik
 from django.conf import settings
+from django.contrib.gis.geos import Point
 
 from lizard_map.adapter import Graph
 from lizard_map.coordinates import GOOGLE
+from lizard_map.coordinates import google_to_rd
+from lizard_map.coordinates import RD
 from lizard_map.workspace import WorkspaceItemAdapter
+from lizard_waterbalance.models import WaterbalanceShape
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +25,6 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         super(AdapterWaterbalance, self).__init__(*args, **kwargs)
         self.shape_tablename = 'waterbalance_shape'
 
-
-
     def _mapnik_style(self):
         """
         Temp function to return a default mapnik style
@@ -38,19 +40,21 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
                 rule.filter = mapnik.Filter(mapnik_filter)
             mapnik_color = mapnik.Color(r, g, b)
 
-            symb_line = mapnik.LineSymbolizer(mapnik_color, 3)
+            symb_line = mapnik.LineSymbolizer(mapnik_color, 0)
             rule.symbols.append(symb_line)
 
             symb_poly = mapnik.PolygonSymbolizer(mapnik_color)
-            symb_poly.fill_opacity = 0.5
+            symb_poly.fill_opacity = 1
             rule.symbols.append(symb_poly)
             return rule
 
         mapnik_style = mapnik.Style()
         rule = mapnik_rule(255, 0 ,0)
         mapnik_style.rules.append(rule)
+        for gid in range(100):
+            rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
+            mapnik_style.rules.append(rule)
         return mapnik_style
-
 
     def layer(self, layer_ids=None, request=None):
         """Return layer and styles for a parameter.
@@ -58,13 +62,13 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         layers = []
         styles = {}
 
-        table_view = ('(select the_geom, objectid from %s) '
+        table_view = ('(select the_geom, gid from %s) '
                       '%s' % (
                 self.shape_tablename, self.shape_tablename))
         mapnik_style = self._mapnik_style()
 
         lyr = mapnik.Layer('Geometry from PostGIS')
-        lyr.srs = GOOGLE
+        lyr.srs = RD  #GOOGLE
         BUFFERED_TABLE = table_view
         db_settings = settings.DATABASES['default']
         lyr.datasource = mapnik.PostGIS(
@@ -73,14 +77,25 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             password=db_settings['PASSWORD'],
             dbname=db_settings['NAME'],
             table=str(BUFFERED_TABLE))
+        style_name = 'waterbalance_style'
+        lyr.styles.append(style_name)
 
         layers.append(lyr)
-        styles['waterbalance_style'] = mapnik_style
+        styles[style_name] = mapnik_style
 
         return layers, styles
 
     def search(self, x, y, radius=None):
-        results = []
+        rd_x, rd_y = google_to_rd(x, y)
+        results = [{
+                'distance': 0,
+                'name': wb_shape.gafnaam,
+                'shortname': wb_shape.gafnaam,
+                'workspace_item': self.workspace_item,
+                'identifier': {},
+                'object': wb_shape}
+                   for wb_shape in WaterbalanceShape.objects.filter(
+                the_geom__contains=Point(rd_x, rd_y))]
         return results
 
     def symbol_url(self, identifier=None, start_date=None,
@@ -88,13 +103,17 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         """
         Returns symbol.
         """
-        return super(AdapterWaterbalance, self).symbol_url()
-            # identifier=identifier,
-            # start_date=start_date,
-            # end_date=end_date,
-            # icon_style=icon_style)
+        icon_style = {'icon': 'meetpuntPeil.png',
+                      'mask': ('meetpuntPeil_mask.png', ),
+                      'color': (0, 0, 1, 0)}
 
-    def location(self, parameter):
+        return super(AdapterWaterbalance, self).symbol_url(
+            identifier=identifier,
+            start_date=start_date,
+            end_date=end_date,
+            icon_style=icon_style)
+
+    def location(self, parameter=None, layout=None):
         result = []
         return result
 

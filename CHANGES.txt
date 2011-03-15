@@ -5,8 +5,9 @@ Changelog of lizard-waterbalance
 0.12 (unreleased)
 -----------------
 
-- The Fews timeseries must have a timestep of "dag GMT+1" or "dag GMT-8" :).
+- Added adapter and map functionality.
 
+- The Fews timeseries must have a timestep of "dag GMT+1" or "dag GMT-8" :)
 - The methods to enumerate the events of multiple time series could not handle
   time series whose dates had different time stamps.
 
