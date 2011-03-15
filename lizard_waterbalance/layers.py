@@ -59,6 +59,10 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         for gid in range(100):
             rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
             mapnik_style.rules.append(rule)
+        # rule = mapnik_rule(0, 255, 0, '[value] <= 75')
+        # mapnik_style.rules.append(rule)
+        # rule = mapnik_rule(255, 0, 0, '[value] > 75')
+        # mapnik_style.rules.append(rule)
         return mapnik_style
 
     def layer(self, layer_ids=None, request=None):
@@ -68,8 +72,18 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         styles = {}
 
         table_view = ('(select the_geom, gid from %s) '
-                      '%s' % (
-                self.shape_tablename, self.shape_tablename))
+                      'result_view' % (
+                self.shape_tablename))
+        # table_view = ('(select the_geom, gid, value from %s '
+        #               'inner join lizard_waterbalance_timeseries '
+        #               #'as timeseries '
+        #               'on waterbalance_shape.gafnaam = lizard_waterbalance_timeseries.name '
+        #               'inner join lizard_waterbalance_timeseriesevent '
+        #               #'as timeseriesevent '
+        #               'on lizard_waterbalance_timeseries.id = lizard_waterbalance_timeseriesevent.timeseries_id '
+        #               'where lizard_waterbalance_timeseriesevent.time = \'2011-03-01\') '
+        #               'result_view' % (
+        #         self.shape_tablename))
         mapnik_style = self._mapnik_style()
 
         lyr = mapnik.Layer('Geometry from PostGIS')
