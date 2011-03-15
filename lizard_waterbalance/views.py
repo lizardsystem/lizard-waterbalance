@@ -345,27 +345,29 @@ def retrieve_horizon(request):
                                      59)
     return start_datetime, end_datetime
 
-# @profile("waterbalance_area_graph.prof")
-def waterbalance_area_graph(request,
-                            name,
-                            area=None,
-                            graph_type=None):
-    """Draw the graph for the given area and of the given type."""
 
-    period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
+def draw_waterbalance_area_graph(
+    area_slug, graph_type,
+    period,
+    start_date, end_date,
+    start_datetime, end_datetime,
+    width, height):
+    """Draw the graph for the given area and of the given type.
 
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
-    krw_graph = Graph(start_date, end_date, width, height)
+    area_slug: i.e. artsveldsche-polder-oost
+    period: i.e. 'month'
+    start_date, end_date: start and enddate for graph
+    start_datetime, end_datetime: start and enddate for calculation
+    width, height: width and height of output image
+    """
 
-    krw_graph.suptitle("Waterbalans [m3]")
+    graph = Graph(start_date, end_date, width, height)
+
+    graph.suptitle("Waterbalans [m3]")
 
     bar_width = BAR_WIDTH[period]
 
-    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    outcome = waterbalance_graph_data(area_slug, start_datetime, end_datetime)
 
     t1 = time.time()
 
@@ -404,8 +406,8 @@ def waterbalance_area_graph(request,
     colors = ['#' + get_timeseries_label(name).color for name in names]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
-    krw_graph.legend_space()
-    krw_graph.legend(handles, names)
+    graph.legend_space()
+    graph.legend(handles, names)
 
     for bars in [incoming_bars, outgoing_bars]:
         top_height = TopHeight()
@@ -419,17 +421,44 @@ def waterbalance_area_graph(request,
 
             color = '#' + label.color
             bottom = top_height.get_heights(times)
-            krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
+            graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
             top_height.stack_bars(times, values)
 
     t2 = time.time()
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
 
-    canvas = FigureCanvas(krw_graph.figure)
+    return graph
+
+
+# @profile("waterbalance_area_graph.prof")
+def waterbalance_area_graph(request,
+                            name,
+                            area=None,
+                            graph_type=None):
+    """Fetch parameters and call draw_waterbalance_area_graph.
+    """
+
+    period = request.GET.get('period', 'month')
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
+
+    width = request.GET.get('width', 1600)
+    height = request.GET.get('height', 400)
+
+    graph = draw_waterbalance_area_graph(
+        area, graph_type,
+        period,
+        start_date, end_date,
+        start_datetime, end_datetime,
+        width, height)
+
+    canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
+
 
 def waterbalance_water_level(request,
                              name,
@@ -677,7 +706,7 @@ def waterbalance_phosphate_impact(request,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').minimum),
             ("verhard (incr)", "verhard (min)",
              outcome.open_water_timeseries["hardened"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
+            waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
              waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').minimum),
             ("gedraineerd (incr)", "gedraineerd (min)",
              outcome.open_water_timeseries["drained"],
