@@ -10,6 +10,9 @@ from lizard_map.coordinates import RD
 from lizard_map.workspace import WorkspaceItemAdapter
 from lizard_waterbalance.models import WaterbalanceShape
 
+# testing
+from lizard_waterbalance.views import waterbalance_area_graph
+
 logger = logging.getLogger(__name__)
 
 
@@ -24,6 +27,8 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
     def __init__(self, *args, **kwargs):
         super(AdapterWaterbalance, self).__init__(*args, **kwargs)
         self.shape_tablename = 'waterbalance_shape'
+        # See views.IMPLEMENTED_GRAPH_TYPES
+        self.graph_type = self.layer_arguments['parameter']
 
     def _mapnik_style(self):
         """
@@ -103,9 +108,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         """
         Returns symbol.
         """
-        icon_style = {'icon': 'meetpuntPeil.png',
-                      'mask': ('meetpuntPeil_mask.png', ),
-                      'color': (0, 0, 1, 0)}
+        icon_style = {'icon': 'polygon.png',
+                      'mask': ('mask.png', ),
+                      'color': (0, 1, 0, 0)}
 
         return super(AdapterWaterbalance, self).symbol_url(
             identifier=identifier,

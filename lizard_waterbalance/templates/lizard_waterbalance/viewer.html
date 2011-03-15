@@ -9,10 +9,13 @@
   </h2>
   <ul id="area-pane"
       class="automatic-tree filetree pane">
+    {% for graph_type, graph_name in graph_types %}
     <li class="workspace-acceptable"
-        data-name="Test Parameter WB"
+        data-name="{{ graph_type }}"
         data-adapter-class="adapter_waterbalance"
-        data-adapter-layer-json="{}">Parameter</li>
+        data-adapter-layer-json='{"parameter": "{{ graph_type }}"}'>
+    {{ graph_name }}</li>
+    {% endfor %}
   </ul>
 </div>
 
