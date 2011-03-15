@@ -55,11 +55,13 @@ function activate_adjustment_form_action(event) {
     var url;
     event.preventDefault();
     url = $("#activate-adjustment-form").attr("href");
-    $("#adjustment-form").load(url + " #form");
-    $("#adjustment-form").show();
-    $("#adjustment-form").addClass("not-evenly-spaced");
-    divideVerticalSpaceEqually();
-    reloadGraphs();
+    $("#adjustment-form").load(url + " #form", function() {
+        $("#adjustment-form").show();
+        $("#adjustment-form").addClass("not-evenly-spaced");
+        divideVerticalSpaceEqually();
+        reloadGraphs();
+        $("ul.tabs").tabs("div.panes > div");    
+    });
 }
 
 
@@ -82,6 +84,7 @@ function waterbalance_area_click_handler(x, y, map) {
             redirect_to_area(data);
         });
 }
+
 
 $(document).ready(function () {
     $("input#graph-type-select-submit").click(graph_type_select);

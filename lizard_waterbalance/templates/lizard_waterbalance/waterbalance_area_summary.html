@@ -4,6 +4,13 @@
 
 {% block subtitle %} {{ water_body.name }} {% endblock %}
 
+{% block css %}
+{{ block.super }}
+<link type="text/css"
+      href="{{ STATIC_URL }}lizard_waterbalance/lizard_waterbalance.css"
+      rel="stylesheet" />
+{% endblock %}
+
 {% block portal-tabs %}
 {{ block.super }}
 <div id="portal-tab-selected" data-selected="#portal-tab-waterbalance"></div>
