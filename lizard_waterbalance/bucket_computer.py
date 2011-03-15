@@ -30,14 +30,14 @@ import logging
 
 from lizard_waterbalance.models import Bucket
 
-from lizard_waterbalance.timeseriesstub import add_timeseries
-from lizard_waterbalance.timeseriesstub import create_empty_timeseries
-from lizard_waterbalance.timeseriesstub import enumerate_events
-from lizard_waterbalance.timeseriesstub import multiply_timeseries
-from lizard_waterbalance.timeseriesstub import split_timeseries
-from lizard_waterbalance.timeseriesstub import subtract_timeseries
-from lizard_waterbalance.timeseriesstub import TimeseriesStub
-from lizard_waterbalance.timeseriesstub import TimeseriesRestrictedStub
+from timeseries.timeseriesstub import add_timeseries
+from timeseries.timeseriesstub import create_empty_timeseries
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import multiply_timeseries
+from timeseries.timeseriesstub import split_timeseries
+from timeseries.timeseriesstub import subtract_timeseries
+from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
 
 class BucketOutcome:
