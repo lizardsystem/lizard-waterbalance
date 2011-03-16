@@ -1,4 +1,4 @@
-<mockup version="1.0" skin="sketch" measuredW="1144" measuredH="626" mockupW="1137" mockupH="589">
+<mockup version="1.0" skin="sketch" measuredW="1086" measuredH="626" mockupW="1079" mockupH="589">
   <controls>
     <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="173" y="37" w="913" h="589" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
@@ -43,85 +43,85 @@
         <text>%28o%29%20Cumulatief%20per%20jaar%0A%28%20%29%20Cumulatief%20per%20halfjaar%0A%28%20%29%20Cumulatief%20per%20maand</text>
       </controlProperties>
     </control>
-    <control controlID="36" controlTypeID="com.balsamiq.mockups::Button" x="205" y="268" w="-1" h="-1" measuredW="99" measuredH="28" zOrder="10" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Herbereken</text>
-      </controlProperties>
-    </control>
-    <control controlID="37" controlTypeID="com.balsamiq.mockups::Button" x="389" y="268" w="-1" h="-1" measuredW="53" measuredH="28" zOrder="11" locked="false" isInGroup="-1">
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Button" x="205" y="268" w="-1" h="-1" measuredW="53" measuredH="28" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Toon</text>
       </controlProperties>
     </control>
-    <control controlID="38" controlTypeID="com.balsamiq.mockups::Canvas" x="486" y="408" w="585" h="180" measuredW="100" measuredH="70" zOrder="12" locked="false" isInGroup="-1"/>
-    <control controlID="39" controlTypeID="com.balsamiq.mockups::VerticalScrollBar" x="1052" y="412" w="-1" h="176" measuredW="16" measuredH="100" zOrder="13" locked="false" isInGroup="-1"/>
-    <control controlID="42" controlTypeID="com.balsamiq.mockups::ColumnChart" x="513" y="190" w="-1" h="-1" measuredW="187" measuredH="175" zOrder="14" locked="false" isInGroup="-1"/>
-    <control controlID="43" controlTypeID="com.balsamiq.mockups::TabBar" x="497" y="419" w="555" h="161" measuredW="455" measuredH="100" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Canvas" x="487" y="385" w="585" h="203" measuredW="100" measuredH="70" zOrder="11" locked="false" isInGroup="-1"/>
+    <control controlID="42" controlTypeID="com.balsamiq.mockups::ColumnChart" x="513" y="190" w="-1" h="-1" measuredW="187" measuredH="175" zOrder="12" locked="false" isInGroup="-1"/>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::TabBar" x="497" y="419" w="555" h="127" measuredW="454" measuredH="100" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Algemeen%2C%20Open%20water%2C%20Bakjes%2C%20Meetreeksen%2C%20Logboek</text>
       </controlProperties>
     </control>
-    <control controlID="44" controlTypeID="com.balsamiq.mockups::Link" x="354" y="305" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Link" x="354" y="305" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="50" controlTypeID="com.balsamiq.mockups::Link" x="353" y="325" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Link" x="353" y="325" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::Link" x="354" y="345" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Link" x="354" y="345" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="52" controlTypeID="com.balsamiq.mockups::Link" x="354" y="365" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::Link" x="354" y="365" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="53" controlTypeID="com.balsamiq.mockups::Link" x="354" y="385" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Link" x="354" y="385" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="54" controlTypeID="com.balsamiq.mockups::Link" x="354" y="409" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Link" x="354" y="409" w="-1" h="-1" measuredW="37" measuredH="20" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <size>10</size>
         <text>export</text>
       </controlProperties>
     </control>
-    <control controlID="56" controlTypeID="com.balsamiq.mockups::Button" x="491" y="120" w="-1" h="-1" measuredW="71" measuredH="28" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::Button" x="491" y="120" w="-1" h="-1" measuredW="71" measuredH="28" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Periode</text>
       </controlProperties>
     </control>
-    <control controlID="57" controlTypeID="com.balsamiq.mockups::StickyNote" x="577" y="115" w="271" h="113" measuredW="109" measuredH="123" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::StickyNote" x="577" y="115" w="271" h="113" measuredW="109" measuredH="123" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <size>13</size>
         <text>Periode%20op%20de%20horizontale%20as%20%28we%20berekenen%20alles%20van%201-1-1996%20t/m%20vandaag%29</text>
       </controlProperties>
     </control>
-    <control controlID="58" controlTypeID="com.balsamiq.mockups::StickyNote" x="630" y="503" w="233" h="123" measuredW="109" measuredH="123" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::StickyNote" x="630" y="503" w="233" h="123" measuredW="109" measuredH="123" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>allen%20zichtbaar%20als%20de%20gebruiker%20is%20ingelogd</text>
       </controlProperties>
     </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::StickyNote" x="930" y="420" w="214" h="75" measuredW="109" measuredH="123" zOrder="25" locked="false" isInGroup="-1">
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::StickyNote" x="771" y="434" w="214" h="75" measuredW="109" measuredH="123" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Logboek%20is%20nice-to-have</text>
       </controlProperties>
     </control>
-    <control controlID="60" controlTypeID="com.balsamiq.mockups::StickyNote" x="7" y="190" w="205" h="133" measuredW="109" measuredH="123" zOrder="26" locked="false" isInGroup="-1">
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::StickyNote" x="7" y="190" w="205" h="133" measuredW="109" measuredH="123" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Aanduiding%20%22basis%20scenario%22%20mag%20hardgecodeerd%20zijn%3A%20scenario%27s%20zijn%20nice-to-have%20voor%2030%20maart</text>
       </controlProperties>
     </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Button" x="502" y="550" w="-1" h="-1" measuredW="99" measuredH="28" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Herbereken</text>
+      </controlProperties>
+    </control>
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::VerticalScrollBar" x="1034" y="447" w="-1" h="99" measuredW="16" measuredH="100" zOrder="26" locked="false" isInGroup="-1"/>
   </controls>
 </mockup>

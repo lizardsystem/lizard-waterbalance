@@ -2,21 +2,21 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.12 (unreleased)
+0.12 (2011-03-16)
 -----------------
+
+- Fixed minor bugs in the computation of the waterbalances.
 
 - Added adapter and map functionality to support waterbalances in a
   geographical environment.
 
-- Added support for Fews timeseries must with timestep of "dag GMT+1"
-  and "dag GMT-8" :)
+- Added support for Fews timeseries with timestep of "dag GMT-8", next to "dag
+  GMT+1" :)
 
-- Fixed the methods to enumerate the events of multiple time
-  series. Previously they could not handle time series whose dates had
-  different time stamps.
-
-- The time series functionality has been moved to the separate library
-  'timeseries'.
+- Moved the time series functionality to the separate library 'timeseries',
+  version 0.2. Version 0.2 contains a fix for the enumeration of multiple time
+  series, which could not handle time series whose dates had different time
+  stamps.
 
 
 0.11 (2011-03-10)

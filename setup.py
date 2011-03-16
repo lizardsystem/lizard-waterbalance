@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.12dev'
+version = '0.12'
 
 long_description = '\n\n'.join([
     open('README.txt').read(),
@@ -18,7 +18,7 @@ install_requires = [
     'lizard-map',
     'lizard-shape',
     'lizard-ui >= 1.53',
-    'timeseries',
+    'timeseries >= 0.2',
     'xlrd',
     ],
 
