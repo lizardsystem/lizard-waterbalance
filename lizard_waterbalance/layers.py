@@ -1,9 +1,11 @@
+import datetime
 import logging
 import mapnik
 from django.conf import settings
 from django.contrib.gis.geos import Point
 
 from lizard_map.adapter import Graph
+from lizard_map.animation import AnimationSettings
 from lizard_map.coordinates import GOOGLE
 from lizard_map.coordinates import google_to_rd
 from lizard_map.coordinates import RD
@@ -23,6 +25,8 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
 
     Uses default database table "waterbalance_shape" as geo database.
     """
+
+    is_animatable = True
 
     def __init__(self, *args, **kwargs):
         super(AdapterWaterbalance, self).__init__(*args, **kwargs)
@@ -56,34 +60,41 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         mapnik_style = mapnik.Style()
         rule = mapnik_rule(255, 0 ,0)
         mapnik_style.rules.append(rule)
-        for gid in range(100):
-            rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
-            mapnik_style.rules.append(rule)
-        # rule = mapnik_rule(0, 255, 0, '[value] <= 75')
-        # mapnik_style.rules.append(rule)
-        # rule = mapnik_rule(255, 0, 0, '[value] > 75')
-        # mapnik_style.rules.append(rule)
+        # for gid in range(100):
+        #     rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
+        #     mapnik_style.rules.append(rule)
+        rule = mapnik_rule(0, 255, 0, '[value] <= 75')
+        mapnik_style.rules.append(rule)
+        rule = mapnik_rule(255, 0, 0, '[value] > 75')
+        mapnik_style.rules.append(rule)
         return mapnik_style
 
     def layer(self, layer_ids=None, request=None):
         """Return layer and styles for a parameter.
+
+        request contains the animation settings.
         """
         layers = []
         styles = {}
 
-        table_view = ('(select the_geom, gid from %s) '
-                      'result_view' % (
-                self.shape_tablename))
-        # table_view = ('(select the_geom, gid, value from %s '
-        #               'inner join lizard_waterbalance_timeseries '
-        #               #'as timeseries '
-        #               'on waterbalance_shape.gafnaam = lizard_waterbalance_timeseries.name '
-        #               'inner join lizard_waterbalance_timeseriesevent '
-        #               #'as timeseriesevent '
-        #               'on lizard_waterbalance_timeseries.id = lizard_waterbalance_timeseriesevent.timeseries_id '
-        #               'where lizard_waterbalance_timeseriesevent.time = \'2011-03-01\') '
+        animation_settings = AnimationSettings(request)
+        selected_date = animation_settings.info()['selected_date']
+
+        # table_view = ('(select the_geom, gid from %s) '
         #               'result_view' % (
         #         self.shape_tablename))
+        #s = selected_date.strftime('%Y-%m-%d')
+        table_view = (
+            '(select the_geom, gid, value from %s '
+            'inner join lizard_waterbalance_timeseries '
+            #'as timeseries '
+            'on waterbalance_shape.gafnaam = lizard_waterbalance_timeseries.name '
+            'inner join lizard_waterbalance_timeseriesevent '
+            #'as timeseriesevent '
+            'on lizard_waterbalance_timeseries.id = lizard_waterbalance_timeseriesevent.timeseries_id '
+            'where lizard_waterbalance_timeseriesevent.time = \'%s\') '
+            'result_view' % (
+                self.shape_tablename, selected_date.strftime('%Y-%m-01')))
         mapnik_style = self._mapnik_style()
 
         lyr = mapnik.Layer('Geometry from PostGIS')
