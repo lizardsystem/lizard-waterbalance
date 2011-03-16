@@ -6,6 +6,7 @@ import datetime
 import logging
 import time
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.http import HttpResponse
@@ -924,6 +925,8 @@ def _sub_edit(request,
             form = form_class(request.POST, instance=instance)
             if form.is_valid():
                 form.save()
+                messages.success(request, 
+                                 u"Gegevens zijn opgeslagen.")
         else:
             form = form_class(instance=instance)            
 

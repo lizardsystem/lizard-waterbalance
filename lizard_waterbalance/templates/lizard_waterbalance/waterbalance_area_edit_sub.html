@@ -1,4 +1,9 @@
-<!-- TODO status message? -->
+{% if messages %}
+{% for message in messages %}
+<div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+{% endfor %}
+{% endif %}
+
 <form method="POST"
       action="{{ form_url }}"
       id="edit-sub-form">
