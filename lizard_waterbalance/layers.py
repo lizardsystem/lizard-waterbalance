@@ -10,6 +10,7 @@ from lizard_map.coordinates import GOOGLE
 from lizard_map.coordinates import google_to_rd
 from lizard_map.coordinates import RD
 from lizard_map.workspace import WorkspaceItemAdapter
+from lizard_waterbalance.models import Timeseries
 from lizard_waterbalance.models import WaterbalanceShape
 
 # testing
@@ -122,7 +123,7 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
                 'name': wb_shape.gafnaam,
                 'shortname': wb_shape.gafnaam,
                 'workspace_item': self.workspace_item,
-                'identifier': {},
+                'identifier': {'parameter': wb_shape.gafnaam},
                 'object': wb_shape}
                    for wb_shape in WaterbalanceShape.objects.filter(
                 the_geom__contains=Point(rd_x, rd_y))]
@@ -144,7 +145,10 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             icon_style=icon_style)
 
     def location(self, parameter=None, layout=None):
-        result = []
+        result = {
+            'name': parameter,  # This is displayed in the popup
+            'identifier': {'parameter': parameter}
+            }
         return result
 
     def html(self, snippet_group=None, identifiers=None, layout_options=None):
@@ -159,6 +163,23 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         today = datetime.datetime.now()
         graph = Graph(start_date, end_date,
                       width=width, height=height, today=today)
+
+        line_styles = self.line_styles(identifiers)
+        today = datetime.datetime.now()
+
+        for identifier in identifiers:
+            timeseries = Timeseries.objects.get(name='De Nieuwe Bullewijk')
+            dates = []
+            values = []
+            for ts_event in timeseries.timeseries_events.all().order_by(
+                'time'):
+
+                dates.append(ts_event.time)
+                values.append(ts_event.value)
+            graph.axes.plot(dates, values,
+                            lw=1,
+                            color=line_styles[str(identifier)]['color'],
+                            label=timeseries.name)
 
         graph.add_today()
         return graph.http_png()
