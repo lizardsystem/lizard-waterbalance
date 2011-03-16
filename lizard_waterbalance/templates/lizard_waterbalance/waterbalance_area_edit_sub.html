@@ -1,0 +1,40 @@
+<!-- TODO status message? -->
+<form method="POST"
+      action="{{ form_url }}"
+      id="edit-sub-form">
+  {% csrf_token %}
+  <table>
+    <tbody>
+      {% for item in fixed_items %}
+      <tr>
+        <th title="{{ item.title }}">
+          {{ item.name }}
+        </th>
+        <td>
+          {{ item.value }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% if form %}
+      {% for field in form %}
+      <tr>
+        <th title="{{ field.help_text }}">
+          {{ field.label }}
+        </th>
+        <td>
+          {{ field }}
+          {{ field.errors }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+  {% if form %}
+  <p>
+    <input type="submit"
+           id="edit-sub-form-submit"
+           value="Opslaan" />
+  </p>
+  {% endif %}
+</form>

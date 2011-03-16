@@ -2,14 +2,17 @@ import django.forms as forms
 from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Filter
-from lizard_fewsunblobbed.models import Location
 from lizard_fewsunblobbed.models import Parameter
 from lizard_fewsunblobbed.models import Timeserie
 
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import TimeseriesFews
+from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceTimeserie
-from lizard_waterbalance.views import create_location_label
+
+
+def create_location_label(location):
+    return location.name + ", pkey %d" % location.lkey
 
 
 class PumpingStationForm(forms.ModelForm):
@@ -114,3 +117,11 @@ class WaterbalanceTimeserieForm(forms.ModelForm):
     class Meta:
         model = WaterbalanceTimeserie
         exclude = ['label', 'chloride', 'phosphate', 'nitrate', 'sulfate']
+
+
+class WaterbalanceAreaEditForm(forms.ModelForm):
+    """Front-end edit form for a waterbalance area.
+    """
+    class Meta:
+        model = WaterbalanceArea
+        fields = ['description']

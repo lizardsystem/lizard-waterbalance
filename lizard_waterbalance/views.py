@@ -27,6 +27,8 @@ from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
+from lizard_waterbalance.forms import WaterbalanceAreaEditForm
+from lizard_waterbalance.forms import create_location_label
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
@@ -851,10 +853,6 @@ def graph_select(request):
         return HttpResponse("Should not be run this way.")
 
 
-def create_location_label(location):
-    return location.name + ", pkey %d" % location.lkey
-
-
 def search_fews_lkeys(request):
     if request.is_ajax():
         pkey = request.POST['pkey']
@@ -885,9 +883,9 @@ def recalculate_graph_data(request, area=None):
 
 
 def waterbalance_area_edit(request,
-                              area=None,
-                              template='lizard_waterbalance/waterbalance_area_edit.html',
-                              crumbs_prepend=None):
+                           area=None,
+                           template='lizard_waterbalance/waterbalance_area_edit.html',
+                           crumbs_prepend=None):
     """Show the edit page of the named WaterbalanceArea.
 
     Injected with ajax into the waterbalance_area_summary page.
@@ -898,29 +896,69 @@ def waterbalance_area_edit(request,
 
     """
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
-
-    date_range_form = DateRangeForm(
-        current_start_end_dates(request, for_form=True))
-
-    if crumbs_prepend is None:
-        crumbs = [{'name': 'home', 'url': '/'}]
-    else:
-        crumbs = list(crumbs_prepend)
-    crumbs.append({'name': 'Waterbalans overzicht',
-                   'title': 'Waterbalans overzicht',
-                   'url': reverse('waterbalance_start')})
-
-    kwargs = {'area': waterbalance_area.slug}
-    crumbs.append({'name': waterbalance_area.name,
-                   'title': waterbalance_area.name,
-                   'url': reverse('waterbalance_area_summary', kwargs=kwargs)})
-
-    crumbs.append({'name': 'bewerken',
-                   'title': None,
-                   'url': None})
-
     return render_to_response(
         template,
         {'waterbalance_area': waterbalance_area,
-         'crumbs': crumbs},
+         },
         context_instance=RequestContext(request))
+
+
+def _sub_edit(request,
+              instance=None,
+              template=None,
+              fixed_field_names=None,
+              form_class=None,
+              form_url=None):
+    if template is None:
+        template = 'lizard_waterbalance/waterbalance_area_edit_sub.html'
+    fixed_items = []
+    for fixed_field_name in fixed_field_names:
+        field = instance._meta.get_field(fixed_field_name)
+        fixed_items.append(dict(
+                name=field.verbose_name.capitalize(),
+                title=field.help_text,
+                value=getattr(instance, fixed_field_name)))
+    form = None
+    if form_class is not None:
+        if request.method == 'POST':
+            form = form_class(request.POST, instance=instance)
+            if form.is_valid():
+                form.save()
+        else:
+            form = form_class(instance=instance)            
+
+    return render_to_response(
+        template,
+        {'fixed_items': fixed_items,
+         'form': form,
+         'form_url': form_url,
+         },
+        context_instance=RequestContext(request))
+
+
+def waterbalance_area_edit_sub1(request,
+                                area=None,
+                                template=None):
+    instance = get_object_or_404(WaterbalanceArea, slug=area)
+    fixed_field_names = ['name']
+    form_class = WaterbalanceAreaEditForm
+    form_url = reverse('waterbalance_area_edit_sub1', kwargs={'area': area})
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     form_class=form_class,
+                     form_url=form_url,
+                     )
+
+
+def waterbalance_area_edit_sub2(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=['name'],
+                     )

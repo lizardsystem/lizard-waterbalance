@@ -1,7 +1,7 @@
 // jslint configuration
 /*jslint browser: true */
 /*global $, OpenLayers, window, verticalItemHeight, mainContentWidth, restretchExistingElements
-show_popup, nothingFoundPopup */
+divideVerticalSpaceEqually, reloadGraphs, show_popup, nothingFoundPopup */
 
 
 function graph_type_select(event) {
@@ -55,12 +55,40 @@ function activate_adjustment_form_action(event) {
     var url;
     event.preventDefault();
     url = $("#activate-adjustment-form").attr("href");
-    $("#adjustment-form").load(url + " #form", function() {
+    $("#adjustment-form").load(url + " #form", function () {
         $("#adjustment-form").show();
         $("#adjustment-form").addClass("not-evenly-spaced");
         divideVerticalSpaceEqually();
         reloadGraphs();
-        $("ul.tabs").tabs("div.panes > div");    
+        $("ul.tabs").tabs("div.panes > div", {effect: 'ajax'});    
+    });
+}
+
+
+function adjustment_form_submit(event) {
+    var $form, url, $button, original_text;
+    event.preventDefault();
+    $form = $("#edit-sub-form");
+    $button = $("#edit-sub-form-submit");
+    url = $form.attr("action");
+    original_text = $button.attr("value");
+    $button.attr("value", "Bezig...");
+    $button.attr("disabled", "true");
+    $.ajax({
+        url: url,
+        data: $form.serialize(),
+        type: "POST",
+        success: function (data, textStatus, xhr) {
+            $button.attr("value", original_text);
+            $button.removeAttr("disabled");
+            reloadGraphs();
+            $("#edit-sub-form").parent().html(data);
+        },
+        error: function (data, textStatus, xhr) {
+            $button.attr("value", original_text);
+            $button.removeAttr("disabled");
+            $("#edit-sub-form").parent().html(data);
+        }
     });
 }
 
@@ -90,5 +118,6 @@ $(document).ready(function () {
     $("input#graph-type-select-submit").click(graph_type_select);
     $("input#recalculate-submit").click(recalculate_action);
     $("#activate-adjustment-form").click(activate_adjustment_form_action);
+    $("#edit-sub-form-submit").live('click', adjustment_form_submit);
 });
 
