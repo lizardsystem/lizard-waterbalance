@@ -965,3 +965,54 @@ def waterbalance_area_edit_sub2(request,
                      template=template,
                      fixed_field_names=['name'],
                      )
+
+def waterbalance_area_edit_sub3(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    fixed_field_names = []
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     )
+
+
+def waterbalance_area_edit_sub4(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    fixed_field_names = []
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     )
+
+
+def waterbalance_area_edit_sub5(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    fixed_field_names = []
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     )
+
+
+def waterbalance_area_edit_sub6(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    fixed_field_names = []
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     )
