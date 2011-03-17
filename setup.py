@@ -17,7 +17,7 @@ install_requires = [
     'lizard-fewsunblobbed',
     'lizard-map',
     'lizard-shape',
-    'lizard-ui >= 1.53',
+    'lizard-ui > 1.53',
     'timeseries >= 0.2',
     'xlrd',
     ],

@@ -14,13 +14,14 @@ function graph_type_select(event) {
         data: $form.serialize(),
         type: "POST",
         success: function (data, textStatus, xhr) {
-            $('div#evenly-spaced-vertical').html("");
+            $('div#evenly-spaced-vertical .vertical-item').remove();
             $.each(data, function (index, val) {
                 // console.log(val);
                 div = $("<div/>").addClass('vertical-item').addClass('img-use-my-size');
                 div.append($("<a/>").addClass('replace-with-image').attr('href', val).attr(
                     'data-errormsg', 'Waarschijnlijk is niet alle data ingevuld'));
-                $('div#evenly-spaced-vertical').append(div);
+                // $('div#evenly-spaced-vertical').append(div);
+                div.insertBefore('#adjustment-form');
             });
             restretchExistingElements();
         }
@@ -57,7 +58,7 @@ function activate_adjustment_form_action(event) {
     url = $("#activate-adjustment-form").attr("href");
     $("#adjustment-form").load(url + " #form", function () {
         $("#adjustment-form").show();
-        $("#adjustment-form").addClass("not-evenly-spaced");
+        $("#adjustment-form").addClass("double-vertical-item");
         divideVerticalSpaceEqually();
         reloadGraphs();
         $("ul.tabs").tabs("div.panes > div", {effect: 'ajax'});    
