@@ -495,6 +495,8 @@ def waterbalance_water_level(request,
     if graph_type == "waterpeil_met_sluitfout":
         sluice_error = TimeseriesStub()
         previous_year = None
+        # We have computed the sluice error in [m3/day], however we will display it
+        # as a difference in water level, so [m/day]. We make that translation here.
         for event in outcome.open_water_timeseries["sluice error"].events():
             date = event[0]
             if previous_year is None or previous_year < date.year:
@@ -753,6 +755,8 @@ def waterbalance_phosphate_impact(request,
     top_height = TopHeight()
 
     for index in range(2):
+        # if index == 0, we are talking about the minimum values,
+        # if index == 1, we are talking about the incremental values
         for bar in bars:
             label = get_timeseries_label(bar[1-index])
             discharge = bar[2]
