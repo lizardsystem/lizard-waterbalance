@@ -35,15 +35,11 @@ from django.core.management.base import BaseCommand
 
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
-
-
-
-
 
 
 name2name = dict([("evaporation", "verdamping"),
@@ -66,7 +62,7 @@ def retrieve_timeseries(timeseries_retriever, name, start_date, end_date):
     return timeseries
 
 def create_waterbalance_computer(area_slug, start_date, end_date, filename):
-    """Return a WaterbalanceArea and a WaterbalanceComputer for it
+    """Return a WaterbalanceConf and a WaterbalanceComputer for it
 
     The Waterbalancecomputer has some of its input data hard coded.
 
@@ -80,18 +76,18 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
     timeseries_retriever = TimeseriesRetriever()
     timeseries_retriever.read_timeseries(filename)
 
-    area = WaterbalanceArea.objects.filter(slug=area_slug)[0]
-    assert not area is None
+    configuration = WaterbalanceConf.objects.filter(slug=area_slug)[0]
+    assert not configuration is None
 
-    area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
-    area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
-    area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
+    configuration.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
+    configuration.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
+    configuration.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
 
-    assert not area.open_water is None
+    assert not configuration.open_water is None
 
     waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
 
-    return area, waterbalance_computer
+    return configuration, waterbalance_computer
 
 
 def export_table(area_slug, start_date, end_date, directory, input_directory):
@@ -109,13 +105,13 @@ def export_table(area_slug, start_date, end_date, directory, input_directory):
     timeseries_retriever = TimeseriesRetriever()
     timeseries_retriever.read_timeseries(filename)
 
-    area = WaterbalanceArea.objects.filter(slug=area_slug)[0]
+    configuration = WaterbalanceConf.objects.filter(slug=area_slug)[0]
 
-    area.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
-    area.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
-    area.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
+    configuration.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
+    configuration.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
+    configuration.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
 
-    waterbalance_computer = WaterbalanceComputer2(area)
+    waterbalance_computer = WaterbalanceComputer2(configuration)
 
     #tests
     input_ts = waterbalance_computer.get_input_timeseries(start_date, end_date)

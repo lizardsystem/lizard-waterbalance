@@ -34,6 +34,7 @@ from lizard_waterbalance.forms import create_location_label
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceLabel
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
@@ -134,7 +135,7 @@ def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=Fals
         waterbalance_area, waterbalance_computer = create_waterbalance_computer(
             area, start_datetime, end_datetime, fews_data_filename)
         # waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
-        # waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+        # waterbalance_area = WaterbalanceConf.objects.get(slug=area)
         bucket2outcome, level_control, outcome = waterbalance_computer.compute(
             waterbalance_area, start_datetime, end_datetime)
         result = outcome
@@ -212,7 +213,7 @@ def waterbalance_start(request,
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    waterbalance_areas = WaterbalanceArea.objects.all()
+    areas = [conf.waterbalance_area for conf in WaterbalanceConf.objects.all()]
 
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
@@ -226,7 +227,8 @@ def waterbalance_start(request,
         get_object_or_404(Workspace, pk=WATERBALANCE_HOMEPAGE_KEY)
     return render_to_response(
         template,
-        {'waterbalance_areas': waterbalance_areas,
+        {'waterbalance_configurations': WaterbalanceConf.objects.all(),
+         'waterbalance_areas': areas,
          'workspaces': {'user': [special_homepage_workspace]},
          'javascript_hover_handler': 'popup_hover_handler',
          'javascript_click_handler': 'waterbalance_area_click_handler',
@@ -245,7 +247,8 @@ def waterbalance_area_summary(request,
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    waterbalance_configuration = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = waterbalance_configuration.waterbalance_area
 
     date_range_form = DateRangeForm(
         current_start_end_dates(request, for_form=True))
@@ -258,7 +261,7 @@ def waterbalance_area_summary(request,
                    'title': 'Waterbalans overzicht',
                    'url': reverse('waterbalance_start')})
 
-    kwargs = {'area': waterbalance_area.slug}
+    kwargs = {'area': waterbalance_configuration.slug}
     crumbs.append({'name': waterbalance_area.name,
                    'title': waterbalance_area.name,
                    'url': reverse('waterbalance_area_summary', kwargs=kwargs)})
@@ -279,7 +282,8 @@ def waterbalance_area_summary(request,
 
     return render_to_response(
         template,
-        {'waterbalance_area': waterbalance_area,
+        {'waterbalance_configuration': waterbalance_configuration,
+         'waterbalance_area': waterbalance_area,
          'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
          'periods': periods,
@@ -489,12 +493,13 @@ def waterbalance_water_level(request,
     krw_graph.suptitle(title + "[m NAP]")
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
-    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+
+    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
 
     t1 = time.time()
 
     bars = [
-        ("waterpeil gemeten", waterbalance_area.water_level),
+        ("waterpeil gemeten", waterbalance_configuration.water_level),
         ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
         ]
 
@@ -508,7 +513,7 @@ def waterbalance_water_level(request,
             if previous_year is None or previous_year < date.year:
                 value = 0
                 previous_year = date.year
-            value += (1.0 * event[1]) / waterbalance_area.open_water.surface
+            value += (1.0 * event[1]) / waterbalance_configuration.open_water.surface
             sluice_error.add_value(date, value)
         bars.append(("sluitfout", sluice_error))
 
@@ -571,42 +576,42 @@ def waterbalance_fraction_distribution(request,
     bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
-    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
 
     t1 = time.time()
 
     bars = [("berging", outcome.open_water_fractions["initial"], None),
             ("neerslag",
              outcome.open_water_fractions["precipitation"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='neerslag').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='neerslag').minimum),
             ("kwel",
              outcome.open_water_fractions["seepage"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='kwel').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='kwel').minimum),
             ("verhard",
              outcome.open_water_fractions["hardened"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='verhard').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='verhard').minimum),
             ("gedraineerd",
              outcome.open_water_fractions["drained"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='gedraineerd').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='gedraineerd').minimum),
             ("ongedraineerd",
              outcome.open_water_fractions["undrained"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='ongedraineerd').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='ongedraineerd').minimum),
             ("afstroming",
              outcome.open_water_fractions["flow_off"],
-             waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact='afstroming').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='afstroming').minimum),
             ]
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
     for intake in intakes.order_by('name'):
         bars.append((intake.name,
                      outcome.intake_fractions[intake],
-                     waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+                     waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
     for intake in intakes.order_by('name'):
         bars.append((intake.name,
                      outcome.intake_fractions[intake],
-                     waterbalance_area.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+                     waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
 
     names = [bar[0] for bar in bars]
     if substance == Concentration.SUBSTANCE_CHLORIDE:
@@ -660,9 +665,9 @@ def waterbalance_fraction_distribution(request,
     # show the measured substance levels when they are present
     try:
         if substance == Concentration.SUBSTANCE_CHLORIDE:
-            substance_timeseries = waterbalance_area.chloride
+            substance_timeseries = waterbalance_configuration.chloride
         else:
-            substance_timeseries = waterbalance_area.phosphate
+            substance_timeseries = waterbalance_configuration.phosphate
         times, values = get_average_timeseries(substance_timeseries,
                                                start_datetime,
                                                end_datetime,
@@ -702,34 +707,34 @@ def waterbalance_phosphate_impact(request,
     bar_width = BAR_WIDTH[period]
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
-    waterbalance_area = WaterbalanceArea.objects.get(slug=area)
+    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
 
     phosphate = Concentration.SUBSTANCE_PHOSPHATE
 
     bars = [("neerslag (incr)", "neerslag (min)",
              outcome.open_water_timeseries["precipitation"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').minimum),
             ("kwel (incr)", "kwel (min)",
              outcome.open_water_timeseries["seepage"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').minimum),
             ("verhard (incr)", "verhard (min)",
              outcome.open_water_timeseries["hardened"],
-            waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').minimum),
+            waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').minimum),
             ("gedraineerd (incr)", "gedraineerd (min)",
              outcome.open_water_timeseries["drained"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').minimum),
             ("ongedraineerd (incr)", "ongedraineerd (min)",
              outcome.open_water_timeseries["undrained"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').minimum),
             ("afstroming (incr)", "afstroming (min)",
              outcome.open_water_timeseries["flow_off"],
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').increment,
-             waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').minimum),
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').increment,
+             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').minimum),
             ]
 
 
@@ -738,16 +743,16 @@ def waterbalance_phosphate_impact(request,
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
                      intake.retrieve_sum_timeseries(),
-                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
     for intake in intakes.order_by('name'):
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
                      outcome.level_control_assignment[intake],
-                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     waterbalance_area.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
     names = [bar[0] for bar in bars] + [bar[1] for bar in bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
@@ -756,7 +761,7 @@ def waterbalance_phosphate_impact(request,
     krw_graph.legend_space()
     krw_graph.legend(handles, names)
 
-    open_water = waterbalance_area.open_water
+    open_water = waterbalance_configuration.open_water
 
     top_height = TopHeight()
 
@@ -907,10 +912,11 @@ def waterbalance_area_edit(request,
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    waterbalance_configuration = get_object_or_404(WaterbalanceConf,slug=area)
+
     return render_to_response(
         template,
-        {'waterbalance_area': waterbalance_area,
+        {'waterbalance_configuration': waterbalance_configuration,
          },
         context_instance=RequestContext(request))
 
@@ -940,7 +946,7 @@ def _sub_multiple(request,
             line['header'] = row_header
             line['items'] = []
             lines.append(line)
-            
+
     for instance in instances:
         header_item = {}
         header_item['name'] = getattr(instance, header_name).capitalize()
@@ -990,10 +996,10 @@ def _sub_edit(request,
                 form.save()
                 _actual_recalculation(request, area)
                 messages.success(
-                    request, 
+                    request,
                     u"Gegevens zijn opgeslagen en de grafiek is herberekend.")
         else:
-            form = form_class(instance=instance)            
+            form = form_class(instance=instance)
 
     return render_to_response(
         template,
@@ -1007,7 +1013,8 @@ def _sub_edit(request,
 def waterbalance_area_edit_sub1(request,
                                 area=None,
                                 template=None):
-    instance = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    instance = conf.waterbalance_area
     fixed_field_names = ['name']
     form_class = WaterbalanceAreaEditForm
     form_url = reverse('waterbalance_area_edit_sub1', kwargs={'area': area})
@@ -1024,7 +1031,8 @@ def waterbalance_area_edit_sub1(request,
 def waterbalance_area_edit_sub_openwater(request,
                                          area=None,
                                          template=None):
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = conf.waterbalance_area
     instance = waterbalance_area.open_water
     fixed_field_names = ['name']
     form_class = OpenWaterEditForm
@@ -1041,7 +1049,8 @@ def waterbalance_area_edit_sub_openwater(request,
 def waterbalance_area_edit_sub3(request,
                                 area=None,
                                 template=None):
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = conf.waterbalance_area
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,
@@ -1056,12 +1065,13 @@ def waterbalance_area_edit_sub_out(request,
                                 area=None,
                                 template=None):
     """Posten uit."""
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = conf.waterbalance_area
     instances = [ps for ps in waterbalance_area.open_water.pumping_stations.all()
                  if not ps.into]
 
     header_name = 'name'
-    field_names = ['percentage', 
+    field_names = ['percentage',
                    'computed_level_control',
                    ]
     return _sub_multiple(request,
@@ -1080,7 +1090,7 @@ def waterbalance_area_edit_sub_in(request,
                  if ps.into]
 
     header_name = 'name'
-    field_names = ['percentage', 
+    field_names = ['percentage',
                    'computed_level_control',
                    ]
     return _sub_multiple(request,
@@ -1094,7 +1104,8 @@ def waterbalance_area_edit_sub_in(request,
 def waterbalance_area_edit_sub6(request,
                                 area=None,
                                 template=None):
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = conf.waterbalance_area
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,
@@ -1108,7 +1119,8 @@ def waterbalance_area_edit_sub6(request,
 def waterbalance_area_edit_sub7(request,
                                 area=None,
                                 template=None):
-    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    waterbalance_area = conf.waterbalance_area
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,

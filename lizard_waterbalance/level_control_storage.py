@@ -63,9 +63,6 @@ class LevelControlAssignment:
                     timeseries = multiply_timeseries(outgoing_timeseries, fraction)
 
             if timeseries is None:
-                if not pumping_station.level_control is None:
-                    timeseries = TimeseriesStub()
-            if timeseries is None:
                 continue
 
             assignment[pumping_station] = timeseries
@@ -95,9 +92,12 @@ class LevelControlStorage:
         * pumping_stations -- list of all PumpingStation's
         * assignment -- dictionary of PumpingStation to TimeseriesStub
 
-        If a PumpingStation has a level control time series but should not be
-        used for level control, this method deletes that level control time
-        series.
+        The following has become obsolote since level_control is not an
+        attribute of a PumpingStation anymore!
+
+          If a PumpingStation has a level control time series but should not be
+          used for level control, this method deletes that level control time
+          series.
 
         """
         for pumping_station in pumping_stations:
@@ -106,8 +106,16 @@ class LevelControlStorage:
                 self.store_timeserie(pumping_station, "level_control", timeseries)
                 pumping_station.save()
             except KeyError:
-                waterbalance_timeserie = pumping_station.level_control
-                if not waterbalance_timeserie is None:
-                    pumping_station.level_control = None
-                    pumping_station.save()
-                    waterbalance_timeserie.delete()
+                # The following has become obsolote since level_control is not an
+                # attribute of a PumpingStation anymore!
+                #
+                #   If a PumpingStation has a level control time series but
+                #   should not be used for level control, this method deletes
+                #   that level control time series.
+
+                # waterbalance_timeserie = pumping_station.level_control
+                # if not waterbalance_timeserie is None:
+                #     pumping_station.level_control = None
+                #     pumping_station.save()
+                #     waterbalance_timeserie.delete()
+                pass

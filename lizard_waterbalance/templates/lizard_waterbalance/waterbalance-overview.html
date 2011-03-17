@@ -17,9 +17,9 @@
     hier een keuze maken.
   </p>
   <ul class="without-bullets">
-    {% for waterbalance_area in waterbalance_areas %}
+    {% for conf in waterbalance_configurations %}
     <li>
-      <a href="{{ waterbalance_area.get_absolute_url }}">{{ waterbalance_area.name }}</a>
+      <a href="{{ conf.get_absolute_url }}">{{ conf.waterbalance_area.name }}</a>
     </li>
     {% endfor %}
   </ul>

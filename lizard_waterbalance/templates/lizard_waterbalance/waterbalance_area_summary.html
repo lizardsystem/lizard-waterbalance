@@ -40,7 +40,7 @@
       <dt>Naam</dt>
       <dd>{{ waterbalance_area.name }}</dd>
       <dt>Oppervlakte open water</dt>
-      <dd>{{ waterbalance_area.open_water.surface }} m2</dd>
+      <dd>{{ waterbalance_configuration.open_water.surface }} m2</dd>
     </dl>
   </div>
 </div>
@@ -49,20 +49,20 @@
     <a class="ss_sprite ss_pencil sidebarbox-action-icon"
        title="Bewerk instellingen"
        id="activate-adjustment-form"
-       href="{% url waterbalance_area_edit waterbalance_area.slug %}">&nbsp;</a>
+       href="{% url waterbalance_area_edit waterbalance_configuration.slug %}">&nbsp;</a>
     <span>
       Bakjes
     </span>
   </h2>
   <div>
     <dl>
-      {% for bucket in waterbalance_area.open_water.buckets.all %}
+      {% for bucket in waterbalance_configuration.open_water.buckets.all %}
       <dt>{{ bucket.name }}</dt>
       <dd>{{ bucket.surface }} m2</dd>
       {% endfor %}
     </dl>
     <form method="POST"
-          action="{% url waterbalance_graph_recalculate_data waterbalance_area.slug %}"
+          action="{% url waterbalance_graph_recalculate_data waterbalance_configuration.slug %}"
           id="recalculate-form">
       {% csrf_token %}
       <input type="submit"
@@ -119,7 +119,7 @@
 
       <input type="hidden"
              name="area"
-             value="{{ waterbalance_area.slug }}" />
+             value="{{ waterbalance_configuration.slug }}" />
       <input type="submit" name="submit" value="Toon"
              id="graph-type-select-submit" />
     </form>
