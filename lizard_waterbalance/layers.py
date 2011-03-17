@@ -32,8 +32,8 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
     def __init__(self, *args, **kwargs):
         super(AdapterWaterbalance, self).__init__(*args, **kwargs)
         self.shape_tablename = 'waterbalance_shape'
-        # See views.IMPLEMENTED_GRAPH_TYPES
-        self.graph_type = self.layer_arguments['parameter']
+        # Parameter is phosphate, inlaatwater, sluitfout or verblijftijd.
+        self.parameter = self.layer_arguments['parameter']
 
     def _mapnik_style(self):
         """
@@ -59,7 +59,7 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             return rule
 
         mapnik_style = mapnik.Style()
-        rule = mapnik_rule(255, 0 ,0)
+        rule = mapnik_rule(255, 255, 0)
         mapnik_style.rules.append(rule)
         # for gid in range(100):
         #     rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
@@ -123,7 +123,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
                 'name': wb_shape.gafnaam,
                 'shortname': wb_shape.gafnaam,
                 'workspace_item': self.workspace_item,
-                'identifier': {'parameter': wb_shape.gafnaam},
+                'identifier': {
+                    'area_name': wb_shape.gafnaam
+                    },
                 'object': wb_shape}
                    for wb_shape in WaterbalanceShape.objects.filter(
                 the_geom__contains=Point(rd_x, rd_y))]
@@ -134,9 +136,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         """
         Returns symbol.
         """
-        icon_style = {'icon': 'polygon.png',
+        icon_style = {'icon': 'waterbalance.png',
                       'mask': ('mask.png', ),
-                      'color': (0, 1, 0, 0)}
+                      'color': (1, 0, 0, 0)}
 
         return super(AdapterWaterbalance, self).symbol_url(
             identifier=identifier,
@@ -144,10 +146,10 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             end_date=end_date,
             icon_style=icon_style)
 
-    def location(self, parameter=None, layout=None):
+    def location(self, area_name=None, layout=None):
         result = {
-            'name': parameter,  # This is displayed in the popup
-            'identifier': {'parameter': parameter}
+            'name': area_name,  # This is displayed in the popup
+            'identifier': {'area_name': area_name}
             }
         return result
 
@@ -180,6 +182,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
                             lw=1,
                             color=line_styles[str(identifier)]['color'],
                             label=timeseries.name)
+            # graph.axes.fill_between(
+            #     dates, values, [value-10 for value in values],
+            #     color='b', alpha=0.5)
 
         graph.add_today()
         return graph.http_png()
