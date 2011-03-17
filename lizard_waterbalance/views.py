@@ -1101,7 +1101,7 @@ def waterbalance_area_edit_sub_in(request,
                          )
 
 
-def waterbalance_area_edit_sub6(request,
+def waterbalance_area_edit_sub_labels(request,
                                 area=None,
                                 template=None):
     conf = get_object_or_404(WaterbalanceConf, slug=area)
