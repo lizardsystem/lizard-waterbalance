@@ -29,6 +29,7 @@ from lizard_map.models import Workspace
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 from lizard_waterbalance.forms import WaterbalanceAreaEditForm
+from lizard_waterbalance.forms import OpenWaterEditForm
 from lizard_waterbalance.forms import create_location_label
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
@@ -113,6 +114,11 @@ BAR_WIDTH = {'year': 364,
              'quarter': 90,
              'month': 30,
              'day': 1}
+# Exceptions for boolean fields: used in tab edit forms.
+# Key is the field name, value is text used for (True, False).
+TRUE_FALSE_EXCEPTIONS = {
+    'computed_level_control': ('Berekend', 'Opgedrukt'),
+    }
 
 logger = logging.getLogger(__name__)
 
@@ -871,16 +877,17 @@ def search_fews_lkeys(request):
         return HttpResponse("Should not be run this way.")
 
 
+def _actual_recalculation(request, area):
+    """Recalculate graph data by emptying the cache: used by two views."""
+    start_datetime, end_datetime = retrieve_horizon(request)
+    waterbalance_graph_data(area, start_datetime, end_datetime,
+                            recalculate=True)
+
+
 def recalculate_graph_data(request, area=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-        start_datetime, end_datetime = retrieve_horizon(request)
-        waterbalance_graph_data(area, start_datetime, end_datetime,
-                                recalculate=True)
-        # # Enable this later when there's ajax integration
-        # if request.is_ajax():
-        #     json = simplejson.dumps("Success")
-        #     return HttpResponse(json, mimetype='application/json')
+        _actual_recalculation(request, area)
         return HttpResponseRedirect(
             reverse('waterbalance_area_summary', kwargs={'area': area}))
     else:
@@ -942,14 +949,14 @@ def _sub_multiple(request,
             line = lines[index]
             item = {}
             item['value'] = getattr(instance, field_name)
+            if field_name in TRUE_FALSE_EXCEPTIONS:
+                if isinstance(item['value'], bool):
+                    if item['value']:
+                        item['value'] = TRUE_FALSE_EXCEPTIONS[field_name][0]
+                    else:
+                        item['value'] = TRUE_FALSE_EXCEPTIONS[field_name][1]
             line['items'].append(item)
 
-    # for field_name in field_names:
-    #     field = instance._meta.get_field(field_name)
-    #     items.append(dict(
-    #             name=field.verbose_name.capitalize(),
-    #             title=field.help_text,
-    #             value=getattr(instance, fixed_field_name)))
 
     return render_to_response(
         template,
@@ -960,6 +967,7 @@ def _sub_multiple(request,
 
 
 def _sub_edit(request,
+              area,
               instance=None,
               template=None,
               fixed_field_names=None,
@@ -980,8 +988,10 @@ def _sub_edit(request,
             form = form_class(request.POST, instance=instance)
             if form.is_valid():
                 form.save()
-                messages.success(request, 
-                                 u"Gegevens zijn opgeslagen.")
+                _actual_recalculation(request, area)
+                messages.success(
+                    request, 
+                    u"Gegevens zijn opgeslagen en de grafiek is herberekend.")
         else:
             form = form_class(instance=instance)            
 
@@ -1002,6 +1012,7 @@ def waterbalance_area_edit_sub1(request,
     form_class = WaterbalanceAreaEditForm
     form_url = reverse('waterbalance_area_edit_sub1', kwargs={'area': area})
     return _sub_edit(request,
+                     area=area,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1010,15 +1021,21 @@ def waterbalance_area_edit_sub1(request,
                      )
 
 
-def waterbalance_area_edit_sub2(request,
-                                area=None,
-                                template=None):
+def waterbalance_area_edit_sub_openwater(request,
+                                         area=None,
+                                         template=None):
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
     instance = waterbalance_area.open_water
+    fixed_field_names = ['name']
+    form_class = OpenWaterEditForm
+    form_url = reverse('waterbalance_area_edit_sub_openwater', kwargs={'area': area})
     return _sub_edit(request,
+                     area=area,
                      instance=instance,
                      template=template,
-                     fixed_field_names=['name'],
+                     fixed_field_names=fixed_field_names,
+                     form_class=form_class,
+                     form_url=form_url,
                      )
 
 def waterbalance_area_edit_sub3(request,
@@ -1028,6 +1045,7 @@ def waterbalance_area_edit_sub3(request,
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,
+                     area=area,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1054,17 +1072,23 @@ def waterbalance_area_edit_sub_out(request,
                          )
 
 
-def waterbalance_area_edit_sub5(request,
-                                area=None,
-                                template=None):
+def waterbalance_area_edit_sub_in(request,
+                                  area=None,
+                                  template=None):
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
-    instance = waterbalance_area.open_water
-    fixed_field_names = []
-    return _sub_edit(request,
-                     instance=instance,
-                     template=template,
-                     fixed_field_names=fixed_field_names,
-                     )
+    instances = [ps for ps in waterbalance_area.open_water.pumping_stations.all()
+                 if ps.into]
+
+    header_name = 'name'
+    field_names = ['percentage', 
+                   'computed_level_control',
+                   ]
+    return _sub_multiple(request,
+                         instances=instances,
+                         template=template,
+                         field_names=field_names,
+                         header_name=header_name,
+                         )
 
 
 def waterbalance_area_edit_sub6(request,
@@ -1074,6 +1098,7 @@ def waterbalance_area_edit_sub6(request,
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,
+                     area=area,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1087,6 +1112,7 @@ def waterbalance_area_edit_sub7(request,
     instance = waterbalance_area.open_water
     fixed_field_names = []
     return _sub_edit(request,
+                     area=area,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,

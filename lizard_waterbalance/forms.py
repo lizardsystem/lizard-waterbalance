@@ -5,6 +5,7 @@ from lizard_fewsunblobbed.models import Filter
 from lizard_fewsunblobbed.models import Parameter
 from lizard_fewsunblobbed.models import Timeserie
 
+from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import TimeseriesFews
 from lizard_waterbalance.models import WaterbalanceArea
@@ -125,3 +126,11 @@ class WaterbalanceAreaEditForm(forms.ModelForm):
     class Meta:
         model = WaterbalanceArea
         fields = ['description']
+
+
+class OpenWaterEditForm(forms.ModelForm):
+    """Front-end edit form for open water.
+    """
+    class Meta:
+        model = OpenWater
+        fields = ['init_water_level']

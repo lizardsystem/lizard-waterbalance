@@ -73,8 +73,9 @@ function adjustment_form_submit(event) {
     $button = $("#edit-sub-form-submit");
     url = $form.attr("action");
     original_text = $button.attr("value");
-    $button.attr("value", "Bezig...");
+    $button.attr("value", "Bezig met opslaan en met herberekenen grafiekdata...");
     $button.attr("disabled", "true");
+    $button.effect("pulsate", {"times": 2}, 2000);
     $.ajax({
         url: url,
         data: $form.serialize(),
