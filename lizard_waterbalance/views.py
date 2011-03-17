@@ -908,6 +908,57 @@ def waterbalance_area_edit(request,
         context_instance=RequestContext(request))
 
 
+def _sub_multiple(request,
+                  instances=None,
+                  template=None,
+                  field_names=None,
+                  header_name=None,
+                  form_class=None,
+                  form_url=None):
+    if template is None:
+        template = 'lizard_waterbalance/waterbalance_area_edit_multiple.html'
+    header = []
+    lines = []
+    if instances:
+        instance = instances[0]
+        header_item = {}
+        header_item['name'] = instance._meta.get_field(header_name).verbose_name.capitalize()
+        header.append(header_item)
+        for field_name in field_names:
+            line = {}
+            field = instance._meta.get_field(field_name)
+            row_header = {}
+            row_header['name'] = field.verbose_name.capitalize()
+            row_header['title'] = field.help_text
+            line['header'] = row_header
+            line['items'] = []
+            lines.append(line)
+            
+    for instance in instances:
+        header_item = {}
+        header_item['name'] = getattr(instance, header_name).capitalize()
+        header.append(header_item)
+        for index, field_name in enumerate(field_names):
+            line = lines[index]
+            item = {}
+            item['value'] = getattr(instance, field_name)
+            line['items'].append(item)
+
+    # for field_name in field_names:
+    #     field = instance._meta.get_field(field_name)
+    #     items.append(dict(
+    #             name=field.verbose_name.capitalize(),
+    #             title=field.help_text,
+    #             value=getattr(instance, fixed_field_name)))
+
+    return render_to_response(
+        template,
+        {'header': header,
+         'lines': lines,
+         },
+        context_instance=RequestContext(request))
+
+
 def _sub_edit(request,
               instance=None,
               template=None,
@@ -983,17 +1034,24 @@ def waterbalance_area_edit_sub3(request,
                      )
 
 
-def waterbalance_area_edit_sub4(request,
+def waterbalance_area_edit_sub_out(request,
                                 area=None,
                                 template=None):
+    """Posten uit."""
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
-    instance = waterbalance_area.open_water
-    fixed_field_names = []
-    return _sub_edit(request,
-                     instance=instance,
-                     template=template,
-                     fixed_field_names=fixed_field_names,
-                     )
+    instances = [ps for ps in waterbalance_area.open_water.pumping_stations.all()
+                 if not ps.into]
+
+    header_name = 'name'
+    field_names = ['percentage', 
+                   'computed_level_control',
+                   ]
+    return _sub_multiple(request,
+                         instances=instances,
+                         template=template,
+                         field_names=field_names,
+                         header_name=header_name,
+                         )
 
 
 def waterbalance_area_edit_sub5(request,
@@ -1010,6 +1068,19 @@ def waterbalance_area_edit_sub5(request,
 
 
 def waterbalance_area_edit_sub6(request,
+                                area=None,
+                                template=None):
+    waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)
+    instance = waterbalance_area.open_water
+    fixed_field_names = []
+    return _sub_edit(request,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     )
+
+
+def waterbalance_area_edit_sub7(request,
                                 area=None,
                                 template=None):
     waterbalance_area = get_object_or_404(WaterbalanceArea, slug=area)

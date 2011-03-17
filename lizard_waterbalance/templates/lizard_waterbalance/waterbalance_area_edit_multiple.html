@@ -1,0 +1,49 @@
+{% if messages %}
+{% for message in messages %}
+<div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div>
+  <form method="POST"
+        action="{{ form_url }}"
+        id="edit-sub-form">
+    {% csrf_token %}
+    <input type="submit"
+           id="edit-sub-form-add-new"
+           value="Voeg nieuwe toe" />
+  </form>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      {% for item in header %}
+      <th>
+        {% if item.edit_url %}
+        <a href="item.edit_url"
+           class="edit-single-link">
+          {{ item.name }}
+        </a>
+        {% else %}
+        {{ item.name }}
+        {% endif %}
+      </th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in lines %}
+    <tr>
+      <th title="{{ line.header.title }}">
+        {{ line.header.name }}
+      </th>
+      {% for item in line.items %}
+      <td>
+        {{ item.value }}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
