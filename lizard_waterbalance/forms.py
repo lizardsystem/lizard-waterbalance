@@ -8,7 +8,8 @@ from lizard_fewsunblobbed.models import Timeserie
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import TimeseriesFews
-from lizard_waterbalance.models import WaterbalanceArea
+#from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
 
@@ -120,11 +121,19 @@ class WaterbalanceTimeserieForm(forms.ModelForm):
         exclude = ['label', 'chloride', 'phosphate', 'nitrate', 'sulfate']
 
 
-class WaterbalanceAreaEditForm(forms.ModelForm):
-    """Front-end edit form for a waterbalance area.
+# class WaterbalanceAreaEditForm(forms.ModelForm):
+#     """Front-end edit form for a waterbalance area.
+#     """
+#     class Meta:
+#         model = WaterbalanceArea
+#         fields = ['description']
+
+
+class WaterbalanceConfEditForm(forms.ModelForm):
+    """Front-end edit form for a waterbalance conf.
     """
     class Meta:
-        model = WaterbalanceArea
+        model = WaterbalanceConf
         fields = ['description']
 
 
