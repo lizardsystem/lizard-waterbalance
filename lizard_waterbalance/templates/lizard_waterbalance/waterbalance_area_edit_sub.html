@@ -1,3 +1,9 @@
+{% if previous_url %}
+<div>
+  <a class="back-to-multiple"
+     href="{{ previous_url }}">Terug naar overzicht</a>.
+{% endif %}
+
 {% if messages %}
 {% for message in messages %}
 <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>

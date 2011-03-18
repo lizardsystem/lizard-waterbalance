@@ -31,6 +31,7 @@ from lizard_waterbalance.management.commands.compute_waterbalance import create_
 #from lizard_waterbalance.forms import WaterbalanceAreaEditForm
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
+from lizard_waterbalance.forms import PumpingStationEditForm
 from lizard_waterbalance.forms import create_location_label
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
@@ -949,6 +950,8 @@ def _sub_multiple(request,
     for instance in instances:
         header_item = {}
         header_item['name'] = getattr(instance, header_name).capitalize()
+        if form_url:
+            header_item['edit_url'] = form_url + str(instance.id) + '/'
         header.append(header_item)
         for index, field_name in enumerate(field_names):
             line = lines[index]
@@ -977,7 +980,8 @@ def _sub_edit(request,
               template=None,
               fixed_field_names=None,
               form_class=None,
-              form_url=None):
+              form_url=None,
+              previous_url=None):
     if template is None:
         template = 'lizard_waterbalance/waterbalance_area_edit_sub.html'
     fixed_items = []
@@ -1005,6 +1009,7 @@ def _sub_edit(request,
         {'fixed_items': fixed_items,
          'form': form,
          'form_url': form_url,
+         'previous_url': previous_url,
          },
         context_instance=RequestContext(request))
 
@@ -1088,12 +1093,35 @@ def waterbalance_area_edit_sub_in(request,
     field_names = ['percentage',
                    'computed_level_control',
                    ]
+    form_url = reverse('waterbalance_area_edit_sub_in', kwargs={'area': area})
+
     return _sub_multiple(request,
                          instances=instances,
                          template=template,
                          field_names=field_names,
                          header_name=header_name,
+                         form_url=form_url,
                          )
+
+
+def waterbalance_area_edit_sub_in_single(request,
+                                         area=None,
+                                         pump_id=None,
+                                         template=None):
+    instance = get_object_or_404(PumpingStation, pk=int(pump_id))
+    fixed_field_names = []
+    form_class = PumpingStationEditForm
+    form_url = reverse('waterbalance_area_edit_sub_in_single', kwargs={'area': area, 'pump_id': pump_id})
+    previous_url = reverse('waterbalance_area_edit_sub_in', kwargs={'area': area})
+    return _sub_edit(request,
+                     area=area,
+                     instance=instance,
+                     template=template,
+                     fixed_field_names=fixed_field_names,
+                     form_class=form_class,
+                     form_url=form_url,
+                     previous_url=previous_url,
+                     )
 
 
 def waterbalance_area_edit_sub_labels(request,

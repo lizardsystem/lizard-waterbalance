@@ -143,3 +143,13 @@ class OpenWaterEditForm(forms.ModelForm):
     class Meta:
         model = OpenWater
         fields = ['init_water_level']
+
+
+class PumpingStationEditForm(forms.ModelForm):
+    """Front-end edit form for open water.
+    """
+    class Meta:
+        model = PumpingStation
+        fields = ['name',
+                  'percentage',
+                  ]

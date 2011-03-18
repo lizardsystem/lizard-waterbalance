@@ -95,6 +95,15 @@ function adjustment_form_submit(event) {
 }
 
 
+function single_edit_link_click(event) {
+    // Also used for the single edit page's back link, btw.
+    var url;
+    event.preventDefault();
+    console.log($(this).attr("href"));
+    $("#multiple").load($(this).attr("href"));
+}
+
+
 function redirect_to_area(data) {
     if (data !== "" && data !== undefined) {
         window.location = data;
@@ -121,5 +130,7 @@ $(document).ready(function () {
     $("input#recalculate-submit").click(recalculate_action);
     $("#activate-adjustment-form").click(activate_adjustment_form_action);
     $("#edit-sub-form-submit").live('click', adjustment_form_submit);
+    $(".edit-single-link").live('click', single_edit_link_click);
+    $(".back-to-multiple").live('click', single_edit_link_click);
 });
 
