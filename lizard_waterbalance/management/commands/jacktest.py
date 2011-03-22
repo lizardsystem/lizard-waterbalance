@@ -32,7 +32,6 @@ class Command(BaseCommand):
 
         waterbalance_computer = WaterbalanceComputer2(configuration)
 
-        # waterbalance_computer.compute(start, end)
         wb_ts = waterbalance_computer.get_sluice_error_timeseries(
             start, end,
             timestep=WaterbalanceTimeserie.TIMESTEP_DAY,
@@ -40,21 +39,3 @@ class Command(BaseCommand):
 
         print wb_ts.get_timeseries().timeseries_events.filter(
             time__gte=start, time__lte=end)
-
-        # print dir(ts)
-        # l = [e for e in ts.events()]  # per dag
-
-        # WaterbalanceTimeserie.create(
-        #     name='sluice_error',
-        #     parameter=parameter,
-        #     timeseries=dict(ts.raw_events()),
-        #     configuration=configuration,
-        #     timestep=WaterbalanceTimeserie.TIMESTEP_DAY)
-
-        # WaterbalanceTimeserie.create(
-        #     name='sluice_error',
-        #     parameter=parameter,
-        #     timeseries=dict(ts.monthly_events()),
-        #     configuration=configuration,
-        #     timestep=WaterbalanceTimeserie.TIMESTEP_MONTH)
-
