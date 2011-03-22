@@ -29,12 +29,12 @@ import logging
 from datetime import timedelta
 
 from django.contrib.gis.db import models as gis_models
-from django.db import models
+from django.contrib.gis.db import models
 from django.utils.translation import ugettext as _
 
 from lizard_fewsunblobbed.models import Filter
 from lizard_fewsunblobbed.models import Location
-from lizard_fewsunblobbed.models import Parameter as FewsParameter
+from lizard_fewsunblobbed.models import Parameter
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map.models import ColorField
 
@@ -44,6 +44,8 @@ add_ignored_fields(["^lizard_map\.models\.ColorField"])
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesStub
+
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +111,19 @@ class Timeseries(models.Model):
             previous_value = value
             date_to_yield = date + timedelta(1)
 
+    @transaction.commit_manually
+    def save_timeserie_stub(self,timeserie_stub):
+        """Save a timeserie_stub into the database
+
+        We need some performance boost on this function
+        #first clear?
+        """ 
+        for date, value in timeserie_stub.raw_events():
+            ts = TimeseriesEvent(time=date, value=value, timeseries=self)
+            ts.save()
+        
+        transaction.commit()
+    
     def __unicode__(self):
         return self.name
 
@@ -170,7 +185,7 @@ class TimeseriesFews(models.Model):
         The generator iterates over the events earliest date first.
 
         """
-        fews_parameter = FewsParameter.objects.get(pkey=self.pkey)
+        fews_parameter = Parameter.objects.get(pkey=self.pkey)
         fews_filter = Filter.objects.get(id=self.fkey)
         fews_location = Location.objects.get(lkey=self.lkey)
 
@@ -206,7 +221,10 @@ class Parameter(models.Model):
                             max_length=64)
     unit = models.CharField(verbose_name=_("eenheid"), max_length=64, null=True, blank=True)
 
-
+    def __unicode__(self):
+        return self.name
+    
+    
 class WaterbalanceTimeserie(models.Model):
     """Implements a time series.
 
@@ -235,9 +253,6 @@ class WaterbalanceTimeserie(models.Model):
                             help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
                             max_length=64, null=True, blank=True)
 
-    waterbalance_configuration = models.ForeignKey('WaterbalanceConf', null=True, blank=True, related_name='+')
-    open_water = models.ForeignKey('OpenWater', null=True, blank=True, related_name='+')
-    bucket = models.ForeignKey('Bucket', null=True, blank=True, related_name='+')
     parameter = models.ForeignKey('Parameter', related_name='+')
 
     label = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
@@ -298,24 +313,27 @@ class OpenWater(models.Model):
     minimum_level = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("ondergrens"),
                                       help_text=_("tijdserie naar ondergrens peil in meters"),
-                                      null=True, blank=True, related_name='+')
+                                      null=True, blank=True, related_name='open_water_min_level')
     maximum_level = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("bovengrens"),
                                       help_text=_("tijdserie naar bovengrens peil in meters"),
-                                      null=True, blank=True, related_name='+')
+                                      null=True, blank=True, related_name='open_water_max_level')
     target_level = models.ForeignKey(WaterbalanceTimeserie,
                                      verbose_name=_("streefpeil"),
                                      help_text=_("tijdserie met streefpeil in meters"),
-                                     null=True, blank=True, related_name='+')
+                                     null=True, blank=True, related_name='open_water_targetlevel')
     init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
                                          help_text=_("initiele waterstand in meters"))
 
     seepage = models.ForeignKey(WaterbalanceTimeserie,
                                 verbose_name=_("kwel"),
                                 help_text=_("tijdserie naar kwel"),
-                                null=True, blank=True, related_name='+')
+                                null=True, blank=True, related_name='open_water_seepage')    
 
-
+    infiltration = models.ForeignKey(WaterbalanceTimeserie,
+                                verbose_name=_("wegzijging"),
+                                help_text=_("tijdserie naar kwel"),
+                                null=True, blank=True, related_name='open_water_infiltration')  
 
     def __unicode__(self):
         return self.name
@@ -424,18 +442,13 @@ class Bucket(models.Model):
                                 verbose_name=_("kwel"),
                                 help_text=_("tijdserie naar kwel"),
                                 null=True, blank=True,
-                                related_name='+')
-
-    infiltration = models.ForeignKey(WaterbalanceTimeserie,
-                                     verbose_name=_("wegzijging"),
-                                     help_text=_("tijdserie naar wegzijging"),
-                                     null=True,
-                                     blank=True,
-                                     related_name='+')
-
-    results = models.ManyToManyField(WaterbalanceTimeserie,
+                                related_name='bucket_seepage')
+ 
+    
+    results = models.ManyToManyField(WaterbalanceTimeserie, 
                                      verbose_name=_("resultaten"),
                                      help_text=_("Berekeningsresultaten van een bakje"),
+                                     null=True, blank=True,
                                      related_name='bucket_results')
 
     # TODO these values are optional: change their definition accordingly
@@ -453,6 +466,7 @@ class Bucket(models.Model):
                                          help_text=_("equilibrium waterstand in meters"))
 
     min_water_level = models.FloatField(verbose_name=_("minimum waterstand"),
+                                        null=True, blank=True,
                                         help_text=_("minimum waterstand in meters"))
 
     init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
@@ -463,11 +477,8 @@ class Bucket(models.Model):
                                              default=0)
 
     upper_porosity = models.FloatField(verbose_name=("porositeit bovenste bakje"))
-    upper_crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor bovenste bakje"))
-    upper_min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor bovenste bakje"))
     upper_drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel bovenste bakje"))
     upper_indraft_fraction = models.FloatField(verbose_name=_("fractie intrek bovenste bakje"))
-
     upper_max_water_level = models.FloatField(verbose_name=_("maximum waterstand bovenste bakje"),
                                         help_text=_("maximum waterstand in meters"))
 
@@ -475,6 +486,7 @@ class Bucket(models.Model):
                                          help_text=_("equilibrium waterstand in meters"))
 
     upper_min_water_level = models.FloatField(verbose_name=_("minimum waterstand bovenste bakje"),
+                                        null=True, blank=True,
                                         help_text=_("minimum waterstand in meters"))
 
     upper_init_water_level = models.FloatField(verbose_name=_("initiele waterstand bovenste bakje"),
@@ -526,15 +538,19 @@ class PumpingStation(models.Model):
                                help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
     percentage = models.FloatField(verbose_name=_("percentage"),
                                    help_text=_("percentage inkomend of uitgaand water via deze pomp"))
+    max_discharge = models.FloatField(verbose_name=_("max_capaciteit"),null=True,
+                                   help_text=_("maximale capaciteit voor peilhandhaving"))
+    
     computed_level_control = models.BooleanField(verbose_name=_("berekend"),
                                                  default=False,
                                                  help_text=_("aangevinkt als en alleen als de pomp gebruikt mag worden voor automatisch berekende peilhandhaving"))
 
-    results = models.ManyToManyField(WaterbalanceTimeserie,
+    results = models.ManyToManyField(WaterbalanceTimeserie, 
                                      verbose_name=_("resultaten"),
+                                     null=True, blank=True,
                                      help_text=_("Berekeningsresultaten van een kunstwerk"),
-                                     related_name='openwater_result')
-
+                                     related_name='pumping_station_result')
+        
     def __unicode__(self):
         return self.name
 
@@ -577,7 +593,7 @@ class PumpLine(models.Model):
     timeserie = models.ForeignKey(WaterbalanceTimeserie,
                                   verbose_name=_("Tijdreeks"),
                                   help_text=_("tijdreeks naar gepompte waarden"),
-                                  null=True, blank=True, related_name='+')
+                                  null=True, blank=True, related_name='pump_line_timeserie')
 
     def retrieve_timeseries(self):
         return self.timeserie.get_timeseries()
@@ -601,6 +617,7 @@ class WaterbalanceScenario(models.Model):
     public = models.BooleanField(verbose_name=_("publiek"),
                                  help_text=_("is scenario zichtbaar in dashboards"))
     order = models.IntegerField(verbose_name=_("volgorde"),
+                                default=0,
                                 help_text=_("lager is eerder in de lijst"))
 
     def __unicode__(self):
@@ -645,7 +662,65 @@ class WaterbalanceArea(gis_models.Model):
 
     def __unicode__(self):
         return unicode(self.name)
+    
+    
+def load_shapefile(shapefile_name, name_field, source_epsg):
+     """ Load shapefile into waterbalance areas and update geometry if name exist
+     Instance variables:
+   * shapefile_name *
+     directory and name of shapefile (with Polygon or Multipolygon geometries)
+   * name_field *
+     header of field with the area names
+   * source_epsg *
+     coordinate sytem/ projection of shapefile (28992 = dutch projection       
+     
+     """
+     from osgeo import ogr, osr
+     from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 
+     #original SRS
+     oSRS=ogr.osr.SpatialReference()
+     if source_epsg == 28992:
+         #epsg28992 projection was defined incorrect in proj4, so define manually 
+         oSRS.ImportFromProj4("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.237,50.0087,465.658,-0.406857,0.350733,-1.87035,4.0812 +units=m +no_defs" )
+     else:
+         oSRS.ImportFromEPSG(source_epsg)
+     
+     #target SRS
+     tSRS=ogr.osr.SpatialReference()
+     tSRS.ImportFromEPSG(4326)
+     poCT=ogr.osr.CoordinateTransformation(oSRS,tSRS)  
+ 
+     drv = ogr.GetDriverByName('ESRI Shapefile')
+     source = drv.Open(str(shapefile_name))
+     source_layer = source.GetLayer()
+ 
+     if (source_layer.GetFeatureCount()>0):
+         feature = source_layer.next()
+         name_index = feature.GetFieldIndex(name_field)
+         source_layer.ResetReading()
+ 
+         for feature in source_layer:
+         
+             #krijgen van geometry
+             geom = feature.GetGeometryRef()
+             name = feature.GetField(name_index)
+             if name == None:
+                 print 'warning, waterbalance area has no name'
+                 name = 'none'
+             geom.Transform(poCT)
+             geometry = GEOSGeometry(geom.ExportToWkt(), srid=4326)
+             if geometry.geom_type == 'Polygon':
+                 geometry = MultiPolygon(geometry)
+             wb_area, new = WaterbalanceArea.objects.get_or_create(name=name, defaults={'geom':geometry})
+             if not new:
+                 #update geometry
+                 wb_area.geom = geometry
+             else:
+                 print 'new area: %s'%name
+             wb_area.save() 
+                
+                
 class WaterbalanceConf(models.Model):
     """Represents the area of which we want to know the waterbalance.
 
@@ -684,44 +759,29 @@ class WaterbalanceConf(models.Model):
                                    blank=True,
                                    help_text="You can use markdown")
 
-    water_level = models.ForeignKey(WaterbalanceTimeserie,
-                                    verbose_name=_("waterstand"),
-                                    help_text=_("meetreeks waterstand in [m NAP]"),
-                                    related_name='+',
-                                    null=True,
-                                    blank=True)
-
     precipitation = models.ForeignKey(WaterbalanceTimeserie,
                                       verbose_name=_("neerslag"),
                                       help_text=_("meetreeks neerslag in [mm/dag]"),
-                                      related_name='+',
+                                      related_name='configuration_precipitation',
                                       null=True,
                                       blank=True)
     evaporation = models.ForeignKey(WaterbalanceTimeserie,
                                     verbose_name=_("verdamping"),
                                     help_text=_("meetreeks verdamping in [mm/dag]"),
-                                    related_name='+',
+                                    related_name='configuration_evaporation',
                                     null=True,
                                     blank=True)
-
-    chloride = models.ForeignKey(WaterbalanceTimeserie,
-                                 verbose_name=_("chloride"),
-                                 help_text=_("meetreeks chloride in [mg/l/dag]"),
-                                 related_name='+',
-                                 null=True,
-                                 blank=True)
-
-    phosphate = models.ForeignKey(WaterbalanceTimeserie,
-                                  verbose_name=_("fosfaat"),
-                                  help_text=_("meetreeks fosfaat in [mg/l/dag]"),
-                                  related_name='+',
-                                  null=True,
-                                  blank=True)
-
+    
     results = models.ManyToManyField(WaterbalanceTimeserie,
+                                     null=True, blank=True, 
                                      verbose_name=_("resultaten"),
                                      help_text=_("Rekenresultaten"),
                                      related_name='configuration_results')
+    references = models.ManyToManyField(WaterbalanceTimeserie,
+                                     null=True, blank=True,
+                                     verbose_name=_("referenties"),
+                                     help_text=_("Berekeningsresultaten van een bakje"),
+                                     related_name='configuration_references')
 
 
     def __unicode__(self):
@@ -733,32 +793,32 @@ class WaterbalanceConf(models.Model):
 
     def retrieve_precipitation(self, start_date, end_date):
         if self.precipitation is None:
-            exception_msg = "No precipitation is defined for the waterbalance area %s" % self.name
+            exception_msg = "No precipitation is defined for the waterbalance area %s" % self.__unicode__()
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
-        timeseries = self.precipitation.get_timeseries()
+        timeseries = self.precipitation.get_timeseries() #start_date, end_date
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
 
     def retrieve_evaporation(self, start_date, end_date):
         if self.evaporation is None:
-            exception_msg = "No evaporation is defined for the waterbalance area %s" % self.name
+            exception_msg = "No evaporation is defined for the waterbalance area %s" % self.__unicode__()
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
-        timeseries = self.evaporation.get_timeseries()
+        timeseries = self.evaporation.get_timeseries() #start_date, end_date
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
 
     def retrieve_seepage(self, start_date, end_date):
-        open_water = self._retrieve_open_water()
+        open_water = self._retrieve_open_water() #start_date, end_date
         exception_msg = ""
         if open_water.seepage is None:
-            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.name
+            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.__unicode__()
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
-        timeseries = self.open_water.seepage.get_timeseries()
+        timeseries = self.open_water.seepage.get_timeseries()#start_date, end_date
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
@@ -766,7 +826,7 @@ class WaterbalanceConf(models.Model):
     def _retrieve_open_water(self):
         exception_msg = ""
         if self.open_water is None:
-            exception_msg = "No open water is defined for waterbalance area %s" % self.name
+            exception_msg = "No open water is defined for waterbalance area %s"% self.__unicode__()
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
         return self.open_water

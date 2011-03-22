@@ -36,6 +36,7 @@ from django.core.management.base import BaseCommand
 from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.models import WaterbalanceConf
+from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import split_timeseries
@@ -90,26 +91,10 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
     return configuration, waterbalance_computer
 
 
-def export_table(area_slug, start_date, end_date, directory, input_directory):
+def export_table(configuration_slug, start_date, end_date, directory, input_directory):
 
 
-
-    #area_slug = 'aetsveldsche-polder-oost'
-    #start_date = datetime(1996,1,1)
-    #end_date = datetime(2010,1,1)
-    #directory = 'c:\\_lizard\\krw-waternet\\local_checkouts\\lizard-waterbalance\\lizard_waterbalance\\testdata'
-
-    filename = join(input_directory, "timeserie.csv")
-
-
-    timeseries_retriever = TimeseriesRetriever()
-    timeseries_retriever.read_timeseries(filename)
-
-    configuration = WaterbalanceConf.objects.filter(slug=area_slug)[0]
-
-    configuration.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)
-    configuration.retrieve_evaporation = lambda s,e: retrieve_timeseries(timeseries_retriever, "evaporation", start_date, end_date)
-    configuration.retrieve_seepage = lambda s,e: retrieve_timeseries(timeseries_retriever, "seepage", start_date, end_date)
+    configuration = WaterbalanceConf.objects.filter(slug=configuration_slug)[0]
 
     waterbalance_computer = WaterbalanceComputer2(configuration)
 
@@ -226,11 +211,6 @@ def export_table(area_slug, start_date, end_date, directory, input_directory):
     f.close()
 
 
-
-
-
-
-
 class Command(BaseCommand):
     args = "test-data-directory WaterbalanceArea-name start-date end-date"
     help = "Calculates the water balance on the first open water."
@@ -328,6 +308,3 @@ class Command(BaseCommand):
         for (date, value) in timeseries.events():
             file.write("%s,%s,%d,%d,%d,%f\n" % (key, name, date.year,
                                                 date.month, date.day, value))
-
-
-

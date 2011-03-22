@@ -35,7 +35,7 @@ import csv
     
 from django.core.management.base import BaseCommand
 
-from lizard_waterbalance.models import WaterbalanceArea, WaterbalanceScenario, WaterbalanceConfiguration, Parameter, WaterbalanceTimeserie, Timeseries, OpenWater, \
+from lizard_waterbalance.models import WaterbalanceArea, WaterbalanceScenario, WaterbalanceConf, Parameter, WaterbalanceTimeserie, Timeseries, OpenWater, \
                                         Bucket, PumpingStation, PumpLine
 from timeseries.timeseriesstub import TimeseriesStub
 from django.contrib.gis.geos import GEOSGeometry
@@ -133,7 +133,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
         #create scenario with name and link areas later manually
         scenario, new = WaterbalanceScenario.objects.get_or_create(name=wb_area_name)
         
-    config, new = WaterbalanceConfiguration.objects.get_or_create(waterbalance_scenario = scenario, waterbalance_area = area)
+    config, new = WaterbalanceConf.objects.get_or_create(waterbalance_scenario = scenario, waterbalance_area = area)
     
     config.description = area.name
     config.slug = config.__unicode__()
@@ -196,11 +196,11 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
     config.save()
     
     #minimum_level
-    array_with_values = [[1,1,sheet.cell(66,2).value],
-                         [3,15,sheet.cell(63,2).value],
-                         [5,1,sheet.cell(64,2).value],
-                         [8,15,sheet.cell(65,2).value],
-                         [10,1,sheet.cell(66,2).value],
+    array_with_values = [[1,1,float(sheet.cell(66,2).value)],
+                         [3,15,float(sheet.cell(63,2).value)],
+                         [5,1,float(sheet.cell(64,2).value)],
+                         [8,15,float(sheet.cell(65,2).value)],
+                         [10,1,float(sheet.cell(66,2).value)],
                         ]
     parameter = par_min_level
     if WaterbalanceTimeserie.objects.filter(parameter=parameter, open_water_min_level=open_water).count() == 0:
@@ -211,11 +211,11 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
     create_save_yearly_timeserie_into_database(wb_timeserie, array_with_values)
     
     #maximum_level
-    array_with_values = [[1,1,sheet.cell(66,4).value],
-                         [3,15,sheet.cell(63,4).value],
-                         [5,1,sheet.cell(64,4).value],
-                         [8,15,sheet.cell(65,4).value],
-                         [10,1,sheet.cell(66,4).value],
+    array_with_values = [[1,1,float(sheet.cell(66,4).value)],
+                         [3,15,float(sheet.cell(63,4).value)],
+                         [5,1,float(sheet.cell(64,4).value)],
+                         [8,15,float(sheet.cell(65,4).value)],
+                         [10,1,float(sheet.cell(66,4).value)],
                         ]
     parameter = par_max_level
     if WaterbalanceTimeserie.objects.filter(parameter=parameter, open_water_max_level=open_water).count() == 0:
@@ -228,7 +228,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
     #target_level, wordt niet gebruikt, weg?
     
     #seepage
-    array_with_values = [[1,1,sheet.cell(36,1).value]]
+    array_with_values = [[1,1,float(sheet.cell(36,1).value)]]
     parameter = par_seepage
     if WaterbalanceTimeserie.objects.filter(parameter=parameter, open_water_seepage=open_water).count() == 0:
         wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(open_water.__unicode__(), parameter.name ))
@@ -237,7 +237,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
         wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, open_water_seepage=open_water)[0]                 
     create_save_yearly_timeserie_into_database(wb_timeserie, array_with_values)
     
-    array_with_values = [[1,1,sheet.cell(36,1).value]]
+    array_with_values = [[1,1,float(sheet.cell(36,1).value)]]
     parameter = par_infiltration
     if WaterbalanceTimeserie.objects.filter(parameter=parameter, open_water_infiltration=open_water).count() == 0:
         wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(open_water.__unicode__(), parameter.name ))
@@ -256,7 +256,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
     
     bucket_nr = 0
     for colnr in range(4,12):
-        if sheet.cell(34, colnr).value > 0 and sheet.cell(34, colnr).value < sheet.cell(34, colnr+1).value:
+        if sheet.cell(34, colnr).value > 0 and (sheet.cell(34, colnr).value < sheet.cell(34, colnr+1).value or sheet.cell(34, colnr+1).value < 0):
             bucket_nr = bucket_nr + 1
             
             if sheet.cell(34, colnr).value == sheet.cell(34, colnr-1).value:
@@ -287,11 +287,15 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
                     bucket.surface_type = Bucket.STEDELIJK_SURFACE
                 elif name.find('ondraineerd') >= 0:
                     bucket.surface_type = Bucket.UNDRAINED_SURFACE
+                elif name.lower().find('verhard') >= 0:
+                    bucket.surface_type = Bucket.HARDENED_SURFACE
+                elif name.lower().find('landelijk') >= 0:
+                    bucket.surface_type = Bucket.DRAINED_SURFACE                    
                 else:
                     print 'ERROR: bucket type "%s" unknown, take drained'%name
                     bucket.surface_type = Bucket.DRAINED_SURFACE
     
-            if Bucket.objects.filter(open_water=open_water, name=name).count()>0:
+            if Bucket.objects.filter(open_water=open_water, name=name, surface_type=surface_type).count()>0:
                 bucket = Bucket.objects.filter(open_water=open_water, name=name, surface_type=surface_type)[0]
             else:
                 bucket = Bucket()
@@ -303,8 +307,13 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
             bucket.open_water = open_water
     
             #upper
-            bucket.crop_evaporation_factor = 1
-            bucket.min_crop_evaporation_factor = 0.75
+            if bucket.surface_type == Bucket.HARDENED_SURFACE:
+                bucket.crop_evaporation_factor = 1
+                bucket.min_crop_evaporation_factor = 1            
+            else:
+                bucket.crop_evaporation_factor = 1
+                bucket.min_crop_evaporation_factor = 0.75
+            
             bucket.upper_porosity = sheet.cell(38, col_upper).value
             bucket.upper_drainage_fraction = sheet.cell(36, col_upper).value
             bucket.upper_indraft_fraction = sheet.cell(37, col_upper).value
@@ -335,7 +344,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
             #bucket.seepage
     
     
-            array_with_values = [[1,1,sheet.cell(37+bucket_nr,1).value]]
+            array_with_values = [[1,1,float(sheet.cell(37+bucket_nr,1).value)]]
             parameter = par_seepage_infiltration
             if WaterbalanceTimeserie.objects.filter(parameter=parameter, bucket_seepage=bucket).count() == 0:
                 wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(bucket.__unicode__(), parameter.name ))
@@ -463,9 +472,9 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
                 pump_line.save()
     
             #discharge
-            array_with_values = [[1,1,sheet.cell(row,2).value],
-                                 [4,1,sheet.cell(row,1).value],
-                                 [10,1,sheet.cell(row,2).value],
+            array_with_values = [[1,1,float(sheet.cell(row,1).value)],
+                                 [4,1,float(sheet.cell(row,2).value)],
+                                 [10,1,float(sheet.cell(row,1).value)],
                                 ]
             parameter = par_structure_discharge
             if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
@@ -504,15 +513,13 @@ class Command(BaseCommand):
     help = "Load all waternet waterbalance excelfiles from a directory (only xls)."
 
     def handle(self, *args, **options):
-        method = 1 #hardcoded, option or remove other method?
-        directory_root = args[0]
-        directory = str(args[1])
+        directory = str(args[0])
         load_excel_reference_results = True
 
         input_path = join(directory, "*.xls")
 
         for xls_file_name in glob.glob(input_path):
-            upload_settings_from_timeseries(xls_file_name, load_excel_reference_results) 
+            upload_settings_from_excelfile(xls_file_name, load_excel_reference_results) 
 
 
 

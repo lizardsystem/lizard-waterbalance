@@ -238,7 +238,7 @@ class computeTestSuite(TestCase):
         self.assertTrue(len(calls_to_compute) > 0)
 
         supplied_volume = calls_to_compute[0].getParam(1)
-        expected_volume = self.bucket.init_water_level * self.bucket.surface
+        expected_volume = self.bucket.init_water_level * self.bucket.surface * self.bucket.porosity
         self.assertAlmostEqual(supplied_volume, expected_volume)
 
     def test_l(self):

@@ -30,21 +30,18 @@ from os.path import join
     
 from django.core.management.base import BaseCommand
 
-from lizard_waterbalance.models import WaterbalanceArea
-            
+
+from lizard_waterbalance.models import load_shapefile           
 
 class Command(BaseCommand):
     args = "<filelocation namefield epsg_of_shapefile>"
     help = "Load shapefile with geometries and names into WaterbalanceArea table."
 
     def handle(self, *args, **options):
-        method = 1 #hardcoded, option or remove other method?
-        directory = args[0]
-        shapefile_name = str(args[1])
-        name_field = str(args[2])
-        source_epsg = int(args[3])
-
-        WaterbalanceArea._load_shapefile(self, shapefile_name, name_field, source_epsg)
+        shapefile_name = str(args[0])
+        name_field = str(args[1])
+        source_epsg = int(args[2])
+        load_shapefile(shapefile_name, name_field, source_epsg)
 
 
 
