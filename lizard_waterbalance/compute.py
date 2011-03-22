@@ -26,6 +26,7 @@
 #
 #******************************************************************************
 
+import datetime
 import logging
 
 from lizard_waterbalance.fraction_computer import FractionComputer
@@ -43,6 +44,8 @@ from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from lizard_waterbalance.bucket_computer import BucketsComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
+from lizard_waterbalance.models import Parameter
+from lizard_waterbalance.models import WaterbalanceTimeserie
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +107,10 @@ class WaterbalanceOutcome:
         self.intake_fractions = {}
 
 class WaterbalanceComputer2:
-    """Compute the waterbalance-related time series for the given configuration."""
+    """Compute the waterbalance-related time series.
+
+    for the given configuration.
+    """
 
     def __init__(self, configuration,
                  settings_loader=None,
@@ -418,8 +424,10 @@ class WaterbalanceComputer2:
         """
 
 
-    def get_sluice_error_timeseries(self, start_date, end_date):
-        """return sluice error (sluitfout)
+    def calc_sluice_error_timeseries(
+        self, start_date_calc, end_date_calc):
+        """return sluice error (sluitfout) as TimeseriesStub
+
         Args:
           *start_date*
             date of the first day for which to compute the time series
@@ -429,30 +437,95 @@ class WaterbalanceComputer2:
 
         This method returns a tuple that contains
           1. a dictionary with reference timeseries
-
-            TO DO: enddate startdate storage
         """
-        if (self.outcome.has_key('sluice_error') and self.outcome_info['sluice_error']['start_date']==start_date and self.outcome_info['sluice_error']['end_date']==end_date):
-            return self.outcome['sluice_error']
-        else:
-            timeseries = self.get_level_control_timeseries(
-                start_date, end_date)
-            timeseries_sluice_error = [
-                timeseries['level_control']['intake_time_series'],
-                timeseries['level_control']['pump_time_series'],
-                timeseries['open_water_cnt']['storage'],
-                ]
-            sluice_error = self.sluice_error_computer.compute(
-                self.configuration.open_water,
-                timeseries_sluice_error,
-                start_date, end_date) #??? input van kunstwerk metingen?
-            #cache
-            self.outcome['sluice_error'] = sluice_error
-            self.outcome_info['sluice_error'] = {}
-            self.outcome_info['sluice_error']['start_date'] = start_date
-            self.outcome_info['sluice_error']['end_date'] = end_date
+        logger.debug("Calculating sluice error (%s - %s)..." % (
+                start_date_calc.strftime('%Y-%m-%d'),
+                end_date_calc.strftime('%Y-%m-%d')))
 
-        return sluice_error
+        timeseries = self.get_level_control_timeseries(
+            start_date_calc, end_date_calc)
+        timeseries_sluice_error = [
+            timeseries['level_control']['intake_time_series'],
+            timeseries['level_control']['pump_time_series'],
+            timeseries['open_water_cnt']['storage'],
+            ]
+        sluice_error = self.sluice_error_computer.compute(
+            self.configuration.open_water,
+            timeseries_sluice_error,
+            start_date_calc, end_date_calc) #??? input van kunstwerk metingen?
+
+        return sluice_error  # TimeseriesStub
+
+    def get_sluice_error_timeseries(
+        self, start_date, end_date,
+        start_date_calc=None, end_date_calc=None,
+        timestep=WaterbalanceTimeserie.TIMESTEP_MONTH,
+        force_recalculate=False):
+        """
+        Return WaterbalanceTimeserie of sluice error.
+
+        If data not available, it will be calculated and stored.
+
+        name, configuration, parameter, timestep
+        """
+        name = 'sluice_error'
+        parameter, created = Parameter.objects.get_or_create(
+            name='sluitfout', unit='m')
+
+        # Try to find existing waterbalance timeseries.
+        wb_ts = WaterbalanceTimeserie.objects.filter(
+            name=name,
+            parameter=parameter,
+            configuration=self.configuration,
+            timestep=timestep)
+
+        need_calculation = False
+        if force_recalculate:
+            logger.debug("Forced recalculation.")
+            need_calculation = True
+        if not need_calculation and not wb_ts:
+            logger.debug("Could not find existing ts for "
+                         "sluice_error, recalculating.")
+            need_calculation = True
+        if not need_calculation and wb_ts:
+            # There should be only one
+            if len(wb_ts) > 1:
+                logger.error(
+                    "More than one timeseries found for "
+                    "WaterbalanceTimeserie(%s %s %s %s), "
+                    "recalculating." % (
+                        name, parameter, self.configuration, timestep))
+                need_calculation = True
+            if not wb_ts[0].in_daterange(start_date):
+                logger.debug(
+                    "start_date %s not in available data, "
+                    "recalculating." % start_date)
+                need_calculation = True
+            if not wb_ts[0].in_daterange(end_date):
+                logger.debug(
+                    "end_date %s not in available data, "
+                    "recalculating." % end_date)
+                need_calculation = True
+
+        # (Re)calculate sluice error.
+        if need_calculation:
+            if start_date_calc is None:
+                start_date_calc = datetime.datetime(1900, 1, 1)
+            if end_date_calc is None:
+                # Make 1 month margin because aggregation truncates.
+                end_date_calc = end_date + datetime.timedelta(days=31)
+            ts = self.calc_sluice_error_timeseries(
+                start_date_calc, end_date_calc)
+            result_timeseries = WaterbalanceTimeserie.create(
+                name=name,
+                parameter=parameter,
+                timeseries=dict(ts.monthly_events()),
+                configuration=self.configuration,
+                timestep=timestep)
+        else:
+            result_timeseries = wb_ts[0]
+
+        return result_timeseries
 
 
     def get_fraction_timeseries(self, start_date, end_date):

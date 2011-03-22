@@ -70,7 +70,7 @@ class TimeseriesFewsAdmin(admin.ModelAdmin):
 
 
 class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
-    list_filter = ('use_fews', 'parameter',  )
+    list_filter = ('use_fews', 'parameter', 'configuration', 'timestep' )
     list_display = ( 'name', 'use_fews', 'parameter',
                      'fews_timeseries', 'local_timeseries')
     search_fields = ['name',  ]

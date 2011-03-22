@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'lizard_waterbalance',
     'lizard_map',
     'lizard_ui',
+    #'south',
     'staticfiles',
     'compressor',
     'django_extensions',

@@ -67,11 +67,13 @@ class SluiceErrorComputer:
         return sluice_error_timeseries
 
     def _retrieve_measured_timeseries(self):
-        """Return the single time series of measured incoming and outgoing volume."""
+        """Return the single time series of measured incoming and
+        outgoing volume."""
         return self._retrieve_net_timeseries(only_input=False)
 
     def _retrieve_computed_timeseries(self, level_control):
-        """Return the single time series of computed incoming and outgoing volume.
+        """Return the single time series of computed incoming and
+        outgoing volume.
 
         The computed time series of the intakes and pumps is the single time
         series of total incoming and outgoing volume of the intakes and pumps
@@ -92,9 +94,10 @@ class SluiceErrorComputer:
             and pumps that are not used for level control
 
         This method also uses the instance variables self.open_water,
-        self.start_date and self.end_date. Although these parameters could also
-        be passed as arguments, we decided to 'pass them' als instance
-        variables to allow for a shorter method signature.
+        self.start_date and self.end_date. Although these parameters
+        could also be passed as arguments, we decided to 'pass them'
+        als instance variables to allow for a shorter method
+        signature.
 
         """
 

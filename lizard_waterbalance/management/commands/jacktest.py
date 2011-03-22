@@ -3,7 +3,13 @@ import logging
 
 from django.core.management.base import BaseCommand
 from lizard_waterbalance.compute import WaterbalanceComputer2
+from lizard_waterbalance.models import Parameter
 from lizard_waterbalance.models import WaterbalanceConf
+from lizard_waterbalance.models import WaterbalanceTimeserie
+
+# from lizard_waterbalance.models import WaterbalanceTimeserie
+# from lizard_waterbalance.models import Parameter
+
 
 logger = logging.getLogger(__name__)
 
@@ -13,21 +19,41 @@ class Command(BaseCommand):
     help = "Jacks test command."
 
     def handle(self, *args, **options):
-        logger.info('test info')
+        logger.info('Jacktest')
 
         configuration_slug = "aetsveldsche_polder_oost_-_test"
-        start = datetime.datetime(1900, 1, 1)
+        start = datetime.datetime(2010, 1, 1)
         end = datetime.datetime(2011, 1, 1)
-
 
         configuration = WaterbalanceConf.objects.get(
             slug=configuration_slug)
+        parameter, created = Parameter.objects.get_or_create(
+            name='sluitfout', unit='m')
 
         waterbalance_computer = WaterbalanceComputer2(configuration)
 
         # waterbalance_computer.compute(start, end)
-        ts = waterbalance_computer.get_sluice_error_timeseries(start, end)
+        wb_ts = waterbalance_computer.get_sluice_error_timeseries(
+            start, end,
+            force_recalculate=False)
+
+        print wb_ts.get_timeseries().timeseries_events.filter(
+            time__gte=start, time__lte=end)
+
         # print dir(ts)
-        print [e for e in ts.events()]  # per dag
-        # print [e for e in ts.monthly_events()]
-        # print [e for e in ts.raw_events()]  # per dag
+        # l = [e for e in ts.events()]  # per dag
+
+        # WaterbalanceTimeserie.create(
+        #     name='sluice_error',
+        #     parameter=parameter,
+        #     timeseries=dict(ts.raw_events()),
+        #     configuration=configuration,
+        #     timestep=WaterbalanceTimeserie.TIMESTEP_DAY)
+
+        # WaterbalanceTimeserie.create(
+        #     name='sluice_error',
+        #     parameter=parameter,
+        #     timeseries=dict(ts.monthly_events()),
+        #     configuration=configuration,
+        #     timestep=WaterbalanceTimeserie.TIMESTEP_MONTH)
+

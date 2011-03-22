@@ -30,12 +30,15 @@ from datetime import timedelta
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db import models
+from django.db import transaction
+from django.db.models import Max
+from django.db.models import Min
 from django.utils.translation import ugettext as _
 
-from lizard_fewsunblobbed.models import Filter
-from lizard_fewsunblobbed.models import Location
-from lizard_fewsunblobbed.models import Parameter
-from lizard_fewsunblobbed.models import Timeserie
+from lizard_fewsunblobbed.models import Filter as FewsFilter
+from lizard_fewsunblobbed.models import Location as FewsLocation
+from lizard_fewsunblobbed.models import Parameter as FewsParameter
+from lizard_fewsunblobbed.models import Timeserie as FewsTimeserie
 from lizard_map.models import ColorField
 
 from south.modelsinspector import add_ignored_fields
@@ -49,7 +52,6 @@ from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
-# Create your models here.
 
 class IncompleteData(Exception):
     """Implements the exception when the model is not completely defined."""
@@ -70,14 +72,14 @@ class Timeseries(models.Model):
     implicit attribute 'timeseries_events', which is a Manager for the events.
 
     """
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+        max_length=64, null=True, blank=True)
+
     class Meta:
         verbose_name = _("Tijdreeks")
         verbose_name_plural = _("Tijdreeksen")
-
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
-                            max_length=64, null=True, blank=True)
-
 
     def raw_events(self):
         """Return a generator to iterate over all events.
@@ -117,15 +119,16 @@ class Timeseries(models.Model):
 
         We need some performance boost on this function
         #first clear?
-        """ 
+        """
         for date, value in timeserie_stub.raw_events():
             ts = TimeseriesEvent(time=date, value=value, timeseries=self)
             ts.save()
-        
+
         transaction.commit()
-    
+
     def __unicode__(self):
         return self.name
+
 
 class TimeseriesEvent(models.Model):
     """Specifies a single event, that is, a value - date time pair.
@@ -149,6 +152,7 @@ class TimeseriesEvent(models.Model):
     def __unicode__(self):
         return u'Event %s: (%s, %s)' % (self.timeseries, self.time, self.value)
 
+
 class TimeseriesFews(models.Model):
     """Specifies a time series in a Fews unblobbed database.
 
@@ -160,21 +164,25 @@ class TimeseriesFews(models.Model):
         verbose_name = _("tijdreeks FEWS")
         verbose_name_plural = _("tijdreeksen FEWS")
 
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
-                            max_length=64, null=True, blank=True)
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+        max_length=64, null=True, blank=True)
 
-    pkey = models.IntegerField(verbose_name=_("Parameter"),
-                               help_text=_("pkey van de parameter in FEWS unblobbed"),
-                               null=True, blank=True)
+    pkey = models.IntegerField(
+        verbose_name=_("Parameter"),
+        help_text=_("pkey van de parameter in FEWS unblobbed"),
+        null=True, blank=True)
 
-    fkey = models.IntegerField(verbose_name=_("Filter"),
-                               help_text=_("fkey van de filter in FEWS unblobbed"),
-                               null=True, blank=True)
+    fkey = models.IntegerField(
+        verbose_name=_("Filter"),
+        help_text=_("fkey van de filter in FEWS unblobbed"),
+        null=True, blank=True)
 
-    lkey = models.IntegerField(verbose_name=_("Location"),
-                               help_text=_("lkey van de locatie in FEWS unblobbed"),
-                               null=True, blank=True)
+    lkey = models.IntegerField(
+        verbose_name=_("Location"),
+        help_text=_("lkey van de locatie in FEWS unblobbed"),
+        null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -185,25 +193,27 @@ class TimeseriesFews(models.Model):
         The generator iterates over the events earliest date first.
 
         """
-        fews_parameter = Parameter.objects.get(pkey=self.pkey)
-        fews_filter = Filter.objects.get(id=self.fkey)
-        fews_location = Location.objects.get(lkey=self.lkey)
+        fews_parameter = FewsParameter.objects.get(pkey=self.pkey)
+        fews_filter = FewsFilter.objects.get(id=self.fkey)
+        fews_location = FewsLocation.objects.get(lkey=self.lkey)
 
         # the timestep is hardcoded for Waternet: "dag GMT+1" or "dag GMT-8"
         timestep = "dag GMT+1"
         try:
-            fews_timeseries = Timeserie.objects.get(timestep=timestep,
-                                                    parameterkey=fews_parameter,
+            fews_timeseries = FewsTimeserie.objects.get(
+                timestep=timestep,
+                parameterkey=fews_parameter,
                                                     filterkey=fews_filter,
                                                     locationkey=fews_location)
-        except Timeserie.DoesNotExist:
+        except FewsTimeserie.DoesNotExist:
             timestep = "dag GMT-8"
             try:
-                fews_timeseries = Timeserie.objects.get(timestep=timestep,
-                                                        parameterkey=fews_parameter,
-                                                        filterkey=fews_filter,
-                                                        locationkey=fews_location)
-            except Timeserie.DoesNotExist:
+                fews_timeseries = FewsTimeserie.objects.get(
+                    timestep=timestep,
+                    parameterkey=fews_parameter,
+                    filterkey=fews_filter,
+                    locationkey=fews_location)
+            except FewsTimeserie.DoesNotExist:
                 exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
                 logger.warning(exception_msg)
                 raise IncompleteData(exception_msg)
@@ -219,12 +229,13 @@ class Parameter(models.Model):
     name = models.CharField(verbose_name=_("naam"),
                             help_text=_("naam van parameter"),
                             max_length=64)
-    unit = models.CharField(verbose_name=_("eenheid"), max_length=64, null=True, blank=True)
+    unit = models.CharField(
+        verbose_name=_("eenheid"), max_length=64, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
-    
-    
+
+
 class WaterbalanceTimeserie(models.Model):
     """Implements a time series.
 
@@ -245,13 +256,21 @@ class WaterbalanceTimeserie(models.Model):
         link to the WaterbalanceLabel that describes the time serie
 
     """
-    class Meta:
-        verbose_name = _("Waterbalans tijdreeks")
-        verbose_name_plural = _("Waterbalans tijdreeksen")
+    TIMESTEP_DAY = 1
+    TIMESTEP_MONTH = 2
+    TIMESTEP_QUARTER = 3
+    TIMESTEP_YEAR = 4
+    TIMESTEP_CHOICES = [
+        (TIMESTEP_DAY, 'day'),
+        (TIMESTEP_MONTH, 'month'),
+        (TIMESTEP_QUARTER, 'quarter'),
+        (TIMESTEP_YEAR, 'year'),
+        ]
 
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
-                            max_length=64, null=True, blank=True)
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
+        max_length=64, null=True, blank=True)
 
     parameter = models.ForeignKey('Parameter', related_name='+')
 
@@ -259,15 +278,39 @@ class WaterbalanceTimeserie(models.Model):
 
     use_fews = models.BooleanField(verbose_name=_("gebruik FEWS tijdreeks"))
 
-    fews_timeseries = models.ForeignKey(TimeseriesFews,
-                                    verbose_name=_("FEWS"),
-                                    help_text=_("tijdreeks opgeslagen in FEWS unblobbed database"),
-                                    null=True, blank=True, related_name='+')
+    fews_timeseries = models.ForeignKey(
+        TimeseriesFews,
+        verbose_name=_("FEWS"),
+        help_text=_("tijdreeks opgeslagen in FEWS unblobbed database"),
+        null=True, blank=True, related_name='+')
 
-    local_timeseries = models.ForeignKey(Timeseries,
-                               verbose_name=_("standaard"),
-                               help_text=_("tijdreeks opgeslagen in eigen database"),
-                               null=True, blank=True, related_name='+')
+    local_timeseries = models.ForeignKey(
+        Timeseries,
+        verbose_name=_("standaard"),
+        help_text=_("tijdreeks opgeslagen in eigen database"),
+        null=True, blank=True, related_name='+')
+
+    # Belongs to what configuration? Optional, but needed for
+    # adapter/lizard-map.
+    configuration = models.ForeignKey(
+        'WaterbalanceConf', null=True, blank=True,
+        help_text='WaterbalanceConf, needed for adapter/lizard-map.')
+
+    # Timestep is what it's supposed to be. It is metadata for
+    # (calculated) timeseries.
+    timestep = models.IntegerField(
+        choices=TIMESTEP_CHOICES, null=True, blank=True,
+        help_text='Timestep. Optional metadata for (calculated) timeseries')
+
+    class Meta:
+        verbose_name = _("Waterbalans tijdreeks")
+        verbose_name_plural = _("Waterbalans tijdreeksen")
+        unique_together = (("name", "parameter",
+                            "configuration", "timestep"),
+                           )
+
+    def __unicode__(self):
+        return self.name
 
     def get_timeseries(self):
         """Returns the time series this WaterbalanceTimeserie refers to."""
@@ -277,8 +320,65 @@ class WaterbalanceTimeserie(models.Model):
             timeseries = self.local_timeseries
         return timeseries
 
-    def __unicode__(self):
-        return self.name
+    def in_daterange(self, dt):
+        """
+        Check if dt is in daterange of available data.
+        """
+        ts = self.get_timeseries()
+        dt_range = ts.timeseries_events.aggregate(
+            Min('time'), Max('time'))
+        return dt >= dt_range['time__min'] and dt <= dt_range['time__max']
+
+    @classmethod
+    @transaction.commit_on_success()
+    def create(cls, name, parameter, timeseries,
+               configuration=None, timestep=None):
+        """
+        Create a local timeserie.
+
+        Will replace existing combination of name, parameter,
+        configuration and timestep.
+
+        timeserie is a dict with key=datetime, value=value
+        """
+        existing_timeseries = WaterbalanceTimeserie.objects.filter(
+            name=name,
+            parameter=parameter,
+            configuration=configuration,
+            timestep=timestep)
+        if existing_timeseries:
+            for ex_wb_ts in existing_timeseries:
+                ex_wb_ts.get_timeseries().delete()  # Removes events as well
+                ex_wb_ts.delete()
+            logger.info(
+                'Replacing existing timeseries (%s %s %s %s)'
+                % (name, parameter, configuration, timestep))
+        logger.debug(
+            'Creating waterbalance timeseries (%s, timestep=%d)...' % (
+                name, timestep))
+        local_timeseries = Timeseries(name=name)
+        local_timeseries.save()
+        counter = 0
+        counter_report = 1000
+        for key, value in timeseries.items():
+            local_timeseries.timeseries_events.create(
+                time=key,
+                value=value)
+            counter += 1
+            if counter % counter_report == 0:
+                logger.debug('record %d' % counter)
+                counter_report = min(counter * 2, 10000)
+        wb_ts = WaterbalanceTimeserie(
+            name=name,
+            parameter=parameter,
+            use_fews=False,
+            configuration=configuration,
+            timestep=timestep,
+            local_timeseries=local_timeseries)
+        wb_ts.save()
+        logger.debug('Successfully created waterbalance timeseries.')
+        return wb_ts
+
 
 class OpenWater(models.Model):
     """Represents the *open water*.
@@ -302,38 +402,47 @@ class OpenWater(models.Model):
     class Meta:
         verbose_name = _("Open water")
 
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om het open water eenvoudig te herkennen"),
-                            max_length=64)
-    surface = models.IntegerField(verbose_name=_("oppervlakte"),
-                                  help_text=_("oppervlakte in vierkante meters"))
-    bottom_height = models.FloatField(verbose_name=_("bodemhoogte"),
-                                      help_text=_("bodemhoogte in meters boven NAP"),
-                                      null=True, blank=True)
-    minimum_level = models.ForeignKey(WaterbalanceTimeserie,
-                                      verbose_name=_("ondergrens"),
-                                      help_text=_("tijdserie naar ondergrens peil in meters"),
-                                      null=True, blank=True, related_name='open_water_min_level')
-    maximum_level = models.ForeignKey(WaterbalanceTimeserie,
-                                      verbose_name=_("bovengrens"),
-                                      help_text=_("tijdserie naar bovengrens peil in meters"),
-                                      null=True, blank=True, related_name='open_water_max_level')
-    target_level = models.ForeignKey(WaterbalanceTimeserie,
-                                     verbose_name=_("streefpeil"),
-                                     help_text=_("tijdserie met streefpeil in meters"),
-                                     null=True, blank=True, related_name='open_water_targetlevel')
-    init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
-                                         help_text=_("initiele waterstand in meters"))
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om het open water eenvoudig te herkennen"),
+        max_length=64)
+    surface = models.IntegerField(
+        verbose_name=_("oppervlakte"),
+        help_text=_("oppervlakte in vierkante meters"))
+    bottom_height = models.FloatField(
+        verbose_name=_("bodemhoogte"),
+        help_text=_("bodemhoogte in meters boven NAP"),
+        null=True, blank=True)
+    minimum_level = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("ondergrens"),
+        help_text=_("tijdserie naar ondergrens peil in meters"),
+        null=True, blank=True, related_name='open_water_min_level')
+    maximum_level = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("bovengrens"),
+        help_text=_("tijdserie naar bovengrens peil in meters"),
+        null=True, blank=True, related_name='open_water_max_level')
+    target_level = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("streefpeil"),
+        help_text=_("tijdserie met streefpeil in meters"),
+        null=True, blank=True, related_name='open_water_targetlevel')
+    init_water_level = models.FloatField(
+        verbose_name=_("initiele waterstand"),
+        help_text=_("initiele waterstand in meters"))
 
-    seepage = models.ForeignKey(WaterbalanceTimeserie,
-                                verbose_name=_("kwel"),
-                                help_text=_("tijdserie naar kwel"),
-                                null=True, blank=True, related_name='open_water_seepage')    
+    seepage = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("kwel"),
+        help_text=_("tijdserie naar kwel"),
+        null=True, blank=True, related_name='open_water_seepage')
 
-    infiltration = models.ForeignKey(WaterbalanceTimeserie,
-                                verbose_name=_("wegzijging"),
-                                help_text=_("tijdserie naar kwel"),
-                                null=True, blank=True, related_name='open_water_infiltration')  
+    infiltration = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("wegzijging"),
+        help_text=_("tijdserie naar kwel"),
+        null=True, blank=True, related_name='open_water_infiltration')
 
     def __unicode__(self):
         return self.name
@@ -398,6 +507,7 @@ class OpenWater(models.Model):
     def retrieve_maximum_level(self):
         return self.maximum_level.get_timeseries()
 
+
 class Bucket(models.Model):
     """Represents a *bakje*.
 
@@ -432,65 +542,82 @@ class Bucket(models.Model):
     name = models.CharField(verbose_name=_("naam"), max_length=64)
     slug = models.CharField(verbose_name=_("slug"), max_length=64)
 
-    surface_type =  models.IntegerField(verbose_name=_("oppervlakte type"),
-                                        choices=SURFACE_TYPES,
-                                        default=UNDRAINED_SURFACE)
-    surface = models.IntegerField(verbose_name=_("oppervlakte"),
-                                  help_text=_("oppervlakte in vierkante meters"))
+    surface_type =  models.IntegerField(
+        verbose_name=_("oppervlakte type"),
+        choices=SURFACE_TYPES,
+        default=UNDRAINED_SURFACE)
+    surface = models.IntegerField(
+        verbose_name=_("oppervlakte"),
+        help_text=_("oppervlakte in vierkante meters"))
 
-    seepage = models.ForeignKey(WaterbalanceTimeserie,
-                                verbose_name=_("kwel"),
-                                help_text=_("tijdserie naar kwel"),
-                                null=True, blank=True,
-                                related_name='bucket_seepage')
- 
-    
-    results = models.ManyToManyField(WaterbalanceTimeserie, 
-                                     verbose_name=_("resultaten"),
-                                     help_text=_("Berekeningsresultaten van een bakje"),
-                                     null=True, blank=True,
-                                     related_name='bucket_results')
+    seepage = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("kwel"),
+        help_text=_("tijdserie naar kwel"),
+        null=True, blank=True,
+        related_name='bucket_seepage')
+
+    results = models.ManyToManyField(
+        WaterbalanceTimeserie,
+        verbose_name=_("resultaten"),
+        help_text=_("Berekeningsresultaten van een bakje"),
+        null=True, blank=True,
+        related_name='bucket_results')
 
     # TODO these values are optional: change their definition accordingly
     porosity = models.FloatField(verbose_name=_("porositeit"))
-    crop_evaporation_factor = models.FloatField(verbose_name=_("gewasverdampingsfactor"))
-    min_crop_evaporation_factor = models.FloatField(verbose_name=_("minimum gewasverdampingsfactor"))
+    crop_evaporation_factor = models.FloatField(
+        verbose_name=_("gewasverdampingsfactor"))
+    min_crop_evaporation_factor = models.FloatField(
+        verbose_name=_("minimum gewasverdampingsfactor"))
 
     drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel"))
     indraft_fraction = models.FloatField(verbose_name=_("fractie intrek"))
 
-    max_water_level = models.FloatField(verbose_name=_("maximum waterstand"),
-                                        help_text=_("maximum waterstand in meters"))
+    max_water_level = models.FloatField(
+        verbose_name=_("maximum waterstand"),
+        help_text=_("maximum waterstand in meters"))
 
-    equi_water_level = models.FloatField(verbose_name=_("equilibrium waterstand"),
-                                         help_text=_("equilibrium waterstand in meters"))
+    equi_water_level = models.FloatField(
+        verbose_name=_("equilibrium waterstand"),
+        help_text=_("equilibrium waterstand in meters"))
 
-    min_water_level = models.FloatField(verbose_name=_("minimum waterstand"),
-                                        null=True, blank=True,
-                                        help_text=_("minimum waterstand in meters"))
+    min_water_level = models.FloatField(
+        verbose_name=_("minimum waterstand"),
+        null=True, blank=True,
+        help_text=_("minimum waterstand in meters"))
 
-    init_water_level = models.FloatField(verbose_name=_("initiele waterstand"),
-                                         help_text=_("initiele waterstand in meters"))
+    init_water_level = models.FloatField(
+        verbose_name=_("initiele waterstand"),
+        help_text=_("initiele waterstand in meters"))
 
-    external_discharge = models.IntegerField(verbose_name=_("Afvoer (naar extern)"),
-                                             help_text=_("Afvoer (naar extern) in mm/dag"),
-                                             default=0)
+    external_discharge = models.IntegerField(
+        verbose_name=_("Afvoer (naar extern)"),
+        help_text=_("Afvoer (naar extern) in mm/dag"),
+        default=0)
 
-    upper_porosity = models.FloatField(verbose_name=("porositeit bovenste bakje"))
-    upper_drainage_fraction = models.FloatField(verbose_name=_("fractie uitspoel bovenste bakje"))
-    upper_indraft_fraction = models.FloatField(verbose_name=_("fractie intrek bovenste bakje"))
-    upper_max_water_level = models.FloatField(verbose_name=_("maximum waterstand bovenste bakje"),
-                                        help_text=_("maximum waterstand in meters"))
+    upper_porosity = models.FloatField(
+        verbose_name=("porositeit bovenste bakje"))
+    upper_drainage_fraction = models.FloatField(
+        verbose_name=_("fractie uitspoel bovenste bakje"))
+    upper_indraft_fraction = models.FloatField(
+        verbose_name=_("fractie intrek bovenste bakje"))
+    upper_max_water_level = models.FloatField(
+        verbose_name=_("maximum waterstand bovenste bakje"),
+        help_text=_("maximum waterstand in meters"))
 
-    upper_equi_water_level = models.FloatField(verbose_name=_("equilibrium waterstand bovenste bakje"),
-                                         help_text=_("equilibrium waterstand in meters"))
+    upper_equi_water_level = models.FloatField(
+        verbose_name=_("equilibrium waterstand bovenste bakje"),
+        help_text=_("equilibrium waterstand in meters"))
 
-    upper_min_water_level = models.FloatField(verbose_name=_("minimum waterstand bovenste bakje"),
-                                        null=True, blank=True,
-                                        help_text=_("minimum waterstand in meters"))
+    upper_min_water_level = models.FloatField(
+        verbose_name=_("minimum waterstand bovenste bakje"),
+        null=True, blank=True,
+        help_text=_("minimum waterstand in meters"))
 
-    upper_init_water_level = models.FloatField(verbose_name=_("initiele waterstand bovenste bakje"),
-                                         help_text=_("initiele waterstand in meters"))
+    upper_init_water_level = models.FloatField(
+        verbose_name=_("initiele waterstand bovenste bakje"),
+        help_text=_("initiele waterstand in meters"))
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
@@ -498,7 +625,7 @@ class Bucket(models.Model):
     open_water = models.ForeignKey(OpenWater,
                                    null=True,
                                    blank=True,
-                                   related_name='buckets') #mooier als je deze naam niet zet, dan is het altijd consistent
+                                   related_name='buckets')  #mooier als je deze naam niet zet, dan is het altijd consistent
 
     # We may need to add time series to store the inputs in the the right
     # units. For example, chances are seepage is specified in cubic milimeters
@@ -528,29 +655,38 @@ class PumpingStation(models.Model):
         verbose_name = _("Pomp")
         verbose_name_plural = _("Pompen")
 
-    name = models.CharField(max_length=64,
-                            verbose_name=_("naam"),
-                            help_text=_("naam van de pomp, bijvoorbeeld \"Inlaat C\" of \"Gemaal D\""))
-    open_water = models.ForeignKey(OpenWater, null=True, blank=True,
-                                   help_text=_("open water waar deze pomp bij hoort"),
-                                   related_name='pumping_stations')
-    into = models.BooleanField(verbose_name=_("ingaande stroom"),
-                               help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
-    percentage = models.FloatField(verbose_name=_("percentage"),
-                                   help_text=_("percentage inkomend of uitgaand water via deze pomp"))
-    max_discharge = models.FloatField(verbose_name=_("max_capaciteit"),null=True,
-                                   help_text=_("maximale capaciteit voor peilhandhaving"))
-    
-    computed_level_control = models.BooleanField(verbose_name=_("berekend"),
-                                                 default=False,
-                                                 help_text=_("aangevinkt als en alleen als de pomp gebruikt mag worden voor automatisch berekende peilhandhaving"))
+    name = models.CharField(
+        max_length=64,
+        verbose_name=_("naam"),
+        help_text=_("naam van de pomp, bijvoorbeeld \"Inlaat C\" of "
+                    "\"Gemaal D\""))
+    open_water = models.ForeignKey(
+        OpenWater, null=True, blank=True,
+        help_text=_("open water waar deze pomp bij hoort"),
+        related_name='pumping_stations')
+    into = models.BooleanField(
+        verbose_name=_("ingaande stroom"),
+        help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
+    percentage = models.FloatField(
+        verbose_name=_("percentage"),
+        help_text=_("percentage inkomend of uitgaand water via deze pomp"))
+    max_discharge = models.FloatField(
+        verbose_name=_("max_capaciteit"),null=True,
+        help_text=_("maximale capaciteit voor peilhandhaving"))
 
-    results = models.ManyToManyField(WaterbalanceTimeserie, 
-                                     verbose_name=_("resultaten"),
-                                     null=True, blank=True,
-                                     help_text=_("Berekeningsresultaten van een kunstwerk"),
-                                     related_name='pumping_station_result')
-        
+    computed_level_control = models.BooleanField(
+        verbose_name=_("berekend"),
+        default=False,
+        help_text=_("aangevinkt als en alleen als de pomp gebruikt "
+                    "mag worden voor automatisch berekende peilhandhaving"))
+
+    results = models.ManyToManyField(
+        WaterbalanceTimeserie,
+        verbose_name=_("resultaten"),
+        null=True, blank=True,
+        help_text=_("Berekeningsresultaten van een kunstwerk"),
+        related_name='pumping_station_result')
+
     def __unicode__(self):
         return self.name
 
@@ -581,19 +717,22 @@ class PumpLine(models.Model):
         verbose_name = _("Pomplijn")
         verbose_name_plural = _("Pomplijnen")
 
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om de pomplijn eenvoudig te herkennen"),
-                            max_length=64, null=True, blank=True)
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om de pomplijn eenvoudig te herkennen"),
+        max_length=64, null=True, blank=True)
 
-    pumping_station = models.ForeignKey(PumpingStation,
-                                        verbose_name=_("Pomp"),
-                                        help_text=_("pomp waartoe deze pomplijn behoort"),
-                                        related_name='pump_lines')
+    pumping_station = models.ForeignKey(
+        PumpingStation,
+        verbose_name=_("Pomp"),
+        help_text=_("pomp waartoe deze pomplijn behoort"),
+        related_name='pump_lines')
 
-    timeserie = models.ForeignKey(WaterbalanceTimeserie,
-                                  verbose_name=_("Tijdreeks"),
-                                  help_text=_("tijdreeks naar gepompte waarden"),
-                                  null=True, blank=True, related_name='pump_line_timeserie')
+    timeserie = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("Tijdreeks"),
+        help_text=_("tijdreeks naar gepompte waarden"),
+        null=True, blank=True, related_name='pump_line_timeserie')
 
     def retrieve_timeseries(self):
         return self.timeserie.get_timeseries()
@@ -651,19 +790,22 @@ class WaterbalanceArea(gis_models.Model):
         verbose_name_plural = _("Waterbalans gebieden")
         ordering = ("name",)
 
-    name = gis_models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam om het waterbalans gebied te identificeren"),
-                            max_length=80)
+    name = gis_models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam om het waterbalans gebied te identificeren"),
+        max_length=80)
 
-    slug = gis_models.SlugField(help_text=_("naam om de URL te maken"))
-    geom = gis_models.MultiPolygonField('Region Border', srid=4326, null=True, blank=True)
+    slug = gis_models.SlugField(
+        help_text=_("naam om de URL te maken"))
+    geom = gis_models.MultiPolygonField(
+        'Region Border', srid=4326, null=True, blank=True)
 
     objects = gis_models.GeoManager()
 
     def __unicode__(self):
         return unicode(self.name)
-    
-    
+
+
 def load_shapefile(shapefile_name, name_field, source_epsg):
      """ Load shapefile into waterbalance areas and update geometry if name exist
      Instance variables:
@@ -672,36 +814,36 @@ def load_shapefile(shapefile_name, name_field, source_epsg):
    * name_field *
      header of field with the area names
    * source_epsg *
-     coordinate sytem/ projection of shapefile (28992 = dutch projection       
-     
+     coordinate sytem/ projection of shapefile (28992 = dutch projection
+
      """
-     from osgeo import ogr, osr
+     from osgeo import ogr  #, osr
      from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 
      #original SRS
      oSRS=ogr.osr.SpatialReference()
      if source_epsg == 28992:
-         #epsg28992 projection was defined incorrect in proj4, so define manually 
+         #epsg28992 projection was defined incorrect in proj4, so define manually
          oSRS.ImportFromProj4("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.999908 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.237,50.0087,465.658,-0.406857,0.350733,-1.87035,4.0812 +units=m +no_defs" )
      else:
          oSRS.ImportFromEPSG(source_epsg)
-     
+
      #target SRS
      tSRS=ogr.osr.SpatialReference()
      tSRS.ImportFromEPSG(4326)
-     poCT=ogr.osr.CoordinateTransformation(oSRS,tSRS)  
- 
+     poCT=ogr.osr.CoordinateTransformation(oSRS,tSRS)
+
      drv = ogr.GetDriverByName('ESRI Shapefile')
      source = drv.Open(str(shapefile_name))
      source_layer = source.GetLayer()
- 
+
      if (source_layer.GetFeatureCount()>0):
          feature = source_layer.next()
          name_index = feature.GetFieldIndex(name_field)
          source_layer.ResetReading()
- 
+
          for feature in source_layer:
-         
+
              #krijgen van geometry
              geom = feature.GetGeometryRef()
              name = feature.GetField(name_index)
@@ -718,9 +860,9 @@ def load_shapefile(shapefile_name, name_field, source_epsg):
                  wb_area.geom = geometry
              else:
                  print 'new area: %s'%name
-             wb_area.save() 
-                
-                
+             wb_area.save()
+
+
 class WaterbalanceConf(models.Model):
     """Represents the area of which we want to know the waterbalance.
 
@@ -745,11 +887,13 @@ class WaterbalanceConf(models.Model):
         verbose_name_plural = _("Waterbalans configuraties")
         ordering = ("waterbalance_area__name", "waterbalance_scenario__order")
 
-    waterbalance_area = models.ForeignKey(WaterbalanceArea,
-                                          verbose_name=_("waterbalans gebied"))
+    waterbalance_area = models.ForeignKey(
+        WaterbalanceArea,
+        verbose_name=_("waterbalans gebied"))
 
-    waterbalance_scenario = models.ForeignKey(WaterbalanceScenario,
-                                          verbose_name=_("waterbalans scenario"))
+    waterbalance_scenario = models.ForeignKey(
+        WaterbalanceScenario,
+        verbose_name=_("waterbalans scenario"))
 
     slug = models.SlugField(help_text=_("naam om de URL te maken"))
 
@@ -771,9 +915,9 @@ class WaterbalanceConf(models.Model):
                                     related_name='configuration_evaporation',
                                     null=True,
                                     blank=True)
-    
+
     results = models.ManyToManyField(WaterbalanceTimeserie,
-                                     null=True, blank=True, 
+                                     null=True, blank=True,
                                      verbose_name=_("resultaten"),
                                      help_text=_("Rekenresultaten"),
                                      related_name='configuration_results')
@@ -867,6 +1011,7 @@ class WaterbalanceLabel(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Concentration(models.Model):
     """Specifies the type, name and concentrations of a specific substance.
 
@@ -887,18 +1032,23 @@ class Concentration(models.Model):
     SUBSTANCES = ((SUBSTANCE_CHLORIDE, "chloride"),
                   (SUBSTANCE_PHOSPHATE, "fosfaat"))
 
-    substance = models.IntegerField(choices=SUBSTANCES,
-                                    default=SUBSTANCE_CHLORIDE,
-                                    verbose_name=_("stof"))
-    flow_name = models.CharField(max_length=64, verbose_name=_("naam"),
-                                 help_text=_("naam van de waterstroom van deze concentratie"))
-    minimum = models.FloatField(verbose_name=_("minimum"),
-                                help_text=_("minimum concentratie in [mg/l]"))
-    increment = models.FloatField(verbose_name=_("increment"),
-                                  help_text=_("maximum extra concentratie boven het minimum in [mg/l]"),
-                                  null=True, blank=True)
-    configuration = models.ForeignKey(WaterbalanceConf, related_name='concentrations',
-                                      verbose_name=_("Waterbalans configuratie"))
+    substance = models.IntegerField(
+        choices=SUBSTANCES,
+        default=SUBSTANCE_CHLORIDE,
+        verbose_name=_("stof"))
+    flow_name = models.CharField(
+        max_length=64, verbose_name=_("naam"),
+        help_text=_("naam van de waterstroom van deze concentratie"))
+    minimum = models.FloatField(
+        verbose_name=_("minimum"),
+        help_text=_("minimum concentratie in [mg/l]"))
+    increment = models.FloatField(
+        verbose_name=_("increment"),
+        help_text=_("maximum extra concentratie boven het minimum in [mg/l]"),
+        null=True, blank=True)
+    configuration = models.ForeignKey(
+        WaterbalanceConf, related_name='concentrations',
+        verbose_name=_("Waterbalans configuratie"))
 
     def __unicode__(self):
         substance_name = next((substance[1] for substance in self.SUBSTANCES if substance[0] == self.substance), None)
