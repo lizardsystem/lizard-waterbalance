@@ -127,7 +127,11 @@ logger = logging.getLogger(__name__)
 
 
 def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=False):
-    """Return the outcome needed for drawing the waterbalance graphs."""
+    """Return the outcome needed for drawing the waterbalance graphs.
+
+    Result is a compute.WaterbalanceOutcome object.
+
+    """
     cache_key = '%s_%s_%s' % (area, start_datetime, end_datetime)
     t1 = time.time()
     result = cache.get(cache_key)
@@ -505,6 +509,7 @@ def waterbalance_water_level(request,
         ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
         ]
 
+    # Add sluice error to bars.
     if graph_type == "waterpeil_met_sluitfout":
         sluice_error = TimeseriesStub()
         previous_year = None
@@ -707,39 +712,37 @@ def waterbalance_phosphate_impact(request,
     krw_graph.suptitle("Fosfaatbelasting [mg/m2]")
 
     bar_width = BAR_WIDTH[period]
+    stopwatch_start = datetime.datetime.now()
+    # logger.debug('Started waterbalance_phosphate_impact at %s' %
+    #              stopwatch_start)
 
     outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
     waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
 
     phosphate = Concentration.SUBSTANCE_PHOSPHATE
 
-    bars = [("neerslag (incr)", "neerslag (min)",
-             outcome.open_water_timeseries["precipitation"],
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='neerslag').minimum),
-            ("kwel (incr)", "kwel (min)",
-             outcome.open_water_timeseries["seepage"],
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='kwel').minimum),
-            ("verhard (incr)", "verhard (min)",
-             outcome.open_water_timeseries["hardened"],
-            waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='verhard').minimum),
-            ("gedraineerd (incr)", "gedraineerd (min)",
-             outcome.open_water_timeseries["drained"],
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='gedraineerd').minimum),
-            ("ongedraineerd (incr)", "ongedraineerd (min)",
-             outcome.open_water_timeseries["undrained"],
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='ongedraineerd').minimum),
-            ("afstroming (incr)", "afstroming (min)",
-             outcome.open_water_timeseries["flow_off"],
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').increment,
-             waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact='afstroming').minimum),
-            ]
+    # One bar is (name incr, name min, discharge, increment value,
+    # minimum value)
+    bar_contents = [
+        ('precipitation', 'neerslag'), ('seepage', 'kwel'),
+        ('hardened', 'verhard'), ('drained', 'gedraineerd'),
+        ('undrained', 'ongedraineerd'), ('flow_off', 'afstroming'),]
 
+    bars = [('%s (incr)' % name_dutch,
+             '%s (min)' % name_dutch,
+             outcome.open_water_timeseries[name],
+             waterbalance_configuration.concentrations.get(
+                substance__exact=phosphate,
+                flow_name__iexact=name_dutch).increment,
+             waterbalance_configuration.concentrations.get(
+                substance__exact=phosphate,
+                flow_name__iexact=name_dutch).minimum)
+            for name, name_dutch in bar_contents]
 
+    logger.debug('1: Got bars %s' %
+                 (datetime.datetime.now() - stopwatch_start))
+
+    # Add intakes to bars
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
     for intake in intakes.order_by('name'):
         bars.append((intake.name + " (incr)",
@@ -756,6 +759,9 @@ def waterbalance_phosphate_impact(request,
                      waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
                      waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
+    logger.debug('2: Got intakes %s' %
+                 (datetime.datetime.now() - stopwatch_start))
+
     names = [bar[0] for bar in bars] + [bar[1] for bar in bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
@@ -771,12 +777,15 @@ def waterbalance_phosphate_impact(request,
         # if index == 0, we are talking about the minimum values,
         # if index == 1, we are talking about the incremental values
         for bar in bars:
+            # Label is the min name or the incr name
             label = get_timeseries_label(bar[1-index])
             discharge = bar[2]
 
             if index == 0:
+                # Minimum value
                 concentration = bar[4]
             else:
+                # Maximum value = Incremental value + Minimum value
                 concentration = bar[3] + bar[4]
             # Concentration is specified in [mg/l] whereas discharge is
             # specified in [m3/day]. The impact is specified in [mg/m2/day] so
@@ -795,13 +804,20 @@ def waterbalance_phosphate_impact(request,
 
             color = '#' + label.color
             bottom = top_height.get_heights(times)
-            krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
-                               bottom=bottom)
+            krw_graph.axes.bar(
+                times, values, bar_width, color=color, edgecolor=color,
+                bottom=bottom)
             top_height.stack_bars(times, values)
+
+    logger.debug('3: Got axes %s' %
+                 (datetime.datetime.now() - stopwatch_start))
 
     canvas = FigureCanvas(krw_graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
+
+    logger.debug('4: Got response %s' %
+                 (datetime.datetime.now() - stopwatch_start))
     return response
 
 
