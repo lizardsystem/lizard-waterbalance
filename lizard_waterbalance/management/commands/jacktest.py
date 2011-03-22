@@ -35,6 +35,7 @@ class Command(BaseCommand):
         # waterbalance_computer.compute(start, end)
         wb_ts = waterbalance_computer.get_sluice_error_timeseries(
             start, end,
+            timestep=WaterbalanceTimeserie.TIMESTEP_DAY,
             force_recalculate=False)
 
         print wb_ts.get_timeseries().timeseries_events.filter(
