@@ -435,9 +435,17 @@ class WaterbalanceComputer2:
         if (self.outcome.has_key('sluice_error') and self.outcome_info['sluice_error']['start_date']==start_date and self.outcome_info['sluice_error']['end_date']==end_date):
             return self.outcome['sluice_error']
         else:
-            sluice_error = self.sluice_error_computer.compute(self.configuration.open_water,
-                                                     level_control[0:2],
-                                                     start_date, end_date) #??? input van kunstwerk metingen?
+            timeseries = self.get_level_control_timeseries(
+                start_date, end_date)
+            timeseries_sluice_error = [
+                timeseries['level_control']['intake_time_series'],
+                timeseries['level_control']['pump_time_series'],
+                timeseries['open_water_cnt']['storage'],
+                ]
+            sluice_error = self.sluice_error_computer.compute(
+                self.configuration.open_water,
+                timeseries_sluice_error,
+                start_date, end_date) #??? input van kunstwerk metingen?
             #cache
             self.outcome['sluice_error'] = sluice_error
             self.outcome_info['sluice_error'] = {}
@@ -531,56 +539,6 @@ class WaterbalanceComputer2:
         #configuration.open_water.save() #???
 
         return input, buckets, buckets_summary, vertical_openwater, level_control, reference_timeseries, sluice_error, fractions #uitbreiden
-
-
-
-    def store(self):
-
-        self.store_timeserie(configuration.open_water, "undrained",
-                                     buckets_summary.undrained)
-        self.store_timeserie(configuration.open_water, "drained",
-                                     buckets_summary.drained)
-        self.store_timeserie(configuration.open_water, "hardened",
-                                     buckets_summary.hardened)
-        self.store_timeserie(configuration.open_water, "flow_off",
-                                     buckets_summary.flow_off)
-        self.store_timeserie(configuration.open_water, "indraft",
-                                     buckets_summary.indraft)
-
-
-        self.store_timeserie(configuration.open_water, "fractions_initial",
-                             fractions[0])
-        outcome.open_water_fractions["initial"] = fractions[0]
-        self.store_timeserie(configuration.open_water, "fractions_precipitation",
-                             fractions[1])
-        outcome.open_water_fractions["precipitation"] = fractions[1]
-        self.store_timeserie(configuration.open_water, "fractions_seepage",
-                             fractions[2])
-        outcome.open_water_fractions["seepage"] = fractions[2]
-        self.store_timeserie(configuration.open_water, "fractions_hardened",
-                             fractions[3])
-        outcome.open_water_fractions["hardened"] = fractions[3]
-        self.store_timeserie(configuration.open_water, "fractions_drained",
-                             fractions[4])
-        outcome.open_water_fractions["drained"] = fractions[4]
-        self.store_timeserie(configuration.open_water, "fractions_undrained",
-                             fractions[5])
-        outcome.open_water_fractions["undrained"] = fractions[5]
-        self.store_timeserie(configuration.open_water, "fractions_flow_off",
-                             fractions[6])
-        outcome.open_water_fractions["flow_off"] = fractions[6]
-        for index, intake in enumerate(intakes):
-            self.store_timeserie(intake, "fractions", fractions[7 + index])
-            intake.save()
-            outcome.intake_fractions[intake] = fractions[7 + index]
-
-        self.vertical_timeseries_storage.store(vertical_timeseries,
-                                            configuration.open_water)
-
-        self.level_control_storage.store(pumping_stations, outcome.level_control_assignment)
-        self.store_timeserie(configuration.open_water, "storage", outcome.open_water_timeseries["storage"])
-
-
 
 
 class WaterbalanceComputer:
