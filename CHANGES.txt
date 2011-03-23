@@ -5,7 +5,14 @@ Changelog of lizard-waterbalance
 0.13 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Removed WaterbalanceShape (it was previously needed for the adapter).
+
+- Added storage of calculated timeseries sluice_error
+  (WaterbalanceComputer2).
+
+- Added autodetection of parameters in viewer.
+
+- Updated adapter to show stored calculated timeseries.
 
 
 0.12 (2011-03-16)
