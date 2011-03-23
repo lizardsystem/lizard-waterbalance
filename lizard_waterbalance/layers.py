@@ -240,12 +240,14 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
     def image(self, identifiers, start_date, end_date,
               width=380.0, height=250.0, layout_extra=None):
 
-        today = datetime.datetime.now()
+        if self.selected_date:
+            today = self.selected_date
+        else:
+            today = datetime.datetime.now()
         graph = Graph(start_date, end_date,
                       width=width, height=height, today=today)
 
         line_styles = self.line_styles(identifiers)
-        today = datetime.datetime.now()
 
         for identifier in identifiers:
             logger.debug('identifier: %s' % identifier)
