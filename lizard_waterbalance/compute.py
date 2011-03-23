@@ -456,6 +456,35 @@ class WaterbalanceComputer2:
 
         return sluice_error  # TimeseriesStub
 
+    def calc_and_store_sluice_error_timeseries(
+        self, start_date_calc, end_date_calc, timestep,
+        name=None, parameter=None):
+        """
+        Calculate, store and return waterbalance timeseries for sluice error.
+        """
+        if name is None:
+            name = 'sluice_error'
+        if parameter is None:
+            parameter, _ = Parameter.objects.get_or_create(
+                name='sluitfout', unit='m')
+
+        ts = self.calc_sluice_error_timeseries(
+            start_date_calc, end_date_calc)  # Is actually quite fast.
+        if timestep == WaterbalanceTimeserie.TIMESTEP_DAY:
+            ts_dict = dict(ts.events())
+        elif timestep == WaterbalanceTimeserie.TIMESTEP_MONTH:
+            ts_dict = dict(ts.monthly_events())
+        else:
+            logger.error("Timestep %d is not supported yet." % timestep)
+            return None
+        result_timeseries = WaterbalanceTimeserie.create(
+            name=name,
+            parameter=parameter,
+            timeseries=ts_dict,
+            configuration=self.configuration,
+            timestep=timestep)
+        return result_timeseries
+
     def get_sluice_error_timeseries(
         self, start_date, end_date,
         start_date_calc=None, end_date_calc=None,
@@ -467,7 +496,7 @@ class WaterbalanceComputer2:
         If data not available, it will be calculated and stored.
         """
         name = 'sluice_error'
-        parameter, created = Parameter.objects.get_or_create(
+        parameter, _ = Parameter.objects.get_or_create(
             name='sluitfout', unit='m')
 
         logger.debug(
@@ -514,21 +543,9 @@ class WaterbalanceComputer2:
             if end_date_calc is None:
                 # Make 1 month margin because aggregation truncates.
                 end_date_calc = end_date + datetime.timedelta(days=31)
-            ts = self.calc_sluice_error_timeseries(
-                start_date_calc, end_date_calc)
-            if timestep == WaterbalanceTimeserie.TIMESTEP_DAY:
-                ts_dict = dict(ts.events())
-            elif timestep == WaterbalanceTimeserie.TIMESTEP_MONTH:
-                ts_dict = dict(ts.monthly_events())
-            else:
-                logger.error("Timestep %d is not supported yet." % timestep)
-                return None
-            result_timeseries = WaterbalanceTimeserie.create(
-                name=name,
-                parameter=parameter,
-                timeseries=ts_dict,
-                configuration=self.configuration,
-                timestep=timestep)
+            result_timeseries = self.calc_and_store_sluice_error_timeseries(
+                start_date_calc, end_date_calc, timestep,
+                name=name, parameter=parameter)
         else:
             result_timeseries = wb_ts[0]
 

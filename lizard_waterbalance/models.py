@@ -917,30 +917,33 @@ class WaterbalanceConf(models.Model):
                                    blank=True,
                                    help_text="You can use markdown")
 
-    precipitation = models.ForeignKey(WaterbalanceTimeserie,
-                                      verbose_name=_("neerslag"),
-                                      help_text=_("meetreeks neerslag in [mm/dag]"),
-                                      related_name='configuration_precipitation',
-                                      null=True,
-                                      blank=True)
-    evaporation = models.ForeignKey(WaterbalanceTimeserie,
-                                    verbose_name=_("verdamping"),
-                                    help_text=_("meetreeks verdamping in [mm/dag]"),
-                                    related_name='configuration_evaporation',
-                                    null=True,
-                                    blank=True)
+    precipitation = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("neerslag"),
+        help_text=_("meetreeks neerslag in [mm/dag]"),
+        related_name='configuration_precipitation',
+        null=True,
+        blank=True)
+    evaporation = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("verdamping"),
+        help_text=_("meetreeks verdamping in [mm/dag]"),
+        related_name='configuration_evaporation',
+        null=True,
+        blank=True)
 
-    results = models.ManyToManyField(WaterbalanceTimeserie,
-                                     null=True, blank=True,
-                                     verbose_name=_("resultaten"),
-                                     help_text=_("Rekenresultaten"),
-                                     related_name='configuration_results')
-    references = models.ManyToManyField(WaterbalanceTimeserie,
-                                     null=True, blank=True,
-                                     verbose_name=_("referenties"),
-                                     help_text=_("Berekeningsresultaten van een bakje"),
-                                     related_name='configuration_references')
-
+    results = models.ManyToManyField(
+        WaterbalanceTimeserie,
+        null=True, blank=True,
+        verbose_name=_("resultaten"),
+        help_text=_("Rekenresultaten"),
+        related_name='configuration_results')
+    references = models.ManyToManyField(
+        WaterbalanceTimeserie,
+        null=True, blank=True,
+        verbose_name=_("referenties"),
+        help_text=_("Berekeningsresultaten van een bakje"),
+        related_name='configuration_references')
 
     def __unicode__(self):
         return unicode("%s - %s" % (self.waterbalance_area.name, self.waterbalance_scenario.name))

@@ -88,7 +88,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
 
         return mapnik_style
 
-    def _timeseries(self, area):
+    def _timeseries(
+        self, area,
+        timestep=WaterbalanceTimeserie.TIMESTEP_MONTH):
         """
         return corresponding waterbalance timeseries object.
 
@@ -99,7 +101,7 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         wb_ts = WaterbalanceTimeserie.objects.filter(
             parameter=self.parameter,
             configuration__in=list(configurations),
-            timestep=WaterbalanceTimeserie.TIMESTEP_MONTH)
+            timestep=timestep)
         if wb_ts:
             # There should be only one per scenario. There should be
             # only one scenario. So just take the first.
@@ -169,6 +171,9 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
 
         if self.selected_date is present: display value.
         """
+        if self.selected_date is None:
+            logger.error('There is no self.selected_date.')
+            return []
         wgs84_x, wgs84_y = google_to_wgs84(x, y)
 
         # Is always 0 or 1
@@ -179,35 +184,35 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             return []
 
         area = areas[0]
-        name = '%s' % area.name
 
-        # Try to add value to the name
-        if self.selected_date is not None:
-            # Find corresponding timeseries for areas, parameter
-            ts = self._timeseries(area)
+        # Add value to the name
 
-            # Look up value
-            if ts:
-                selected_date_rounded = datetime.date(
-                    self.selected_date.year,
-                    self.selected_date.month, 1)
-                try:
-                    ts_event = (
-                        ts.timeseries_events.get(
-                            time=selected_date_rounded))
-                    name += ' - %s=%.2f' % (self.parameter, ts_event.value)
-                except TimeseriesEvent.DoesNotExist:
-                    # No value found - do nothing
-                    pass
+        # Find corresponding timeseries for areas, parameter
+        ts = self._timeseries(area)
 
-        results = [
+        # Look up value
+        if ts:
+            selected_date_rounded = datetime.date(
+                self.selected_date.year,
+                self.selected_date.month, 1)
+            try:
+                ts_event = (
+                    ts.timeseries_events.get(
+                        time=selected_date_rounded))
+                name = '%s - %s=%.2f' % (
+                    area.name, self.parameter, ts_event.value)
+            except TimeseriesEvent.DoesNotExist:
+                # No value found - do nothing
+                return []
+
+        # We can only arrive here when the corresponding area has data.
+        return [
             {'distance': 0,
              'name': name,
              'shortname': area.name,
              'workspace_item': self.workspace_item,
              'identifier': {'area_id': area.id},
              'object': area}]
-        return results
 
     def symbol_url(self, identifier=None, start_date=None,
                    end_date=None, icon_style=None):
@@ -251,21 +256,27 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
 
         for identifier in identifiers:
             logger.debug('identifier: %s' % identifier)
-            area_id = identifier['area_id']
-            ts = self._timeseries(WaterbalanceArea.objects.get(pk=area_id))
+            area = WaterbalanceArea.objects.get(pk=identifier['area_id'])
 
-            dates = []
-            values = []
-            for ts_event in ts.timeseries_events.filter(
-                time__gte=start_date, time__lte=end_date).order_by(
-                'time'):
+            # Try to fetch day timeseries.
+            ts = self._timeseries(area, WaterbalanceTimeserie.TIMESTEP_DAY)
+            if ts is None:
+                # Revert to default: month.
+                ts = self._timeseries(area)
 
-                dates.append(ts_event.time)
-                values.append(ts_event.value)
-            graph.axes.plot(dates, values,
-                            lw=1,
-                            color=line_styles[str(identifier)]['color'],
-                            label=ts.name)
+            if ts:
+                dates = []
+                values = []
+                for ts_event in ts.timeseries_events.filter(
+                    time__gte=start_date, time__lte=end_date).order_by(
+                    'time'):
+
+                    dates.append(ts_event.time)
+                    values.append(ts_event.value)
+                graph.axes.plot(dates, values,
+                                lw=1,
+                                color=line_styles[str(identifier)]['color'],
+                                label=ts.name)
 
             # graph.axes.fill_between(
             #     dates, values, [value-10 for value in values],
