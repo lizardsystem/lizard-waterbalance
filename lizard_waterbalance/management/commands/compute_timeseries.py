@@ -33,6 +33,7 @@ class Command(BaseCommand):
             waterbalance_computer = WaterbalanceComputer2(configuration)
 
             try:
+                logger.info('Computing sluice errors...')
                 waterbalance_computer.calc_and_store_sluice_error_timeseries(
                     start_date_calc, end_date_calc,
                     timestep=WaterbalanceTimeserie.TIMESTEP_MONTH)

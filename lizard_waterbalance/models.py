@@ -370,7 +370,7 @@ class WaterbalanceTimeserie(models.Model):
         logger.debug(
             'Creating waterbalance timeseries (%s, timestep=%d)...' % (
                 name, timestep))
-        local_timeseries = Timeseries(name=name)
+        local_timeseries = Timeseries(name='%s (%s)' % (name, configuration))
         local_timeseries.save()
         counter = 0
         counter_report = 1000
