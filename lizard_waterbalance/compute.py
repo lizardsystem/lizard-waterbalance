@@ -494,13 +494,15 @@ class WaterbalanceComputer2:
         Return WaterbalanceTimeserie of sluice error.
 
         If data not available, it will be calculated and stored.
+
+        TODO: use dates consistently. Now also datetimes are used.
         """
         name = 'sluice_error'
         parameter, _ = Parameter.objects.get_or_create(
             name='sluitfout', unit='m')
 
         logger.debug(
-            "Searching for WaterbalanceTimeserie (%s %s %s %s)" %
+            "Searching for WaterbalanceTimeserie (%s %s %s timestep=%s)" %
             (name, parameter, self.configuration, timestep))
 
         # Try to find existing waterbalance timeseries.

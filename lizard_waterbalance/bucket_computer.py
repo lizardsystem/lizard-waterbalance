@@ -82,21 +82,21 @@ def empty_outcome(start_date):
 
     """
     outcome = BucketOutcome()
-    
+
     outcome.storage = TimeseriesWithMemoryStub()
     outcome.flow_off = TimeseriesWithMemoryStub()
     outcome.net_drainage = TimeseriesWithMemoryStub()
     outcome.seepage = TimeseriesWithMemoryStub()
     outcome.net_precipitation = TimeseriesWithMemoryStub()
-    
+
     outcome.storage.add_value(start_date, 0)
     outcome.flow_off.add_value(start_date, 0)
     outcome.net_drainage.add_value(start_date, 0)
     outcome.seepage.add_value(start_date, 0)
     outcome.net_precipitation.add_value(start_date, 0)
-        
-    return outcome 
-        
+
+    return outcome
+
 def compute_seepage(bucket, seepage):
     """Return the seepage of the given bucket on the given date.
 
@@ -210,11 +210,11 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
     """
     outcome = BucketOutcome()
     volume = bucket.init_water_level * bucket.surface * bucket.porosity
-    
+
     if not allow_below_minimum_storage and bucket.min_water_level == None:
-        print "Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name    
+        print "Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name
         bucket.min_water_level = 0
-        
+
     for triple in enumerate_events(precipitation, evaporation, seepage):
         precipitation_event = triple[0]
         event_date = precipitation_event[0]
@@ -236,7 +236,7 @@ def switch_values(one, two):
     return two, one
 
 def switch_bucket_upper_values(bucket):
-    
+
     bucket.porosity, bucket.upper_porosity = switch_values(bucket.porosity, bucket.upper_porosity)
     bucket.drainage_fraction, bucket.upper_drainage_fraction = switch_values(bucket.drainage_fraction, bucket.upper_drainage_fraction)
     bucket.indraft_fraction, bucket.upper_indraft_fraction = switch_values(bucket.indraft_fraction, bucket.upper_indraft_fraction)
@@ -253,11 +253,11 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #   - the storage of the upper bucket can not be below the minimum storage
 
     upper_seepage = create_empty_timeseries(seepage)
-    
-    
+
+
     bucket = switch_bucket_upper_values(bucket)
     bucket.porosity, tmp = 1.0, bucket.porosity
-    
+
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
                                        evaporation,
@@ -294,7 +294,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     upper_seepage = create_empty_timeseries(seepage)
 
     bucket = switch_bucket_upper_values(bucket)
-    
+
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
                                        evaporation,
@@ -302,7 +302,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                                        compute)
     assert len(list(upper_outcome.flow_off.events())) > 0
     assert len(list(upper_outcome.net_drainage.events())) > 0
-    
+
     bucket = switch_bucket_upper_values(bucket)
 
     # we compute the lower bucket
@@ -369,8 +369,10 @@ class BucketsComputer:
                 print bucket.surface_type
                 bucket_computer = self.bucket_computers[bucket.surface_type]
                 outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-                
+
                 result[bucket] = outcome
             else:
-                result[bucket] = empty_outcome(precipitation.start_date) #mooier is een functie_get startdate
+                #mooier is een functie get startdate in TimeseriesStub
+                events = list(precipitation.events())
+                result[bucket] = empty_outcome(events[0][0])
         return result

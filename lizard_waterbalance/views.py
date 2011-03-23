@@ -26,6 +26,7 @@ from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
+from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 #from lizard_waterbalance.forms import WaterbalanceAreaEditForm
@@ -38,6 +39,8 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceLabel
+from lizard_waterbalance.models import WaterbalanceScenario
+from lizard_waterbalance.models import WaterbalanceTimeserie
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
 from timeseries.timeseriesstub import multiply_timeseries
@@ -50,6 +53,9 @@ try:
     PROFILE_LOG_BASE = settings.PROFILE_LOG_BASE
 except:
     PROFILE_LOG_BASE = "/tmp"
+
+
+date2datetime = lambda d: datetime.datetime(d.year, d.month, d.day)
 
 
 def profile(log_file):
@@ -208,9 +214,10 @@ def indicator_graph(request,
         timeseriedata = MockTimeSerieData()
 
 
-def waterbalance_start(request,
-                       template='lizard_waterbalance/waterbalance-overview.html',
-                       crumbs_prepend=None):
+def waterbalance_start(
+    request,
+    template='lizard_waterbalance/waterbalance-overview.html',
+    crumbs_prepend=None):
     """Show waterbalance overview workspace.
 
     The workspace for the waterbalance homepage should already be present.
@@ -219,8 +226,6 @@ def waterbalance_start(request,
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    areas = [conf.waterbalance_area for conf in WaterbalanceConf.objects.all()]
-
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
@@ -234,7 +239,6 @@ def waterbalance_start(request,
     return render_to_response(
         template,
         {'waterbalance_configurations': WaterbalanceConf.objects.all(),
-         'waterbalance_areas': areas,
          'workspaces': {'user': [special_homepage_workspace]},
          'javascript_hover_handler': 'popup_hover_handler',
          'javascript_click_handler': 'waterbalance_area_click_handler',
@@ -242,10 +246,12 @@ def waterbalance_start(request,
         context_instance=RequestContext(request))
 
 
-def waterbalance_area_summary(request,
-                              area=None,
-                              template='lizard_waterbalance/waterbalance_area_summary.html',
-                              crumbs_prepend=None):
+def waterbalance_area_summary(
+    request,
+    area=None,
+    scenario=None,
+    template='lizard_waterbalance/waterbalance_area_summary.html',
+    crumbs_prepend=None):
     """Show the summary page of the named WaterbalanceArea.
 
     Parameters:
@@ -253,7 +259,18 @@ def waterbalance_area_summary(request,
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    waterbalance_configuration = get_object_or_404(WaterbalanceConf, slug=area)
+    print area
+    print scenario
+    if scenario is None:
+        # We hope to get at least 1.
+        waterbalance_configuration = WaterbalanceConf.objects.filter(
+            waterbalance_area__slug=area)[0]
+    else:
+        waterbalance_configuration = get_object_or_404(
+            WaterbalanceConf,
+            waterbalance_area__slug=area,
+            waterbalance_scenario__slug=scenario)
+
     waterbalance_area = waterbalance_configuration.waterbalance_area
 
     date_range_form = DateRangeForm(
@@ -478,8 +495,62 @@ def waterbalance_area_graph(request,
     return response
 
 
+def waterbalance_sluice_error(
+    request, configuration_slug):
+    """Draw sluice error.
+    """
+    # Fetch parameters
+    period = request.GET.get('period', 'month')
+    width = request.GET.get('width', 1600)
+    height = request.GET.get('height', 400)
+
+    # Get/calculate timeseries
+    start_date, end_date = current_start_end_dates(request)
+    # scenario = WaterbalanceScenario.objects.get(name='test')
+    # scenarios = WaterbalanceScenario.objects.all()
+    # configuration = WaterbalanceConf.objects.get(
+    #     waterbalance_area__slug=area_slug,
+    #     waterbalance_scenario__in=scenarios)
+    configuration = WaterbalanceConf.objects.get(slug=configuration_slug)
+    waterbalance_computer = WaterbalanceComputer2(configuration)
+
+    # Enforces that data is calculated between start_date and end_date
+    ts = waterbalance_computer.get_sluice_error_timeseries(
+        date2datetime(start_date), date2datetime(end_date),
+        # start_date, end_date,
+        timestep=WaterbalanceTimeserie.TIMESTEP_DAY)
+
+    # Draw this timeseries
+    graph = Graph(start_date, end_date, width, height)
+
+    #times, values = ts.times_values(start_date, end_date)
+    # Display cumulative sluice error
+    times = []
+    values = []
+    current_value = 0
+    previous_dt = None
+    for event in ts.get_timeseries().timeseries_events.filter(
+        time__gte=start_date, time__lte=end_date):
+
+        if previous_dt is None or previous_dt.year != event.time.year:
+            current_value = 0
+
+        current_value += event.value
+        previous_dt = event.time
+        times.append(event.time)
+        values.append(current_value)
+
+    color = '#0000ff'
+    graph.axes.plot(times, values, color=color)
+
+    # Return response
+    canvas = FigureCanvas(graph.figure)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
+
+
 def waterbalance_water_level(request,
-                             name,
                              area=None,
                              graph_type=None):
     """Draw the graph for the given area and of the given type."""
@@ -505,7 +576,7 @@ def waterbalance_water_level(request,
     t1 = time.time()
 
     bars = [
-        ("waterpeil gemeten", waterbalance_configuration.water_level),
+        #("waterpeil gemeten", waterbalance_configuration.water_level),
         ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
         ]
 
@@ -513,8 +584,9 @@ def waterbalance_water_level(request,
     if graph_type == "waterpeil_met_sluitfout":
         sluice_error = TimeseriesStub()
         previous_year = None
-        # We have computed the sluice error in [m3/day], however we will display it
-        # as a difference in water level, so [m/day]. We make that translation here.
+        # We have computed the sluice error in [m3/day], however we
+        # will display it as a difference in water level, so
+        # [m/day]. We make that translation here.
         for event in outcome.open_water_timeseries["sluice error"].events():
             date = event[0]
             if previous_year is None or previous_year < date.year:
@@ -535,8 +607,9 @@ def waterbalance_water_level(request,
         label_name = bar[0]
         label = get_timeseries_label(label_name)
         try:
-            times, values = get_average_timeseries(bar[1], start_datetime,
-                                                   end_datetime, period=period)
+            times, values = get_average_timeseries(
+                bar[1], start_datetime,
+                end_datetime, period=period)
         except:
             logger.warning("Unable to retrieve the time series for '%s'", label_name)
             continue
@@ -828,7 +901,8 @@ def waterbalance_area_graphs(request,
     if graph_type == 'waterbalans':
         return waterbalance_area_graph(request, name, area, graph_type)
     elif graph_type == 'waterpeil' or graph_type == 'waterpeil_met_sluitfout':
-        return waterbalance_water_level(request, name, area, graph_type)
+        # return waterbalance_water_level(request, area, graph_type)
+        return waterbalance_sluice_error(request, area)
     elif graph_type == 'fracties_chloride' or graph_type == 'fracties_fosfaat':
         return waterbalance_fraction_distribution(request, name, area, graph_type)
     elif graph_type == 'fosfaatbelasting':

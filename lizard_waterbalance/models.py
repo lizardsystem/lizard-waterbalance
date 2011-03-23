@@ -26,7 +26,7 @@
 #******************************************************************************
 
 import logging
-from datetime import timedelta
+import datetime
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db import models
@@ -108,10 +108,10 @@ class Timeseries(models.Model):
             if not date_to_yield is None:
                 while date_to_yield < date:
                     yield date_to_yield, previous_value
-                    date_to_yield = date_to_yield + timedelta(1)
+                    date_to_yield = date_to_yield + datetime.timedelta(1)
             yield date, value
             previous_value = value
-            date_to_yield = date + timedelta(1)
+            date_to_yield = date + datetime.timedelta(1)
 
     @transaction.commit_manually
     def save_timeserie_stub(self,timeserie_stub):
@@ -125,6 +125,21 @@ class Timeseries(models.Model):
             ts.save()
 
         transaction.commit()
+
+    def times_values(self, start_date, end_date):
+        """
+        Produce times and values list, use for matplotlib.
+        """
+        times = []
+        values = []
+        for event in self.timeseries_events.filter(
+            time__gte=start_date,
+            time__lte=end_date):
+
+            times.append(event.time)
+            values.append(event.value)
+        return times, values
+
 
     def __unicode__(self):
         return self.name
@@ -336,12 +351,14 @@ class WaterbalanceTimeserie(models.Model):
 
     def in_daterange(self, dt):
         """
-        Check if dt is in daterange of available data.
+        Check if datetime (not date) is in daterange of available data.
         """
         ts = self.get_timeseries()
         dt_range = ts.timeseries_events.aggregate(
             Min('time'), Max('time'))
-        return dt >= dt_range['time__min'] and dt <= dt_range['time__max']
+        dt_min = dt_range['time__min']
+        dt_max = dt_range['time__max']
+        return dt >= dt_min and dt <= dt_max
 
     @classmethod
     @transaction.commit_on_success()
@@ -370,7 +387,8 @@ class WaterbalanceTimeserie(models.Model):
         logger.debug(
             'Creating waterbalance timeseries (%s, timestep=%d)...' % (
                 name, timestep))
-        local_timeseries = Timeseries(name='%s (%s)' % (name, configuration))
+        ts_name = '%s (%s)' % (name, configuration)
+        local_timeseries = Timeseries(name=ts_name[:64])
         local_timeseries.save()
         counter = 0
         counter_report = 1000
@@ -392,6 +410,14 @@ class WaterbalanceTimeserie(models.Model):
         wb_ts.save()
         logger.debug('Successfully created waterbalance timeseries.')
         return wb_ts
+
+    def times_values(self, start_date, end_date):
+        """
+        Return times and values for matplotlib.
+
+        TODO: will now crash on fews timeseries.
+        """
+        return self.get_timeseries().times_values(start_date, end_date)
 
 
 class OpenWater(models.Model):
@@ -764,14 +790,21 @@ class WaterbalanceScenario(models.Model):
         verbose_name_plural = _("Waterbalans scenario's")
         ordering = ("order",)
 
-    name = models.CharField(verbose_name=_("naam"),
-                            help_text=_("naam van het scenario"),
-                            max_length=80)
-    public = models.BooleanField(verbose_name=_("publiek"),
-                                 help_text=_("is scenario zichtbaar in dashboards"))
-    order = models.IntegerField(verbose_name=_("volgorde"),
-                                default=0,
-                                help_text=_("lager is eerder in de lijst"))
+    name = models.CharField(
+        verbose_name=_("naam"),
+        help_text=_("naam van het scenario"),
+        max_length=80)
+    slug = models.CharField(
+        help_text=_("naam om de URL te maken"),
+        max_length=40,
+        default='graag invullen')
+    public = models.BooleanField(
+        verbose_name=_("publiek"),
+        help_text=_("is scenario zichtbaar in dashboards"))
+    order = models.IntegerField(
+        verbose_name=_("volgorde"),
+        default=0,
+        help_text=_("lager is eerder in de lijst"))
 
     def __unicode__(self):
         return unicode(self.name)
@@ -950,7 +983,9 @@ class WaterbalanceConf(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('waterbalance_area_summary', (), {'area': str(self.slug)})
+        return ('waterbalance_area_summary', (),
+                {'area': str(self.waterbalance_area.slug),
+                 'scenario': str(self.waterbalance_scenario.slug)})
 
     def retrieve_precipitation(self, start_date, end_date):
         if self.precipitation is None:

@@ -47,13 +47,9 @@ class Command(BaseCommand):
             logger.info('Processing %s...' % configuration)
             waterbalance_computer = WaterbalanceComputer2(configuration)
 
-            start_date_calc = datetime.datetime(1900, 1, 1)
-            end_date_calc = (datetime.datetime.now() +
-                             datetime.timedelta(days=31))
-
             try:
                 waterbalance_computer.get_sluice_error_timeseries(
-                    start_date_calc, end_date_calc,
+                    start, end,
                     timestep=WaterbalanceTimeserie.TIMESTEP_MONTH)
                 done_list.append(configuration)
             except IncompleteData:

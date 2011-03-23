@@ -27,6 +27,12 @@ urlpatterns = patterns(
       },
      'waterbalance_area_summary',
      ),
+    (r'^summary/(?P<area>.*)/scenario/(?P<scenario>.*)/$',
+     'lizard_waterbalance.views.waterbalance_area_summary',
+     {'crumbs_prepend': list(crumbs_waterbalance),
+      },
+     'waterbalance_area_summary',
+     ),
 
     (r'^summary/(?P<area>[^/]+)/edit/$',
      'lizard_waterbalance.views.waterbalance_area_edit',
@@ -75,12 +81,12 @@ urlpatterns = patterns(
      'waterbalance_area_edit_sub7',
      ),
     # TODO: 1..6 as parameter??
-    
+
     (r'^summary/(?P<area>.*)/recalculate_graph_data/$',
      'lizard_waterbalance.views.recalculate_graph_data',
      {},
      "waterbalance_graph_recalculate_data"),
-    (r'^summary/(?P<area>.*)/(?P<graph_type>.*)/$',
+    (r'^summary/(?P<area>.*)/graph/(?P<graph_type>.*)/$',
      'lizard_waterbalance.views.waterbalance_area_graphs',
      {},
      'waterbalance_area_graph'),
