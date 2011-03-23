@@ -6,25 +6,26 @@ from django.template import RequestContext
 from lizard_waterbalance.views import GRAPH_TYPES
 from lizard_waterbalance.views import IMPLEMENTED_GRAPH_TYPES
 from lizard_waterbalance.layers import AdapterWaterbalance
+from lizard_waterbalance.models import Parameter
 
 
-GRAPH_PARAMETERS = [
-    ('fosfaat', 'Fosfaat'),
-    ('inlaatwater', 'Percentage inlaatwater'),
-    ('sluitfout', 'Sluitfout'),
-    ('verblijftijd', 'Verblijftijd water')]
+# GRAPH_PARAMETERS = [
+#     ('fosfaat', 'Fosfaat'),
+#     ('inlaatwater', 'Percentage inlaatwater'),
+#     ('sluitfout', 'Sluitfout'),
+#     ('verblijftijd', 'Verblijftijd water')]
 
 
 class ViewIcons(object):
     """Shortcut to get icon urls for different geo types"""
 
-    def __init__(self):
+    def __init__(self, parameters):
         self.adapters = dict([
-                (parameter_type,
+                (p.id,
                  AdapterWaterbalance(
                         workspace_item=None,
-                        layer_arguments={'parameter': parameter_type}))
-                for parameter_type, parameter_name in GRAPH_PARAMETERS])
+                        layer_arguments={'parameter': p.id}))
+                for p in parameters])
 
     def url(self, graph_type, identifier=None,
             start_date=None, end_date=None):
@@ -47,15 +48,20 @@ def waterbalance_viewer(
     crumbs.append({'name': 'waterbalance',
                    'url': reverse('waterbalance_viewer')})
 
-    icons = ViewIcons()
 
     # Collect implemented graph types for displaying.
     # graph_types_dict = dict(GRAPH_TYPES)
     # graph_types = [(gt, graph_types_dict[gt])
     #                for gt in IMPLEMENTED_GRAPH_TYPES]
+
+    # graph_types = [
+    #     (parameter_type, parameter_name, icons.url(parameter_type))
+    #     for parameter_type, parameter_name in GRAPH_PARAMETERS]
+
+    parameters = Parameter.related_to_calculated_timeseries()
+    icons = ViewIcons(parameters)
     graph_types = [
-        (parameter_type, parameter_name, icons.url(parameter_type))
-        for parameter_type, parameter_name in GRAPH_PARAMETERS]
+        (p.id, p.name, icons.url(p.id)) for p in parameters]
 
     return render_to_response(
         template,

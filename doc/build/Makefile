@@ -3,14 +3,14 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD = /Users/reinout/buildout/krw-waternet/local_checkouts/lizard-waterbalance/bin/python /Users/reinout/buildout/krw-waternet/local_checkouts/lizard-waterbalance/bin/sphinx-build
+SPHINXBUILD = /home/jack/svn/sites/krw-waternet/local_checkouts/lizard-waterbalance/bin/python /home/jack/svn/sites/krw-waternet/local_checkouts/lizard-waterbalance/bin/sphinx-build
 PAPER         =
-BUILDDIR      = /Users/reinout/buildout/krw-waternet/local_checkouts/lizard-waterbalance/doc/build
+BUILDDIR      = /home/jack/svn/sites/krw-waternet/local_checkouts/lizard-waterbalance/doc/build
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) /Users/reinout/buildout/krw-waternet/local_checkouts/lizard-waterbalance/doc/source
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) /home/jack/svn/sites/krw-waternet/local_checkouts/lizard-waterbalance/doc/source
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 

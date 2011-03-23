@@ -235,6 +235,20 @@ class Parameter(models.Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod
+    def related_to_calculated_timeseries(cls):
+        """ Return parameters that are related to calculated
+        timeseries.
+
+        Filter out the parameters which are connected to a
+        waterbalance timeserie with timestep and configuration.
+        """
+        wb_ts = WaterbalanceTimeserie.objects.exclude(
+            timestep=None, configuration=None)
+
+        return Parameter.objects.filter(
+            waterbalancetimeserie__in=wb_ts).distinct()
+
 
 class WaterbalanceTimeserie(models.Model):
     """Implements a time series.
@@ -272,7 +286,7 @@ class WaterbalanceTimeserie(models.Model):
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
         max_length=64, null=True, blank=True)
 
-    parameter = models.ForeignKey('Parameter', related_name='+')
+    parameter = models.ForeignKey('Parameter')
 
     label = models.ForeignKey('WaterbalanceLabel', null=True, blank=True)
 
@@ -1055,33 +1069,33 @@ class Concentration(models.Model):
         return u"%s - %s" % (unicode(substance_name), unicode(self.flow_name))
 
 
-class WaterbalanceShape(gis_models.Model):
-    """
-    Viewer model for the Waterbalance shapefile.
+# class WaterbalanceShape(gis_models.Model):
+#     """
+#     Viewer model for the Waterbalance shapefile.
 
-    The shapefile was originally imported using shp2pgsql.
-    """
-    gid = gis_models.IntegerField(primary_key=True)
-    gaf_gaf_id = gis_models.BigIntegerField()
-    richting = gis_models.FloatField()
-    temp_id = gis_models.CharField(max_length=24)
-    objectid = gis_models.BigIntegerField()
-    gaf_id = gis_models.IntegerField()
-    gafident = gis_models.CharField(max_length=24)
-    gaf_gaf__1 = gis_models.BigIntegerField()
-    gafnaam = gis_models.CharField(max_length=50)
-    gafsoort = gis_models.CharField(max_length=50)
-    gafoppvl = gis_models.BigIntegerField()
-    gafbemal = gis_models.SmallIntegerField()
-    gafcode = gis_models.CharField(max_length=20)
-    osmomsch = gis_models.CharField(max_length=60)
-    iws_legrt = gis_models.BigIntegerField()
-    ha = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
-    ha_int = gis_models.IntegerField()
-    hectare = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
-    x = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
-    y = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
-    the_geom = gis_models.MultiPolygonField(srid=-1)
-    objects = gis_models.GeoManager()
-    class Meta:
-        db_table = u'waterbalance_shape'
+#     The shapefile was originally imported using shp2pgsql.
+#     """
+#     gid = gis_models.IntegerField(primary_key=True)
+#     gaf_gaf_id = gis_models.BigIntegerField()
+#     richting = gis_models.FloatField()
+#     temp_id = gis_models.CharField(max_length=24)
+#     objectid = gis_models.BigIntegerField()
+#     gaf_id = gis_models.IntegerField()
+#     gafident = gis_models.CharField(max_length=24)
+#     gaf_gaf__1 = gis_models.BigIntegerField()
+#     gafnaam = gis_models.CharField(max_length=50)
+#     gafsoort = gis_models.CharField(max_length=50)
+#     gafoppvl = gis_models.BigIntegerField()
+#     gafbemal = gis_models.SmallIntegerField()
+#     gafcode = gis_models.CharField(max_length=20)
+#     osmomsch = gis_models.CharField(max_length=60)
+#     iws_legrt = gis_models.BigIntegerField()
+#     ha = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
+#     ha_int = gis_models.IntegerField()
+#     hectare = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
+#     x = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
+#     y = gis_models.DecimalField(max_digits=1000, decimal_places=1000)
+#     the_geom = gis_models.MultiPolygonField(srid=-1)
+#     objects = gis_models.GeoManager()
+#     class Meta:
+#         db_table = u'waterbalance_shape'

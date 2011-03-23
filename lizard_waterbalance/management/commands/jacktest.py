@@ -27,8 +27,6 @@ class Command(BaseCommand):
 
         configuration = WaterbalanceConf.objects.get(
             slug=configuration_slug)
-        parameter, created = Parameter.objects.get_or_create(
-            name='sluitfout', unit='m')
 
         waterbalance_computer = WaterbalanceComputer2(configuration)
 

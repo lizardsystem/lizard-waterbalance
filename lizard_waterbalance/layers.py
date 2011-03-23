@@ -6,15 +6,11 @@ from django.contrib.gis.geos import Point
 
 from lizard_map.adapter import Graph
 from lizard_map.animation import AnimationSettings
-from lizard_map.coordinates import GOOGLE
-from lizard_map.coordinates import google_to_rd
-from lizard_map.coordinates import RD
+from lizard_map.coordinates import google_to_wgs84
+from lizard_map.coordinates import WGS84
 from lizard_map.workspace import WorkspaceItemAdapter
-from lizard_waterbalance.models import Timeseries
-from lizard_waterbalance.models import WaterbalanceShape
-
-# testing
-from lizard_waterbalance.views import waterbalance_area_graph
+from lizard_waterbalance.models import Parameter
+from lizard_waterbalance.models import WaterbalanceArea
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +29,8 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         super(AdapterWaterbalance, self).__init__(*args, **kwargs)
         self.shape_tablename = 'waterbalance_shape'
         # Parameter is phosphate, inlaatwater, sluitfout or verblijftijd.
-        self.parameter = self.layer_arguments['parameter']
+        self.parameter_id = int(self.layer_arguments['parameter'])
+        self.parameter = Parameter.objects.get(pk=self.parameter_id)
 
     def _mapnik_style(self):
         """
@@ -61,13 +58,21 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         mapnik_style = mapnik.Style()
         rule = mapnik_rule(255, 255, 0)
         mapnik_style.rules.append(rule)
+        # Version 1: rules based on gid
         # for gid in range(100):
         #     rule = mapnik_rule(0, 10 * gid ,0, '[gid] = %d' % gid)
         #     mapnik_style.rules.append(rule)
-        rule = mapnik_rule(0, 255, 0, '[value] <= 75')
+
+        # Version 2: rules based on value, hard coded
+        # rule = mapnik_rule(0, 255, 0, '[value] <= 75')
+        # mapnik_style.rules.append(rule)
+        # rule = mapnik_rule(255, 0, 0, '[value] > 75')
+        # mapnik_style.rules.append(rule)
+
+        # Version 3: the real thing
+        rule = mapnik_rule(0, 255, 0, '[name] = \'Riekerpolder\'')
         mapnik_style.rules.append(rule)
-        rule = mapnik_rule(255, 0, 0, '[value] > 75')
-        mapnik_style.rules.append(rule)
+
         return mapnik_style
 
     def layer(self, layer_ids=None, request=None):
@@ -81,25 +86,49 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         animation_settings = AnimationSettings(request)
         selected_date = animation_settings.info()['selected_date']
 
+        # Version 1: select everything, no data, rd
         # table_view = ('(select the_geom, gid from %s) '
         #               'result_view' % (
         #         self.shape_tablename))
         #s = selected_date.strftime('%Y-%m-%d')
+
+        # Version 2: test select data, rd
+        # table_view = (
+        #     '(select the_geom, gid, value from %s '
+        #     'inner join lizard_waterbalance_timeseries '
+        #     #'as timeseries '
+        #     'on waterbalance_shape.gafnaam = lizard_waterbalance_timeseries.name '
+        #     'inner join lizard_waterbalance_timeseriesevent '
+        #     #'as timeseriesevent '
+        #     'on lizard_waterbalance_timeseries.id = lizard_waterbalance_timeseriesevent.timeseries_id '
+        #     'where lizard_waterbalance_timeseriesevent.time = \'%s\') '
+        #     'result_view' % (
+        #         self.shape_tablename, selected_date.strftime('%Y-%m-01')))
+
+        # Version 3: the real thing, wgs84
+        # Note: timeseries must be of local type. timestep=MONTH.
         table_view = (
-            '(select the_geom, gid, value from %s '
-            'inner join lizard_waterbalance_timeseries '
-            #'as timeseries '
-            'on waterbalance_shape.gafnaam = lizard_waterbalance_timeseries.name '
-            'inner join lizard_waterbalance_timeseriesevent '
-            #'as timeseriesevent '
-            'on lizard_waterbalance_timeseries.id = lizard_waterbalance_timeseriesevent.timeseries_id '
-            'where lizard_waterbalance_timeseriesevent.time = \'%s\') '
+            '(select area.geom, area.name, tsevent.value from '
+            'lizard_waterbalance_waterbalancearea as area, '
+            'lizard_waterbalance_waterbalanceconf as conf, '
+            'lizard_waterbalance_waterbalancetimeserie as wbts, '
+            'lizard_waterbalance_timeseries as ts, '
+            'lizard_waterbalance_timeseriesevent as tsevent '
+            'where conf.waterbalance_area_id = area.id '
+            'and wbts.configuration_id = conf.id '
+            'and wbts.parameter_id = %d '
+            'and wbts.local_timeseries_id = ts.id '
+            'and wbts.timestep = 2 '  # MONTH
+            'and ts.id = tsevent.timeseries_id '
+            'and tsevent.time = \'%s\''
+            ') '
             'result_view' % (
-                self.shape_tablename, selected_date.strftime('%Y-%m-01')))
+                self.parameter_id, selected_date.strftime('%Y-%m-01')))
+
         mapnik_style = self._mapnik_style()
 
         lyr = mapnik.Layer('Geometry from PostGIS')
-        lyr.srs = RD  #GOOGLE
+        lyr.srs = WGS84
         BUFFERED_TABLE = table_view
         db_settings = settings.DATABASES['default']
         lyr.datasource = mapnik.PostGIS(
@@ -117,18 +146,28 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         return layers, styles
 
     def search(self, x, y, radius=None):
-        rd_x, rd_y = google_to_rd(x, y)
-        results = [{
-                'distance': 0,
-                'name': wb_shape.gafnaam,
-                'shortname': wb_shape.gafnaam,
-                'workspace_item': self.workspace_item,
-                'identifier': {
-                    'area_name': wb_shape.gafnaam
-                    },
-                'object': wb_shape}
-                   for wb_shape in WaterbalanceShape.objects.filter(
-                the_geom__contains=Point(rd_x, rd_y))]
+        wgs84_x, wgs84_y = google_to_wgs84(x, y)
+        results = [
+            {'distance': 0,
+             'name': area.name,
+             'shortname': area.name,
+             'workspace_item': self.workspace_item,
+             'identifier': {'area_id': area.id},
+             'object': area}
+            for area in WaterbalanceArea.objects.filter(
+                geom__contains=Point(wgs84_x, wgs84_y))]
+        # rd_x, rd_y = google_to_rd(x, y)
+        # results = [
+        #     {'distance': 0,
+        #      'name': wb_shape.gafnaam,
+        #      'shortname': wb_shape.gafnaam,
+        #      'workspace_item': self.workspace_item,
+        #      'identifier': {
+        #             'area_name': wb_shape.gafnaam
+        #             },
+        #      'object': wb_shape}
+        #     for wb_shape in WaterbalanceShape.objects.filter(
+        #         the_geom__contains=Point(rd_x, rd_y))]
         return results
 
     def symbol_url(self, identifier=None, start_date=None,
@@ -146,11 +185,11 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
             end_date=end_date,
             icon_style=icon_style)
 
-    def location(self, area_name=None, layout=None):
+    def location(self, area_id=None, layout=None):
+        area = WaterbalanceArea.objects.get(pk=area_id)
         result = {
-            'name': area_name,  # This is displayed in the popup
-            'identifier': {'area_name': area_name}
-            }
+            'name': area.name,  # This is displayed in the popup
+            'identifier': {'area_id': area_id}}
         return result
 
     def html(self, snippet_group=None, identifiers=None, layout_options=None):
@@ -170,22 +209,26 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
         today = datetime.datetime.now()
 
         for identifier in identifiers:
-            timeseries = Timeseries.objects.get(name='De Nieuwe Bullewijk')
-            dates = []
-            values = []
-            for ts_event in timeseries.timeseries_events.all().order_by(
-                'time'):
+            logger.debug('identifier: %s' % identifier)
+            area_id = identifier['area_id']
+            logger.debug(WaterbalanceArea.objects.filter(pk=area_id))
 
-                dates.append(ts_event.time)
-                values.append(ts_event.value)
-            graph.axes.plot(dates, values,
-                            lw=1,
-                            color=line_styles[str(identifier)]['color'],
-                            label=timeseries.name)
+            # timeseries = Timeseries.objects.get(name='De Nieuwe Bullewijk')
+            # dates = []
+            # values = []
+            # for ts_event in timeseries.timeseries_events.all().order_by(
+            #     'time'):
+
+            #     dates.append(ts_event.time)
+            #     values.append(ts_event.value)
+            # graph.axes.plot(dates, values,
+            #                 lw=1,
+            #                 color=line_styles[str(identifier)]['color'],
+            #                 label=timeseries.name)
+
             # graph.axes.fill_between(
             #     dates, values, [value-10 for value in values],
             #     color='b', alpha=0.5)
 
         graph.add_today()
         return graph.http_png()
-
