@@ -27,6 +27,7 @@
 #******************************************************************************
 
 import logging
+from datetime import datetime
 
 from lizard_waterbalance.models import Bucket
 
@@ -75,6 +76,13 @@ class BucketOutcome:
                 "net_drainage": self.net_drainage,
                 "seepage": self.seepage,
                 "net_precipitation": self.net_precipitation}
+        
+    def __dict__(self):
+        return {"storage": self.storage,
+                "flow_off": self.flow_off,
+                "net_drainage": self.net_drainage,
+                "seepage": self.seepage,
+                "net_precipitation": self.net_precipitation}        
 
 
 def empty_outcome(start_date):
@@ -338,7 +346,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     return outcome
 
 
-class BucketsComputer:
+class BucketComputer:
 
     def __init__(self, bucket_computers=None):
         if bucket_computers is None:
@@ -350,29 +358,31 @@ class BucketsComputer:
         else:
             self.bucket_computers = bucket_computers
 
-    def compute(self, buckets, precipitation, evaporation, seepage):
-        """Compute and return the waterbalance for the given buckets.
+    def compute(self, bucket, precipitation, evaporation, seepage):
+        """Compute and return the waterbalance for a given bucket.
 
         Parameters:
-        * buckets -- list of buckets connected to the open water
+        * bucket -- one bucket connected to the open water
         * precipitation -- TimesseriesStub for the precipitation
         * evaporation -- TimesseriesStub for the evaporation
         * seepage -- TimesseriesStub for the seepage
 
         Return value:
-        * result -- dictionary of bucket to TimesseriesStub
+        * result -- dictionary of TimesseriesStub
         """
         result = {}
-        for bucket in buckets:
-            if bucket.surface > 0:
-                print bucket.name
-                print bucket.surface_type
-                bucket_computer = self.bucket_computers[bucket.surface_type]
-                outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-
-                result[bucket] = outcome
-            else:
-                #mooier is een functie get startdate in TimeseriesStub
-                events = list(precipitation.events())
-                result[bucket] = empty_outcome(events[0][0])
+        
+        if bucket.surface > 0:
+            print bucket.name
+            print bucket.surface_type
+            bucket_computer = self.bucket_computers[bucket.surface_type]
+            outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
+            
+            result = outcome
+        else:
+            try:
+                start_date = precipitation.start_date
+            except AttributeError:
+                start_date = datetime(1900,1,1)
+            result = empty_outcome(start_date) #mooier is een functie_get startdate
         return result

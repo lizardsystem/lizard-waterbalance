@@ -58,14 +58,14 @@ class VerticalTimeseriesComputerTests(TestCase):
                                                  precipitation,
                                                  evaporation,
                                                 seepage)
-        expected_timeseries = (TimeseriesStub((self.today, .4)),
-                               TimeseriesStub((self.today, -.2)),
-                               TimeseriesStub((self.today, .1)),
-                               TimeseriesStub((self.today, 0)))
-        self.assertEqual(list(expected_timeseries[0].events()), list(timeseries[0].events()))
-        self.assertEqual(list(expected_timeseries[1].events()), list(timeseries[1].events()))
-        self.assertEqual(list(expected_timeseries[2].events()), list(timeseries[2].events()))
-        self.assertEqual(list(expected_timeseries[3].events()), list(timeseries[3].events()))
+        expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4)),
+                               "evaporation":TimeseriesStub((self.today, -.2)),
+                               "seepage":TimeseriesStub((self.today, .1)),
+                               "infiltration":TimeseriesStub((self.today, 0))}
+        self.assertEqual(list(expected_timeseries["precipitation"].events()), list(timeseries["precipitation"].events()))
+        self.assertEqual(list(expected_timeseries["evaporation"].events()), list(timeseries["evaporation"].events()))
+        self.assertEqual(list(expected_timeseries["seepage"].events()), list(timeseries["seepage"].events()))
+        self.assertEqual(list(expected_timeseries["infiltration"].events()), list(timeseries["infiltration"].events()))
 
     def test_aa(self):
         """Test the case with only positive seepage on a single day.
@@ -82,14 +82,14 @@ class VerticalTimeseriesComputerTests(TestCase):
                                                  precipitation,
                                                  evaporation,
                                                 seepage)
-        expected_timeseries = (TimeseriesStub((self.today, .4)),
-                               TimeseriesStub((self.today, -.1)),
-                               TimeseriesStub((self.today, .1)),
-                               TimeseriesStub((self.today, 0)))
-        self.assertEqual(list(expected_timeseries[0].events()), list(timeseries[0].events()))
-        self.assertEqual(list(expected_timeseries[1].events()), list(timeseries[1].events()))
-        self.assertEqual(list(expected_timeseries[2].events()), list(timeseries[2].events()))
-        self.assertEqual(list(expected_timeseries[3].events()), list(timeseries[3].events()))
+        expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4)),
+                               "evaporation":TimeseriesStub((self.today, -.1)),
+                               "seepage":TimeseriesStub((self.today, .1)),
+                               "infiltration":TimeseriesStub((self.today, 0))}
+        self.assertEqual(list(expected_timeseries["precipitation"].events()), list(timeseries["precipitation"].events()))
+        self.assertEqual(list(expected_timeseries["evaporation"].events()), list(timeseries["evaporation"].events()))
+        self.assertEqual(list(expected_timeseries["seepage"].events()), list(timeseries["seepage"].events()))
+        self.assertEqual(list(expected_timeseries["infiltration"].events()), list(timeseries["infiltration"].events()))
 
     def test_b(self):
         """Test the case with only positive seepage on two days."""
@@ -105,17 +105,17 @@ class VerticalTimeseriesComputerTests(TestCase):
                                                  precipitation,
                                                  evaporation,
                                                  seepage)
-        expected_timeseries = (TimeseriesStub((self.today, .4),
+        expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4),
                                               (self.tomorrow, .6)),
-                               TimeseriesStub((self.today, -.2),
+                               "evaporation":TimeseriesStub((self.today, -.2),
                                               (self.tomorrow, -.4)),
-                               TimeseriesStub((self.today, .1),
+                               "seepage":TimeseriesStub((self.today, .1),
                                               (self.tomorrow, .3)),
-                               TimeseriesStub((self.today, 0), (self.tomorrow, 0)))
-        self.assertEqual(list(expected_timeseries[0].events()), list(timeseries[0].events()))
-        self.assertEqual(list(expected_timeseries[1].events()), list(timeseries[1].events()))
-        self.assertEqual(list(expected_timeseries[2].events()), list(timeseries[2].events()))
-        self.assertEqual(list(expected_timeseries[3].events()), list(timeseries[3].events()))
+                               "infiltration":TimeseriesStub((self.today, 0), (self.tomorrow, 0))}
+        self.assertEqual(list(expected_timeseries["precipitation"].events()), list(timeseries["precipitation"].events()))
+        self.assertEqual(list(expected_timeseries["evaporation"].events()), list(timeseries["evaporation"].events()))
+        self.assertEqual(list(expected_timeseries["seepage"].events()), list(timeseries["seepage"].events()))
+        self.assertEqual(list(expected_timeseries["infiltration"].events()), list(timeseries["infiltration"].events()))
 
     def test_c(self):
         """Test the case with both positive and negative seepage on two days."""
@@ -131,16 +131,17 @@ class VerticalTimeseriesComputerTests(TestCase):
                                                  precipitation,
                                                  evaporation,
                                                  seepage)
-        expected_timeseries = (TimeseriesStub((self.today, .4),
+        expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4),
                                               (self.tomorrow, .6)),
-                               TimeseriesStub((self.today, -.2),
+                               "evaporation":TimeseriesStub((self.today, -.2),
                                               (self.tomorrow, -.4)),
-                               TimeseriesStub((self.today, .1),
+                               "seepage":TimeseriesStub((self.today, .1),
                                               (self.tomorrow, 0)),
-                               TimeseriesStub((self.today, 0),
-                                              (self.tomorrow, -.1)))
-        self.assertEqual(list(expected_timeseries[0].events()), list(timeseries[0].events()))
-        self.assertEqual(list(expected_timeseries[1].events()), list(timeseries[1].events()))
-        self.assertEqual(list(expected_timeseries[2].events()), list(timeseries[2].events()))
-        self.assertEqual(list(expected_timeseries[3].events()), list(timeseries[3].events()))
+                               "infiltration":TimeseriesStub((self.today, 0),
+                                              (self.tomorrow, -.1))}
+        self.assertEqual(list(expected_timeseries["precipitation"].events()), list(timeseries["precipitation"].events()))
+        self.assertEqual(list(expected_timeseries["evaporation"].events()), list(timeseries["evaporation"].events()))
+        self.assertEqual(list(expected_timeseries["seepage"].events()), list(timeseries["seepage"].events()))
+        self.assertEqual(list(expected_timeseries["infiltration"].events()), list(timeseries["infiltration"].events()))
+        
 

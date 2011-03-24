@@ -391,7 +391,7 @@ def draw_waterbalance_area_graph(
 
     area_slug: i.e. artsveldsche-polder-oost
     period: i.e. 'month'
-    start_date, end_date: start and enddate for graph
+    start_date, end_date: start and end_date for graph
     start_datetime, end_datetime: start and enddate for calculation
     width, height: width and height of output image
     """
@@ -401,41 +401,32 @@ def draw_waterbalance_area_graph(
     graph.suptitle("Waterbalans [m3]")
 
     bar_width = BAR_WIDTH[period]
-
-    outcome = waterbalance_graph_data(area_slug, start_datetime, end_datetime)
+    
+    wb_conf = WaterbalanceConf.objects.get(slug=area_slug)
+    wb_computer = WaterbalanceComputer2(wb_conf)
+    
+    incoming = wb_computer.get_open_water_incoming_flows(start_date, end_date)
+    incoming_bars = [("verhard", incoming["hardened"]), 
+                     ("gedraineerd", incoming["drained"]),
+                     ("afstroming", incoming["flow_off"]),
+                     ("uitspoeling", incoming["undrained"]),
+                     ("neerslag", incoming["precipitation"]),
+                     ("kwel", incoming["seepage"])]
+    incoming_bars += [(structure.name, timeserie) for structure, timeserie in incoming['defined_input'].items()]
+    incoming_bars.append(("peilhandhaving inlaat", incoming["computed_intake"]))
 
     t1 = time.time()
 
-    incoming_bars = [
-        ("verhard", outcome.open_water_timeseries["hardened"]),
-        ("gedraineerd", outcome.open_water_timeseries["drained"]),
-        ("afstroming", outcome.open_water_timeseries["flow_off"]),
-        ("uitspoeling", outcome.open_water_timeseries["undrained"]),
-        ("neerslag", outcome.open_water_timeseries["precipitation"]),
-        ("kwel", outcome.open_water_timeseries["seepage"]),
-        ]
-
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
-    for intake in intakes.order_by('name'):
-        incoming_bars.append((intake.name, intake.retrieve_sum_timeseries()))
-
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
-    for intake in intakes.order_by('name'):
-        incoming_bars.append((intake.name, outcome.level_control_assignment[intake]))
+    outgoing = wb_computer.get_open_water_outgoing_flows(start_date, end_date)
 
     outgoing_bars = [
-        ("intrek", outcome.open_water_timeseries["indraft"]),
-        ("verdamping", outcome.open_water_timeseries["evaporation"]),
-        ("wegzijging", outcome.open_water_timeseries["infiltration"]),
+        ("intrek", outgoing["indraft"]),
+        ("verdamping", outgoing["evaporation"]),
+        ("wegzijging", outgoing["infiltration"]),
          ]
-
-    pumps = PumpingStation.objects.filter(into=False, computed_level_control=False)
-    for pump in pumps.order_by('name'):
-        outgoing_bars.append((pump.name, pump.retrieve_sum_timeseries()))
-
-    pumps = PumpingStation.objects.filter(into=False, computed_level_control=True)
-    for pump in pumps.order_by('name'):
-        outgoing_bars.append((pump.name, outcome.level_control_assignment[pump]))
+    
+    outgoing_bars += [(structure.name, timeserie) for structure, timeserie in outgoing['defined_output'].items()]
+    outgoing_bars.append(("peilhandhaving uitlaat", outgoing["computed_pumps"]))    
 
     names = [bar[0] for bar in incoming_bars + outgoing_bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]

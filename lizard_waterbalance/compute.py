@@ -41,7 +41,7 @@ from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
-from lizard_waterbalance.bucket_computer import BucketsComputer
+from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from lizard_waterbalance.models import Parameter
@@ -50,23 +50,23 @@ from lizard_waterbalance.models import WaterbalanceTimeserie
 logger = logging.getLogger(__name__)
 
 
-class OpenWaterOutcome:
-    """Stores the time series that are computed for an OpenWater.
-
-    Instance variables:
-    * precipitation -- time series for *neerslag*
-    * evaporation -- time series for *verdamping*
-
-    """
-    def __init__(self):
-        self.precipitation = TimeseriesStub()
-        self.evaporation = TimeseriesStub()
-        self.seepage = TimeseriesStub()
-
-    def name2timeseries(self):
-        return {"precipitation": self.precipitation,
-                "evaporation": self.evaporation,
-                "seepage": self.seepage}
+#class OpenWaterOutcome:
+#    """Stores the time series that are computed for an OpenWater.
+#
+#    Instance variables:
+#    * precipitation -- time series for *neerslag*
+#    * evaporation -- time series for *verdamping*
+#
+#    """
+#    def __init__(self):
+#        self.precipitation = TimeseriesStub()
+#        self.evaporation = TimeseriesStub()
+#        self.seepage = TimeseriesStub()
+#
+#    def name2timeseries(self):
+#        return {"precipitation": self.precipitation,
+#                "evaporation": self.evaporation,
+#                "seepage": self.seepage}
 
 
 def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
@@ -88,23 +88,23 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-class WaterbalanceOutcome:
-    """Contains the computed time series that are part of a waterbalance.
-
-    Instance variables:
-    * open_water_timeseries -- dictionary that contains the summed discharges of the buckets to and from the open water
-    * open_water_fractions -- dictionary that contains the fractions of the discharges of the buckets to and from the open water
-    * level_control_assignment -- dictionary that contains the level control time series
-    * intake_fractions -- dictionary that contains the fractions of all the intakes and pumps
-
-    """
-
-    def __init__(self):
-
-        self.open_water_timeseries = {}
-        self.level_control_assignment = {}
-        self.open_water_fractions = {}
-        self.intake_fractions = {}
+#class WaterbalanceOutcome:
+#    """Contains the computed time series that are part of a waterbalance.
+#
+#    Instance variables:
+#    * open_water_timeseries -- dictionary that contains the summed discharges of the buckets to and from the open water
+#    * open_water_fractions -- dictionary that contains the fractions of the discharges of the buckets to and from the open water
+#    * level_control_assignment -- dictionary that contains the level control time series
+#    * intake_fractions -- dictionary that contains the fractions of all the intakes and pumps
+#
+#    """
+#
+#    def __init__(self):
+#
+#        self.open_water_timeseries = {}
+#        self.level_control_assignment = {}
+#        self.open_water_fractions = {}
+#        self.intake_fractions = {}
 
 class WaterbalanceComputer2:
     """Compute the waterbalance-related time series.
@@ -114,7 +114,7 @@ class WaterbalanceComputer2:
 
     def __init__(self, configuration,
                  settings_loader=None,
-                 buckets_computer=BucketsComputer(),
+                 bucket_computer=BucketComputer(),
                  buckets_summarizer=BucketsSummarizer(),
                  level_control_computer=LevelControlComputer(),
                  level_control_assignment=LevelControlAssignment(),
@@ -129,7 +129,7 @@ class WaterbalanceComputer2:
             WaterbalanceArea for which to compute the time series
 
 
-        * buckets_computer -- computer for the bucket time series
+        * bucket_computer -- computer for the bucket time series
         * level_control_computer -- computer for the level control
         * store_timeserie -- function to store a time series
 
@@ -143,7 +143,7 @@ class WaterbalanceComputer2:
         self.settings_loader=settings_loader,
 
         #all computation units
-        self.buckets_computer = buckets_computer
+        self.bucket_computer = bucket_computer
         self.buckets_summarizer = buckets_summarizer
         self.level_control_computer = level_control_computer
         self.vertical_timeseries_computer = vertical_timeseries_computer
@@ -201,15 +201,13 @@ class WaterbalanceComputer2:
 
             input_ts['incoming_timeseries'] = {}
             for intake, timeseries in self.configuration.open_water.retrieve_incoming_timeseries(only_input=True).iteritems():
-                slug = intake.id
-                input_ts['incoming_timeseries'][slug] = TimeseriesRestrictedStub(timeseries=timeseries,
+                input_ts['incoming_timeseries'][intake] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date)
 
             input_ts['outgoing_timeseries'] = {}
             for pump, timeseries in self.configuration.open_water.retrieve_outgoing_timeseries(only_input=True).iteritems():
-                slug = pump.id
-                input_ts['outgoing_timeseries'][slug] = TimeseriesRestrictedStub(timeseries=timeseries,
+                input_ts['outgoing_timeseries'][intake] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date)
 
@@ -241,10 +239,12 @@ class WaterbalanceComputer2:
             input = self.get_input_timeseries(start_date, end_date)
 
             buckets = self.configuration.retrieve_buckets()
-            buckets_outcome = self.buckets_computer.compute(buckets,
-                                                            input['precipitation'],
-                                                            input['evaporation'],
-                                                            input['seepage']) #start_date, end_date??? + seepage for each bucket. this for the time being
+            buckets_outcome = {}
+            for bucket in buckets:
+                buckets_outcome[bucket] = self.bucket_computer.compute(bucket,
+                                                                input['precipitation'],
+                                                                input['evaporation'],
+                                                                bucket.retrieve_seepage(start_date, end_date))
 
             #store for later use (some kind of cache)
             self.outcome['buckets'] = buckets_outcome
@@ -274,17 +274,9 @@ class WaterbalanceComputer2:
         if (self.outcome.has_key('buckets_summary') and self.outcome_info['buckets_summary']['start_date']==start_date and self.outcome_info['buckets_summary']['end_date']==end_date):
             buckets_summary = self.outcome['buckets_summary']
         else:
-            bucket_outcome = self.get_buckets_timeseries(start_date, end_date)
+            buckets_outcome = self.get_buckets_timeseries(start_date, end_date)
 
-            buckets_summary = self.buckets_summarizer.compute(bucket_outcome)
-
-            #outcome = {"undrained": buckets_summary.undrained,
-            #          "drained": buckets_summary.drained,
-            #          "hardened": buckets_summary.hardened,
-            #          "flow_off": buckets_summary.flow_off,
-            #          "indraft": buckets_summary.indraft,
-            #          "totals":buckets_summary.totals}
-
+            buckets_summary = self.buckets_summarizer.compute(buckets_outcome)
 
             #store for later use (some kind of cache)
             self.outcome['buckets_summary'] = buckets_summary
@@ -316,16 +308,11 @@ class WaterbalanceComputer2:
             # variable of the open water. Apparently the variable is a constant
             # so we just fill it in.
             crop_evaporation_factor = 1.0
-            vertical_timeseries = self.vertical_timeseries_computer.compute(self.configuration.open_water.surface,
+            outcome = self.vertical_timeseries_computer.compute(self.configuration.open_water.surface,
                                                                             crop_evaporation_factor,
                                                                             input['precipitation'],
                                                                             transform_evaporation_timeseries_penman_to_makkink(input['evaporation']), #place this function to VerticalComputer()
                                                                             input['seepage'])#seepage nog general, but specific for buckets and openwater
-
-            outcome = {"precipitation":vertical_timeseries[0],
-                      "evaporation":vertical_timeseries[1],
-                      "seepage":vertical_timeseries[2],
-                      "infiltration":vertical_timeseries[3]}
 
             #store for later use (some kind of cache)
             self.outcome['vertical_open_water'] = outcome
@@ -351,43 +338,84 @@ class WaterbalanceComputer2:
         """
 
         if (self.outcome.has_key('level_control') and self.outcome_info['level_control']['start_date']==start_date and self.outcome_info['level_control']['end_date']==end_date):
-            return {'level_control':self.outcome['level_control'], 'open_water_cnt':self.outcome['open_water_cnt']}
+            return self.outcome['level_control']
         else:
             input = self.get_input_timeseries(start_date, end_date)
             buckets_summary = self.get_bucketflow_summary(start_date, end_date)
             vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
 
             #to do: label timeseries
-            intake_time_series, pump_time_series, storage, water_level_timeseries = self.level_control_computer.compute(
+            outcome = self.level_control_computer.compute(
                                                                 self.configuration.open_water,
                                                                 buckets_summary,
-                                                                vertical_open_water_timeseries.values(),
+                                                                vertical_open_water_timeseries["precipitation"],
+                                                                vertical_open_water_timeseries["evaporation"],
+                                                                vertical_open_water_timeseries["seepage"],
+                                                                vertical_open_water_timeseries["infiltration"],                                                              
                                                                 input['open_water']['minimum_level'],
                                                                 input['open_water']['maximum_level'],
-                                                                input['incoming_timeseries'].values(),
-                                                                input['outgoing_timeseries'].values())
+                                                                input['incoming_timeseries'],
+                                                                input['outgoing_timeseries'])
 
 
-            #devide flow over punpingstation
-            pumping_stations = self.configuration.open_water.pumping_stations.all()
-            outcome = {}
-            outcome['level_control'] = self.level_control_assignment.compute((intake_time_series, pump_time_series), #to do: label timeseries
-                                                                             pumping_stations)
-
-            outcome['level_control']['intake_time_series'] = intake_time_series
-            outcome['level_control']['pump_time_series'] = pump_time_series
-
-            outcome['open_water_cnt'] = {}
-            outcome['open_water_cnt']['storage'] = storage
-            outcome['open_water_cnt']['water level'] = water_level_timeseries
+            #devide flow over pumpingstation
+            #pumping_stations = self.configuration.open_water.pumping_stations.all()
+            #outcome = {}
+            #outcome['level_control'] = self.level_control_assignment.compute((intake_time_series, pump_time_series), #to do: label timeseries
+            #                                                                 pumping_stations)
 
             #cache
-            self.outcome['level_control'] = outcome['level_control']
-            self.outcome['open_water_cnt'] = outcome['open_water_cnt']
+            self.outcome['level_control'] = outcome
+
             self.outcome_info['level_control'] = {}
             self.outcome_info['level_control']['start_date'] = start_date
             self.outcome_info['level_control']['end_date'] = end_date
             return outcome
+
+    
+    def get_open_water_incoming_flows(self, start_date, end_date):
+        """ Returns incoming waterflows """
+    
+        input = self.get_input_timeseries(start_date, end_date)
+        buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+        vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
+        control = self.get_level_control_timeseries(start_date, end_date)
+        
+        incoming = {}
+        incoming["precipitation"] = vertical_open_water_timeseries["precipitation"]
+        incoming["seepage"] = vertical_open_water_timeseries["seepage"]
+        
+        incoming["drained"] = buckets_summary.drained
+        incoming["flow_off"] = buckets_summary.flow_off
+        incoming["undrained"] = buckets_summary.undrained
+        incoming["hardened"] = buckets_summary.hardened
+        
+        incoming["defined_input"]= input['incoming_timeseries']
+        incoming["computed_intake"] = control['intake']
+        
+        return incoming
+        
+    
+    
+    def get_open_water_outgoing_flows(self, start_date, end_date):
+        """ Returns outgoing waterflows """
+    
+        input = self.get_input_timeseries(start_date, end_date)
+        buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+        vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
+        control = self.get_level_control_timeseries(start_date, end_date)
+        
+        outgoing = {}
+        outgoing["evaporation"] = vertical_open_water_timeseries["evaporation"]
+        outgoing["infiltration"] = vertical_open_water_timeseries["infiltration"]
+        
+        outgoing["indraft"] = buckets_summary.indraft
+        
+        outgoing["defined_output"]= input['outgoing_timeseries']
+        outgoing["computed_pumps"] = control['pump']
+        
+        return outgoing
+        
 
     #to do
     def get_reference_timeseries(self, start_date, end_date):
@@ -579,14 +607,21 @@ class WaterbalanceComputer2:
 
             #intakes, tmp_timeseries = self.retrieve_intakes_timeseries(configuration.open_water)
             #TO DO
-            intakes_timeseries = [TimeseriesRestrictedStub(timeseries=timeseries,
+            intakes_timeseries = {}
+            for key, timeseries in input['incoming_timeseries'].items():
+                intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
-                                                       end_date=end_date) for timeseries in input['incoming_timeseries'].values()]
+                                                       end_date=end_date)
+                
+            intakes_timeseries['intake_wl_control'] = control['intake']
+                
 
             fractions = self.fraction_computer.compute(self.configuration.open_water,
                                                        buckets_summary,
-                                                       vertical_open_water_timeseries.values(),
-                                                       control['open_water_cnt']['storage'],
+                                                       vertical_open_water_timeseries["precipitation"],
+                                                       vertical_open_water_timeseries["seepage"],                                                      
+                                                       control['storage'],
+                                                       control['total_outgoing'],
                                                        intakes_timeseries)
 
             self.outcome['fraction_water'] = fractions

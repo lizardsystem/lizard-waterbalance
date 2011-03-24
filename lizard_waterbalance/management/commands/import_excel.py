@@ -136,7 +136,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=T
     config, new = WaterbalanceConf.objects.get_or_create(waterbalance_scenario = scenario, waterbalance_area = area)
     
     config.description = area.name
-    config.slug = config.__unicode__()
+    config.slug = ("%s-%s"%(area.name[0:25], scenario.name)).replace(" ","_").lower()
     
     #precipitation
     parameter = par_rainfall_day

@@ -39,23 +39,7 @@ from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import subtract_timeseries
 
-class SingleDayBucketsSummary:
-    """Stores the interesting values of a single day summed over all buckets.
 
-    Instance variables:
-    * hardened -- single day value of in [m3] *Qsom verhard*
-    * drained -- single day value in [m3] of *Qsom gedraineerdonder*
-    * undrained -- single day value in [m3] of *Qsom ongedraineerd*
-    * flow off -- single day value in [m3] of *Qsom afst*
-    * indraft -- single day of in [m3] *Qsom intrek*
-
-    """
-    def total(self):
-        return self.hardened +\
-               self.drained +\
-               self.undrained +\
-               self.flow_off +\
-               self.indraft
 
 class BucketsSummary:
     """Stores the total time series computed for all buckets.
@@ -71,11 +55,24 @@ class BucketsSummary:
     """
     def __init__(self):
         self.totals = TimeseriesStub()
+        self.total_incoming = TimeseriesStub()
+        self.total_outgoing = TimeseriesStub()
         self.hardened = TimeseriesStub()
         self.drained = TimeseriesStub()
         self.undrained = TimeseriesStub()
         self.flow_off = TimeseriesStub()
         self.indraft = TimeseriesStub()
+        
+    def __dict__(self):
+        """returns dictionary of BucketOutcome to the given one."""
+        return {'total': self.totals,
+        'total_incoming': self.total_incoming,
+        'total_outgoing': self.total_outgoing,
+        'hardened': self.hardened,
+        'drained': self.drained,
+        'undrained': self.undrained,
+        'flow_off': self.flow_off,
+        'indraft': self.indraft}
 
 def event_tuple_values(events):
     """Return the list of event values from the given tuple of events."""
@@ -121,7 +118,7 @@ class BucketSummarizer:
 
     def compute(self):
         """Compute and return the SingleDayBucketsSummary."""
-        summary = SingleDayBucketsSummary()
+        summary = {}
 
         # Note that the time series computed for each bucket are computed from
         # the point of view the bucket:
@@ -132,16 +129,18 @@ class BucketSummarizer:
         # So to get the volume that flows from the buckets to the open water we
         # have to negate the bucket total.
 
-        summary.hardened = -self.compute_sum_hardened()
-        summary.drained = -self.compute_sum_drained()
-        summary.undrained = -self.compute_sum_undrained_net_drainage()
-        summary.flow_off = -self.compute_sum_undrained_flow_off()
-        summary.indraft = -self.compute_sum_indraft()
-        summary.totals = summary.hardened + \
-                         summary.drained + \
-                         summary.undrained + \
-                         summary.flow_off + \
-                         summary.indraft
+        summary['hardened'] = -self.compute_sum_hardened()
+        summary['drained'] = -self.compute_sum_drained()
+        summary['undrained'] = -self.compute_sum_undrained_net_drainage()
+        summary['flow_off'] = -self.compute_sum_undrained_flow_off()
+        summary['indraft'] = -self.compute_sum_indraft()
+        summary['total_outgoing'] = summary['hardened'] + \
+                         summary['drained'] + \
+                         summary['undrained'] + \
+                         summary['flow_off'] 
+        summary['total_incoming'] = summary['indraft']
+        summary['total'] = summary['total_outgoing'] + summary['total_incoming']
+                         
         return summary
 
     def compute_sum_hardened(self):
@@ -202,10 +201,12 @@ class BucketsSummarizer:
         buckets_summary = BucketsSummary()
         for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
             daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
-            buckets_summary.totals.add_value(date, daily_summary.total())
-            buckets_summary.hardened.add_value(date, daily_summary.hardened)
-            buckets_summary.drained.add_value(date, daily_summary.drained)
-            buckets_summary.undrained.add_value(date, daily_summary.undrained)
-            buckets_summary.flow_off.add_value(date, daily_summary.flow_off)
-            buckets_summary.indraft.add_value(date, daily_summary.indraft)
+            buckets_summary.totals.add_value(date, daily_summary['total'])
+            buckets_summary.total_outgoing.add_value(date, daily_summary['total_outgoing'])
+            buckets_summary.total_incoming.add_value(date, daily_summary['total_incoming'])
+            buckets_summary.hardened.add_value(date, daily_summary['hardened'])
+            buckets_summary.drained.add_value(date, daily_summary['drained'])
+            buckets_summary.undrained.add_value(date, daily_summary['undrained'])
+            buckets_summary.flow_off.add_value(date, daily_summary['flow_off'])
+            buckets_summary.indraft.add_value(date, daily_summary['indraft'])
         return buckets_summary

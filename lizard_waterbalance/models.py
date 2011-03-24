@@ -674,7 +674,17 @@ class Bucket(models.Model):
 
     def __unicode__(self):
         return self.slug
-
+    
+    def retrieve_seepage(self, start_date, end_date):
+        exception_msg = ""
+        if self.seepage is None:
+            exception_msg = "No seepage is defined for bucket of waterbalance area %s" % self.__unicode__()
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = self.seepage.get_timeseries()#start_date, end_date
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
 
 class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.

@@ -39,7 +39,7 @@ class VerticalTimeseriesComputer:
 
     def compute(self, surface, crop_evaporation_factor, precipitation,
                 evaporation, seepage):
-        """Compute and return the vertical time series for the given surface.
+        """Compute and return the vertical time series for the given surface as dictionary.
 
         The incoming time series precipitation and evaporation always contain
         non-negative event values although precipitation adds volume to the
@@ -80,5 +80,8 @@ class VerticalTimeseriesComputer:
                 vertical_timeseries_list[index].add_value(date, value)
         vertical_timeseries_list[3], vertical_timeseries_list[2] = \
                                      split_timeseries(vertical_timeseries_list[2])
-        return vertical_timeseries_list
+        return {"precipitation":vertical_timeseries_list[0],
+                      "evaporation":vertical_timeseries_list[1],
+                      "seepage":vertical_timeseries_list[2],
+                      "infiltration":vertical_timeseries_list[3]}
 

@@ -27,14 +27,14 @@
 
 from datetime import timedelta
 
-from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
 
 class LevelControlComputer:
 
-    def compute(self, open_water, buckets_summary, vertical_timeseries,
+    def compute(self, open_water, buckets_summary, precipitation, evaporation, seepage, infiltration,
                 minimum_level_timeseries, maximum_level_timeseries,
                 intakes_timeseries, pumps_timeseries):
         """Compute and return the pair of intake and pump time series.
@@ -45,74 +45,95 @@ class LevelControlComputer:
         Parameters:
         * open_water -- OpenWater for which to compute the level control
         * buckets_summary -- BucketsSummary with the summed buckets outcome
-        * intakes_timeseries -- list of intake timeseries in [m3/day]
-        * pumps_timeseries -- list of pump timeseries in [m3/day]
-        * vertical_timeseries -- list of time series [precipitation,
-          evaporation, seepage, infiltration], where each time series is
-          specified in [m3/day]TimeseriesStub((self.today, 2.0),
-                                              (tomorrow, 0.0)).
-
+        * precipitation, 
+        * evaporation, 
+        * seepage, 
+        * infiltration
+        * intakes_timeseries -- dict of intake timeseries in [m3/day]
+        * pumps_timeseries -- dict of pump timeseries in [m3/day]
 
         """
         storage = TimeseriesStub()
         result = TimeseriesStub()
         water_level_timeseries = TimeseriesStub()
+        pump_time_series = TimeseriesStub()
+        intake_time_series = TimeseriesStub()
+        total_incoming = TimeseriesStub()
+        total_outgoing = TimeseriesStub()
 
         surface = 1.0 * open_water.surface
         water_level = open_water.init_water_level
 
-        timeseries_list = []
-        timeseries_list += [buckets_summary.totals]
-        timeseries_list += vertical_timeseries
-        timeseries_list += [minimum_level_timeseries]
-        timeseries_list += [maximum_level_timeseries]
-        timeseries_list += intakes_timeseries[:]
-        timeseries_list += pumps_timeseries[:]
+        ts = {}
+        ts['bucket_total_incoming'] = buckets_summary.total_incoming
+        ts['bucket_total_outgoing'] = buckets_summary.total_outgoing
+        ts['precipitation'] = precipitation
+        ts['evaporation'] = evaporation
+        ts['seepage'] = seepage
+        ts['infiltration'] = infiltration
+        ts['min_level'] = minimum_level_timeseries
+        ts['max_level'] = maximum_level_timeseries
+       
+        ts['intakes'] = intakes_timeseries
+        ts['pumps'] = pumps_timeseries
 
-        index_first_pump_event = len(timeseries_list) - len(pumps_timeseries)
-        for event_tuple in enumerate_events(*timeseries_list):
-            date = event_tuple[0][0]
-            buckets_total_value = event_tuple[0][1]
-            precipitation_value = event_tuple[1][1]
-            evaporation_value = event_tuple[2][1]
-            seepage_value = event_tuple[3][1]
-            infiltration_value = event_tuple[4][1]
-            minimum_level = event_tuple[5][1]
-            maximum_level = event_tuple[6][1]
-            incoming_value = self.compute_incoming_volume(buckets_total_value,
-                                                          precipitation_value,
-                                                          evaporation_value,
-                                                          seepage_value,
-                                                          infiltration_value)
+        
+        for events in enumerate_dict_events(ts):
+            date = events['date']
+            
+            if not events.has_key('intakes'):
+                events['intakes'] = {}
+            
+            incoming_value = [ events['bucket_total_outgoing'][1],
+                                  events['precipitation'][1],
+                                  events['seepage'][1]] + \
+                                  [event[1] for event in events['intakes'].values()]
+                                  
+            incoming_value = sum(incoming_value)
+            
+            if not events.has_key('pumps'):
+                events['pumps'] = {}
+            
+            outgoing_value = [ events['bucket_total_incoming'][1],
+                                  events['infiltration'][1],
+                                  events['evaporation'][1]] + \
+                                  [-1 * event[1] for event in events['pumps'].values()]
+                                  
+            outgoing_value = sum(outgoing_value)
 
-            water_level += incoming_value / surface
-            for intake_event in event_tuple[7:index_first_pump_event]:
-                water_level += intake_event[1] / surface
-            for pump_event in event_tuple[index_first_pump_event:]:
-                water_level -= pump_event[1] / surface
-            level_control = self._compute_level_control(surface, water_level, minimum_level, maximum_level)
+            water_level += (incoming_value + outgoing_value) / surface
+
+            level_control = self._compute_level_control(surface, water_level, events['min_level'][1], events['max_level'][1])
             water_level += level_control / surface
-
+            
+            if level_control < 0:
+                pump = level_control
+                intake = 0
+            else:
+                pump = 0
+                intake = level_control               
+            
+            pump_time_series.add_value(date, pump)
+            intake_time_series.add_value(date, intake)
+            
             water_level_timeseries.add_value(date, water_level)
 
             storage_value = (water_level - open_water.bottom_height) * surface
             storage.add_value(date, storage_value)
 
             result.add_value(date, level_control)
+            
+            total_incoming.add_value(date, sum([incoming_value, intake]))
+            total_outgoing.add_value(date, sum([outgoing_value, pump]))        
+            
             date += timedelta(1)
-        (pump_time_series, intake_time_series) = split_timeseries(result)
-        return (intake_time_series, pump_time_series, storage, water_level_timeseries)
 
-    def compute_incoming_volume(self, buckets_value, precipitation_value,
-                                evaporation_value, seepage_value,
-                                infiltration_value):
-
-        incoming_volume = buckets_value
-        incoming_volume += precipitation_value
-        incoming_volume += evaporation_value
-        incoming_volume += seepage_value
-        incoming_volume += infiltration_value
-        return incoming_volume
+        return {'intake':intake_time_series, 
+                'pump':pump_time_series, 
+                'storage':storage, 
+                'water_level':water_level_timeseries, 
+                'total_incoming':total_incoming, 
+                'total_outgoing':total_outgoing}
 
     def _compute_level_control(self, surface, water_level, minimum_water_level, maximum_water_level):
         """Compute and return the level control for the given date.

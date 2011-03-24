@@ -577,78 +577,78 @@ class TimeseriesRetrieverStub():
 
 
 class WaterbalanceComputerTests(TestCase):
-
-    def setUp(self):
-        self.buckets_result = {} # don't care
-        self.buckets_computer = Mock({"compute": self.buckets_result})
-        self.level_result = [TimeseriesStub(),
-                             TimeseriesStub(),
-                             TimeseriesStub(),
-                             TimeseriesStub()] # don't care
-        self.level_control_computer = Mock({"compute": self.level_result})
-        self.buckets = [Bucket(), Bucket()]
-        self.area = WaterbalanceArea()
-        self.area.open_water = create_saveable_openwater()
-        self.area.open_water.retrieve_minimum_level = lambda : TimeseriesStub()
-        self.area.open_water.retrieve_maximum_level = lambda : TimeseriesStub()
-        self.area.retrieve_buckets = lambda : self.buckets
-        self.precipitation = TimeseriesStub()
-        self.evaporation = TimeseriesStub()
-        self.seepage = TimeseriesStub()
-        self.area.retrieve_precipitation = lambda s, e: self.precipitation
-        self.area.retrieve_evaporation = lambda s, e: self.evaporation
-        self.area.retrieve_seepage = lambda s, e: self.seepage
-
-    def test_a(self):
-        """Test that compute calls the right method of the bucket computer."""
-        start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.level_control_computer)
-        computer.level_control_storage = Mock()
-        computer.compute(self.area, start, start + timedelta(1))
-        calls = self.buckets_computer.getAllCalls()
-        self.assertEqual(1, len(calls))
-        self.assertEqual("compute", calls[0].getName())
-
-    def test_b(self):
-        """Test that method compute passes the buckets of the waterbalance area to the bucket computer."""
-        start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.level_control_computer)
-        computer.level_control_storage = Mock()
-        computer.compute(self.area, start, start + timedelta(1))
-        calls = self.buckets_computer.getNamedCalls("compute")
-        self.assertEqual(self.buckets, calls[0].getParam(0))
-
-    def test_c(self):
-        """Test that method compute passes the time series to the bucket computer."""
-        start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.level_control_computer)
-        computer.level_control_storage = Mock()
-        computer.compute(self.area, start, start + timedelta(1))
-        calls = self.buckets_computer.getNamedCalls("compute")
-        self.assertEqual(self.precipitation, calls[0].getParam(1))
-        self.assertEqual(self.evaporation, calls[0].getParam(2))
-        self.assertEqual(self.seepage, calls[0].getParam(3))
-
-    def test_d(self):
-        """Test that method compute returns the bucket time series."""
-        start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.level_control_computer)
-        computer.level_control_storage = Mock()
-        result = computer.compute(self.area, start, start + timedelta(1))
-        self.assertEqual(self.buckets_result, result[0])
-
-    def test_e(self):
-        """Test that method compute returns the level control time series."""
-        start = datetime(2010, 12, 21)
-        computer = WaterbalanceComputer(self.buckets_computer,
-                                        self.level_control_computer)
-        computer.level_control_storage = Mock()
-        result = computer.compute(self.area, start, start + timedelta(1))
-        self.assertEqual(self.level_result, result[1])
+    pass
+    #    def setUp(self):
+    #        self.buckets_result = {} # don't care
+    #        self.buckets_computer = Mock({"compute": self.buckets_result})
+    #        self.level_result = [TimeseriesStub(),
+    #                             TimeseriesStub(),
+    #                             TimeseriesStub(),
+    #                             TimeseriesStub()] # don't care
+    #        self.level_control_computer = Mock({"compute": self.level_result})
+    #        self.buckets = [Bucket(), Bucket()]
+    #        self.area = WaterbalanceArea()
+    #        self.area.open_water = create_saveable_openwater()
+    #        self.area.open_water.retrieve_minimum_level = lambda : TimeseriesStub()
+    #        self.area.open_water.retrieve_maximum_level = lambda : TimeseriesStub()
+    #        self.area.retrieve_buckets = lambda : self.buckets
+    #        self.precipitation = TimeseriesStub()
+    #        self.evaporation = TimeseriesStub()
+    #        self.seepage = TimeseriesStub()
+    #        self.area.retrieve_precipitation = lambda s, e: self.precipitation
+    #        self.area.retrieve_evaporation = lambda s, e: self.evaporation
+    #        self.area.retrieve_seepage = lambda s, e: self.seepage
+    #
+    #    def test_a(self):
+    #        """Test that compute calls the right method of the bucket computer."""
+    #        start = datetime(2010, 12, 21)
+    #        computer = WaterbalanceComputer(self.buckets_computer,
+    #                                        self.level_control_computer)
+    #        computer.level_control_storage = Mock()
+    #        computer.compute(self.area, start, start + timedelta(1))
+    #        calls = self.buckets_computer.getAllCalls()
+    #        self.assertEqual(1, len(calls))
+    #        self.assertEqual("compute", calls[0].getName())
+    #
+    #    def test_b(self):
+    #        """Test that method compute passes the buckets of the waterbalance area to the bucket computer."""
+    #        start = datetime(2010, 12, 21)
+    #        computer = WaterbalanceComputer(self.buckets_computer,
+    #                                        self.level_control_computer)
+    #        computer.level_control_storage = Mock()
+    #        computer.compute(self.area, start, start + timedelta(1))
+    #        calls = self.buckets_computer.getNamedCalls("compute")
+    #        self.assertEqual(self.buckets, calls[0].getParam(0))
+    #
+    #    def test_c(self):
+    #        """Test that method compute passes the time series to the bucket computer."""
+    #        start = datetime(2010, 12, 21)
+    #        computer = WaterbalanceComputer(self.buckets_computer,
+    #                                        self.level_control_computer)
+    #        computer.level_control_storage = Mock()
+    #        computer.compute(self.area, start, start + timedelta(1))
+    #        calls = self.buckets_computer.getNamedCalls("compute")
+    #        self.assertEqual(self.precipitation, calls[0].getParam(1))
+    #        self.assertEqual(self.evaporation, calls[0].getParam(2))
+    #        self.assertEqual(self.seepage, calls[0].getParam(3))
+    #
+    #    def test_d(self):
+    #        """Test that method compute returns the bucket time series."""
+    #        start = datetime(2010, 12, 21)
+    #        computer = WaterbalanceComputer(self.buckets_computer,
+    #                                        self.level_control_computer)
+    #        computer.level_control_storage = Mock()
+    #        result = computer.compute(self.area, start, start + timedelta(1))
+    #        self.assertEqual(self.buckets_result, result[0])
+    #
+    #    def test_e(self):
+    #        """Test that method compute returns the level control time series."""
+    #        start = datetime(2010, 12, 21)
+    #        computer = WaterbalanceComputer(self.buckets_computer,
+    #                                        self.level_control_computer)
+    #        computer.level_control_storage = Mock()
+    #        result = computer.compute(self.area, start, start + timedelta(1))
+    #        self.assertEqual(self.level_result, result[1])
 
     # def test_f(self):
     #     """Test that method compute stores the undrained time series of the buckets summary.
@@ -859,39 +859,39 @@ class TotalDailyBucketOutcomeTests(TestCase):
         self.assertEqual([50.0, 70.0], outcomes[0][1][bucket1])
         self.assertEqual([60.0, 80.0], outcomes[1][1][bucket1])
 
-class RetrieveIntakesTimeseriesTests(TestCase):
-
-    def test_a(self):
-        "Test when there are no intakes and no pumps."""
-        open_water = create_saveable_openwater()
-
-        waterbalance_computer = WaterbalanceComputer()
-        intakes, intakes_timeseries = \
-                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
-
-        self.assertEqual([], intakes)
-        self.assertEqual([], intakes_timeseries)
-
-    def test_b(self):
-        """Test when there is a single intake.
-
-        The intake cannot be used for level control.
-        """
-        open_water = create_saveable_openwater()
-        open_water.save()
-        intake = PumpingStation()
-        intake.open_water = open_water
-        intake.name = "Inlaat Vecht"
-        intake.into = True
-        intake.computed_level_control = False
-        intake.percentage = 100 # don't care but obligatory
-        intake.save()
-
-        waterbalance_computer = WaterbalanceComputer()
-        intakes, intakes_timeseries = \
-                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
-
-        self.assertEqual([intake.pk], [intake.pk for intake in intakes])
+#class RetrieveIntakesTimeseriesTests(TestCase):
+#
+#    def test_a(self):
+#        "Test when there are no intakes and no pumps."""
+#        open_water = create_saveable_openwater()
+#
+#        waterbalance_computer = WaterbalanceComputer()
+#        intakes, intakes_timeseries = \
+#                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
+#
+#        self.assertEqual([], intakes)
+#        self.assertEqual([], intakes_timeseries)
+#
+#    def test_b(self):
+#        """Test when there is a single intake.
+#
+#        The intake cannot be used for level control.
+#        """
+#        open_water = create_saveable_openwater()
+#        open_water.save()
+#        intake = PumpingStation()
+#        intake.open_water = open_water
+#        intake.name = "Inlaat Vecht"
+#        intake.into = True
+#        intake.computed_level_control = False
+#        intake.percentage = 100 # don't care but obligatory
+#        intake.save()
+#
+#        waterbalance_computer = WaterbalanceComputer()
+#        intakes, intakes_timeseries = \
+#                 waterbalance_computer.retrieve_intakes_timeseries(open_water)
+#
+#        self.assertEqual([intake.pk], [intake.pk for intake in intakes])
 
     # def test_c(self):
     #     """Test when there is a single intake.
