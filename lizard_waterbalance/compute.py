@@ -494,11 +494,18 @@ class WaterbalanceComputer2:
 
         timeseries = self.get_level_control_timeseries(
             start_date_calc, end_date_calc)
+        # timeseries_sluice_error = [
+        #     timeseries['level_control']['intake_time_series'],
+        #     timeseries['level_control']['pump_time_series'],
+        #     timeseries['open_water_cnt']['storage'],
+        #     ]
         timeseries_sluice_error = [
-            timeseries['level_control']['intake_time_series'],
-            timeseries['level_control']['pump_time_series'],
-            timeseries['open_water_cnt']['storage'],
+            timeseries['intake'],
+            timeseries['pump'],
+            timeseries['storage'],
             ]
+        # ^^^ @Bastiaan: deze keys bestaan niet meer. Kloppen de nieuwe?
+
         sluice_error = self.sluice_error_computer.compute(
             self.configuration.open_water,
             timeseries_sluice_error,
@@ -620,7 +627,10 @@ class WaterbalanceComputer2:
 
             TO DO: enddate startdate storage
         """
-        if (self.outcome.has_key('fraction_water') and self.outcome_info['fraction_water']['start_date']==start_date and self.outcome_info['fraction_water']['end_date']==end_date):
+        if (self.outcome.has_key('fraction_water') and
+            self.outcome_info['fraction_water']['start_date']==start_date and
+            self.outcome_info['fraction_water']['end_date']==end_date):
+
             return self.outcome['fraction_water']
         else:
             input = self.get_input_timeseries(start_date, end_date)

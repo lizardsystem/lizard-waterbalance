@@ -32,7 +32,8 @@ class Command(BaseCommand):
 
         done_list = []
 
-        # Testing: update with dummy data
+        # Testing: update with dummy data. Comment out if you don't
+        # want your WaterbalanceConf's changed.
         # for c in WaterbalanceConf.objects.all():
         #     if c.precipitation is None:
         #         c.precipitation = WaterbalanceTimeserie.objects.get(pk=21)
@@ -42,7 +43,7 @@ class Command(BaseCommand):
         #         c.open_water = OpenWater.objects.get(pk=2)
         #     c.save()
 
-        # Loop all configurations, try to calculate sluice errors.
+        # loop all configurations, try to calculate sluice errors.
         for configuration in WaterbalanceConf.objects.all():
             logger.info('Processing %s...' % configuration)
             waterbalance_computer = WaterbalanceComputer2(configuration)
