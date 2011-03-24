@@ -38,7 +38,7 @@
     </div>
     <dl>
       <dt>Naam</dt>
-      <dd>{{ waterbalance_area.name }}</dd>
+      <dd>{{ waterbalance_configuration.waterbalance_area.name }}</dd>
       <dt>Oppervlakte open water</dt>
       <dd>{{ waterbalance_configuration.open_water.surface }} m2</dd>
     </dl>
@@ -49,7 +49,7 @@
     <a class="ss_sprite ss_pencil sidebarbox-action-icon"
        title="Bewerk instellingen"
        id="activate-adjustment-form"
-       href="{% url waterbalance_area_edit waterbalance_configuration.slug %}">&nbsp;</a>
+       href="{% url waterbalance_area_edit area_slug=waterbalance_configuration.waterbalance_area.slug scenario_slug=waterbalance_configuration.waterbalance_scenario.slug %}">&nbsp;</a>
     <span>
       Bakjes
     </span>
@@ -62,7 +62,7 @@
       {% endfor %}
     </dl>
     <form method="POST"
-          action="{% url waterbalance_graph_recalculate_data waterbalance_configuration.slug %}"
+          action="{% url waterbalance_graph_recalculate_data waterbalance_configuration.waterbalance_area.slug waterbalance_configuration.waterbalance_scenario.slug %}"
           id="recalculate-form">
       {% csrf_token %}
       <input type="submit"
@@ -118,8 +118,11 @@
       </ul>
 
       <input type="hidden"
-             name="area"
-             value="{{ waterbalance_configuration.slug }}" />
+             name="area_slug"
+             value="{{ waterbalance_configuration.waterbalance_area.slug }}" />
+      <input type="hidden"
+             name="scenario_slug"
+             value="{{ waterbalance_configuration.waterbalance_scenario.slug }}" />
       <input type="submit" name="submit" value="Toon"
              id="graph-type-select-submit" />
     </form>

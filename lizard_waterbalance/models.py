@@ -331,6 +331,15 @@ class WaterbalanceTimeserie(models.Model):
         choices=TIMESTEP_CHOICES, null=True, blank=True,
         help_text='Timestep. Optional metadata for (calculated) timeseries')
 
+    hint_datetime_start = models.DateTimeField(
+        null=True, blank=True,
+        help_text=('Hint for datetime start of timerange. '
+                   'Filled in by automatic process.'))
+    hint_datetime_end = models.DateTimeField(
+        null=True, blank=True,
+        help_text=('Hint for datetime end of timerange. '
+                   'Filled in by automatic process.'))
+
     class Meta:
         verbose_name = _("Waterbalans tijdreeks")
         verbose_name_plural = _("Waterbalans tijdreeksen")
@@ -352,18 +361,29 @@ class WaterbalanceTimeserie(models.Model):
     def in_daterange(self, dt):
         """
         Check if datetime (not date) is in daterange of available data.
+
+        Uses hint if available, else check real values.
         """
-        ts = self.get_timeseries()
-        dt_range = ts.timeseries_events.aggregate(
-            Min('time'), Max('time'))
-        dt_min = dt_range['time__min']
-        dt_max = dt_range['time__max']
+        if self.hint_datetime_start and self.hint_datetime_end:
+            dt_min = self.hint_datetime_start
+            dt_max = self.hint_datetime_end
+            logger.debug('Found min/max dates (hinted): %s %s' % (
+                    dt_min, dt_max))
+        else:
+            ts = self.get_timeseries()
+            dt_range = ts.timeseries_events.aggregate(
+                Min('time'), Max('time'))
+            dt_min = dt_range['time__min']
+            dt_max = dt_range['time__max']
+            logger.debug('Found min/max dates (from data): %s %s' % (
+                    dt_min, dt_max))
         return dt >= dt_min and dt <= dt_max
 
     @classmethod
     @transaction.commit_on_success()
     def create(cls, name, parameter, timeseries,
-               configuration=None, timestep=None):
+               configuration=None, timestep=None,
+               hint_datetime_start=None, hint_datetime_end=None):
         """
         Create a local timeserie.
 
@@ -406,7 +426,9 @@ class WaterbalanceTimeserie(models.Model):
             use_fews=False,
             configuration=configuration,
             timestep=timestep,
-            local_timeseries=local_timeseries)
+            local_timeseries=local_timeseries,
+            hint_datetime_start=hint_datetime_start,
+            hint_datetime_end=hint_datetime_end)
         wb_ts.save()
         logger.debug('Successfully created waterbalance timeseries.')
         return wb_ts
@@ -994,8 +1016,8 @@ class WaterbalanceConf(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('waterbalance_area_summary', (),
-                {'area': str(self.waterbalance_area.slug),
-                 'scenario': str(self.waterbalance_scenario.slug)})
+                {'area_slug': str(self.waterbalance_area.slug),
+                 'scenario_slug': str(self.waterbalance_scenario.slug)})
 
     def retrieve_precipitation(self, start_date, end_date):
         if self.precipitation is None:

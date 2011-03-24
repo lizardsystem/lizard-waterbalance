@@ -124,6 +124,7 @@ class AdapterWaterbalance(WorkspaceItemAdapter):
 
         # Note: timeseries must be of local type. timestep=MONTH.
         # TODO: time format is hardcoded. Must work for oracle as well.
+        # TODO: add scenario
         table_view = (
             '(select area.geom, area.name, tsevent.value as value from '
             'lizard_waterbalance_waterbalancearea as area, '

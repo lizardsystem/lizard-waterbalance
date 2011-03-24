@@ -39,7 +39,6 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceLabel
-from lizard_waterbalance.models import WaterbalanceScenario
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
@@ -132,20 +131,23 @@ TRUE_FALSE_EXCEPTIONS = {
 logger = logging.getLogger(__name__)
 
 
-def waterbalance_graph_data(area, start_datetime, end_datetime, recalculate=False):
+def waterbalance_graph_data(
+    conf,
+    start_datetime, end_datetime, recalculate=False):
+
     """Return the outcome needed for drawing the waterbalance graphs.
 
     Result is a compute.WaterbalanceOutcome object.
 
     """
-    cache_key = '%s_%s_%s' % (area, start_datetime, end_datetime)
+    cache_key = '%s_%s_%s' % (conf, start_datetime, end_datetime)
     t1 = time.time()
     result = cache.get(cache_key)
     if (result is None) or recalculate:
         fews_data_filename = pkg_resources.resource_filename(
             "lizard_waterbalance", "testdata/timeserie.csv")
         waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-            area, start_datetime, end_datetime, fews_data_filename)
+            conf.waterbalance_area, start_datetime, end_datetime, fews_data_filename)
         # waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
         # waterbalance_area = WaterbalanceConf.objects.get(slug=area)
         bucket2outcome, level_control, outcome = waterbalance_computer.compute(
@@ -248,30 +250,28 @@ def waterbalance_start(
 
 def waterbalance_area_summary(
     request,
-    area=None,
-    scenario=None,
+    area_slug,
+    scenario_slug,
     template='lizard_waterbalance/waterbalance_area_summary.html',
     crumbs_prepend=None):
     """Show the summary page of the named WaterbalanceArea.
 
     Parameters:
-    * area -- name of the WaterbalanceArea whose summary has to be shown
+    * area -- slug of the WaterbalanceArea whose summary has to be shown
+    * scenario -- slug of the WaterbalanceScenario
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    print area
-    print scenario
-    if scenario is None:
-        # We hope to get at least 1.
-        waterbalance_configuration = WaterbalanceConf.objects.filter(
-            waterbalance_area__slug=area)[0]
-    else:
-        waterbalance_configuration = get_object_or_404(
-            WaterbalanceConf,
-            waterbalance_area__slug=area,
-            waterbalance_scenario__slug=scenario)
+    # waterbalance_configuration = get_object_or_404(
+    #     WaterbalanceConf,
+    #     waterbalance_area__slug=area,
+    #     waterbalance_scenario__slug=scenario)
+    #logger.debug('%s - %s' % (area, scenario))
+    waterbalance_configuration = WaterbalanceConf.objects.get(
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
 
-    waterbalance_area = waterbalance_configuration.waterbalance_area
+    area = waterbalance_configuration.waterbalance_area
 
     date_range_form = DateRangeForm(
         current_start_end_dates(request, for_form=True))
@@ -284,9 +284,9 @@ def waterbalance_area_summary(
                    'title': 'Waterbalans overzicht',
                    'url': reverse('waterbalance_start')})
 
-    kwargs = {'area': waterbalance_configuration.slug}
-    crumbs.append({'name': waterbalance_area.name,
-                   'title': waterbalance_area.name,
+    kwargs = {'area_slug': area_slug, 'scenario_slug': scenario_slug}
+    crumbs.append({'name': area.name,
+                   'title': area.name,
                    'url': reverse('waterbalance_area_summary', kwargs=kwargs)})
 
     graph_type_formitems = []
@@ -306,7 +306,6 @@ def waterbalance_area_summary(
     return render_to_response(
         template,
         {'waterbalance_configuration': waterbalance_configuration,
-         'waterbalance_area': waterbalance_area,
          'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
          'periods': periods,
@@ -381,8 +380,9 @@ def retrieve_horizon(request):
     return start_datetime, end_datetime
 
 
-def draw_waterbalance_area_graph(
-    area_slug, graph_type,
+# @profile("waterbalance_area_graph.prof")
+def waterbalance_area_graph(
+    conf,
     period,
     start_date, end_date,
     start_datetime, end_datetime,
@@ -401,12 +401,11 @@ def draw_waterbalance_area_graph(
     graph.suptitle("Waterbalans [m3]")
 
     bar_width = BAR_WIDTH[period]
-    
-    wb_conf = WaterbalanceConf.objects.get(slug=area_slug)
-    wb_computer = WaterbalanceComputer2(wb_conf)
-    
+
+    wb_computer = WaterbalanceComputer2(conf)
+
     incoming = wb_computer.get_open_water_incoming_flows(start_datetime, end_datetime)
-    incoming_bars = [("verhard", incoming["hardened"]), 
+    incoming_bars = [("verhard", incoming["hardened"]),
                      ("gedraineerd", incoming["drained"]),
                      ("afstroming", incoming["flow_off"]),
                      ("uitspoeling", incoming["undrained"]),
@@ -424,9 +423,9 @@ def draw_waterbalance_area_graph(
         ("verdamping", outgoing["evaporation"]),
         ("wegzijging", outgoing["infiltration"]),
          ]
-    
+
     outgoing_bars += [(structure.name, timeserie) for structure, timeserie in outgoing['defined_output'].items()]
-    outgoing_bars.append(("peilhandhaving uitlaat", outgoing["computed_pumps"]))    
+    outgoing_bars.append(("peilhandhaving uitlaat", outgoing["computed_pumps"]))
 
     names = [bar[0] for bar in incoming_bars + outgoing_bars]
     colors = ['#' + get_timeseries_label(name).color for name in names]
@@ -454,32 +453,6 @@ def draw_waterbalance_area_graph(
     t2 = time.time()
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
 
-    return graph
-
-
-# @profile("waterbalance_area_graph.prof")
-def waterbalance_area_graph(request,
-                            name,
-                            area=None,
-                            graph_type=None):
-    """Fetch parameters and call draw_waterbalance_area_graph.
-    """
-
-    period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
-
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
-
-    graph = draw_waterbalance_area_graph(
-        area, graph_type,
-        period,
-        start_date, end_date,
-        start_datetime, end_datetime,
-        width, height)
-
     canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
@@ -487,22 +460,13 @@ def waterbalance_area_graph(request,
 
 
 def waterbalance_sluice_error(
-    request, configuration_slug):
+    area_slug, scenario_slug, start_date, end_date, width, height):
     """Draw sluice error.
     """
-    # Fetch parameters
-    period = request.GET.get('period', 'month')
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
-
     # Get/calculate timeseries
-    start_date, end_date = current_start_end_dates(request)
-    # scenario = WaterbalanceScenario.objects.get(name='test')
-    # scenarios = WaterbalanceScenario.objects.all()
-    # configuration = WaterbalanceConf.objects.get(
-    #     waterbalance_area__slug=area_slug,
-    #     waterbalance_scenario__in=scenarios)
-    configuration = WaterbalanceConf.objects.get(slug=configuration_slug)
+    configuration = WaterbalanceConf.objects.get(
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     waterbalance_computer = WaterbalanceComputer2(configuration)
 
     # Enforces that data is calculated between start_date and end_date
@@ -514,8 +478,9 @@ def waterbalance_sluice_error(
     # Draw this timeseries
     graph = Graph(start_date, end_date, width, height)
 
-    #times, values = ts.times_values(start_date, end_date)
-    # Display cumulative sluice error
+    # Normally we would just fetch times and values
+    # times, values = ts.times_values(start_date, end_date)
+    # We have to display the cumulative value per year
     times = []
     values = []
     current_value = 0
@@ -616,19 +581,11 @@ def waterbalance_water_level(request,
     return response
 
 #@profile("waterbalance_fraction_distribution.prof")
-def waterbalance_fraction_distribution(request,
-                                       name,
-                                       area=None,
-                                       graph_type=None):
+def waterbalance_fraction_distribution(
+    name, conf, graph_type,
+    period, start_date, end_date, width, height):
     """Draw the graph for the given area and of the given type."""
 
-    period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
-
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
     krw_graph = Graph(start_date, end_date, width, height)
     ax2 = krw_graph.axes.twinx()
 
@@ -646,7 +603,7 @@ def waterbalance_fraction_distribution(request,
 
     bar_width = BAR_WIDTH[period]
 
-    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
+    outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
     waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
 
     t1 = time.time()
@@ -758,19 +715,10 @@ def waterbalance_fraction_distribution(request,
     return response
 
 
-def waterbalance_phosphate_impact(request,
-                                  name,
-                                  area=None,
-                                  graph_type=None):
+def waterbalance_phosphate_impact(
+    name, conf, period, start_date, end_date, width, height):
     """Draw the graph for the given area and of the given type."""
 
-    period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
-
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
     krw_graph = Graph(start_date, end_date, width, height)
 
     krw_graph.suptitle("Fosfaatbelasting [mg/m2]")
@@ -780,8 +728,7 @@ def waterbalance_phosphate_impact(request,
     # logger.debug('Started waterbalance_phosphate_impact at %s' %
     #              stopwatch_start)
 
-    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
-    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
+    outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
 
     phosphate = Concentration.SUBSTANCE_PHOSPHATE
 
@@ -795,10 +742,10 @@ def waterbalance_phosphate_impact(request,
     bars = [('%s (incr)' % name_dutch,
              '%s (min)' % name_dutch,
              outcome.open_water_timeseries[name],
-             waterbalance_configuration.concentrations.get(
+             conf.concentrations.get(
                 substance__exact=phosphate,
                 flow_name__iexact=name_dutch).increment,
-             waterbalance_configuration.concentrations.get(
+             conf.concentrations.get(
                 substance__exact=phosphate,
                 flow_name__iexact=name_dutch).minimum)
             for name, name_dutch in bar_contents]
@@ -812,16 +759,16 @@ def waterbalance_phosphate_impact(request,
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
                      intake.retrieve_sum_timeseries(),
-                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
     for intake in intakes.order_by('name'):
         bars.append((intake.name + " (incr)",
                      intake.name + " (min)",
                      outcome.level_control_assignment[intake],
-                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     waterbalance_configuration.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
+                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
 
     logger.debug('2: Got intakes %s' %
                  (datetime.datetime.now() - stopwatch_start))
@@ -833,7 +780,7 @@ def waterbalance_phosphate_impact(request,
     krw_graph.legend_space()
     krw_graph.legend(handles, names)
 
-    open_water = waterbalance_configuration.open_water
+    open_water = conf.open_water
 
     top_height = TopHeight()
 
@@ -886,18 +833,48 @@ def waterbalance_phosphate_impact(request,
 
 
 def waterbalance_area_graphs(request,
-                             area=None,
+                             area_slug,
+                             scenario_slug,
                              graph_type=None):
+    """
+    Return area graph.
+
+    Fetch request parameters: name, period, width, height.
+    """
     name = request.GET.get('name', "landelijk")
+    conf = WaterbalanceConf.objects.get(
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
+
+    period = request.GET.get('period', 'month')
+    start_datetime, end_datetime = retrieve_horizon(request)
+    start_date = start_datetime.date()
+    end_date = end_datetime.date() + datetime.timedelta(1)
+
+    # Don't know the difference in above start/end dates. This seems
+    # better, but not sure if it works correctly with existing
+    # functions.
+    _start_date, _end_date = current_start_end_dates(request)
+
+    width = request.GET.get('width', 1600)
+    height = request.GET.get('height', 400)
+
     if graph_type == 'waterbalans':
-        return waterbalance_area_graph(request, name, area, graph_type)
+        return waterbalance_area_graph(
+            conf, period, start_date, end_date, start_datetime,
+            end_datetime, width, height)
     elif graph_type == 'waterpeil' or graph_type == 'waterpeil_met_sluitfout':
         # return waterbalance_water_level(request, area, graph_type)
-        return waterbalance_sluice_error(request, area)
+        return waterbalance_sluice_error(
+            area_slug, scenario_slug, _start_date, _end_date, width, height)
     elif graph_type == 'fracties_chloride' or graph_type == 'fracties_fosfaat':
-        return waterbalance_fraction_distribution(request, name, area, graph_type)
+        return waterbalance_fraction_distribution(
+            name, conf, graph_type, period, start_date, end_date,
+            width, height)
     elif graph_type == 'fosfaatbelasting':
-        return waterbalance_phosphate_impact(request, name, area, graph_type)
+        return waterbalance_phosphate_impact(
+            name, conf, graph_type, period, start_date, end_date,
+            width, height)
 
 
 def waterbalance_shapefile_search(request):
@@ -934,15 +911,18 @@ def graph_select(request):
 
     graphs = []
     if request.is_ajax():
-        area_slug = request.POST['area']
+        area_slug = request.POST['area_slug']
+        scenario_slug = request.POST['scenario_slug']
         selected_graph_types = request.POST.getlist('graphs')
         period = request.POST['period']
 
         for graph_type, name in GRAPH_TYPES:
             if not graph_type in selected_graph_types:
                 continue
+
             url = (reverse('waterbalance_area_graph',
-                           kwargs={'area': area_slug,
+                           kwargs={'area_slug': area_slug,
+                                   'scenario_slug': scenario_slug,
                                    'graph_type': graph_type}) +
                    '?period=' + period)
             graphs.append(url)
@@ -965,25 +945,33 @@ def search_fews_lkeys(request):
         return HttpResponse("Should not be run this way.")
 
 
-def _actual_recalculation(request, area):
+def _actual_recalculation(request, area_slug, scenario_slug):
     """Recalculate graph data by emptying the cache: used by two views."""
     start_datetime, end_datetime = retrieve_horizon(request)
-    waterbalance_graph_data(area, start_datetime, end_datetime,
+
+    conf = WaterbalanceConf.objects.get(
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
+
+    waterbalance_graph_data(conf, start_datetime, end_datetime,
                             recalculate=True)
 
 
-def recalculate_graph_data(request, area=None):
+def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-        _actual_recalculation(request, area)
+        _actual_recalculation(request, area_slug, scenario_slug)
         return HttpResponseRedirect(
-            reverse('waterbalance_area_summary', kwargs={'area': area}))
+            reverse(
+                'waterbalance_area_summary',
+                kwargs={'area_slug': area_slug,
+                        'scenario_slug': scenario_slug}))
     else:
         return HttpResponse("false")
 
 
 def waterbalance_area_edit(request,
-                           area=None,
+                           area_slug=None,
                            template='lizard_waterbalance/waterbalance_area_edit.html',
                            crumbs_prepend=None):
     """Show the edit page of the named WaterbalanceArea.
@@ -997,7 +985,7 @@ def waterbalance_area_edit(request,
     """
     return render_to_response(
         template,
-        {'area': area,
+        {'area': area_slug,
          },
         context_instance=RequestContext(request))
 
@@ -1009,6 +997,11 @@ def _sub_multiple(request,
                   header_name=None,
                   form_class=None,
                   form_url=None):
+    """
+    Generic sub multiple screen (?)
+
+    instance is a model object
+    """
     if template is None:
         template = 'lizard_waterbalance/waterbalance_area_edit_multiple.html'
     header = []
@@ -1056,13 +1049,17 @@ def _sub_multiple(request,
 
 
 def _sub_edit(request,
-              area,
+              area_slug,
+              scenario_slug,
               instance=None,
               template=None,
               fixed_field_names=None,
               form_class=None,
               form_url=None,
               previous_url=None):
+    """
+    Generic sub edit screen (?)
+    """
     if template is None:
         template = 'lizard_waterbalance/waterbalance_area_edit_sub.html'
     fixed_items = []
@@ -1078,7 +1075,7 @@ def _sub_edit(request,
             form = form_class(request.POST, instance=instance)
             if form.is_valid():
                 form.save()
-                _actual_recalculation(request, area)
+                _actual_recalculation(request, area_slug, scenario_slug)
                 messages.success(
                     request,
                     u"Gegevens zijn opgeslagen en de grafiek is herberekend.")
@@ -1096,14 +1093,20 @@ def _sub_edit(request,
 
 
 def waterbalance_area_edit_sub_conf(request,
-                                    area=None,
+                                    area_slug,
+                                    scenario_slug,
                                     template=None):
-    instance = get_object_or_404(WaterbalanceConf, slug=area)
+    instance = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     fixed_field_names = []  # ['name']
     form_class = WaterbalanceConfEditForm
-    form_url = reverse('waterbalance_area_edit_sub_conf', kwargs={'area': area})
+    form_url = reverse('waterbalance_area_edit_sub_conf',
+                       kwargs={'area': area_slug, 'scenario': scenario_slug})
     return _sub_edit(request,
-                     area=area,
+                     area_slug=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1113,15 +1116,22 @@ def waterbalance_area_edit_sub_conf(request,
 
 
 def waterbalance_area_edit_sub_openwater(request,
-                                         area=None,
+                                         area_slug,
+                                         scenario_slug,
                                          template=None):
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instance = conf.open_water
     fixed_field_names = ['name']
     form_class = OpenWaterEditForm
-    form_url = reverse('waterbalance_area_edit_sub_openwater', kwargs={'area': area})
+    form_url = reverse(
+        'waterbalance_area_edit_sub_openwater',
+        kwargs={'area_slug': area_slug, 'scenario_slug': scenario_slug})
     return _sub_edit(request,
-                     area=area,
+                     area_slug=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1130,13 +1140,18 @@ def waterbalance_area_edit_sub_openwater(request,
                      )
 
 def waterbalance_area_edit_sub_buckets(request,
-                                       area=None,
+                                       area_slug,
+                                       scenario_slug,
                                        template=None):
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instance = conf.open_water
     fixed_field_names = []
     return _sub_edit(request,
-                     area=area,
+                     area_slug=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1144,10 +1159,14 @@ def waterbalance_area_edit_sub_buckets(request,
 
 
 def waterbalance_area_edit_sub_out(request,
-                                area=None,
-                                template=None):
+                                   area_slug,
+                                   scenario_slug,
+                                   template=None):
     """Posten uit."""
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instances = [ps for ps in conf.open_water.pumping_stations.all()
                  if not ps.into]
 
@@ -1164,9 +1183,13 @@ def waterbalance_area_edit_sub_out(request,
 
 
 def waterbalance_area_edit_sub_in(request,
-                                  area=None,
+                                  area_slug,
+                                  scenario_slug,
                                   template=None):
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instances = [ps for ps in conf.open_water.pumping_stations.all()
                  if ps.into]
 
@@ -1174,7 +1197,9 @@ def waterbalance_area_edit_sub_in(request,
     field_names = ['percentage',
                    'computed_level_control',
                    ]
-    form_url = reverse('waterbalance_area_edit_sub_in', kwargs={'area': area})
+    form_url = reverse(
+        'waterbalance_area_edit_sub_in',
+        kwargs={'area_slug': area_slug, 'scenario_slug': scenario_slug})
 
     return _sub_multiple(request,
                          instances=instances,
@@ -1186,16 +1211,24 @@ def waterbalance_area_edit_sub_in(request,
 
 
 def waterbalance_area_edit_sub_in_single(request,
-                                         area=None,
-                                         pump_id=None,
+                                         area_slug,
+                                         scenario_slug,
+                                         pump_id,
                                          template=None):
     instance = get_object_or_404(PumpingStation, pk=int(pump_id))
     fixed_field_names = []
     form_class = PumpingStationEditForm
-    form_url = reverse('waterbalance_area_edit_sub_in_single', kwargs={'area': area, 'pump_id': pump_id})
-    previous_url = reverse('waterbalance_area_edit_sub_in', kwargs={'area': area})
+    form_url = reverse(
+        'waterbalance_area_edit_sub_in_single',
+        kwargs={'area_slug': area_slug,
+                'scenario_slug': scenario_slug,
+                'pump_id': pump_id})
+    previous_url = reverse(
+        'waterbalance_area_edit_sub_in',
+        kwargs={'area_slug': area_slug, 'scenario_slug': scenario_slug})
     return _sub_edit(request,
-                     area=area,
+                     area_slug=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1206,13 +1239,18 @@ def waterbalance_area_edit_sub_in_single(request,
 
 
 def waterbalance_area_edit_sub_labels(request,
-                                area=None,
-                                template=None):
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+                                      area_slug,
+                                      scenario_slug,
+                                      template=None):
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instance = conf.open_water
     fixed_field_names = []
     return _sub_edit(request,
-                     area=area,
+                     area_slug=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,
@@ -1220,13 +1258,18 @@ def waterbalance_area_edit_sub_labels(request,
 
 
 def waterbalance_area_edit_sub7(request,
-                                area=None,
+                                area_slug,
+                                scenario_slug,
                                 template=None):
-    conf = get_object_or_404(WaterbalanceConf, slug=area)
+    conf = get_object_or_404(
+        WaterbalanceConf,
+        waterbalance_area__slug=area_slug,
+        waterbalance_scenario__slug=scenario_slug)
     instance = conf.open_water
     fixed_field_names = []
     return _sub_edit(request,
-                     area=area,
+                     area=area_slug,
+                     scenario_slug=scenario_slug,
                      instance=instance,
                      template=template,
                      fixed_field_names=fixed_field_names,

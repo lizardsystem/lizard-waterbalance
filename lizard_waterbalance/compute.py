@@ -351,7 +351,7 @@ class WaterbalanceComputer2:
                                                                 vertical_open_water_timeseries["precipitation"],
                                                                 vertical_open_water_timeseries["evaporation"],
                                                                 vertical_open_water_timeseries["seepage"],
-                                                                vertical_open_water_timeseries["infiltration"],                                                              
+                                                                vertical_open_water_timeseries["infiltration"],
                                                                 input['open_water']['minimum_level'],
                                                                 input['open_water']['maximum_level'],
                                                                 input['incoming_timeseries'],
@@ -372,50 +372,50 @@ class WaterbalanceComputer2:
             self.outcome_info['level_control']['end_date'] = end_date
             return outcome
 
-    
+
     def get_open_water_incoming_flows(self, start_date, end_date):
         """ Returns incoming waterflows """
-    
+
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
         vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
         control = self.get_level_control_timeseries(start_date, end_date)
-        
+
         incoming = {}
         incoming["precipitation"] = vertical_open_water_timeseries["precipitation"]
         incoming["seepage"] = vertical_open_water_timeseries["seepage"]
-        
+
         incoming["drained"] = buckets_summary.drained
         incoming["flow_off"] = buckets_summary.flow_off
         incoming["undrained"] = buckets_summary.undrained
         incoming["hardened"] = buckets_summary.hardened
-        
+
         incoming["defined_input"]= input['incoming_timeseries']
         incoming["computed_intake"] = control['intake']
-        
+
         return incoming
-        
-    
-    
+
+
+
     def get_open_water_outgoing_flows(self, start_date, end_date):
         """ Returns outgoing waterflows """
-    
+
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
         vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
         control = self.get_level_control_timeseries(start_date, end_date)
-        
+
         outgoing = {}
         outgoing["evaporation"] = vertical_open_water_timeseries["evaporation"]
         outgoing["infiltration"] = vertical_open_water_timeseries["infiltration"]
-        
+
         outgoing["indraft"] = buckets_summary.indraft
-        
+
         outgoing["defined_output"]= input['outgoing_timeseries']
         outgoing["computed_pumps"] = control['pump']
-        
+
         return outgoing
-        
+
 
     #to do
     def get_reference_timeseries(self, start_date, end_date):
@@ -465,6 +465,9 @@ class WaterbalanceComputer2:
 
         This method returns a tuple that contains
           1. a dictionary with reference timeseries
+
+        TODO:
+          When given range 1900-2015, it only returns values for 1996-2011
         """
         logger.debug("Calculating sluice error (%s - %s)..." % (
                 start_date_calc.strftime('%Y-%m-%d'),
@@ -510,7 +513,9 @@ class WaterbalanceComputer2:
             parameter=parameter,
             timeseries=ts_dict,
             configuration=self.configuration,
-            timestep=timestep)
+            timestep=timestep,
+            hint_datetime_start=start_date_calc,
+            hint_datetime_end=end_date_calc)
         return result_timeseries
 
     def get_sluice_error_timeseries(
@@ -612,14 +617,14 @@ class WaterbalanceComputer2:
                 intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
                                                        end_date=end_date)
-                
+
             intakes_timeseries['intake_wl_control'] = control['intake']
-                
+
 
             fractions = self.fraction_computer.compute(self.configuration.open_water,
                                                        buckets_summary,
                                                        vertical_open_water_timeseries["precipitation"],
-                                                       vertical_open_water_timeseries["seepage"],                                                      
+                                                       vertical_open_water_timeseries["seepage"],
                                                        control['storage'],
                                                        control['total_outgoing'],
                                                        intakes_timeseries)
