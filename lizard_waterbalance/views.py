@@ -503,6 +503,8 @@ def waterbalance_sluice_error(
     color = '#0000ff'
     graph.axes.plot(times, values, color=color)
 
+    graph.add_today()
+
     # Return response
     canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
@@ -677,18 +679,6 @@ def waterbalance_fraction_distribution(
              # outcome.intake_fractions[intake],
              wb_timeseries['intakes'][intake]))
 
-    # intakes = PumpingStation.objects.filter(
-    #     into=True, computed_level_control=True)
-    # # Temp removed
-    # # conf.concentrations.get(
-    # #        substance__exact=substance,
-    # #        flow_name__iexact=intake.name).minimum)
-    # for intake in intakes.order_by('name'):
-    #     bars.append(
-    #         (intake.name,
-    #          # outcome.intake_fractions[intake],
-    #          wb_timeseries['intakes'][intake]))
-
     names = [bar[0] for bar in bars]
     if substance == Concentration.SUBSTANCE_CHLORIDE:
         names.append("chloride")
@@ -725,11 +715,11 @@ def waterbalance_fraction_distribution(
         color = '#' + label.color
         bottom = top_height.get_heights(times)
         graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
-                           bottom=bottom)
+                       bottom=bottom)
         top_height.stack_bars(times, values)
 
     # Skipping berging/initial??
-    fractions_list = [bar[1] for bar in bars[1:]]  # TimeseriesStubs
+    # fractions_list = [bar[1] for bar in bars[1:]]  # TimeseriesStubs
     #concentrations = [bar[2] for bar in bars[1:]]  # minimum concentrations
 
     # Draw axis 2
@@ -762,6 +752,8 @@ def waterbalance_fraction_distribution(
     t2 = time.time()
 
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
+
+    graph.add_today()
 
     canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
