@@ -405,7 +405,7 @@ def draw_waterbalance_area_graph(
     wb_conf = WaterbalanceConf.objects.get(slug=area_slug)
     wb_computer = WaterbalanceComputer2(wb_conf)
     
-    incoming = wb_computer.get_open_water_incoming_flows(start_date, end_date)
+    incoming = wb_computer.get_open_water_incoming_flows(start_datetime, end_datetime)
     incoming_bars = [("verhard", incoming["hardened"]), 
                      ("gedraineerd", incoming["drained"]),
                      ("afstroming", incoming["flow_off"]),
@@ -417,7 +417,7 @@ def draw_waterbalance_area_graph(
 
     t1 = time.time()
 
-    outgoing = wb_computer.get_open_water_outgoing_flows(start_date, end_date)
+    outgoing = wb_computer.get_open_water_outgoing_flows(start_datetime, end_datetime)
 
     outgoing_bars = [
         ("intrek", outgoing["indraft"]),
