@@ -88,23 +88,6 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-#class WaterbalanceOutcome:
-#    """Contains the computed time series that are part of a waterbalance.
-#
-#    Instance variables:
-#    * open_water_timeseries -- dictionary that contains the summed discharges of the buckets to and from the open water
-#    * open_water_fractions -- dictionary that contains the fractions of the discharges of the buckets to and from the open water
-#    * level_control_assignment -- dictionary that contains the level control time series
-#    * intake_fractions -- dictionary that contains the fractions of all the intakes and pumps
-#
-#    """
-#
-#    def __init__(self):
-#
-#        self.open_water_timeseries = {}
-#        self.level_control_assignment = {}
-#        self.open_water_fractions = {}
-#        self.intake_fractions = {}
 
 class WaterbalanceComputer2:
     """Compute the waterbalance-related time series.
@@ -176,9 +159,17 @@ class WaterbalanceComputer2:
 
         This method returns a tuple that contains
           1. a dictionary with all input timeseries.
+            - precipitation
+            - evaporation
+            - seepage
+            - open_water minimum_level/maximum_level
+            - incoming_timeseries[intake]
 
         """
-        if (self.input.has_key('timeseries') and self.input_info['timeseries']['start_date']==start_date and self.input_info['timeseries']['end_date']==end_date):
+        if (self.input.has_key('timeseries') and
+            self.input_info['timeseries']['start_date']==start_date and
+            self.input_info['timeseries']['end_date']==end_date):
+            # Already in memory
             input_ts = self.input['timeseries']
         else:
             input_ts = {}
@@ -230,7 +221,7 @@ class WaterbalanceComputer2:
             series
 
         This method returns a tuple that contains
-          1. a dictionary with all calculated bucket timeseries.
+          1. a dictionary with all calculated bucket timeseries. Key=bucket.
 
         """
         if (self.outcome.has_key('buckets') and self.outcome_info['buckets']['start_date']==start_date and self.outcome_info['buckets']['end_date']==end_date):
@@ -241,10 +232,11 @@ class WaterbalanceComputer2:
             buckets = self.configuration.retrieve_buckets()
             buckets_outcome = {}
             for bucket in buckets:
-                buckets_outcome[bucket] = self.bucket_computer.compute(bucket,
-                                                                input['precipitation'],
-                                                                input['evaporation'],
-                                                                bucket.retrieve_seepage(start_date, end_date))
+                buckets_outcome[bucket] = self.bucket_computer.compute(
+                    bucket,
+                    input['precipitation'],
+                    input['evaporation'],
+                    bucket.retrieve_seepage(start_date, end_date))
 
             #store for later use (some kind of cache)
             self.outcome['buckets'] = buckets_outcome
@@ -271,7 +263,10 @@ class WaterbalanceComputer2:
 
         """
 
-        if (self.outcome.has_key('buckets_summary') and self.outcome_info['buckets_summary']['start_date']==start_date and self.outcome_info['buckets_summary']['end_date']==end_date):
+        if (self.outcome.has_key('buckets_summary') and
+            self.outcome_info['buckets_summary']['start_date']==start_date and
+            self.outcome_info['buckets_summary']['end_date']==end_date):
+
             buckets_summary = self.outcome['buckets_summary']
         else:
             buckets_outcome = self.get_buckets_timeseries(start_date, end_date)
@@ -296,7 +291,10 @@ class WaterbalanceComputer2:
             series
 
         This method returns a tuple that contains
-          1. a dictionary with all flows directly related to open water (rainfall, evaporation and seepage).
+          1. a dictionary with all flows directly related to open water
+            - rainfall
+            - evaporation
+            - seepage
 
         """
         if (self.outcome.has_key('vertical_open_water') and self.outcome_info['vertical_open_water']['start_date']==start_date and self.outcome_info['vertical_open_water']['end_date']==end_date):
@@ -308,11 +306,13 @@ class WaterbalanceComputer2:
             # variable of the open water. Apparently the variable is a constant
             # so we just fill it in.
             crop_evaporation_factor = 1.0
-            outcome = self.vertical_timeseries_computer.compute(self.configuration.open_water.surface,
-                                                                            crop_evaporation_factor,
-                                                                            input['precipitation'],
-                                                                            transform_evaporation_timeseries_penman_to_makkink(input['evaporation']), #place this function to VerticalComputer()
-                                                                            input['seepage'])#seepage nog general, but specific for buckets and openwater
+            outcome = self.vertical_timeseries_computer.compute(
+                self.configuration.open_water.surface,
+                crop_evaporation_factor,
+                input['precipitation'],
+                transform_evaporation_timeseries_penman_to_makkink(
+                    input['evaporation']), #place this function to VerticalComputer()
+                input['seepage'])#seepage nog general, but specific for buckets and openwater
 
             #store for later use (some kind of cache)
             self.outcome['vertical_open_water'] = outcome
@@ -332,7 +332,10 @@ class WaterbalanceComputer2:
             series
 
         This method returns a tuple that contains
-          1. a dictionary with all flows directly related to open water (rainfall, evaporation and seepage).
+          1. a dictionary with all flows directly related to open water
+            - rainfall
+            - evaporation
+            - seepage
 
             TO DO: enddate startdate storage
         """
@@ -346,17 +349,16 @@ class WaterbalanceComputer2:
 
             #to do: label timeseries
             outcome = self.level_control_computer.compute(
-                                                                self.configuration.open_water,
-                                                                buckets_summary,
-                                                                vertical_open_water_timeseries["precipitation"],
-                                                                vertical_open_water_timeseries["evaporation"],
-                                                                vertical_open_water_timeseries["seepage"],
-                                                                vertical_open_water_timeseries["infiltration"],
-                                                                input['open_water']['minimum_level'],
-                                                                input['open_water']['maximum_level'],
-                                                                input['incoming_timeseries'],
-                                                                input['outgoing_timeseries'])
-
+                self.configuration.open_water,
+                buckets_summary,
+                vertical_open_water_timeseries["precipitation"],
+                vertical_open_water_timeseries["evaporation"],
+                vertical_open_water_timeseries["seepage"],
+                vertical_open_water_timeseries["infiltration"],
+                input['open_water']['minimum_level'],
+                input['open_water']['maximum_level'],
+                input['incoming_timeseries'],
+                input['outgoing_timeseries'])
 
             #devide flow over pumpingstation
             #pumping_stations = self.configuration.open_water.pumping_stations.all()
@@ -374,7 +376,17 @@ class WaterbalanceComputer2:
 
 
     def get_open_water_incoming_flows(self, start_date, end_date):
-        """ Returns incoming waterflows """
+        """ Return incoming waterflows.
+
+        - precipitation
+        - seepage
+        - drained
+        - flow_off
+        - undrained
+        - hardened
+        - defined_input
+        - computed_intake
+        """
 
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
@@ -398,7 +410,14 @@ class WaterbalanceComputer2:
 
 
     def get_open_water_outgoing_flows(self, start_date, end_date):
-        """ Returns outgoing waterflows """
+        """ Return outgoing waterflows
+
+        - evaporation
+        - infiltration
+        - indraft
+        - defined_output
+        - computed_pumps
+        """
 
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
@@ -586,7 +605,6 @@ class WaterbalanceComputer2:
 
         return result_timeseries
 
-
     def get_fraction_timeseries(self, start_date, end_date):
         """return fractions in openwater
         Args:
@@ -598,6 +616,7 @@ class WaterbalanceComputer2:
 
         This method returns a tuple that contains
           1. a dictionary with reference timeseries
+            - fraction_water
 
             TO DO: enddate startdate storage
         """
@@ -680,6 +699,25 @@ class WaterbalanceComputer2:
         return input, buckets, buckets_summary, vertical_openwater, level_control, reference_timeseries, sluice_error, fractions #uitbreiden
 
 
+# class WaterbalanceOutcome:
+#    """Contains the computed time series that are part of a waterbalance.
+
+#    Instance variables:
+#    * open_water_timeseries -- dictionary that contains the summed discharges of the buckets to and from the open water
+#    * open_water_fractions -- dictionary that contains the fractions of the discharges of the buckets to and from the open water
+#    * level_control_assignment -- dictionary that contains the level control time series
+#    * intake_fractions -- dictionary that contains the fractions of all the intakes and pumps
+
+#    """
+
+#    def __init__(self):
+
+#        self.open_water_timeseries = {}
+#        self.level_control_assignment = {}
+#        self.open_water_fractions = {}
+#        self.intake_fractions = {}
+
+
 class WaterbalanceComputer:
     """Computes the waterbalance time series for a given area."""
 
@@ -699,7 +737,7 @@ class WaterbalanceComputer:
         """
         self.store_timeserie = lambda m, n, t: None
         if buckets_computer is None:
-            self.buckets_computer = BucketsComputer()
+            self.buckets_computer = BucketComputer()
         else:
             self.buckets_computer = buckets_computer
         if level_control_computer is None:

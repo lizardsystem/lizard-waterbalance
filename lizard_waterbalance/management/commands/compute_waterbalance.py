@@ -62,7 +62,7 @@ def retrieve_timeseries(timeseries_retriever, name, start_date, end_date):
             break
     return timeseries
 
-def create_waterbalance_computer(area_slug, start_date, end_date, filename):
+def create_waterbalance_computer(configuration, start_date, end_date, filename):
     """Return a WaterbalanceConf and a WaterbalanceComputer for it
 
     The Waterbalancecomputer has some of its input data hard coded.
@@ -77,7 +77,7 @@ def create_waterbalance_computer(area_slug, start_date, end_date, filename):
     timeseries_retriever = TimeseriesRetriever()
     timeseries_retriever.read_timeseries(filename)
 
-    configuration = WaterbalanceConf.objects.filter(slug=area_slug)[0]
+    #configuration = WaterbalanceConf.objects.filter(slug=area_slug)[0]
     assert not configuration is None
 
     configuration.retrieve_precipitation = lambda s,e: retrieve_timeseries(timeseries_retriever, "precipitation", start_date, end_date)

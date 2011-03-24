@@ -147,7 +147,7 @@ def waterbalance_graph_data(
         fews_data_filename = pkg_resources.resource_filename(
             "lizard_waterbalance", "testdata/timeserie.csv")
         waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-            conf.waterbalance_area, start_datetime, end_datetime, fews_data_filename)
+            conf, start_datetime, end_datetime, fews_data_filename)
         # waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
         # waterbalance_area = WaterbalanceConf.objects.get(slug=area)
         bucket2outcome, level_control, outcome = waterbalance_computer.compute(
@@ -404,15 +404,19 @@ def waterbalance_area_graph(
 
     wb_computer = WaterbalanceComputer2(conf)
 
-    incoming = wb_computer.get_open_water_incoming_flows(start_datetime, end_datetime)
+    incoming = wb_computer.get_open_water_incoming_flows(
+        start_datetime, end_datetime)
     incoming_bars = [("verhard", incoming["hardened"]),
                      ("gedraineerd", incoming["drained"]),
                      ("afstroming", incoming["flow_off"]),
                      ("uitspoeling", incoming["undrained"]),
                      ("neerslag", incoming["precipitation"]),
                      ("kwel", incoming["seepage"])]
-    incoming_bars += [(structure.name, timeserie) for structure, timeserie in incoming['defined_input'].items()]
-    incoming_bars.append(("peilhandhaving inlaat", incoming["computed_intake"]))
+    incoming_bars += [
+        (structure.name, timeserie) for structure, timeserie in
+        incoming['defined_input'].items()]
+    incoming_bars.append(
+        ("peilhandhaving inlaat", incoming["computed_intake"]))
 
     t1 = time.time()
 
@@ -580,14 +584,48 @@ def waterbalance_water_level(request,
     canvas.print_png(response)
     return response
 
+
+def fraction_distribution(
+    conf, period, start_date, end_date, width, height):
+    """
+    Draw graph for given configuration for chloride or phosphate.
+    """
+    # Fetch needed data
+    wb_computer = WaterbalanceComputer2(conf)
+    wb_timeseries = wb_computer.get_input_timeseries(start_date, end_date)
+
+    substance = Concentration.SUBSTANCE_CHLORIDE
+    title = "Fractieverdeling xxx"
+
+    # We need in this order on axis 1: berging, neerslag, kwel, verhard,
+    # gedraineerd, ongedraineerd, afstroming, <intakes with
+    # computed_level_control=False>, <intakes with
+    # computed_level_control=True>
+
+    # Axis 2: Computed substance levels, measured substance levels in
+    # present.
+
+
+    # Draw graph
+    graph = Graph(start_date, end_date, width, height)
+    ax2 = graph.axes.twinx()
+    graph.suptitle(title)
+
+    canvas = FigureCanvas(graph.figure)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
+
+
 #@profile("waterbalance_fraction_distribution.prof")
 def waterbalance_fraction_distribution(
-    name, conf, graph_type,
-    period, start_date, end_date, width, height):
+    name, conf, graph_type, period,
+    start_date, end_date, start_datetime, end_datetime,
+    width, height):
     """Draw the graph for the given area and of the given type."""
 
-    krw_graph = Graph(start_date, end_date, width, height)
-    ax2 = krw_graph.axes.twinx()
+    graph = Graph(start_date, end_date, width, height)
+    ax2 = graph.axes.twinx()
 
     if graph_type == 'fracties_chloride':
         substance = Concentration.SUBSTANCE_CHLORIDE
@@ -599,47 +637,50 @@ def waterbalance_fraction_distribution(
         title += "chloride"
     else:
         title += "fosfaat"
-    krw_graph.suptitle(title)
+    graph.suptitle(title)
 
     bar_width = BAR_WIDTH[period]
 
-    outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
-    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
+    wb_computer = WaterbalanceComputer2(conf)
+    wb_timeseries = wb_computer.get_input_timeseries(start_date, end_date)
+    # outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
+
+    # conf = WaterbalanceConf.objects.get(slug=area)
 
     t1 = time.time()
 
     bars = [("berging", outcome.open_water_fractions["initial"], None),
             ("neerslag",
              outcome.open_water_fractions["precipitation"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='neerslag').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='neerslag').minimum),
             ("kwel",
              outcome.open_water_fractions["seepage"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='kwel').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='kwel').minimum),
             ("verhard",
              outcome.open_water_fractions["hardened"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='verhard').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='verhard').minimum),
             ("gedraineerd",
              outcome.open_water_fractions["drained"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='gedraineerd').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='gedraineerd').minimum),
             ("ongedraineerd",
              outcome.open_water_fractions["undrained"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='ongedraineerd').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='ongedraineerd').minimum),
             ("afstroming",
              outcome.open_water_fractions["flow_off"],
-             waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact='afstroming').minimum),
+             conf.concentrations.get(substance__exact=substance, flow_name__iexact='afstroming').minimum),
             ]
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
     for intake in intakes.order_by('name'):
         bars.append((intake.name,
                      outcome.intake_fractions[intake],
-                     waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+                     conf.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
 
     intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
     for intake in intakes.order_by('name'):
         bars.append((intake.name,
                      outcome.intake_fractions[intake],
-                     waterbalance_configuration.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+                     conf.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
 
     names = [bar[0] for bar in bars]
     if substance == Concentration.SUBSTANCE_CHLORIDE:
@@ -657,9 +698,10 @@ def waterbalance_fraction_distribution(
     substance_name = names[-1]
     names.append(substance_name + " meting")
 
-    krw_graph.legend_space()
-    krw_graph.legend(handles, names)
+    graph.legend_space()
+    graph.legend(handles, names)
 
+    # Now draw the graph
     times = []
     values = []
     top_height = TopHeight()
@@ -674,28 +716,32 @@ def waterbalance_fraction_distribution(
 
         color = '#' + label.color
         bottom = top_height.get_heights(times)
-        krw_graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
+        graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                            bottom=bottom)
         top_height.stack_bars(times, values)
 
-    fractions_list = [bar[1] for bar in bars[1:]]
-    concentrations = [bar[2] for bar in bars[1:]]
+    # Skipping berging/initial??
+    fractions_list = [bar[1] for bar in bars[1:]]  # TimeseriesStubs
+    concentrations = [bar[2] for bar in bars[1:]]  # minimum concentrations
 
+    # Draw axis 2
     # show the computed substance levels
-    substance_timeseries = ConcentrationComputer().compute(fractions_list,
-                                                           outcome.open_water_timeseries["storage"],
-                                                           concentrations)
-    times, values = get_average_timeseries(substance_timeseries, start_datetime, end_datetime,
-                                           period=period)
+    substance_timeseries = ConcentrationComputer().compute(
+        fractions_list,
+        outcome.open_water_timeseries["storage"],
+        concentrations)
+    times, values = get_average_timeseries(
+        substance_timeseries, start_datetime, end_datetime,
+        period=period)
 
     ax2.plot(times, values, 'k-')
 
     # show the measured substance levels when they are present
     try:
         if substance == Concentration.SUBSTANCE_CHLORIDE:
-            substance_timeseries = waterbalance_configuration.chloride
+            substance_timeseries = conf.chloride
         else:
-            substance_timeseries = waterbalance_configuration.phosphate
+            substance_timeseries = conf.phosphate
         times, values = get_average_timeseries(substance_timeseries,
                                                start_datetime,
                                                end_datetime,
@@ -709,24 +755,28 @@ def waterbalance_fraction_distribution(
 
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
 
-    canvas = FigureCanvas(krw_graph.figure)
+    canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
 
 
 def waterbalance_phosphate_impact(
-    name, conf, period, start_date, end_date, width, height):
+    name, conf, period, start_date, end_date, start_datetime, end_datetime,
+    width, height):
     """Draw the graph for the given area and of the given type."""
 
-    krw_graph = Graph(start_date, end_date, width, height)
+    graph = Graph(start_date, end_date, width, height)
 
-    krw_graph.suptitle("Fosfaatbelasting [mg/m2]")
+    graph.suptitle("Fosfaatbelasting [mg/m2]")
 
     bar_width = BAR_WIDTH[period]
     stopwatch_start = datetime.datetime.now()
     # logger.debug('Started waterbalance_phosphate_impact at %s' %
     #              stopwatch_start)
+
+    # wb_computer = WaterbalanceComputer2(conf)
+    # wb_timeseries = wb_computer.
 
     outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
 
@@ -754,21 +804,33 @@ def waterbalance_phosphate_impact(
                  (datetime.datetime.now() - stopwatch_start))
 
     # Add intakes to bars
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
+    intakes = PumpingStation.objects.filter(
+        into=True, computed_level_control=False)
     for intake in intakes.order_by('name'):
-        bars.append((intake.name + " (incr)",
-                     intake.name + " (min)",
-                     intake.retrieve_sum_timeseries(),
-                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+        bars.append(
+            (intake.name + " (incr)",
+             intake.name + " (min)",
+             intake.retrieve_sum_timeseries(),
+             conf.concentrations.get(
+                    substance__exact=phosphate,
+                    flow_name__iexact=intake.name).increment,
+             conf.concentrations.get(
+                    substance__exact=phosphate,
+                    flow_name__iexact=intake.name).minimum))
 
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
+    intakes = PumpingStation.objects.filter(
+        into=True, computed_level_control=True)
     for intake in intakes.order_by('name'):
-        bars.append((intake.name + " (incr)",
-                     intake.name + " (min)",
-                     outcome.level_control_assignment[intake],
-                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).increment,
-                     conf.concentrations.get(substance__exact=phosphate, flow_name__iexact=intake.name).minimum))
+        bars.append(
+            (intake.name + " (incr)",
+             intake.name + " (min)",
+             outcome.level_control_assignment[intake],
+             conf.concentrations.get(
+                    substance__exact=phosphate,
+                    flow_name__iexact=intake.name).increment,
+             conf.concentrations.get(
+                    substance__exact=phosphate,
+                    flow_name__iexact=intake.name).minimum))
 
     logger.debug('2: Got intakes %s' %
                  (datetime.datetime.now() - stopwatch_start))
@@ -777,8 +839,8 @@ def waterbalance_phosphate_impact(
     colors = ['#' + get_timeseries_label(name).color for name in names]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
-    krw_graph.legend_space()
-    krw_graph.legend(handles, names)
+    graph.legend_space()
+    graph.legend(handles, names)
 
     open_water = conf.open_water
 
@@ -815,7 +877,7 @@ def waterbalance_phosphate_impact(
 
             color = '#' + label.color
             bottom = top_height.get_heights(times)
-            krw_graph.axes.bar(
+            graph.axes.bar(
                 times, values, bar_width, color=color, edgecolor=color,
                 bottom=bottom)
             top_height.stack_bars(times, values)
@@ -823,7 +885,7 @@ def waterbalance_phosphate_impact(
     logger.debug('3: Got axes %s' %
                  (datetime.datetime.now() - stopwatch_start))
 
-    canvas = FigureCanvas(krw_graph.figure)
+    canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
 
@@ -870,11 +932,14 @@ def waterbalance_area_graphs(request,
     elif graph_type == 'fracties_chloride' or graph_type == 'fracties_fosfaat':
         return waterbalance_fraction_distribution(
             name, conf, graph_type, period, start_date, end_date,
+            start_datetime, end_datetime,
             width, height)
+        # return fraction_distribution(
+        #     conf, period, start_date, end_date, width, height)
     elif graph_type == 'fosfaatbelasting':
         return waterbalance_phosphate_impact(
-            name, conf, graph_type, period, start_date, end_date,
-            width, height)
+            name, conf, period, start_date, end_date,
+            start_datetime, end_datetime, width, height)
 
 
 def waterbalance_shapefile_search(request):
