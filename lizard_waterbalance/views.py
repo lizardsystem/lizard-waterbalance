@@ -589,6 +589,8 @@ def fraction_distribution(
     conf, period, start_date, end_date, width, height):
     """
     Draw graph for given configuration for chloride or phosphate.
+
+    UNFINISHED.
     """
     # Fetch needed data
     wb_computer = WaterbalanceComputer2(conf)
@@ -642,45 +644,50 @@ def waterbalance_fraction_distribution(
     bar_width = BAR_WIDTH[period]
 
     wb_computer = WaterbalanceComputer2(conf)
-    wb_timeseries = wb_computer.get_input_timeseries(start_date, end_date)
-    # outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
-
-    # conf = WaterbalanceConf.objects.get(slug=area)
+    wb_timeseries = wb_computer.get_fraction_timeseries(
+        start_datetime, end_datetime)
 
     t1 = time.time()
 
-    bars = [("berging", outcome.open_water_fractions["initial"], None),
-            ("neerslag",
-             outcome.open_water_fractions["precipitation"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='neerslag').minimum),
-            ("kwel",
-             outcome.open_water_fractions["seepage"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='kwel').minimum),
-            ("verhard",
-             outcome.open_water_fractions["hardened"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='verhard').minimum),
-            ("gedraineerd",
-             outcome.open_water_fractions["drained"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='gedraineerd').minimum),
-            ("ongedraineerd",
-             outcome.open_water_fractions["undrained"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='ongedraineerd').minimum),
-            ("afstroming",
-             outcome.open_water_fractions["flow_off"],
-             conf.concentrations.get(substance__exact=substance, flow_name__iexact='afstroming').minimum),
+    # (Temp) removed concentrations from bar[2]. 'neerslag', 'kwel',
+    # 'verhard', 'gedraineerd', 'ongedraineerd', 'afstroming'
+
+    # conf.concentrations.get(
+    #     substance__exact=substance,
+    #     flow_name__iexact='neerslag').minimum),
+
+    bars = [("berging", wb_timeseries["initial"]),
+            ("neerslag", wb_timeseries["precipitation"]),
+            ("kwel", wb_timeseries["seepage"]),
+            ("verhard", wb_timeseries["hardened"]),
+            ("gedraineerd", wb_timeseries["drained"]),
+            ("ongedraineerd", wb_timeseries["undrained"]),
+            ("afstroming", wb_timeseries["flow_off"]),
             ]
 
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=False)
+    intakes = PumpingStation.objects.filter(
+        into=True, computed_level_control=False)
+    # Temp removed
+    # conf.concentrations.get(
+    #        substance__exact=substance,
+    #        flow_name__iexact=intake.name).minimum)
     for intake in intakes.order_by('name'):
-        bars.append((intake.name,
-                     outcome.intake_fractions[intake],
-                     conf.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+        bars.append(
+            (intake.name,
+             # outcome.intake_fractions[intake],
+             wb_timeseries['intakes'][intake]))
 
-    intakes = PumpingStation.objects.filter(into=True, computed_level_control=True)
-    for intake in intakes.order_by('name'):
-        bars.append((intake.name,
-                     outcome.intake_fractions[intake],
-                     conf.concentrations.get(substance__exact=substance, flow_name__iexact=intake.name).minimum))
+    # intakes = PumpingStation.objects.filter(
+    #     into=True, computed_level_control=True)
+    # # Temp removed
+    # # conf.concentrations.get(
+    # #        substance__exact=substance,
+    # #        flow_name__iexact=intake.name).minimum)
+    # for intake in intakes.order_by('name'):
+    #     bars.append(
+    #         (intake.name,
+    #          # outcome.intake_fractions[intake],
+    #          wb_timeseries['intakes'][intake]))
 
     names = [bar[0] for bar in bars]
     if substance == Concentration.SUBSTANCE_CHLORIDE:
@@ -708,8 +715,9 @@ def waterbalance_fraction_distribution(
     for bar in bars:
 
         label = get_timeseries_label(bar[0])
-        times, values = get_average_timeseries(bar[1], start_datetime, end_datetime,
-                                               period=period)
+        times, values = get_average_timeseries(
+            bar[1], start_datetime, end_datetime,
+            period=period)
 
         # add the following keyword argument to give the bar edges the same
         # color as the bar itself: edgecolor='#' + label.color
@@ -722,34 +730,34 @@ def waterbalance_fraction_distribution(
 
     # Skipping berging/initial??
     fractions_list = [bar[1] for bar in bars[1:]]  # TimeseriesStubs
-    concentrations = [bar[2] for bar in bars[1:]]  # minimum concentrations
+    #concentrations = [bar[2] for bar in bars[1:]]  # minimum concentrations
 
     # Draw axis 2
     # show the computed substance levels
-    substance_timeseries = ConcentrationComputer().compute(
-        fractions_list,
-        outcome.open_water_timeseries["storage"],
-        concentrations)
-    times, values = get_average_timeseries(
-        substance_timeseries, start_datetime, end_datetime,
-        period=period)
+    # substance_timeseries = ConcentrationComputer().compute(
+    #     fractions_list,
+    #     outcome.open_water_timeseries["storage"],
+    #     concentrations)
+    # times, values = get_average_timeseries(
+    #     substance_timeseries, start_datetime, end_datetime,
+    #     period=period)
 
-    ax2.plot(times, values, 'k-')
+    # ax2.plot(times, values, 'k-')
 
     # show the measured substance levels when they are present
-    try:
-        if substance == Concentration.SUBSTANCE_CHLORIDE:
-            substance_timeseries = conf.chloride
-        else:
-            substance_timeseries = conf.phosphate
-        times, values = get_average_timeseries(substance_timeseries,
-                                               start_datetime,
-                                               end_datetime,
-                                               period=period)
-        ax2.plot(times, values, 'k-')
-    except AttributeError:
-        logger.warning("Unable to retrieve measured time series for %s",
-                       substance_name)
+    # try:
+    #     if substance == Concentration.SUBSTANCE_CHLORIDE:
+    #         substance_timeseries = conf.chloride
+    #     else:
+    #         substance_timeseries = conf.phosphate
+    #     times, values = get_average_timeseries(substance_timeseries,
+    #                                            start_datetime,
+    #                                            end_datetime,
+    #                                            period=period)
+    #     ax2.plot(times, values, 'k-')
+    # except AttributeError:
+    #     logger.warning("Unable to retrieve measured time series for %s",
+    #                    substance_name)
 
     t2 = time.time()
 
