@@ -9,9 +9,9 @@ DATABASES = {
     'default': { #postgres testdatabase at N&S
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'HOST': '127.0.0.1',
-        'NAME': 'waterbalance',
-        'USER': 'buildout',
-        'PASSWORD': 'buildout'
+        'NAME': 'krw_test',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres'
         },
     }
 

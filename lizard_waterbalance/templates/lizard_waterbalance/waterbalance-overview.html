@@ -19,7 +19,7 @@
   <ul class="without-bullets">
     {% for conf in waterbalance_configurations %}
     <li>
-      <a href="{{ conf.get_absolute_url }}">{{ conf.waterbalance_area.name }}</a>
+      <a href="{{ conf.get_absolute_url }}">{{ conf.waterbalance_area.name }} - {{ conf.waterbalance_scenario.name }}</a>
     </li>
     {% endfor %}
   </ul>

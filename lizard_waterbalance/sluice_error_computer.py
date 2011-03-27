@@ -26,14 +26,21 @@
 #******************************************************************************
 
 from timeseries.timeseriesstub import add_timeseries
-from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import TimeseriesStub
 
 
 class SluiceErrorComputer:
     "Implements the functionality to compute the sluice error."""
 
-    def compute(self, open_water, level_control, start_date, end_date):
+    def compute(self,
+            open_water,            
+            calc_intake,
+            calc_outtake,
+            ref_intakes,
+            ref_outtakes,
+            start_date_calc, 
+            end_date_calc):
         """Compute and return the sluice error.
 
         The sluice error on a specific day is defined as the sum of the
@@ -55,16 +62,29 @@ class SluiceErrorComputer:
             error
 
         """
+        
+        total_meas_outtakes = TimeseriesStub()
         sluice_error_timeseries = TimeseriesStub()
-        self.open_water = open_water
-        self.start_date = start_date
-        self.end_date = end_date
-        measured_timeseries = self._retrieve_measured_timeseries()
-        computed_timeseries = self._retrieve_computed_timeseries(level_control)
-        for events in enumerate_events(computed_timeseries, measured_timeseries):
-            date = events[0][0]
-            sluice_error_timeseries.add_value(date, events[0][1] - events[1][1])
-        return sluice_error_timeseries
+        #sluice_error_intake = TimeseriesStub()
+        #sluice_error_outtake = TimeseriesStub()
+        
+        ts = {
+        'calc_intake':calc_intake,
+        'calc_outtake':calc_outtake,
+        'total_intakes':add_timeseries(*ref_intakes.values()),
+        'total_outtakes':add_timeseries(*ref_outtakes.values())}
+        
+        for events in enumerate_dict_events(ts):
+            date = events['date']
+            intake = events['calc_intake'][1] - events['total_intakes'][1]
+            outtake = events['calc_outtake'][1] + events['total_outtakes'][1]
+            total = outtake - intake
+            sluice_error_timeseries.add_value(date, total)
+            #sluice_error_intake.add_value(date, intake)
+            #sluice_error_outtake.add_value(date, outtake)
+            total_meas_outtakes.add_value(date, -1*events['total_outtakes'][1])    
+         
+        return sluice_error_timeseries, total_meas_outtakes #, sluice_error_intake, sluice_error_outtake
 
     def _retrieve_measured_timeseries(self):
         """Return the single time series of measured incoming and

@@ -34,36 +34,43 @@ from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
 
-class ConcentrationComputer:
+class LoadComputer:
 
     def compute(self, 
-                fractions_dict, concentration_dict,
+                flow_dict, concentration_dict,
                 start_date, end_date):
         """Compute and return the concentration time series.
 
         Parameters:
-        * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
+        * flow_list -- dict of incoming waterflows
         * concentration_list -- dict of label keys with concentration values in [mg/l]
-        
-        Computation is based on constant concentration of the fractions
+
+
         """
-          
-       
-        timeseries = TimeseriesStub()
-        for events in enumerate_dict_events(fractions_dict):
+           
+        loads = {}
+        
+        first_ts = True
+        for events in enumerate_dict_events(flow_dict):
             date = events['date']
             del(events['date'])
-            concentration = 0
             for key, value in events.items():
                 if key in ['intakes', 'defined_input']:
                     for key_intake, value_intake in value.items():
                         if key_intake == 'intake_wl_control':
-                            concentration += value_intake[1] * concentration_dict[key_intake]
+                            concentration = value_intake[1] * concentration_dict[key_intake]
+                            label = 'intake_wl_control'
                         else:
-                            concentration += value_intake[1] * concentration_dict[key_intake.label.program_name]
+                            concentration = value_intake[1] * concentration_dict[key_intake.label.program_name]
+                            label = key_intake.label.program_name
                 else:
-                    concentration += value[1] * concentration_dict[key]
+                    label = key
+                    concentration = value[1] * concentration_dict[key]
             
-            timeseries.add_value(date, concentration)
+                if first_ts:
+                    loads[label] = TimeseriesStub()
+                
+                loads[label].add_value(date, concentration)
+            first_ts = False
 
-        return timeseries
+        return loads

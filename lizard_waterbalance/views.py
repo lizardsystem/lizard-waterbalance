@@ -27,8 +27,6 @@ from lizard_map.daterange import current_start_end_dates
 from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.concentration_computer import ConcentrationComputer
-from lizard_waterbalance.management.commands.compute_waterbalance import create_waterbalance_computer
 #from lizard_waterbalance.forms import WaterbalanceAreaEditForm
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
@@ -37,12 +35,16 @@ from lizard_waterbalance.forms import create_location_label
 from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceScenario
 from lizard_waterbalance.models import WaterbalanceConf
-from lizard_waterbalance.models import WaterbalanceLabel
+from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.models import Parameter
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
+from timeseries.timeseriesstub import cumulative_event_values
 from timeseries.timeseriesstub import multiply_timeseries
+from timeseries.timeseriesstub import split_timeseries
 
 import hotshot
 import os
@@ -114,14 +116,18 @@ IMPLEMENTED_GRAPH_TYPES = (
     'waterbalans',
     'waterpeil',
     'waterpeil_met_sluitfout',
+    'cumulatief_debiet',
     'fracties_chloride',
-    'fracties_fosfaat',
+    #'fracties_fosfaat',
     'fosfaatbelasting',
     )
 BAR_WIDTH = {'year': 364,
              'quarter': 90,
              'month': 30,
              'day': 1}
+
+colors_list = ['blue', 'red', 'yellow', 'green', 'black', 'grey', 'purple', 'pink']
+
 # Exceptions for boolean fields: used in tab edit forms.
 # Key is the field name, value is text used for (True, False).
 TRUE_FALSE_EXCEPTIONS = {
@@ -129,37 +135,6 @@ TRUE_FALSE_EXCEPTIONS = {
     }
 
 logger = logging.getLogger(__name__)
-
-
-def waterbalance_graph_data(
-    conf,
-    start_datetime, end_datetime, recalculate=False):
-
-    """Return the outcome needed for drawing the waterbalance graphs.
-
-    Result is a compute.WaterbalanceOutcome object.
-
-    """
-    cache_key = '%s_%s_%s' % (conf, start_datetime, end_datetime)
-    t1 = time.time()
-    result = cache.get(cache_key)
-    if (result is None) or recalculate:
-        fews_data_filename = pkg_resources.resource_filename(
-            "lizard_waterbalance", "testdata/timeserie.csv")
-        waterbalance_area, waterbalance_computer = create_waterbalance_computer(
-            conf, start_datetime, end_datetime, fews_data_filename)
-        # waterbalance_computer = WaterbalanceComputer(store_timeserie=lambda m, n, t: None)
-        # waterbalance_area = WaterbalanceConf.objects.get(slug=area)
-        bucket2outcome, level_control, outcome = waterbalance_computer.compute(
-            waterbalance_area, start_datetime, end_datetime)
-        result = outcome
-        cache.set(cache_key, result, 8 * 60 * 60)
-        logger.debug("Stored waterbalance graph data in cache for %s", cache_key)
-    else:
-        logger.debug("Got waterbalance graph data from cache")
-    t2 = time.time()
-    logger.debug("Grabbing waterbalance data took %s seconds.", t2 - t1)
-    return result
 
 
 class TopHeight:
@@ -238,9 +213,21 @@ def waterbalance_start(
 
     special_homepage_workspace = \
         get_object_or_404(Workspace, pk=WATERBALANCE_HOMEPAGE_KEY)
+        
+    
+    waterbalance_configurations = WaterbalanceConf.objects.filter(waterbalance_area__active=True,
+                                                                  waterbalance_scenario__active=True
+                                                                  ).order_by(
+                                                                      'waterbalance_area__name',
+                                                                      'waterbalance_scenario__order'
+                                                                      ).select_related(
+                                                                            'WaterbalanceArea', 
+                                                                            'WaterbalanceScenario')
+    #TO DO: waterbalance_configurations verder filteren op basis scenario__public op basis van gebruikersrechten
+    
     return render_to_response(
         template,
-        {'waterbalance_configurations': WaterbalanceConf.objects.all(),
+        {'waterbalance_configurations': waterbalance_configurations,
          'workspaces': {'user': [special_homepage_workspace]},
          'javascript_hover_handler': 'popup_hover_handler',
          'javascript_click_handler': 'waterbalance_area_click_handler',
@@ -327,6 +314,36 @@ def get_timeseries(timeseries, start, end, period='month'):
                  if e[0] >= start and e[0] < end))
 
 
+def split_date_value(timeseries):
+    """Return iterator with split date and time
+
+    Aggregation function is sum.
+    Optional: take average.
+    """
+    groupers = {'year': _first_of_year,
+                'month': _first_of_month,
+                'quarter': _first_of_quarter,
+                'day': _first_of_day}
+    grouper = groupers.get(period)
+    assert grouper is not None
+
+    for date, event in timeseries.raw_events():
+         yield date, event
+
+def get_raw_timeseries(timeseries, start, end):
+    """Return the events for the given timeseries in the given range.
+
+    Parameters:
+    * timeseries -- implementation of a time series that supports a method events()
+    * start -- the earliest date (and/or time) of a returned event
+    * end -- the latest date (and/or time) of a returned event
+    * period -- 'year', 'month' or 'day'
+
+    """
+    return zip(*(e for e in timeseries.raw_events()
+                 if e[0] >= start and e[0] < end))
+
+
 def get_average_timeseries(timeseries, start, end, period='month'):
     """Return the events for the given timeseries in the given range.
 
@@ -340,6 +357,19 @@ def get_average_timeseries(timeseries, start, end, period='month'):
     return zip(*(e for e in grouped_event_values(timeseries, period, average=True)
                  if e[0] >= start and e[0] < end))
 
+def get_cumulative_timeseries(timeseries, start, end, reset_period='year', period='month', multiply=1):
+    """Return the events for the given timeseries in the given range.
+
+    Parameters:
+    * timeseries -- implementation of a time series that supports a method events()
+    * start -- the earliest date (and/or time) of a returned event
+    * end -- the latest date (and/or time) of a returned event
+    * period -- 'year', 'month' or 'day'
+
+    """
+    return zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply)
+                 if e[0] >= start and e[0] < end))
+
 
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name.
@@ -349,10 +379,10 @@ def get_timeseries_label(name):
 
     """
     try:
-        label = WaterbalanceLabel.objects.get(name__iexact=name)
-    except WaterbalanceLabel.DoesNotExist:
+        label = Label.objects.get(name__iexact=name)
+    except Label.DoesNotExist:
         logger.warning("Unable to retrieve the WaterbalanceLabel '%s'", name)
-        label = WaterbalanceLabel()
+        label = Label()
         label.color = "000000"
     return label
 
@@ -382,10 +412,11 @@ def retrieve_horizon(request):
 
 # @profile("waterbalance_area_graph.prof")
 def waterbalance_area_graph(
-    conf,
-    period,
-    start_date, end_date,
-    start_datetime, end_datetime,
+    configuration, 
+    waterbalance_computer, 
+    start_date, 
+    end_date, 
+    period, 
     width, height):
     """Draw the graph for the given area and of the given type.
 
@@ -397,62 +428,107 @@ def waterbalance_area_graph(
     """
 
     graph = Graph(start_date, end_date, width, height)
-
     graph.suptitle("Waterbalans [m3]")
-
     bar_width = BAR_WIDTH[period]
 
-    wb_computer = WaterbalanceComputer2(conf)
+    t1 = time.time()
+    
+    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    
+    #collect all data
+    incoming = waterbalance_computer.get_open_water_incoming_flows(
+        date2datetime(start_date), date2datetime(end_date))
+    sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(date2datetime(start_date), date2datetime(end_date))
+    outgoing = waterbalance_computer.get_open_water_outgoing_flows(date2datetime(start_date), date2datetime(end_date))
 
-    incoming = wb_computer.get_open_water_incoming_flows(
-        start_datetime, end_datetime)
-    incoming_bars = [("verhard", incoming["hardened"]),
-                     ("gedraineerd", incoming["drained"]),
-                     ("afstroming", incoming["flow_off"]),
-                     ("uitspoeling", incoming["undrained"]),
-                     ("neerslag", incoming["precipitation"]),
-                     ("kwel", incoming["seepage"])]
+    
+    #define bars, withour sluice error
+    incoming_bars = []
+    
+    incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened']),
+                     (labels["drained"].name, incoming["drained"], labels['drained']),
+                     (labels["flow_off"].name, incoming["flow_off"], labels['flow_off']),
+                     (labels["undrained"].name, incoming["undrained"], labels['undrained']),
+                     (labels["precipitation"].name, incoming["precipitation"], labels['precipitation']),
+                     (labels["seepage"].name, incoming["seepage"], labels['seepage'])]
+     
     incoming_bars += [
-        (structure.name, timeserie) for structure, timeserie in
+        (structure.name, timeserie,structure.label) for structure, timeserie in
         incoming['defined_input'].items()]
     incoming_bars.append(
-        ("peilhandhaving inlaat", incoming["computed_intake"]))
-
-    t1 = time.time()
-
-    outgoing = wb_computer.get_open_water_outgoing_flows(start_datetime, end_datetime)
+        (labels['intake_wl_control'].name, incoming["intake_wl_control"], labels['intake_wl_control']))
 
     outgoing_bars = [
-        ("intrek", outgoing["indraft"]),
-        ("verdamping", outgoing["evaporation"]),
-        ("wegzijging", outgoing["infiltration"]),
+        (labels["indraft"].name, outgoing["indraft"], labels['indraft']),
+        (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation']),
+        (labels["infiltration"].name, outgoing["infiltration"], labels['infiltration'])
          ]
 
-    outgoing_bars += [(structure.name, timeserie) for structure, timeserie in outgoing['defined_output'].items()]
-    outgoing_bars.append(("peilhandhaving uitlaat", outgoing["computed_pumps"]))
-
-    names = [bar[0] for bar in incoming_bars + outgoing_bars]
-    colors = ['#' + get_timeseries_label(name).color for name in names]
+    outgoing_bars += [(structure.name, timeserie, structure.label) for structure, timeserie in outgoing['defined_output'].items()]
+    outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
+    
+    #sort
+    incoming_bars = sorted(incoming_bars, key=lambda bar: -bar[2].order)
+    outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
+    
+    #define legend
+    names = ["sluitfout t.o.v. gemaal"] + [bar[0] for bar in incoming_bars + outgoing_bars]
+    colors = [labels['sluice_error'].color] + [bar[2].color for bar in incoming_bars + outgoing_bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
-
     graph.legend_space()
     graph.legend(handles, names)
-
-    for bars in [incoming_bars, outgoing_bars]:
-        top_height = TopHeight()
+    incoming_bars.reverse()
+    
+    #send bars to graph
+    top_height_in = TopHeight()
+    top_height_out = TopHeight()
+   
+    for bars, top_height in [(incoming_bars, top_height_in), (outgoing_bars, top_height_out)]:
+        
         for bar in bars:
-            label = get_timeseries_label(bar[0])
-            times, values = get_timeseries(bar[1], start_datetime, end_datetime,
+            label = bar[2]
+            times, values = get_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
                                            period=period)
-
+            
+#                times, values = get_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
+#                                   period=period, only_positive_values, only_negative_values)
+                        
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
-
-            color = '#' + label.color
+            color = label.color
             bottom = top_height.get_heights(times)
             graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
             top_height.stack_bars(times, values)
+    
+    #sluice error
+    label = labels['sluice_error']
+    times, values = get_timeseries(sluice_error, date2datetime(start_date), date2datetime(end_date),
+                                           period=period)
+    
+    positive_sluice_error = []
+    negative_sluice_error = []
+    for value in values:
+        if value > 0:
+            positive_sluice_error.append(value)
+            negative_sluice_error.append(0)
+        else:
+            positive_sluice_error.append(0)
+            negative_sluice_error.append(value)
+            
+    color = label.color
+    
+    #first incoming sluice_error
+    bottom = top_height_in.get_heights(times)
+    graph.axes.bar(times, positive_sluice_error, bar_width, color=color, edgecolor=color,
+                               bottom=bottom)
+    top_height_in.stack_bars(times, values)    
+    
+    #next outgoing sluice_error
+    bottom = top_height_out.get_heights(times)
+    graph.axes.bar(times, negative_sluice_error, bar_width, color=color, edgecolor=color,
+                               bottom=bottom)
+    top_height_out.stack_bars(times, values)
 
     t2 = time.time()
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
@@ -464,15 +540,9 @@ def waterbalance_area_graph(
 
 
 def waterbalance_sluice_error(
-    area_slug, scenario_slug, start_date, end_date, width, height):
+    configuration, waterbalance_computer, start_date, end_date, width, height):
     """Draw sluice error.
     """
-    # Get/calculate timeseries
-    configuration = WaterbalanceConf.objects.get(
-        waterbalance_area__slug=area_slug,
-        waterbalance_scenario__slug=scenario_slug)
-    waterbalance_computer = WaterbalanceComputer2(configuration)
-
     # Enforces that data is calculated between start_date and end_date
     ts = waterbalance_computer.get_sluice_error_timeseries(
         date2datetime(start_date), date2datetime(end_date),
@@ -512,243 +582,280 @@ def waterbalance_sluice_error(
     return response
 
 
-def waterbalance_water_level(request,
-                             area=None,
-                             graph_type=None):
-    """Draw the graph for the given area and of the given type."""
+def waterbalance_water_level(configuration, 
+                             waterbalance_computer, 
+                             start_date, 
+                             end_date, 
+                             period,
+                             reset_period, 
+                             width, height,
+                             with_sluice_error = False):
+    """Draw the graph for the given area en scenario and of the given type."""
 
-    period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
-
-    width = request.GET.get('width', 1600)
-    height = request.GET.get('height', 400)
-    krw_graph = Graph(start_date, end_date, width, height)
-
-    title = "Waterpeil "
-    if graph_type == "waterpeil_met_sluitfout":
-        title += "met sluitfout "
-    krw_graph.suptitle(title + "[m NAP]")
-
-    outcome = waterbalance_graph_data(area, start_datetime, end_datetime)
-
-    waterbalance_configuration = WaterbalanceConf.objects.get(slug=area)
-
-    t1 = time.time()
-
-    bars = [
-        #("waterpeil gemeten", waterbalance_configuration.water_level),
-        ("waterpeil berekend", outcome.open_water_timeseries["water level"]),
-        ]
+    graph = Graph(start_date, end_date, width, height)
+    if with_sluice_error:
+        title = "Waterpeil met sluitfout [m NAP]" 
+    else:
+        title = "Waterpeil [m NAP]"
+    graph.suptitle(title)
+ 
+    t1 = time.time() 
+    
+    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    
+    #define bars
+    bars = []
+    #gemeten waterpeilen
+    reset_timeseries = None
+    for tijdserie in configuration.references.filter(parameter__sourcetype=Parameter.TYPE_MEASURED, parameter__parameter=Parameter.PARAMETER_WATERLEVEL):
+        bars.append((tijdserie.name, tijdserie.get_timeseries(), labels['meas_waterlevel']))
+        reset_timeseries = tijdserie.get_timeseries() 
+    
+    bars.append(("waterpeilen", 
+                 waterbalance_computer.get_level_control_timeseries(date2datetime(start_date), 
+                                                                    date2datetime(end_date))['water_level'], 
+                labels['calc_waterlevel']))
 
     # Add sluice error to bars.
-    if graph_type == "waterpeil_met_sluitfout":
-        sluice_error = TimeseriesStub()
-        previous_year = None
-        # We have computed the sluice error in [m3/day], however we
-        # will display it as a difference in water level, so
-        # [m/day]. We make that translation here.
-        for event in outcome.open_water_timeseries["sluice error"].events():
-            date = event[0]
-            if previous_year is None or previous_year < date.year:
-                value = 0
-                previous_year = date.year
-            value += (1.0 * event[1]) / waterbalance_configuration.open_water.surface
-            sluice_error.add_value(date, value)
-        bars.append(("sluitfout", sluice_error))
+    if with_sluice_error:
+
+        bars.append(("waterpeilen, met sluitfout", 
+                     waterbalance_computer.get_waterlevel_with_sluice_error(date2datetime(start_date), date2datetime(end_date), 
+                                                                            reset_period, reset_timeseries=reset_timeseries), 
+                     labels['sluice_error']))
 
     names = [bar[0] for bar in bars]
-    colors = ['#' + get_timeseries_label(name).color for name in names]
+    colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
-    krw_graph.legend_space()
-    krw_graph.legend(handles, names)
+    graph.legend_space()
+    graph.legend(handles, names)
 
     for bar in bars:
-        label_name = bar[0]
-        label = get_timeseries_label(label_name)
-        try:
+        label = bar[2]
+        #try:
+        if True:
             times, values = get_average_timeseries(
-                bar[1], start_datetime,
-                end_datetime, period=period)
-        except:
-            logger.warning("Unable to retrieve the time series for '%s'", label_name)
-            continue
-        color = '#' + label.color
-        krw_graph.axes.plot(times, values, color=color)
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date), period=period)
+
+            
+        color = label.color
+        graph.axes.plot(times, values, color=color)
 
     t2 = time.time()
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
-
-    canvas = FigureCanvas(krw_graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
-
-
-def fraction_distribution(
-    conf, period, start_date, end_date, width, height):
-    """
-    Draw graph for given configuration for chloride or phosphate.
-
-    UNFINISHED.
-    """
-    # Fetch needed data
-    wb_computer = WaterbalanceComputer2(conf)
-    wb_timeseries = wb_computer.get_input_timeseries(start_date, end_date)
-
-    substance = Concentration.SUBSTANCE_CHLORIDE
-    title = "Fractieverdeling xxx"
-
-    # We need in this order on axis 1: berging, neerslag, kwel, verhard,
-    # gedraineerd, ongedraineerd, afstroming, <intakes with
-    # computed_level_control=False>, <intakes with
-    # computed_level_control=True>
-
-    # Axis 2: Computed substance levels, measured substance levels in
-    # present.
-
-
-    # Draw graph
-    graph = Graph(start_date, end_date, width, height)
-    ax2 = graph.axes.twinx()
-    graph.suptitle(title)
 
     canvas = FigureCanvas(graph.figure)
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
 
+def waterbalance_cum_discharges(configuration, 
+                             waterbalance_computer, 
+                             start_date, 
+                             end_date, 
+                             reset_period, 
+                             width, height):
+    """Draw the graph for the given area en scenario and of the given type."""
+    period = 'month'
+    
+    graph = Graph(start_date, end_date, width, height)
+    graph.suptitle("Cumulatieve debieten")
+    bar_width = BAR_WIDTH[period]
+ 
+    t1 = time.time() 
+    
+    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    
+    bars_in = []  
+    bars_out = []  
+    line_in = []  
+    line_out = [] 
+    #verzamel gegevens
+    control = waterbalance_computer.get_level_control_timeseries( 
+                                    date2datetime(start_date), date2datetime(end_date))
+    
+    ref_in, ref_out = waterbalance_computer.get_reference_timeseries(
+                                date2datetime(start_date), date2datetime(end_date))
+    
+    
+    #define bars    
+    line_out.append((labels['outtake_wl_control'].name, control['outtake_wl_control'], labels['outtake_wl_control'], '#000000'))
+    line_in.append((labels['intake_wl_control'].name, control['intake_wl_control'], labels['intake_wl_control'], '#000000'))
+
+    nr = 0
+    for structure in ref_out:
+        for pump_line in structure.pump_lines.all():
+            bars_out.append((pump_line.name, pump_line.retrieve_timeseries(), structure.label, colors_list[nr]))
+            nr += 1
+    for structure in ref_in:
+        for pump_line in structure.pump_lines.all():
+            bars_in.append((pump_line.name, pump_line.retrieve_timeseries(), structure.label, colors_list[nr]))
+            nr += 1    
+   
+
+ 
+    names = [bar[0] for bar in bars_out + bars_in]
+    colors = [bar[3] for bar in bars_out + bars_in ]
+    handles = [Line2D([], [], color=color, lw=4) for color in colors]
+    
+    names += [bar[0] for bar in line_out + line_in]
+    colors_line = [bar[3] for bar in line_out + line_in]
+    handles += [Line2D([], [], color=color, lw=2) for color in colors_line]
+
+    graph.legend_space()
+    graph.legend(handles, names)
+    
+    top_height_in = TopHeight()
+    top_height_out = TopHeight()
+    for bars, top_height in [(bars_in, top_height_in), (bars_out, top_height_out)]:
+        for bar in bars:
+            label = bar[2]
+
+            times, values =  get_cumulative_timeseries(
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date), multiply=-1)#, reset_period="day")
+            
+            color = bar[3]
+            bottom = top_height.get_heights(times)
+            graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
+                               bottom=bottom)
+            top_height.stack_bars(times, values)
+            
+    for bars in [line_in, line_out]:
+        for bar in bars:
+            label = bar[2]
+
+            times, values =  get_cumulative_timeseries(
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date))#, reset_period="day")
+
+            color = bar[3]
+            graph.axes.plot(times, values, color=color, lw=2)            
+
+    t2 = time.time()
+    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
+
+    canvas = FigureCanvas(graph.figure)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
 
 #@profile("waterbalance_fraction_distribution.prof")
 def waterbalance_fraction_distribution(
-    name, conf, graph_type, period,
-    start_date, end_date, start_datetime, end_datetime,
-    width, height):
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height, concentration = Parameter.PARAMETER_CHLORIDE):
     """Draw the graph for the given area and of the given type."""
 
     graph = Graph(start_date, end_date, width, height)
     ax2 = graph.axes.twinx()
-
-    if graph_type == 'fracties_chloride':
-        substance = Concentration.SUBSTANCE_CHLORIDE
+    
+    if concentration == Parameter.PARAMETER_CHLORIDE:
+        substance = "chloride"
     else:
-        substance = Concentration.SUBSTANCE_PHOSPHATE
-
-    title = "Fractieverdeling "
-    if substance == Concentration.SUBSTANCE_CHLORIDE:
-        title += "chloride"
-    else:
-        title += "fosfaat"
+        substance = "fosfaat"
+    title = "Fractieverdeling en %s"%substance
     graph.suptitle(title)
-
     bar_width = BAR_WIDTH[period]
 
-    wb_computer = WaterbalanceComputer2(conf)
-    wb_timeseries = wb_computer.get_fraction_timeseries(
-        start_datetime, end_datetime)
-
     t1 = time.time()
+    
+    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    
+    #get data and bars
+    fractions = waterbalance_computer.get_fraction_timeseries(
+        date2datetime(start_date), date2datetime(end_date))
 
-    # (Temp) removed concentrations from bar[2]. 'neerslag', 'kwel',
-    # 'verhard', 'gedraineerd', 'ongedraineerd', 'afstroming'
+    bars = [(labels['initial'].name, fractions["initial"], labels['initial']),
+            (labels['precipitation'].name, fractions["precipitation"], labels['precipitation']),
+            (labels['seepage'].name, fractions["seepage"], labels['seepage']),
+            (labels['hardened'].name, fractions["hardened"], labels['hardened']),
+            (labels['drained'].name, fractions["drained"], labels['drained']),
+            (labels['undrained'].name, fractions["undrained"], labels['undrained']),
+            (labels['flow_off'].name, fractions["flow_off"], labels['flow_off'])]
 
-    # conf.concentrations.get(
-    #     substance__exact=substance,
-    #     flow_name__iexact='neerslag').minimum),
+    for key, timeserie in fractions['intakes'].items():
+        if unicode(key) == u'intake_wl_control':
+            name = key
+            label = labels[key]
+        else:
+            name = key.name
+            label = key.label
+        bars.append((name,timeserie, label))
 
-    bars = [("berging", wb_timeseries["initial"]),
-            ("neerslag", wb_timeseries["precipitation"]),
-            ("kwel", wb_timeseries["seepage"]),
-            ("verhard", wb_timeseries["hardened"]),
-            ("gedraineerd", wb_timeseries["drained"]),
-            ("ongedraineerd", wb_timeseries["undrained"]),
-            ("afstroming", wb_timeseries["flow_off"]),
-            ]
+    
+#    if substance == Concentration.SUBSTANCE_CHLORIDE:
+#        names.append("chloride")
+#    else:
+#        names.append("fosfaat")
 
-    intakes = PumpingStation.objects.filter(
-        into=True, computed_level_control=False)
-    # Temp removed
-    # conf.concentrations.get(
-    #        substance__exact=substance,
-    #        flow_name__iexact=intake.name).minimum)
-    for intake in intakes.order_by('name'):
-        bars.append(
-            (intake.name,
-             # outcome.intake_fractions[intake],
-             wb_timeseries['intakes'][intake]))
+    bars = sorted(bars, key=lambda bar: -bar[2].order)
 
+    
+    #setup legend
     names = [bar[0] for bar in bars]
-    if substance == Concentration.SUBSTANCE_CHLORIDE:
-        names.append("chloride")
-    else:
-        names.append("fosfaat")
-
-    colors = ['#' + get_timeseries_label(name).color for name in names]
+    colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
     # we add the legend entries for the measured substance levels
 
-    substance_color = colors[-1]
-    handles.append(Line2D([], [], linestyle=' ',color=substance_color, marker='D'))
-    substance_name = names[-1]
-    names.append(substance_name + " meting")
-
-    graph.legend_space()
-    graph.legend(handles, names)
-
+    bars.reverse()
     # Now draw the graph
     times = []
     values = []
     top_height = TopHeight()
     for bar in bars:
-
-        label = get_timeseries_label(bar[0])
+        label = bar[2]
         times, values = get_average_timeseries(
-            bar[1], start_datetime, end_datetime,
+            bar[1], date2datetime(start_date), date2datetime(end_date),
             period=period)
 
         # add the following keyword argument to give the bar edges the same
         # color as the bar itself: edgecolor='#' + label.color
 
-        color = '#' + label.color
+        color = label.color
         bottom = top_height.get_heights(times)
         graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
                        bottom=bottom)
         top_height.stack_bars(times, values)
 
-    # Skipping berging/initial??
-    # fractions_list = [bar[1] for bar in bars[1:]]  # TimeseriesStubs
-    #concentrations = [bar[2] for bar in bars[1:]]  # minimum concentrations
-
     # Draw axis 2
     # show the computed substance levels
-    # substance_timeseries = ConcentrationComputer().compute(
-    #     fractions_list,
-    #     outcome.open_water_timeseries["storage"],
-    #     concentrations)
-    # times, values = get_average_timeseries(
-    #     substance_timeseries, start_datetime, end_datetime,
-    #     period=period)
+    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(start_date), date2datetime(end_date))
+    
+    style = dict(color='black',  lw=3)
+    handles.append(Line2D([], [], **style))
+    names.append(substance + " berekend")
+    
+    times, values = get_average_timeseries(
+            substance_timeseries, date2datetime(start_date), date2datetime(end_date),
+            period=period)
 
-    # ax2.plot(times, values, 'k-')
+    ax2.plot(times, values, **style)
 
-    # show the measured substance levels when they are present
-    # try:
-    #     if substance == Concentration.SUBSTANCE_CHLORIDE:
-    #         substance_timeseries = conf.chloride
-    #     else:
-    #         substance_timeseries = conf.phosphate
-    #     times, values = get_average_timeseries(substance_timeseries,
-    #                                            start_datetime,
-    #                                            end_datetime,
-    #                                            period=period)
-    #     ax2.plot(times, values, 'k-')
-    # except AttributeError:
-    #     logger.warning("Unable to retrieve measured time series for %s",
-    #                    substance_name)
+    #add metingen
+    if concentration == Parameter.PARAMETER_CHLORIDE:
+         parameter = Parameter.PARAMETER_CHLORIDE
+    else:
+         parameter = Parameter.PARAMETER_FOSFAAT
+         
+    nr = 0
+    for tijdserie in configuration.references.filter(parameter__parameter=parameter, parameter__sourcetype=Parameter.TYPE_MEASURED):
+    
+        style = dict(color=colors_list[nr],  markersize=10, marker='d', linestyle=" ")
+        nr += 1
+        times, values = get_raw_timeseries(tijdserie.get_timeseries(),
+                                            date2datetime(start_date),
+                                            date2datetime(end_date))
+        ax2.plot(times, values, **style)
+        handles.append(Line2D([], [], **style))
+        names.append(tijdserie.name[:15] + " gemeten")
 
+    graph.legend_space()
+    graph.legend(handles, names)
+    
+    
     t2 = time.time()
 
     logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
@@ -762,120 +869,72 @@ def waterbalance_fraction_distribution(
 
 
 def waterbalance_phosphate_impact(
-    name, conf, period, start_date, end_date, start_datetime, end_datetime,
-    width, height):
+           configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height):
     """Draw the graph for the given area and of the given type."""
 
     graph = Graph(start_date, end_date, width, height)
-
     graph.suptitle("Fosfaatbelasting [mg/m2]")
 
     bar_width = BAR_WIDTH[period]
     stopwatch_start = datetime.datetime.now()
-    # logger.debug('Started waterbalance_phosphate_impact at %s' %
-    #              stopwatch_start)
+    logger.debug('Started waterbalance_phosphate_impact at %s' %
+                  stopwatch_start)
 
-    # wb_computer = WaterbalanceComputer2(conf)
-    # wb_timeseries = wb_computer.
+    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    
+    #get data and bars
+    impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water, 
+                                                                             date2datetime(start_date),
+                                                                             date2datetime(end_date))
 
-    outcome = waterbalance_graph_data(conf, start_datetime, end_datetime)
-
-    phosphate = Concentration.SUBSTANCE_PHOSPHATE
-
-    # One bar is (name incr, name min, discharge, increment value,
-    # minimum value)
-    bar_contents = [
-        ('precipitation', 'neerslag'), ('seepage', 'kwel'),
-        ('hardened', 'verhard'), ('drained', 'gedraineerd'),
-        ('undrained', 'ongedraineerd'), ('flow_off', 'afstroming'),]
-
-    bars = [('%s (incr)' % name_dutch,
-             '%s (min)' % name_dutch,
-             outcome.open_water_timeseries[name],
-             conf.concentrations.get(
-                substance__exact=phosphate,
-                flow_name__iexact=name_dutch).increment,
-             conf.concentrations.get(
-                substance__exact=phosphate,
-                flow_name__iexact=name_dutch).minimum)
-            for name, name_dutch in bar_contents]
-
+    bars_minimum = []
+    bars_increment = []
+    legend = []
+    
+    for key, impact in impacts.items():
+        label = labels[key]
+        name = '%s (min)' % label.name
+        name_incremental = '%s (incr)' % label.name
+        
+        bars_minimum.append((name, 
+                     impact,
+                     label,
+                     label.color))
+        bars_increment.append((name_incremental, 
+                               impacts_incremental[key],
+                               label,
+                               label.color_increment))
+        legend.append((label.order, name, label.color))
+        legend.append((label.order+1000, name_incremental, label.color_increment))
+        
     logger.debug('1: Got bars %s' %
                  (datetime.datetime.now() - stopwatch_start))
 
-    # Add intakes to bars
-    intakes = PumpingStation.objects.filter(
-        into=True, computed_level_control=False)
-    for intake in intakes.order_by('name'):
-        bars.append(
-            (intake.name + " (incr)",
-             intake.name + " (min)",
-             intake.retrieve_sum_timeseries(),
-             conf.concentrations.get(
-                    substance__exact=phosphate,
-                    flow_name__iexact=intake.name).increment,
-             conf.concentrations.get(
-                    substance__exact=phosphate,
-                    flow_name__iexact=intake.name).minimum))
-
-    intakes = PumpingStation.objects.filter(
-        into=True, computed_level_control=True)
-    for intake in intakes.order_by('name'):
-        bars.append(
-            (intake.name + " (incr)",
-             intake.name + " (min)",
-             outcome.level_control_assignment[intake],
-             conf.concentrations.get(
-                    substance__exact=phosphate,
-                    flow_name__iexact=intake.name).increment,
-             conf.concentrations.get(
-                    substance__exact=phosphate,
-                    flow_name__iexact=intake.name).minimum))
-
-    logger.debug('2: Got intakes %s' %
-                 (datetime.datetime.now() - stopwatch_start))
-
-    names = [bar[0] for bar in bars] + [bar[1] for bar in bars]
-    colors = ['#' + get_timeseries_label(name).color for name in names]
+    legend = sorted(legend, key=lambda bar: -bar[0])
+    
+    names = [line[1] for line in legend]
+    colors = [line[2] for line in legend]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
     graph.legend_space()
     graph.legend(handles, names)
-
-    open_water = conf.open_water
+    
+    bars_minimum = sorted(bars_minimum, key=lambda bar: -bar[2].order)
+    bars_increment = sorted(bars_increment, key=lambda bar: -bar[2].order)
 
     top_height = TopHeight()
 
-    for index in range(2):
-        # if index == 0, we are talking about the minimum values,
-        # if index == 1, we are talking about the incremental values
+    for bars in [bars_minimum, bars_increment]:
         for bar in bars:
             # Label is the min name or the incr name
-            label = get_timeseries_label(bar[1-index])
-            discharge = bar[2]
-
-            if index == 0:
-                # Minimum value
-                concentration = bar[4]
-            else:
-                # Maximum value = Incremental value + Minimum value
-                concentration = bar[3] + bar[4]
-            # Concentration is specified in [mg/l] whereas discharge is
-            # specified in [m3/day]. The impact is specified in [mg/m2/day] so
-            # we first multiply the concentration by 1000 to specify it in
-            # [mg/m3] and then divide the result by the surface of the open
-            # water to specify it in [mg/m2/m3].
-            concentration = (concentration * 1000.0) / open_water.surface
-
-            impact_timeseries = multiply_timeseries(discharge, concentration)
-
-            times, values = get_average_timeseries(impact_timeseries, start_datetime, end_datetime,
+            label = bar[2]
+            times, values = get_average_timeseries(bar[1], 
+                                                   date2datetime(start_date),
+                                                   date2datetime(end_date),
                                                    period=period)
 
-            # add the following keyword argument to give the bar edges the same
-            # color as the bar itself: edgecolor='#' + label.color
-
-            color = '#' + label.color
+            color = bar[3]
             bottom = top_height.get_heights(times)
             graph.axes.bar(
                 times, values, bar_width, color=color, edgecolor=color,
@@ -904,42 +963,59 @@ def waterbalance_area_graphs(request,
     Fetch request parameters: name, period, width, height.
     """
     name = request.GET.get('name', "landelijk")
-    conf = WaterbalanceConf.objects.get(
+
+    configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
-
+    waterbalance_computer = WaterbalanceComputer2(configuration)
+    
     period = request.GET.get('period', 'month')
-    start_datetime, end_datetime = retrieve_horizon(request)
-    start_date = start_datetime.date()
-    end_date = end_datetime.date() + datetime.timedelta(1)
+    reset_period = request.GET.get('reset_period', 'year')
+    #start_datetime, end_datetime = retrieve_horizon(request)
+    #start_date = start_datetime.date()
+    #end_date = end_datetime.date() + datetime.timedelta(1)
 
     # Don't know the difference in above start/end dates. This seems
     # better, but not sure if it works correctly with existing
     # functions.
-    _start_date, _end_date = current_start_end_dates(request)
+    start_date, end_date = current_start_end_dates(request)
 
     width = request.GET.get('width', 1600)
     height = request.GET.get('height', 400)
 
     if graph_type == 'waterbalans':
         return waterbalance_area_graph(
-            conf, period, start_date, end_date, start_datetime,
-            end_datetime, width, height)
-    elif graph_type == 'waterpeil' or graph_type == 'waterpeil_met_sluitfout':
-        # return waterbalance_water_level(request, area, graph_type)
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height)
+    elif graph_type == 'waterpeil':
+        return waterbalance_water_level(
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, reset_period, width, height)        
+    elif graph_type == 'waterpeil_met_sluitfout':    
+        return waterbalance_water_level(
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, reset_period, width, height, with_sluice_error = True) 
+    elif graph_type == 'sluitfout':       
         return waterbalance_sluice_error(
             area_slug, scenario_slug, _start_date, _end_date, width, height)
-    elif graph_type == 'fracties_chloride' or graph_type == 'fracties_fosfaat':
+    elif graph_type == 'fracties_chloride':
         return waterbalance_fraction_distribution(
-            name, conf, graph_type, period, start_date, end_date,
-            start_datetime, end_datetime,
-            width, height)
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height, Parameter.PARAMETER_CHLORIDE) 
         # return fraction_distribution(
         #     conf, period, start_date, end_date, width, height)
+    elif graph_type == 'cumulatief_debiet':
+        return waterbalance_cum_discharges(
+            configuration, waterbalance_computer, start_date, end_date, 
+            reset_period, width, height) 
+    elif graph_type == 'fracties_fosfaat':
+        return waterbalance_fraction_distribution(
+            configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height, Parameter.PARAMETER_FOSFAAT)
     elif graph_type == 'fosfaatbelasting':
         return waterbalance_phosphate_impact(
-            name, conf, period, start_date, end_date,
-            start_datetime, end_datetime, width, height)
+           configuration, waterbalance_computer, start_date, end_date, 
+            period, width, height)
 
 
 def waterbalance_shapefile_search(request):
@@ -1011,7 +1087,9 @@ def search_fews_lkeys(request):
 
 
 def _actual_recalculation(request, area_slug, scenario_slug):
-    """Recalculate graph data by emptying the cache: used by two views."""
+    """ old function
+    
+    Recalculate graph data by emptying the cache: used by two views."""
     start_datetime, end_datetime = retrieve_horizon(request)
 
     conf = WaterbalanceConf.objects.get(
@@ -1025,7 +1103,13 @@ def _actual_recalculation(request, area_slug, scenario_slug):
 def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-        _actual_recalculation(request, area_slug, scenario_slug)
+
+        conf = WaterbalanceConf.objects.get(
+            waterbalance_area__slug=area_slug,
+            waterbalance_scenario__slug=scenario_slug)
+        
+        conf.delete_cached_waterbalance_computer()
+        
         return HttpResponseRedirect(
             reverse(
                 'waterbalance_area_summary',

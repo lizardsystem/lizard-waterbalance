@@ -128,8 +128,8 @@ class LevelControlComputer:
             
             date += timedelta(1)
 
-        return {'intake':intake_time_series, 
-                'pump':pump_time_series, 
+        return {'intake_wl_control':intake_time_series, 
+                'outtake_wl_control':pump_time_series, 
                 'storage':storage, 
                 'water_level':water_level_timeseries, 
                 'total_incoming':total_incoming, 

@@ -33,7 +33,6 @@ import csv
 
 from django.core.management.base import BaseCommand
 
-from lizard_waterbalance.compute import WaterbalanceComputer
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceArea

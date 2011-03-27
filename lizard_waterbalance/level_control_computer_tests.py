@@ -71,8 +71,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
                                TimeseriesStub((self.today, -2.0)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_b(self):
         """Test the case with precipitation on two days."""
@@ -100,8 +100,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0), (tomorrow, 0.0)),
                                TimeseriesStub((self.today, -2.0), (tomorrow, -1.0)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_c(self):
         """Test the case with precipitation and evaporation on a single day."""
@@ -124,8 +124,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
                                TimeseriesStub((self.today, -1.0)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_d(self):
         """Test the case with precipitation, evaporation and seepage on a single day."""
@@ -148,8 +148,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
                                TimeseriesStub((self.today, -1.5)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_e(self):
         """Test the case with evaporation on a single day."""
@@ -172,8 +172,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 1.0)),
                                TimeseriesStub((self.today, 0.0)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_f(self):
         """Test the case with a single intake time series."""
@@ -197,8 +197,8 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
                                TimeseriesStub((self.today, -16.0)))
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_g(self):
         """Test the case with a single pump time series."""
@@ -223,11 +223,11 @@ class LevelControlComputerTests(TestCase):
         expected_timeseries = (TimeseriesStub((self.today, 4.0)),
                                TimeseriesStub((self.today, 0.0)))
         
-        print next(timeseries['intake'].events())
-        print next(timeseries['pump'].events())
+        print next(timeseries['intake_wl_control'].events())
+        print next(timeseries['outtake_wl_control'].events())
         
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_h(self):
         """Test the case with multiple pump time series."""
@@ -251,10 +251,10 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 14.0)),
                                TimeseriesStub((self.today, 0.0)))
-        print next(timeseries['intake'].events())
-        print next(timeseries['pump'].events())
-        self.assertEqual(expected_timeseries[0], timeseries['intake'])
-        self.assertEqual(expected_timeseries[1], timeseries['pump'])
+        print next(timeseries['intake_wl_control'].events())
+        print next(timeseries['outtake_wl_control'].events())
+        self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
+        self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
 class StorageTests(TestCase):
     """Contains tests for the storage computation by a LevelControlComputer."""

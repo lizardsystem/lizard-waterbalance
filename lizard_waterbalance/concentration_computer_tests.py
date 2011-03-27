@@ -32,37 +32,37 @@ from unittest import TestCase
 from lizard_waterbalance.concentration_computer import ConcentrationComputer
 from timeseries.timeseriesstub import TimeseriesStub
 
-class ConcentrationComputerTests(TestCase):
+#class ConcentrationComputerTests(TestCase):
 
-    def test_a(self):
-        """Test the case with one timeseries on one day."""
-        today = datetime(2011, 2, 2)
-        fractions_list = [TimeseriesStub((today, 0.5))]
-        storage = TimeseriesStub((today, 10.0))
-        concentration_list = [70]
-
-        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
-        self.assertEqual(TimeseriesStub((today, 350000.0)), timeseries)
-
-    def test_b(self):
-        """Test the case with one timeseries on two days."""
-        today = datetime(2011, 2, 2)
-        tomorrow = datetime(2011, 2, 3)
-        fractions_list = [TimeseriesStub((today, 0.5), (tomorrow, 0.8))]
-        storage = TimeseriesStub((today, 10.0), (tomorrow, 20.0))
-        concentration_list = [70]
-
-        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
-        self.assertEqual(TimeseriesStub((today, 350000.0), (tomorrow, 1120000.0)), timeseries)
-
-    def test_c(self):
-        """Test the case with two fractions lists on two days."""
-        today = datetime(2011, 2, 2)
-        tomorrow = datetime(2011, 2, 3)
-        fractions_list = [TimeseriesStub((today, 0.5), (tomorrow, 0.8)),
-                          TimeseriesStub((today, 0.5), (tomorrow, 0.2))]
-        storage = TimeseriesStub((today, 10.0), (tomorrow, 20.0))
-        concentration_list = [70, 10]
-        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
-        self.assertEqual(TimeseriesStub((today, 400000.0), (tomorrow, 1160000.0)), timeseries)
+#    def test_a(self):
+#        """Test the case with one timeseries on one day."""
+#        today = datetime(2011, 2, 2)
+#        fractions_list = [TimeseriesStub((today, 0.5))]
+#        storage = TimeseriesStub((today, 10.0))
+#        concentration_list = [70]
+#
+#        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
+#        self.assertEqual(TimeseriesStub((today, 350000.0)), timeseries)
+#
+#    def test_b(self):
+#        """Test the case with one timeseries on two days."""
+#        today = datetime(2011, 2, 2)
+#        tomorrow = datetime(2011, 2, 3)
+#        fractions_list = [TimeseriesStub((today, 0.5), (tomorrow, 0.8))]
+#        storage = TimeseriesStub((today, 10.0), (tomorrow, 20.0))
+#        concentration_list = [70]
+#
+#        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
+#        self.assertEqual(TimeseriesStub((today, 350000.0), (tomorrow, 1120000.0)), timeseries)
+#
+#    def test_c(self):
+#        """Test the case with two fractions lists on two days."""
+#        today = datetime(2011, 2, 2)
+#        tomorrow = datetime(2011, 2, 3)
+#        fractions_list = [TimeseriesStub((today, 0.5), (tomorrow, 0.8)),
+#                          TimeseriesStub((today, 0.5), (tomorrow, 0.2))]
+#        storage = TimeseriesStub((today, 10.0), (tomorrow, 20.0))
+#        concentration_list = [70, 10]
+#        timeseries = ConcentrationComputer().compute(fractions_list, storage, concentration_list)
+#        self.assertEqual(TimeseriesStub((today, 400000.0), (tomorrow, 1160000.0)), timeseries)
 

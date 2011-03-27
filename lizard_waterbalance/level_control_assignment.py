@@ -26,7 +26,6 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.store import store_waterbalance_timeserie
 from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
@@ -69,53 +68,3 @@ class LevelControlAssignment:
 
         return assignment
 
-class LevelControlStorage:
-    """Implements the storage of a level control assignment to the database.
-
-    Instance variables:
-    * store_timeserie -- function used to store a level control time series
-
-    """
-    def __init__(self, store_timeserie=store_waterbalance_timeserie):
-        """Set the function used to store a level control time series.
-
-        Parameter:
-        * store_timeserie -- function used to store a level control time series
-
-        """
-        self.store_timeserie = store_timeserie
-
-    def store(self, pumping_stations, assignment):
-        """Store the given level control assignment to the database.
-
-        Parameter:
-        * pumping_stations -- list of all PumpingStation's
-        * assignment -- dictionary of PumpingStation to TimeseriesStub
-
-        The following has become obsolote since level_control is not an
-        attribute of a PumpingStation anymore!
-
-          If a PumpingStation has a level control time series but should not be
-          used for level control, this method deletes that level control time
-          series.
-
-        """
-        for pumping_station in pumping_stations:
-            try:
-                timeseries = assignment[pumping_station]
-                self.store_timeserie(pumping_station, "level_control", timeseries)
-                pumping_station.save()
-            except KeyError:
-                # The following has become obsolote since level_control is not an
-                # attribute of a PumpingStation anymore!
-                #
-                #   If a PumpingStation has a level control time series but
-                #   should not be used for level control, this method deletes
-                #   that level control time series.
-
-                # waterbalance_timeserie = pumping_station.level_control
-                # if not waterbalance_timeserie is None:
-                #     pumping_station.level_control = None
-                #     pumping_station.save()
-                #     waterbalance_timeserie.delete()
-                pass

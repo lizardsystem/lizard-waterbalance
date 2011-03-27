@@ -85,10 +85,6 @@ urlpatterns = patterns(
      ),
     # TODO: 1..6 as parameter??
 
-    (r'^summary/(?P<area_slug>.*)/recalculate_graph_data/$',
-     'lizard_waterbalance.views.recalculate_graph_data',
-     {},
-     "waterbalance_graph_recalculate_data"),
     (r'^summary/(?P<area_slug>.*)/scenario/(?P<scenario_slug>.*)'
      '/recalculate_graph_data/$',
      'lizard_waterbalance.views.recalculate_graph_data',
@@ -99,6 +95,11 @@ urlpatterns = patterns(
      'lizard_waterbalance.views.waterbalance_area_graphs',
      {},
      'waterbalance_area_graph'),
+     (r'^summary/(?P<area_slug>.*)/scenario/(?P<scenario_slug>.*)'
+     '/export_excel_small/$',
+     'lizard_waterbalance.export.export_excel_small',
+     {},
+     'waterbalance_excel_export_small'),
     (r'^graphselect/$',
      'lizard_waterbalance.views.graph_select',
      {},

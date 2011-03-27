@@ -41,6 +41,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
+logger = logging.getLogger(__name__)
 
 class BucketOutcome:
     """Contains the time series that are computed for a Bucket.
@@ -220,7 +221,7 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
     volume = bucket.init_water_level * bucket.surface * bucket.porosity
 
     if not allow_below_minimum_storage and bucket.min_water_level == None:
-        print "Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name
+        logger.warming("Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name)
         bucket.min_water_level = 0
 
     for triple in enumerate_events(precipitation, evaporation, seepage):
@@ -373,8 +374,7 @@ class BucketComputer:
         result = {}
         
         if bucket.surface > 0:
-            print bucket.name
-            print bucket.surface_type
+            log.debug("calculate bucket %s of type "%(bucket.name, bucket.surface_type))
             bucket_computer = self.bucket_computers[bucket.surface_type]
             outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
             

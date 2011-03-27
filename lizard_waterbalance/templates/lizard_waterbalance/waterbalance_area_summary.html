@@ -125,6 +125,15 @@
              value="{{ waterbalance_configuration.waterbalance_scenario.slug }}" />
       <input type="submit" name="submit" value="Toon"
              id="graph-type-select-submit" />
+             
+    </form>
+    <form method="POST"
+          action="{% url waterbalance_excel_export_small waterbalance_configuration.waterbalance_area.slug waterbalance_configuration.waterbalance_scenario.slug %}"
+          id="recalculate-form">
+      {% csrf_token %}
+      <input type="submit"
+             value="Exporteer resultaten"
+             id="export-submit"/>
     </form>
     <br />  <!-- br as the input button above sometimes lead to a scrollbar -->
   </div>

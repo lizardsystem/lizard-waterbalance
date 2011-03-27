@@ -16,7 +16,7 @@ from lizard_waterbalance.models import TimeseriesFews
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceScenario
-from lizard_waterbalance.models import WaterbalanceLabel
+from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
 class BucketAdmin(admin.ModelAdmin):
@@ -45,13 +45,30 @@ class PumpingStationAdmin(admin.ModelAdmin):
         PumpLineInLine,
         ]
     form = PumpingStationForm
+    
+class ParameterAdmin(admin.ModelAdmin):
+    list_filter = ('sourcetype', 'parameter')
+    list_display = ('name', 'unit', 'slug', 'parameter',
+                    'sourcetype')
+    search_fields = ['name']
+    
+    prepopulated_fields = {'slug': ('name',)}
+
+
+class ConcentrationInLine(admin.TabularInline):
+    model = Concentration
 
 
 class WaterbalanceConfAdmin(admin.ModelAdmin):
     list_filter = ('waterbalance_scenario', 'waterbalance_area',  )
-    list_display = ('slug', 'waterbalance_scenario', 'waterbalance_area',
+    list_display = ('waterbalance_scenario', 'waterbalance_area',
                     'description')
     search_fields = ['waterbalance_scenario', 'waterbalance_area' ]
+    
+    inlines = [
+        ConcentrationInLine,
+        ]
+
 
 
 class TimeseriesEventInline(admin.TabularInline):
@@ -68,6 +85,12 @@ class TimeseriesFewsAdmin(admin.ModelAdmin):
     # raw_id_fields = ("fews_location",)
     form = TimeseriesFewsForm
 
+
+class LabelAdmin(admin.ModelAdmin):
+    list_filter = ('flow_type', )
+    list_display = ( 'name', 'program_name', 'order',
+                     'color', 'color_increment', 'flow_type')
+    search_fields = ['name', ]
 
 class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
     list_filter = ('use_fews', 'parameter', 'configuration', 'timestep' )
@@ -88,7 +111,7 @@ class WaterbalanceAreaAdmin(admin.ModelAdmin):
 admin.site.register(Bucket, BucketAdmin)
 admin.site.register(Concentration)
 admin.site.register(OpenWater)
-admin.site.register(Parameter)
+admin.site.register(Parameter, ParameterAdmin)
 admin.site.register(PumpLine, PumpLineAdmin)
 admin.site.register(PumpingStation, PumpingStationAdmin)
 admin.site.register(Timeseries, TimeseriesAdmin)
@@ -97,6 +120,6 @@ admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)
 admin.site.register(WaterbalanceArea)
 admin.site.register(WaterbalanceConf, WaterbalanceConfAdmin)
 admin.site.register(WaterbalanceScenario)
-admin.site.register(WaterbalanceLabel)
+admin.site.register(Label, LabelAdmin)
 admin.site.register(WaterbalanceTimeserie, WaterbalanceTimeserieAdmin)
 
