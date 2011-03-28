@@ -45,8 +45,6 @@ from django.core.cache import cache
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.models import WaterbalanceConf, WaterbalanceScenario, WaterbalanceArea, WaterbalanceTimeserie, Timeseries, TimeseriesEvent, Parameter
 
-
-from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import TimeseriesStub
 
@@ -66,49 +64,49 @@ def test_export():
     configuration_slug = 'aetsveldsche_polder_oost_-_test'
     export_to_excel(configuration_slug, start_date, end_date)
 
-def export_excel_small(request, area_slug, scenario_slug): 
+def export_excel_small(request, area_slug, scenario_slug):
     """ export van een configuratie naar Excel """
-    
+
     t1 = time.time()
-    
+
     bucket_export = False
-    
+
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
-    
+
     waterbalance_computer = configuration.get_waterbalance_computer()
-    
+
     logger.debug("%s seconds - got waterbalance computer", time.time() - t1)
-    
+
     start_date = configuration.calculation_start_date
     end_date = datetime.now()
     end_date = datetime(end_date.year, end_date.month, end_date.day)
-    
+
     excel_template = 'C:\\_lizard\\krw-waternet\\local_checkouts\\lizard-waterbalance\\lizard_waterbalance\\templates\\lizard_waterbalance\\excel_export_template.xls'
 
     rb = xlrd.open_workbook(excel_template, on_demand=True)
     wb = copy(rb)
-    
+
     logger.debug("%s seconds - opened excel template", time.time() - t1)
-    
+
     input_ts = waterbalance_computer.get_input_timeseries(start_date, end_date)
     buckets_summary = waterbalance_computer.get_bucketflow_summary(start_date, end_date)
-    
+
     #bakjes export
     if bucket_export:
-        
+
         if u'bakjes' in rb.sheet_names():
             sheet = wb.sheet_by_name(u'bakjes')
         else:
             sheet = wb.add_sheet('bakje')
-        
+
         buckets = waterbalance_computer.get_buckets_timeseries(start_date, end_date)
-        
+
         #TO DO: afmaken
-    
-    
-    sheet = wb.get_sheet(0)    
+
+
+    sheet = wb.get_sheet(0)
     #tests
     buckets_summary = waterbalance_computer.get_bucketflow_summary(start_date, end_date)
     vertical_openwater = waterbalance_computer.get_vertical_open_water_timeseries(start_date, end_date)
@@ -117,14 +115,14 @@ def export_excel_small(request, area_slug, scenario_slug):
     sluice_error = waterbalance_computer.calc_sluice_error_timeseries(start_date, end_date)
     chloride_concentration = waterbalance_computer.get_concentration_timeseries(start_date, end_date)
     impact_minimum, impact_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water, start_date, end_date)
-    
+
     logger.debug("%s seconds - got all values", time.time() - t1)
-    
+
     waterbalance_computer.cache_if_updated()
     logger.debug("%s seconds - saved to cache", time.time() - t1)
-    
-    
-    
+
+
+
     #combine cols of table
     header = ['year', 'month', 'day']
     data_cols = {}
@@ -136,7 +134,7 @@ def export_excel_small(request, area_slug, scenario_slug):
         data_cols[6] = configuration.open_water.target_level.get_timeseries()
     except:
         pass
-    
+
     #in
     data_cols[9] = vertical_openwater['precipitation']
     data_cols[10] = vertical_openwater['seepage']
@@ -148,22 +146,22 @@ def export_excel_small(request, area_slug, scenario_slug):
     for intake, timeserie in input_ts['incoming_timeseries'].items():
         data_cols[col] = timeserie
         col = col + 1
-        
+
     data_cols[20] = level_control["intake_wl_control"]
-    
+
     #uit
     data_cols[22] = vertical_openwater['evaporation']
     data_cols[23] = vertical_openwater['infiltration']
     data_cols[24] = buckets_summary.indraft
     data_cols[29] = level_control["outtake_wl_control"]
-    
+
     #totaal
     data_cols[32] = level_control['total_incoming']
     data_cols[33] = level_control['total_outgoing']
     data_cols[35] = level_control['water_level']
     data_cols[36] = level_control['storage']
     data_cols[51] = chloride_concentration
-    
+
     #fracties
     data_cols[68] = fractions['initial']
     data_cols[69] = fractions['precipitation']
@@ -176,56 +174,56 @@ def export_excel_small(request, area_slug, scenario_slug):
     for key, item in fractions['intakes'].items():
         data_cols[colnr] = item
         colnr = colnr + 1
-        
+
     data_cols[108] = sluice_error[0]
     data_cols[111] = sluice_error[1]
-    
+
     colnr = 135
     for key, item in impact_minimum.items():
         data_cols[colnr] = item
-        colnr = colnr + 1    
-    
+        colnr = colnr + 1
+
     colnr = colnr + 1
-    
+
     for key, item in impact_incremental.items():
         data_cols[colnr] = item
-        colnr = colnr + 1    
-    
+        colnr = colnr + 1
+
     start_row = 13
     row = start_row
-    
-    
+
+
     excel_date_fmt = 'D/M/YY'
     style = xlwt.XFStyle()
     style.num_format_str = excel_date_fmt
-    
+
     logger.debug("%s seconds - referenced all values", time.time() - t1)
-    
+
     for event_dict in enumerate_dict_events(data_cols):
         date = event_dict['date']
         sheet.write(row,0,date, style)
         for col, event in event_dict.items():
-            if not col == 'date': 
+            if not col == 'date':
                 sheet.write(row,col,event_dict[col][1])#neerslag
-    
+
         row = row + 1
-    
+
 
     #for max: Formula('MAX(A1:B1)')
 
-    
+
     buffer = StringIO()
     wb.save(buffer)
     del wb
     logger.debug("%s seconds - saved excel file to memory", time.time() - t1)
-    
+
     buffer.seek(0)
     response = HttpResponse(buffer.read(), mimetype='xls')
     today = datetime.now()
     response['Content-Disposition'] = \
                 'attachment; filename=wb_export_%s_%s_%i-%i-%i.xls'% \
-                    (configuration.waterbalance_area.slug[:25], 
-                     configuration.waterbalance_scenario.slug[:20], 
+                    (configuration.waterbalance_area.slug[:25],
+                     configuration.waterbalance_scenario.slug[:20],
                      today.day, today.month, today.year)
 
     return  response
