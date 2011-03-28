@@ -28,25 +28,20 @@
 
 
 
-
 from datetime import datetime
 import time
 import logging
-from os.path import join
 import xlrd
 from xlutils.copy import copy
 import xlwt
 from cStringIO import StringIO
+import pkg_resources
+
 from django.http import HttpResponse
 
-from django.core.management.base import BaseCommand
-from django.core.cache import cache
-
-from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.models import WaterbalanceConf, WaterbalanceScenario, WaterbalanceArea, WaterbalanceTimeserie, Timeseries, TimeseriesEvent, Parameter
+from lizard_waterbalance.models import WaterbalanceConf
 
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import TimeseriesStub
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +78,8 @@ def export_excel_small(request, area_slug, scenario_slug):
     end_date = datetime.now()
     end_date = datetime(end_date.year, end_date.month, end_date.day)
 
-    excel_template = 'C:\\_lizard\\krw-waternet\\local_checkouts\\lizard-waterbalance\\lizard_waterbalance\\templates\\lizard_waterbalance\\excel_export_template.xls'
+    excel_template = pkg_resources.resource_filename("lizard_waterbalance",
+                                                     "/templates/lizard_waterbalance/excel_export_template.xls")
 
     rb = xlrd.open_workbook(excel_template, on_demand=True)
     wb = copy(rb)
