@@ -36,7 +36,7 @@ from django.core.management.base import BaseCommand
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceArea
-from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
+#from lizard_waterbalance.timeseriesretriever import TimeseriesRetriever
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import TimeseriesStub

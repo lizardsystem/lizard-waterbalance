@@ -530,8 +530,6 @@ class WaterbalanceComputer2:
 
         factor = 1000.0 / float(open_water.surface)
 
-        print 'factor = %f'%factor
-
         for key, timeserie in load.items():
             impact_timeseries = multiply_timeseries(timeserie, factor)
             impact[key] = impact_timeseries
@@ -733,7 +731,8 @@ class WaterbalanceComputer2:
             t1 = time.time()
             updated = self.updated
             self.updated = False
-            cache.set('wb_computer_%i'%self.configuration.id, self, 24*60*60)
+            cache.set('wb_computer_%i_store'%self.configuration.id, self, 24*60*60)
+            cache.set('wb_computer_%i_stored_date'%self.configuration.id, time.time(), 24*60*60)
             self.updated = updated
 
             logger.debug("Saved updated watercomputer to cache in %s seconds", time.time() - t1)

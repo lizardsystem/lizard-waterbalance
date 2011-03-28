@@ -382,6 +382,6 @@ class BucketComputer:
             try:
                 start_date = precipitation.start_date
             except AttributeError:
-                start_date = datetime(1900,1,1)
+                start_date = datetime(1990,1,1)
             result = empty_outcome(start_date) #mooier is een functie_get startdate
         return result

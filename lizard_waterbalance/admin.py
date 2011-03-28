@@ -20,9 +20,14 @@ from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
 class BucketAdmin(admin.ModelAdmin):
-    list_filter = ('open_water', 'surface_type' )
-    list_display = ('name', 'open_water', 'surface_type', 'surface',)
+    list_filter = ('open_water', 'surface_type')
+    list_display = ('name', 'open_water', 'surface_type', 'surface', 'crop_evaporation_factor', 'min_crop_evaporation_factor',
+                     'upper_bucket_info', 'lower_bucket_info')
     search_fields = ['name', 'open_water', ]
+
+
+
+ 
 
 
 class PumpLineAdmin(admin.ModelAdmin):
@@ -107,19 +112,26 @@ class WaterbalanceAreaAdmin(admin.ModelAdmin):
     list_display = ( 'name', 'public', 'description', )
     search_fields = ['name', ]
 
+class WaterbalanceScenarioAdmin(admin.ModelAdmin):
+    list_filter = ('public', 'active' )
+    list_display = ( 'name', 'order', 'active', 'public')
+    search_fields = ['name', ]    
+    
+    
+
 
 admin.site.register(Bucket, BucketAdmin)
-admin.site.register(Concentration)
+#admin.site.register(Concentration)
 admin.site.register(OpenWater)
 admin.site.register(Parameter, ParameterAdmin)
-admin.site.register(PumpLine, PumpLineAdmin)
+#admin.site.register(PumpLine, PumpLineAdmin)
 admin.site.register(PumpingStation, PumpingStationAdmin)
 admin.site.register(Timeseries, TimeseriesAdmin)
-admin.site.register(TimeseriesEvent)
+#admin.site.register(TimeseriesEvent)
 admin.site.register(TimeseriesFews, TimeseriesFewsAdmin)
 admin.site.register(WaterbalanceArea)
 admin.site.register(WaterbalanceConf, WaterbalanceConfAdmin)
-admin.site.register(WaterbalanceScenario)
+admin.site.register(WaterbalanceScenario, WaterbalanceScenarioAdmin)
 admin.site.register(Label, LabelAdmin)
 admin.site.register(WaterbalanceTimeserie, WaterbalanceTimeserieAdmin)
 

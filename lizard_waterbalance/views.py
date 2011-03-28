@@ -221,7 +221,7 @@ def waterbalance_start(
                                                                       'waterbalance_area__name',
                                                                       'waterbalance_scenario__order'
                                                                       ).select_related(
-                                                                            'WaterbalanceArea', 
+                                                                            'WaterbalanceArea',
                                                                             'WaterbalanceScenario')
     #TO DO: waterbalance_configurations verder filteren op basis scenario__public op basis van gebruikersrechten
     
@@ -412,11 +412,11 @@ def retrieve_horizon(request):
 
 # @profile("waterbalance_area_graph.prof")
 def waterbalance_area_graph(
-    configuration, 
-    waterbalance_computer, 
-    start_date, 
-    end_date, 
-    period, 
+    configuration,
+    waterbalance_computer,
+    start_date,
+    end_date,
+    period,
     width, height):
     """Draw the graph for the given area and of the given type.
 
@@ -426,25 +426,27 @@ def waterbalance_area_graph(
     start_datetime, end_datetime: start and enddate for calculation
     width, height: width and height of output image
     """
-
+    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Waterbalans [m3]")
     bar_width = BAR_WIDTH[period]
 
     t1 = time.time()
     
-    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for label in Label.objects.all()])
     
     #collect all data
     incoming = waterbalance_computer.get_open_water_incoming_flows(
-        date2datetime(start_date), date2datetime(end_date))
-    sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(date2datetime(start_date), date2datetime(end_date))
-    outgoing = waterbalance_computer.get_open_water_outgoing_flows(date2datetime(start_date), date2datetime(end_date))
-
+        calc_start_datetime, 
+        calc_end_datetime)
+    sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime, 
+                                                                                           calc_end_datetime)
+    outgoing = waterbalance_computer.get_open_water_outgoing_flows(calc_start_datetime, 
+                                                                   calc_end_datetime)
     
-    #define bars, withour sluice error
+    #define bars, without sluice error
     incoming_bars = []
-    
     incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened']),
                      (labels["drained"].name, incoming["drained"], labels['drained']),
                      (labels["flow_off"].name, incoming["flow_off"], labels['flow_off']),
@@ -453,7 +455,7 @@ def waterbalance_area_graph(
                      (labels["seepage"].name, incoming["seepage"], labels['seepage'])]
      
     incoming_bars += [
-        (structure.name, timeserie,structure.label) for structure, timeserie in
+        (structure.name, timeserie, structure.label) for structure, timeserie in
         incoming['defined_input'].items()]
     incoming_bars.append(
         (labels['intake_wl_control'].name, incoming["intake_wl_control"], labels['intake_wl_control']))
@@ -468,7 +470,7 @@ def waterbalance_area_graph(
     outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
     
     #sort
-    incoming_bars = sorted(incoming_bars, key=lambda bar: -bar[2].order)
+    incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
     outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
     
     #define legend
@@ -484,15 +486,11 @@ def waterbalance_area_graph(
     top_height_out = TopHeight()
    
     for bars, top_height in [(incoming_bars, top_height_in), (outgoing_bars, top_height_out)]:
-        
         for bar in bars:
             label = bar[2]
-            times, values = get_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
+            times, values = get_average_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
                                            period=period)
             
-#                times, values = get_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
-#                                   period=period, only_positive_values, only_negative_values)
-                        
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
             color = label.color
@@ -503,7 +501,7 @@ def waterbalance_area_graph(
     
     #sluice error
     label = labels['sluice_error']
-    times, values = get_timeseries(sluice_error, date2datetime(start_date), date2datetime(end_date),
+    times, values = get_average_timeseries(sluice_error, date2datetime(start_date), date2datetime(end_date),
                                            period=period)
     
     positive_sluice_error = []
@@ -530,13 +528,8 @@ def waterbalance_area_graph(
                                bottom=bottom)
     top_height_out.stack_bars(times, values)
 
-    t2 = time.time()
-    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
-
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    return graph
 
 
 def waterbalance_sluice_error(
@@ -582,16 +575,18 @@ def waterbalance_sluice_error(
     return response
 
 
-def waterbalance_water_level(configuration, 
-                             waterbalance_computer, 
-                             start_date, 
-                             end_date, 
+def waterbalance_water_level(configuration,
+                             waterbalance_computer,
+                             start_date,
+                             end_date,
                              period,
-                             reset_period, 
+                             reset_period,
                              width, height,
-                             with_sluice_error = False):
+                             with_sluice_error=False):
     """Draw the graph for the given area en scenario and of the given type."""
 
+    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    
     graph = Graph(start_date, end_date, width, height)
     if with_sluice_error:
         title = "Waterpeil met sluitfout [m NAP]" 
@@ -601,7 +596,7 @@ def waterbalance_water_level(configuration,
  
     t1 = time.time() 
     
-    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for label in Label.objects.all()])
     
     #define bars
     bars = []
@@ -611,17 +606,19 @@ def waterbalance_water_level(configuration,
         bars.append((tijdserie.name, tijdserie.get_timeseries(), labels['meas_waterlevel']))
         reset_timeseries = tijdserie.get_timeseries() 
     
-    bars.append(("waterpeilen", 
-                 waterbalance_computer.get_level_control_timeseries(date2datetime(start_date), 
-                                                                    date2datetime(end_date))['water_level'], 
+    bars.append(("waterpeilen",
+                 waterbalance_computer.get_level_control_timeseries(calc_start_datetime, 
+                                                                    calc_end_datetime)['water_level'],
                 labels['calc_waterlevel']))
 
     # Add sluice error to bars.
     if with_sluice_error:
 
-        bars.append(("waterpeilen, met sluitfout", 
-                     waterbalance_computer.get_waterlevel_with_sluice_error(date2datetime(start_date), date2datetime(end_date), 
-                                                                            reset_period, reset_timeseries=reset_timeseries), 
+        bars.append(("waterpeilen, met sluitfout",
+                     waterbalance_computer.get_waterlevel_with_sluice_error(calc_start_datetime, 
+                                                                            calc_end_datetime,
+                                                                            reset_period, 
+                                                                            reset_timeseries=reset_timeseries),
                      labels['sluice_error']))
 
     names = [bar[0] for bar in bars]
@@ -643,43 +640,40 @@ def waterbalance_water_level(configuration,
         color = label.color
         graph.axes.plot(times, values, color=color)
 
-    t2 = time.time()
-    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
+    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    return graph
 
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
-
-def waterbalance_cum_discharges(configuration, 
-                             waterbalance_computer, 
-                             start_date, 
-                             end_date, 
-                             reset_period, 
+def waterbalance_cum_discharges(configuration,
+                             waterbalance_computer,
+                             start_date,
+                             end_date,
+                             period,
+                             reset_period,
                              width, height):
     """Draw the graph for the given area en scenario and of the given type."""
-    period = 'month'
-    
+   
+    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+   
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Cumulatieve debieten")
     bar_width = BAR_WIDTH[period]
  
     t1 = time.time() 
     
-    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for label in Label.objects.all()])
     
     bars_in = []  
     bars_out = []  
     line_in = []  
     line_out = [] 
     #verzamel gegevens
-    control = waterbalance_computer.get_level_control_timeseries( 
-                                    date2datetime(start_date), date2datetime(end_date))
+    control = waterbalance_computer.get_level_control_timeseries(
+                                    calc_start_datetime, 
+                                    calc_end_datetime)
     
     ref_in, ref_out = waterbalance_computer.get_reference_timeseries(
-                                date2datetime(start_date), date2datetime(end_date))
-    
-    
+                                    calc_start_datetime, 
+                                    calc_end_datetime)    
     #define bars    
     line_out.append((labels['outtake_wl_control'].name, control['outtake_wl_control'], labels['outtake_wl_control'], '#000000'))
     line_in.append((labels['intake_wl_control'].name, control['intake_wl_control'], labels['intake_wl_control'], '#000000'))
@@ -713,9 +707,9 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            times, values =  get_cumulative_timeseries(
+            times, values = get_cumulative_timeseries(
                 bar[1], date2datetime(start_date),
-                date2datetime(end_date), multiply=-1)#, reset_period="day")
+                date2datetime(end_date), multiply= -1)#, reset_period="day")
             
             color = bar[3]
             bottom = top_height.get_heights(times)
@@ -727,27 +721,24 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            times, values =  get_cumulative_timeseries(
+            times, values = get_cumulative_timeseries(
                 bar[1], date2datetime(start_date),
                 date2datetime(end_date))#, reset_period="day")
 
             color = bar[3]
             graph.axes.plot(times, values, color=color, lw=2)            
 
-    t2 = time.time()
-    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
-
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    return graph
 
 #@profile("waterbalance_fraction_distribution.prof")
 def waterbalance_fraction_distribution(
-            configuration, waterbalance_computer, start_date, end_date, 
-            period, width, height, concentration = Parameter.PARAMETER_CHLORIDE):
+            configuration, waterbalance_computer, start_date, end_date,
+            period, width, height, concentration=Parameter.PARAMETER_CHLORIDE):
     """Draw the graph for the given area and of the given type."""
 
+    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    
     graph = Graph(start_date, end_date, width, height)
     ax2 = graph.axes.twinx()
     
@@ -755,17 +746,17 @@ def waterbalance_fraction_distribution(
         substance = "chloride"
     else:
         substance = "fosfaat"
-    title = "Fractieverdeling en %s"%substance
+    title = "Fractieverdeling en %s" % substance
     graph.suptitle(title)
     bar_width = BAR_WIDTH[period]
 
     t1 = time.time()
     
-    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for label in Label.objects.all()])
     
     #get data and bars
     fractions = waterbalance_computer.get_fraction_timeseries(
-        date2datetime(start_date), date2datetime(end_date))
+        calc_start_datetime, calc_end_datetime)
 
     bars = [(labels['initial'].name, fractions["initial"], labels['initial']),
             (labels['precipitation'].name, fractions["precipitation"], labels['precipitation']),
@@ -782,23 +773,15 @@ def waterbalance_fraction_distribution(
         else:
             name = key.name
             label = key.label
-        bars.append((name,timeserie, label))
+        bars.append((name, timeserie, label))
 
-    
-#    if substance == Concentration.SUBSTANCE_CHLORIDE:
-#        names.append("chloride")
-#    else:
-#        names.append("fosfaat")
-
-    bars = sorted(bars, key=lambda bar: -bar[2].order)
-
+    #sort
+    bars = sorted(bars, key=lambda bar:-bar[2].order)
     
     #setup legend
     names = [bar[0] for bar in bars]
     colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
-
-    # we add the legend entries for the measured substance levels
 
     bars.reverse()
     # Now draw the graph
@@ -824,7 +807,7 @@ def waterbalance_fraction_distribution(
     # show the computed substance levels
     substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(start_date), date2datetime(end_date))
     
-    style = dict(color='black',  lw=3)
+    style = dict(color='black', lw=3)
     handles.append(Line2D([], [], **style))
     names.append(substance + " berekend")
     
@@ -843,7 +826,7 @@ def waterbalance_fraction_distribution(
     nr = 0
     for tijdserie in configuration.references.filter(parameter__parameter=parameter, parameter__sourcetype=Parameter.TYPE_MEASURED):
     
-        style = dict(color=colors_list[nr],  markersize=10, marker='d', linestyle=" ")
+        style = dict(color=colors_list[nr], markersize=10, marker='d', linestyle=" ")
         nr += 1
         times, values = get_raw_timeseries(tijdserie.get_timeseries(),
                                             date2datetime(start_date),
@@ -855,38 +838,30 @@ def waterbalance_fraction_distribution(
     graph.legend_space()
     graph.legend(handles, names)
     
-    
-    t2 = time.time()
-
-    logger.debug("Grabbing all graph data took %s seconds.", t2 - t1)
-
-    graph.add_today()
-
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    return graph
 
 
 def waterbalance_phosphate_impact(
-           configuration, waterbalance_computer, start_date, end_date, 
+           configuration, waterbalance_computer, start_date, end_date,
             period, width, height):
     """Draw the graph for the given area and of the given type."""
 
+    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Fosfaatbelasting [mg/m2]")
 
     bar_width = BAR_WIDTH[period]
-    stopwatch_start = datetime.datetime.now()
-    logger.debug('Started waterbalance_phosphate_impact at %s' %
-                  stopwatch_start)
+    
+    t1 = time.time()
 
-    labels = dict([(label.program_name,label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for label in Label.objects.all()])
     
     #get data and bars
-    impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water, 
-                                                                             date2datetime(start_date),
-                                                                             date2datetime(end_date))
+    impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water,
+                                                                               calc_start_datetime, 
+                                                                               calc_end_datetime)
 
     bars_minimum = []
     bars_increment = []
@@ -897,21 +872,21 @@ def waterbalance_phosphate_impact(
         name = '%s (min)' % label.name
         name_incremental = '%s (incr)' % label.name
         
-        bars_minimum.append((name, 
+        bars_minimum.append((name,
                      impact,
                      label,
                      label.color))
-        bars_increment.append((name_incremental, 
+        bars_increment.append((name_incremental,
                                impacts_incremental[key],
                                label,
                                label.color_increment))
         legend.append((label.order, name, label.color))
-        legend.append((label.order+1000, name_incremental, label.color_increment))
+        legend.append((label.order + 1000, name_incremental, label.color_increment))
         
-    logger.debug('1: Got bars %s' %
-                 (datetime.datetime.now() - stopwatch_start))
+    logger.debug('1: Got bars in %s seconds' % 
+                 (time.time() - t1))
 
-    legend = sorted(legend, key=lambda bar: -bar[0])
+    legend = sorted(legend, key=lambda bar:-bar[0])
     
     names = [line[1] for line in legend]
     colors = [line[2] for line in legend]
@@ -920,8 +895,8 @@ def waterbalance_phosphate_impact(
     graph.legend_space()
     graph.legend(handles, names)
     
-    bars_minimum = sorted(bars_minimum, key=lambda bar: -bar[2].order)
-    bars_increment = sorted(bars_increment, key=lambda bar: -bar[2].order)
+    bars_minimum = sorted(bars_minimum, key=lambda bar:-bar[2].order)
+    bars_increment = sorted(bars_increment, key=lambda bar:-bar[2].order)
 
     top_height = TopHeight()
 
@@ -929,7 +904,7 @@ def waterbalance_phosphate_impact(
         for bar in bars:
             # Label is the min name or the incr name
             label = bar[2]
-            times, values = get_average_timeseries(bar[1], 
+            times, values = get_average_timeseries(bar[1],
                                                    date2datetime(start_date),
                                                    date2datetime(end_date),
                                                    period=period)
@@ -941,16 +916,10 @@ def waterbalance_phosphate_impact(
                 bottom=bottom)
             top_height.stack_bars(times, values)
 
-    logger.debug('3: Got axes %s' %
-                 (datetime.datetime.now() - stopwatch_start))
+    logger.debug('1: Got axes in %s seconds' % 
+                 (time.time() - t1))
 
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-
-    logger.debug('4: Got response %s' %
-                 (datetime.datetime.now() - stopwatch_start))
-    return response
+    return graph
 
 
 def waterbalance_area_graphs(request,
@@ -960,14 +929,11 @@ def waterbalance_area_graphs(request,
     """
     Return area graph.
 
-    Fetch request parameters: name, period, width, height.
     """
-    name = request.GET.get('name', "landelijk")
-
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
-    waterbalance_computer = WaterbalanceComputer2(configuration)
+    waterbalance_computer = configuration.get_waterbalance_computer()
     
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
@@ -984,38 +950,46 @@ def waterbalance_area_graphs(request,
     height = request.GET.get('height', 400)
 
     if graph_type == 'waterbalans':
-        return waterbalance_area_graph(
-            configuration, waterbalance_computer, start_date, end_date, 
+        graph = waterbalance_area_graph(
+            configuration, waterbalance_computer, start_date, end_date,
             period, width, height)
     elif graph_type == 'waterpeil':
-        return waterbalance_water_level(
-            configuration, waterbalance_computer, start_date, end_date, 
+        graph = waterbalance_water_level(
+            configuration, waterbalance_computer, start_date, end_date,
             period, reset_period, width, height)        
     elif graph_type == 'waterpeil_met_sluitfout':    
-        return waterbalance_water_level(
-            configuration, waterbalance_computer, start_date, end_date, 
-            period, reset_period, width, height, with_sluice_error = True) 
+        graph = waterbalance_water_level(
+            configuration, waterbalance_computer, start_date, end_date,
+            period, reset_period, width, height, with_sluice_error=True) 
     elif graph_type == 'sluitfout':       
         return waterbalance_sluice_error(
             area_slug, scenario_slug, _start_date, _end_date, width, height)
     elif graph_type == 'fracties_chloride':
-        return waterbalance_fraction_distribution(
-            configuration, waterbalance_computer, start_date, end_date, 
+        graph = waterbalance_fraction_distribution(
+            configuration, waterbalance_computer, start_date, end_date,
             period, width, height, Parameter.PARAMETER_CHLORIDE) 
-        # return fraction_distribution(
-        #     conf, period, start_date, end_date, width, height)
     elif graph_type == 'cumulatief_debiet':
-        return waterbalance_cum_discharges(
-            configuration, waterbalance_computer, start_date, end_date, 
-            reset_period, width, height) 
+        graph = waterbalance_cum_discharges(
+            configuration, waterbalance_computer, start_date, end_date,
+            period, reset_period, width, height) 
     elif graph_type == 'fracties_fosfaat':
-        return waterbalance_fraction_distribution(
-            configuration, waterbalance_computer, start_date, end_date, 
+        graph = waterbalance_fraction_distribution(
+            configuration, waterbalance_computer, start_date, end_date,
             period, width, height, Parameter.PARAMETER_FOSFAAT)
     elif graph_type == 'fosfaatbelasting':
-        return waterbalance_phosphate_impact(
-           configuration, waterbalance_computer, start_date, end_date, 
+        graph = waterbalance_phosphate_impact(
+           configuration, waterbalance_computer, start_date, end_date,
             period, width, height)
+    
+    #graph.add_today()
+    
+    canvas = FigureCanvas(graph.figure)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    
+    waterbalance_computer.cache_if_updated()
+    
+    return response
 
 
 def waterbalance_shapefile_search(request):
@@ -1051,7 +1025,7 @@ def graph_select(request):
     """
 
     graphs = []
-    if request.is_ajax():
+    if request.method == "POST": #.is_ajax():
         area_slug = request.POST['area_slug']
         scenario_slug = request.POST['scenario_slug']
         selected_graph_types = request.POST.getlist('graphs')
@@ -1064,10 +1038,23 @@ def graph_select(request):
             url = (reverse('waterbalance_area_graph',
                            kwargs={'area_slug': area_slug,
                                    'scenario_slug': scenario_slug,
-                                   'graph_type': graph_type}) +
+                                   'graph_type': graph_type}) + 
                    '?period=' + period)
             graphs.append(url)
         json = simplejson.dumps(graphs)
+        
+        #check is graph is cached, otherwise do it now (otherwise all graphs start a computer on their own)
+        configuration = WaterbalanceConf.objects.get(
+                                                     waterbalance_area__slug=area_slug,
+                                                     waterbalance_scenario__slug=scenario_slug)
+    
+        if not configuration.has_cached_waterbalance_computer():
+            waterbalance_computer = configuration.get_waterbalance_computer()
+            #compute all cached outcomes
+            calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
+
+            waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
+        
         return HttpResponse(json, mimetype='application/json')
     else:
         return HttpResponse("Should not be run this way.")

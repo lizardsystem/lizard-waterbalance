@@ -80,12 +80,21 @@ class Timeseries(models.Model):
         verbose_name=_("naam"),
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
         max_length=64, null=True, blank=True)
+    
+    default_value = models.FloatField(verbose_name=_("default value"),
+                                      null=True, blank=True,
+                                      default=0.0)
+                                      
+    stick_to_last_value = models.NullBooleanField(verbose_name=_("reeks met 'geheugen'"),
+                                      null=True, blank=True,
+                                      help_text=_("moet een waarde geldig blijven tot de eerst volgende waarde (blok functie)"),
+                                      default=False)
 
     class Meta:
         verbose_name = _("Tijdreeks")
         verbose_name_plural = _("Tijdreeksen")
 
-    def raw_events(self):
+    def raw_events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all events.
 
         The generator iterates over the events in the order they were added. If
@@ -93,10 +102,26 @@ class Timeseries(models.Model):
         not fill in the missing dates with value.
 
         """
-        for event in self.timeseries_events.all():
+  
+        
+        events = self.timeseries_events.filter().order_by('time')
+        if start_date:
+            events = events.filter(time__gte=start_date)
+        if end_date:
+            events = events.filter(time__lte=end_date)
+        
+        for event in events:        
             yield event.time, event.value
+            
+    def get_last_event(self):
+        """return event with latest datetime"""
+        try:
+            return self.timeseries_events.all().order_by('-time')[0]
+        except:
+            return None
+        
 
-    def events(self):
+    def events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all daily events.
 
         The generator iterates over the events in the order they were added. If
@@ -105,13 +130,25 @@ class Timeseries(models.Model):
 
         """
         date_to_yield = None # we initialize this variable to silence pyflakes
-        previous_value = 0
-        for event in self.timeseries_events.all():
+        previous_value = self.default_value
+        
+        events = self.timeseries_events.filter().order_by('time')
+        if start_date:
+            events = events.filter(time__gte=start_date)
+        if end_date:
+            events = events.filter(time__lte=end_date)
+        
+        
+        for event in events:
             date = event.time
             value = event.value
             if not date_to_yield is None:
                 while date_to_yield < date:
-                    yield date_to_yield, previous_value
+                    if self.stick_to_last_value:
+                        return_value = previous_value
+                    else:
+                        return_value = self.default_value
+                    yield date_to_yield, return_value
                     date_to_yield = date_to_yield + datetime.timedelta(1)
             yield date, value
             previous_value = value
@@ -205,12 +242,19 @@ class TimeseriesFews(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    def events(self):
-        """Return a generator to iterate over all events.
-
-        The generator iterates over the events earliest date first.
-
+    
+    def get_last_event(self):
+        """return event with latest datetime"""
+        self._get_fews_timeserie_object()
+        
+        try:
+            return self.events.all().order_by('-time')[0]
+        except:
+            return None
+    
+    def _get_fews_timeserie_object(self):
+        """
+        
         """
         fews_parameter = FewsParameter.objects.get(pkey=self.pkey)
         fews_filter = FewsFilter.objects.get(id=self.fkey)
@@ -236,8 +280,27 @@ class TimeseriesFews(models.Model):
                 exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
                 logger.warning(exception_msg)
                 raise IncompleteData(exception_msg)
+            
+        return fews_timeseries
+    
+    
+    
+    def events(self, start_date=None, end_date=None):
+        """Return a generator to iterate over all events.
 
-        for event in fews_timeseries.timeseriedata.all().order_by('tsd_time'):
+        The generator iterates over the events earliest date first.
+        
+        TO DO: zelfde maken als bij tijdseries (met 0 waarden en stick_to_last_value)
+        """
+        fews_timeseries = self._get_fews_timeserie_object()
+
+        events = fews_timeseries.timeseriedata.filter().order_by('tsd_time')
+        if start_date:
+            events = events.filter(tsd_time__gte=start_date)
+        if end_date:
+            events = events.filter(tsd_time__lte=end_date)
+        
+        for event in events:
             yield event.tsd_time, event.tsd_value
 
 
@@ -290,10 +353,6 @@ class Parameter(models.Model):
     def __unicode__(self):
         return self.name
     
-
-    #
-
-
     @classmethod
     def related_to_calculated_timeseries(cls):
         """ Return parameters that are related to calculated
@@ -307,9 +366,6 @@ class Parameter(models.Model):
 
         return Parameter.objects.filter(
             waterbalancetimeserie__in=wb_ts).distinct()
-
-
-
 
 class WaterbalanceTimeserie(models.Model):
     """Implements a time series.
@@ -358,7 +414,7 @@ class WaterbalanceTimeserie(models.Model):
 
     local_timeseries = models.ForeignKey(
         Timeseries,
-        verbose_name=_("standaard"),
+        verbose_name=_("Waterbalans tijdserie"),
         help_text=_("tijdreeks opgeslagen in eigen database"),
         null=True, blank=True, related_name='+')
 
@@ -393,13 +449,21 @@ class WaterbalanceTimeserie(models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_timeseries(self):
+    def get_timeseries(self, start_date=None, end_date=None, stick_to_last_value=False, default_value=0.0):
         """Returns the time series this WaterbalanceTimeserie refers to."""
         if self.use_fews:
             timeseries = self.fews_timeseries
         else:
             timeseries = self.local_timeseries
         return timeseries
+    
+    def get_last_event(self):
+        """ return last event """
+        if self.use_fews:
+            timeseries = self.fews_timeseries.get_last_event()
+        else:
+            timeseries = self.local_timeseries.get_last_event()
+        return timeseries       
 
     def in_daterange(self, dt):
         """
@@ -759,6 +823,31 @@ class Bucket(models.Model):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
+    def upper_bucket_info(self):
+        
+        info = ""
+
+        info += "porositeit: %s, "%str(self.upper_porosity)
+        info += "drainage factor: %s, "%str(self.upper_drainage_fraction)
+        info += "intrek_factor: %s, "%str(self.upper_indraft_fraction)
+        info += "max peil: %s, "%str(self.upper_max_water_level)
+        info += "min peil: %s, "%str(self.upper_min_water_level)
+        info += "initieel peil: %s"%str(self.upper_init_water_level)
+        
+        return info
+        
+        
+    def lower_bucket_info(self):
+ 
+        info = ""
+        info += "porositeit: %s, "%str(self.porosity)
+        info += "drainage factor: %s, "%str(self.drainage_fraction)
+        info += "intrek_factor: %s, "%str(self.indraft_fraction)
+        info += "max peil: %s, "%str(self.max_water_level)
+        info += "min peil: %s, "%str(self.min_water_level)
+        info += "initieel peil: %s"%str(self.init_water_level)
+        
+        return info
 
 class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.
@@ -1118,7 +1207,7 @@ class WaterbalanceConf(models.Model):
                                         start_date=start_date,
                                         end_date=end_date)
 
-    def  get_waterbalance_computer(self, force_new=False):
+    def get_waterbalance_computer(self, force_new=False):
         """get waterbalance computer"""
         
         from lizard_waterbalance.compute import WaterbalanceComputer2
@@ -1126,18 +1215,46 @@ class WaterbalanceConf(models.Model):
         if force_new:
             waterbalance_computer = None
         else:
-            waterbalance_computer = cache.get('wb_computer_%i'%self.id)
+            waterbalance_computer = cache.get('wb_computer_%i_store'%self.id)
     
         if not waterbalance_computer:
             waterbalance_computer = WaterbalanceComputer2(self)
         
         return waterbalance_computer
     
-    def  delete_cached_waterbalance_computer(self):
+    def delete_cached_waterbalance_computer(self):
         """deletel waterbalance computer"""
         
-        cache.delete('wb_computer_%i'%self.id)
+        cache.delete('wb_computer_%i_store'%self.id)
+        cache.delete('wb_computer_%i_stored_date'%self.id)
+        
+    def has_cached_waterbalance_computer(self):
+        """check if there is a waterbalance computer in cache"""
+        #check not on store date, is faster
+        if cache.get('wb_computer_%i_stored_date'%self.id):
+            return True
+        else:
+            return False
            
+    def get_calc_period(self, input_end_date_time=datetime.datetime.now()):
+        """return calculation start_date and end_date """
+        start_date = self.calculation_start_date
+        if self.calculation_end_date:
+            end_date = self.calculation_end_date
+        else:
+            #precipitation
+            last_precipitation = self.open_water.precipitation.get_last_event()
+            if last_precipitation:
+                last_precipitation = last_precipitation.time
+            #to do: else, warning
+                
+
+            if input_end_date_time > last_precipitation:
+                end_date = last_precipitation
+            else:
+                end_date = input_end_date_time
+        
+        return start_date, end_date
     
     def _retrieve_open_water(self):
         exception_msg = ""
@@ -1182,36 +1299,10 @@ class Label(models.Model):
              (TYPE_ERROR, 'fout'), 
              (TYPE_OTHER, 'overig'))
     
-    CATEGORY_OTHER = 0
-    CATEGORY_PRECIPITATION = 1
-    CATEGORY_SEEPAGE = 2
-    CATEGORY_HARDENED = 3
-    CATEGORY_SEWER = 4
-    CATEGORY_DRAINED = 5
-    CATEGORY_UNDRAINED = 9
-    CATEGORY_FLOW_OFF = 6
-    CATEGORY_STRUCTURE = 7
-    CATEGORY_INDRAFT = 8
-    CATEGORY_EVAPORATION = 10
-    CATEGORY_INFILTRATION = 11
-   
-    CATEGORIES = ((CATEGORY_OTHER, 'overig'), 
-                  (CATEGORY_PRECIPITATION, 'neerslag'), 
-                  (CATEGORY_SEEPAGE, 'kwel'), 
-                  (CATEGORY_HARDENED, 'verhard'),
-                  (CATEGORY_SEWER, 'riolering'),
-                  (CATEGORY_UNDRAINED, 'uitspoeling'), 
-                  (CATEGORY_DRAINED, 'gedraineerd'), 
-                  (CATEGORY_FLOW_OFF, 'afstroming'), 
-                  (CATEGORY_STRUCTURE, 'kunstwerk'),
-                  (CATEGORY_INDRAFT, 'intrek'),
-                  (CATEGORY_EVAPORATION, 'verdamping'),
-                  (CATEGORY_INFILTRATION, 'wegzijging'))
 
     name = models.CharField(max_length=64)
     program_name = models.CharField(max_length=64, null=True, blank=True)
     parent = models.ForeignKey('Label', null=True, blank=True)
-    #category = models.IntegerField(choices=CATEGORIES, default=CATEGORY_OTHER)
     flow_type = models.IntegerField(choices=TYPES, default=TYPE_IN)
     
     order = models.IntegerField(
