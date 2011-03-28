@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.13 (unreleased)
+0.13 (2011-03-28)
 -----------------
 
 - Removed WaterbalanceShape (it was previously needed for the adapter).
@@ -14,6 +14,10 @@ Changelog of lizard-waterbalance
 
 - Updated adapter to show stored calculated timeseries.
 
+- Upgraded lizard_fewsunblobbed to version 1.10.
+- Upgraded lizard_map to version 1.62.
+- Upgraded lizard_ui to version 1.54.
+- Upgraded library timeseries to 0.3
 
 0.12 (2011-03-16)
 -----------------
