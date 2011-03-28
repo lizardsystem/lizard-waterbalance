@@ -36,9 +36,7 @@ from timeseries.timeseriesstub import create_empty_timeseries
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import subtract_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
-from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
 logger = logging.getLogger(__name__)
@@ -77,13 +75,13 @@ class BucketOutcome:
                 "net_drainage": self.net_drainage,
                 "seepage": self.seepage,
                 "net_precipitation": self.net_precipitation}
-        
+
     def __dict__(self):
         return {"storage": self.storage,
                 "flow_off": self.flow_off,
                 "net_drainage": self.net_drainage,
                 "seepage": self.seepage,
-                "net_precipitation": self.net_precipitation}        
+                "net_precipitation": self.net_precipitation}
 
 
 def empty_outcome(start_date):
@@ -372,12 +370,13 @@ class BucketComputer:
         * result -- dictionary of TimesseriesStub
         """
         result = {}
-        
+
         if bucket.surface > 0:
-            log.debug("calculate bucket %s of type "%(bucket.name, bucket.surface_type))
+            surface_type_name = Bucket.SURFACE_TYPES[bucket.surface_type]
+            logger.debug("calculate bucket %s of type %s", bucket.name,
+                         surface_type_name)
             bucket_computer = self.bucket_computers[bucket.surface_type]
             outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-            
             result = outcome
         else:
             try:
