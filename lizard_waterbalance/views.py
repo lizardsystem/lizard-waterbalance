@@ -59,6 +59,19 @@ except:
 date2datetime = lambda d: datetime.datetime(d.year, d.month, d.day)
 
 
+def configuration_edit(request, template=None):
+    if template is None:
+        template = 'lizard_waterbalance/configuration.html'
+
+    
+    
+    return render_to_response(
+        template,
+        { },
+        context_instance=RequestContext(request))
+
+
+
 def profile(log_file):
     """Profile some callable.
 
@@ -805,7 +818,7 @@ def waterbalance_fraction_distribution(
 
     # Draw axis 2
     # show the computed substance levels
-    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(start_date), date2datetime(end_date))
+    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(start_date), date2datetime(end_date))[0]
     
     style = dict(color='black', lw=3)
     handles.append(Line2D([], [], **style))
@@ -850,7 +863,7 @@ def waterbalance_phosphate_impact(
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
     
     graph = Graph(start_date, end_date, width, height)
-    graph.suptitle("Fosfaatbelasting [mg/m2]")
+    graph.suptitle("Fosfaatbelasting [mg/m2/dag]")
 
     bar_width = BAR_WIDTH[period]
     
@@ -895,8 +908,8 @@ def waterbalance_phosphate_impact(
     graph.legend_space()
     graph.legend(handles, names)
     
-    bars_minimum = sorted(bars_minimum, key=lambda bar:-bar[2].order)
-    bars_increment = sorted(bars_increment, key=lambda bar:-bar[2].order)
+    bars_minimum = sorted(bars_minimum, key=lambda bar:bar[2].order)
+    bars_increment = sorted(bars_increment, key=lambda bar:bar[2].order)
 
     top_height = TopHeight()
 

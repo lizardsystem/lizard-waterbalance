@@ -42,7 +42,7 @@ class PumpLineInLine(admin.TabularInline):
 
 class PumpingStationAdmin(admin.ModelAdmin):
     list_filter = ('open_water', 'into', 'computed_level_control' )
-    list_display = ('name', 'open_water', 'into',
+    list_display = ('name', 'open_water', 'into', 'label',
                     'computed_level_control', 'percentage', 'max_discharge')
     search_fields = ['name', 'open_water', ]
 

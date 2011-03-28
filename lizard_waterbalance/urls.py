@@ -15,6 +15,9 @@ crumbs_waterbalance = [
 urlpatterns = patterns(
     '',
     (r'^admin/', include(admin.site.urls)),
+        
+    (r'^configuration/', 
+     'lizard_waterbalance.views.configuration_edit',),
     # Waterbalance screens.
     (r'^$',
      'lizard_waterbalance.views.waterbalance_start',

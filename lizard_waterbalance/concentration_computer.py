@@ -67,3 +67,65 @@ class ConcentrationComputer:
             timeseries.add_value(date, concentration)
 
         return timeseries
+    
+class ConcentrationComputer2:
+
+    def compute(self, 
+                inflow_dict, outflow_dict, storage, concentration_dict,
+                start_date, end_date):
+        """Compute and return the concentration time series.
+
+        Parameters:
+        * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
+        * concentration_list -- dict of label keys with concentration values in [mg/l]
+        
+        Computation is based on constant concentration of the fractions
+        """
+        
+        total_outflow = TimeseriesStub()
+        for events in enumerate_dict_events(outflow_dict):
+            date = events['date']
+            del(events['evaporation'])
+            del(events['date'])
+            total= 0.0
+            for key, event in events.items():
+                if key in ['outtakes', 'defined_output']:
+                    for key_outtake, event_outtake in event.items():
+                        total += event_outtake[1]
+                else:
+                     total += event[1]
+            total_outflow.add_value(date, total)
+            
+            
+        start_storage = next(storage.events(start_date, end_date))[1]
+        storage_chloride = start_storage * concentration_dict['initial']
+        
+        delta = TimeseriesStub()
+       
+        timeseries = TimeseriesStub()
+        for events in enumerate_dict_events(dict(tuple(inflow_dict.items()) + (('total_outflow', total_outflow), ('storage', storage)))):
+            date = events['date']
+            total_outflow = -events['total_outflow'][1]
+            storage = events['storage'][1]
+            del(events['date'])
+            del(events['total_outflow'])
+            del(events['storage'])
+            
+            out = storage_chloride/storage * total_outflow
+            
+            plus = 0.0
+            for key, value in events.items():
+                if key in ['intakes', 'defined_input']:
+                    for key_intake, value_intake in value.items():
+                        if key_intake == 'intake_wl_control':
+                            plus += value_intake[1] * concentration_dict[key_intake] 
+                        else:
+                            plus += value_intake[1] * concentration_dict[key_intake.label.program_name] 
+                else:
+                    plus += value[1] * concentration_dict[key]
+            storage_chloride = storage_chloride + plus - out
+            timeseries.add_value(date, storage_chloride/storage)
+            delta.add_value(date, plus - out)
+
+        return timeseries, delta  
+    

@@ -109,7 +109,7 @@ def export_excel_small(request, area_slug, scenario_slug):
     level_control = waterbalance_computer.get_level_control_timeseries(start_date, end_date)
     fractions = waterbalance_computer.get_fraction_timeseries(start_date, end_date)
     sluice_error = waterbalance_computer.calc_sluice_error_timeseries(start_date, end_date)
-    chloride_concentration = waterbalance_computer.get_concentration_timeseries(start_date, end_date)
+    chloride_concentration, delta_concentration = waterbalance_computer.get_concentration_timeseries(start_date, end_date)
     impact_minimum, impact_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water, start_date, end_date)
 
     logger.debug("%s seconds - got all values", time.time() - t1)
@@ -122,67 +122,69 @@ def export_excel_small(request, area_slug, scenario_slug):
     #combine cols of table
     header = ['year', 'month', 'day']
     data_cols = {}
-    data_cols[2] = input_ts['precipitation']
-    data_cols[3] = input_ts['evaporation']
-    data_cols[5] = configuration.open_water.minimum_level.get_timeseries()
-    data_cols[7] = configuration.open_water.maximum_level.get_timeseries()
+    data_cols[(2, 'neerslag', '[mm/dag]')] = input_ts['precipitation']
+    data_cols[(3, 'neerslag', '[mm/dag]')] = input_ts['evaporation']
+    data_cols[(5, 'min peil', '[mNAP]')] = configuration.open_water.minimum_level.get_timeseries()
+    data_cols[(7, 'neerslag', '[mNAP]')] = configuration.open_water.maximum_level.get_timeseries()
     try:
-        data_cols[6] = configuration.open_water.target_level.get_timeseries()
+        data_cols[(6, 'streefpeil', '[mNAP]')] = configuration.open_water.target_level.get_timeseries()
     except:
         pass
 
     #in
-    data_cols[9] = vertical_openwater['precipitation']
-    data_cols[10] = vertical_openwater['seepage']
-    data_cols[11] = buckets_summary.hardened
-    data_cols[13] = buckets_summary.drained
-    data_cols[14] = buckets_summary.undrained
-    data_cols[15] = buckets_summary.flow_off
+    data_cols[(9, 'neerslag', '[m3/dag]')] = vertical_openwater['precipitation']
+    data_cols[(10, 'verdamping', '[m3/dag]')] = vertical_openwater['seepage']
+    data_cols[(11, 'verhard', '[m3/dag]')] = buckets_summary.hardened
+    data_cols[(13, 'gedraineerd', '[m3/dag]')] = buckets_summary.drained
+    data_cols[(14, 'uitspoelig', '[m3/dag]')] = buckets_summary.undrained
+    data_cols[(15, 'afstroming', '[m3/dag]')] = buckets_summary.flow_off
     col = 16
     for intake, timeserie in input_ts['incoming_timeseries'].items():
-        data_cols[col] = timeserie
+        data_cols[(col, str(intake), '[m3/dag]')] = timeserie
         col = col + 1
 
-    data_cols[20] = level_control["intake_wl_control"]
+    data_cols[(20, 'inlaat peilhandhaving', '[m3/dag]')] = level_control["intake_wl_control"]
 
     #uit
-    data_cols[22] = vertical_openwater['evaporation']
-    data_cols[23] = vertical_openwater['infiltration']
-    data_cols[24] = buckets_summary.indraft
-    data_cols[29] = level_control["outtake_wl_control"]
+    data_cols[(22, 'verdamping', '[m3/dag]')] = vertical_openwater['evaporation']
+    data_cols[(23, 'wegzijiging', '[m3/dag]')] = vertical_openwater['infiltration']
+    data_cols[(24, 'intrek', '[m3/dag]')] = buckets_summary.indraft
+    data_cols[(29, 'uitlaat', '[m3/dag]')] = level_control["outtake_wl_control"]
 
     #totaal
-    data_cols[32] = level_control['total_incoming']
-    data_cols[33] = level_control['total_outgoing']
-    data_cols[35] = level_control['water_level']
-    data_cols[36] = level_control['storage']
-    data_cols[51] = chloride_concentration
+    data_cols[(32, 'totaal in', '[m3/dag]')] = level_control['total_incoming']
+    data_cols[(33, 'totaal uit', '[m3/dag]')] = level_control['total_outgoing']
+    data_cols[(35, 'berekend waterpeil', '[mNAP]')] = level_control['water_level']
+    data_cols[(36, 'berekende berging', '[m3]')] = level_control['storage']
+    
+    data_cols[(50, 'verschil chloride', '[g]')] = delta_concentration
+    data_cols[(51, 'chloride concentratie', '[mg/l]')] = chloride_concentration
 
     #fracties
-    data_cols[68] = fractions['initial']
-    data_cols[69] = fractions['precipitation']
-    data_cols[70] = fractions['seepage']
-    data_cols[71] = fractions['hardened']
-    data_cols[73] = fractions['drained']
-    data_cols[74] = fractions['undrained']
-    data_cols[75] = fractions['flow_off']
+    data_cols[(68, 'fractie initieel', '[-]')] = fractions['initial']
+    data_cols[(69, 'fractie neerslag', '[-]')] = fractions['precipitation']
+    data_cols[(70, 'fractie kwel', '[-]')] = fractions['seepage']
+    data_cols[(71, 'fractie verhard', '[-]')] = fractions['hardened']
+    data_cols[(73, 'fractie gedraineerd', '[-]')] = fractions['drained']
+    data_cols[(74, 'fractie uitspoeling', '[-]')] = fractions['undrained']
+    data_cols[(75, 'fractie uitstroom', '[-]')] = fractions['flow_off']
     colnr = 76
     for key, item in fractions['intakes'].items():
-        data_cols[colnr] = item
+        data_cols[(colnr, 'fractie %s'%str(key), '[-]')] = item
         colnr = colnr + 1
 
-    data_cols[108] = sluice_error[0]
-    data_cols[111] = sluice_error[1]
+    data_cols[(108, 'sluitfout', '[m3/dag]')] = sluice_error[0]
+    data_cols[(111, 'som gemeten pompdebieten', '[m3/dag]')] = sluice_error[1]
 
     colnr = 135
     for key, item in impact_minimum.items():
-        data_cols[colnr] = item
+        data_cols[(colnr, 'min fosfaatb %s'%str(key), '[mg/m2/dag]' )] = item
         colnr = colnr + 1
 
     colnr = colnr + 1
 
     for key, item in impact_incremental.items():
-        data_cols[colnr] = item
+        data_cols[(colnr, 'incr fosfaatb %s'%str(key), '[mg/m2/dag]')] = item
         colnr = colnr + 1
 
     start_row = 13
@@ -195,19 +197,21 @@ def export_excel_small(request, area_slug, scenario_slug):
 
     logger.debug("%s seconds - referenced all values", time.time() - t1)
 
+    sheet.write(10,0,'datum')
+    for key in data_cols.keys():
+        sheet.write(10,key[0],key[1])
+        sheet.write(11,key[0],key[2])
+
     for event_dict in enumerate_dict_events(data_cols):
         date = event_dict['date']
         sheet.write(row,0,date, style)
-        for col, event in event_dict.items():
-            if not col == 'date':
-                sheet.write(row,col,event_dict[col][1])#neerslag
+        for key, event in event_dict.items():
+            if not key == 'date':
+                sheet.write(row,key[0],event[1])
 
         row = row + 1
-
-
+    
     #for max: Formula('MAX(A1:B1)')
-
-
     buffer = StringIO()
     wb.save(buffer)
     del wb

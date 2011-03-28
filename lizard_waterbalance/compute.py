@@ -43,7 +43,7 @@ from django.core.cache import cache
 
 from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
-from lizard_waterbalance.concentration_computer import ConcentrationComputer
+from lizard_waterbalance.concentration_computer import ConcentrationComputer2
 from lizard_waterbalance.load_computer import LoadComputer
 
 from lizard_waterbalance.models import Parameter
@@ -84,7 +84,7 @@ class WaterbalanceComputer2:
                  level_control_computer=LevelControlComputer(),
                  level_control_assignment=LevelControlAssignment(),
                  vertical_timeseries_computer=VerticalTimeseriesComputer(),
-                 concentration_computer=ConcentrationComputer(),
+                 concentration_computer=ConcentrationComputer2(),
                  fraction_computer=FractionComputer(),
                  sluice_error_computer=SluiceErrorComputer(),
                  load_computer = LoadComputer()):
@@ -478,11 +478,17 @@ class WaterbalanceComputer2:
         """ Alleen chloride op dit moment"""
 
         fractions = self.get_fraction_timeseries(start_date_calc, end_date_calc)
+        
+        inflow = self.get_open_water_incoming_flows(start_date_calc, end_date_calc)
+        outflow = self.get_open_water_outgoing_flows(start_date_calc, end_date_calc)
+        storage = self.get_level_control_timeseries(start_date_calc, end_date_calc)['storage']
+        
         concentrations = {}
         for concentr in self.configuration.config_concentrations.all().select_related('Label'):
             concentrations[concentr.label.program_name] = concentr.cl_concentration
 
-        return self.concentration_computer.compute(fractions, concentrations, start_date_calc, end_date_calc)
+        return self.concentration_computer.compute(inflow, outflow, storage, concentrations, 
+                                                   start_date_calc, end_date_calc)
 
     def get_load_timeseries(self,
             start_date_calc, end_date_calc):
@@ -501,8 +507,8 @@ class WaterbalanceComputer2:
             concentrations = {}
             concentrations_incremetal = {}
             for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-                concentrations[concentr.label.program_name] = concentr.p_lower_concentration
-                concentrations_incremetal[concentr.label.program_name] = concentr.p_incremental
+                concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
+                concentrations_incremetal[concentr.label.program_name] = concentr.stof_increment
 
             load = {}
             load_incremental = {}
