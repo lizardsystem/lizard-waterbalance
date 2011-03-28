@@ -20,6 +20,8 @@ install_requires = [
     'lizard-ui > 1.53',
     'timeseries >= 0.2',
     'xlrd',
+    'xlwt',
+    'xlutils',
     ],
 
 tests_require = [
