@@ -370,7 +370,7 @@ def get_average_timeseries(timeseries, start, end, period='month'):
     return zip(*(e for e in grouped_event_values(timeseries, period, average=True)
                  if e[0] >= start and e[0] < end))
 
-def get_cumulative_timeseries(timeseries, start, end, reset_period='year', period='month', multiply=1):
+def get_cumulative_timeseries(timeseries, start, end, reset_period='hydro_year', period='month', multiply=1, time_shift=0):
     """Return the events for the given timeseries in the given range.
 
     Parameters:
@@ -380,7 +380,7 @@ def get_cumulative_timeseries(timeseries, start, end, reset_period='year', perio
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply)
+    return zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply, time_shift=time_shift)
                  if e[0] >= start and e[0] < end))
 
 
@@ -721,8 +721,8 @@ def waterbalance_cum_discharges(configuration,
             label = bar[2]
 
             times, values = get_cumulative_timeseries(
-                bar[1], date2datetime(start_date),
-                date2datetime(end_date), multiply= -1)#, reset_period="day")
+                bar[1], date2datetime(calc_start_date),
+                date2datetime(calc_end_date), multiply= -1, time_shift=-31)#, reset_period="day")
             
             color = bar[3]
             bottom = top_height.get_heights(times)
@@ -818,7 +818,7 @@ def waterbalance_fraction_distribution(
 
     # Draw axis 2
     # show the computed substance levels
-    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(start_date), date2datetime(end_date))[0]
+    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(calc_start_datetime), date2datetime(calc_end_datetime))[0]
     
     style = dict(color='black', lw=3)
     handles.append(Line2D([], [], **style))
@@ -943,10 +943,14 @@ def waterbalance_area_graphs(request,
     Return area graph.
 
     """
+    
+    
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
     waterbalance_computer = configuration.get_waterbalance_computer()
+    
+    
     
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
@@ -958,7 +962,7 @@ def waterbalance_area_graphs(request,
     # better, but not sure if it works correctly with existing
     # functions.
     start_date, end_date = current_start_end_dates(request)
-
+    
     width = request.GET.get('width', 1600)
     height = request.GET.get('height', 400)
 
@@ -1038,7 +1042,7 @@ def graph_select(request):
     """
 
     graphs = []
-    if request.method == "POST": #.is_ajax():
+    if request.is_ajax():
         area_slug = request.POST['area_slug']
         scenario_slug = request.POST['scenario_slug']
         selected_graph_types = request.POST.getlist('graphs')

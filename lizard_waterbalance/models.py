@@ -91,8 +91,8 @@ class Timeseries(models.Model):
                                       default=False)
 
     class Meta:
-        verbose_name = _("Tijdreeks")
-        verbose_name_plural = _("Tijdreeksen")
+        verbose_name = _("7a Tijdreeks")
+        verbose_name_plural = _("7a Tijdreeksen")
 
     def raw_events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all events.
@@ -217,8 +217,8 @@ class TimeseriesFews(models.Model):
 
     """
     class Meta:
-        verbose_name = _("tijdreeks FEWS")
-        verbose_name_plural = _("tijdreeksen FEWS")
+        verbose_name = _("7b tijdreeks FEWS")
+        verbose_name_plural = _("7b tijdreeksen FEWS")
 
     name = models.CharField(
         verbose_name=_("naam"),
@@ -396,6 +396,8 @@ class WaterbalanceTimeserie(models.Model):
         (TIMESTEP_YEAR, 'year'),
         ]
 
+        
+        
     name = models.CharField(
         verbose_name=_("naam"),
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
@@ -421,27 +423,30 @@ class WaterbalanceTimeserie(models.Model):
     # Belongs to what configuration? Optional, but needed for
     # adapter/lizard-map.
     configuration = models.ForeignKey(
-        'WaterbalanceConf', null=True, blank=True,
+        'WaterbalanceConf', editable=False, null=True, blank=True,
         help_text='WaterbalanceConf, needed for adapter/lizard-map.')
 
     # Timestep is what it's supposed to be. It is metadata for
     # (calculated) timeseries.
     timestep = models.IntegerField(
+        editable=False,
         choices=TIMESTEP_CHOICES, null=True, blank=True,
         help_text='Timestep. Optional metadata for (calculated) timeseries')
 
     hint_datetime_start = models.DateTimeField(
+        editable=False,
         null=True, blank=True,
         help_text=('Hint for datetime start of timerange. '
                    'Filled in by automatic process.'))
     hint_datetime_end = models.DateTimeField(
+        editable=False,                                     
         null=True, blank=True,
         help_text=('Hint for datetime end of timerange. '
                    'Filled in by automatic process.'))
 
     class Meta:
-        verbose_name = _("Waterbalans tijdreeks")
-        verbose_name_plural = _("Waterbalans tijdreeksen")
+        verbose_name = _("7 Waterbalans tijdseries")
+        verbose_name_plural = _("7 Waterbalans tijdseries")
         unique_together = (("name", "parameter",
                             "configuration", "timestep"),
                            )
@@ -569,8 +574,8 @@ class OpenWater(models.Model):
 
     """
     class Meta:
-        verbose_name = _("Open water")
-
+        verbose_name = _("4 Open water")
+ 
     name = models.CharField(
         verbose_name=_("naam"),
         help_text=_("naam om het open water eenvoudig te herkennen"),
@@ -611,7 +616,7 @@ class OpenWater(models.Model):
         verbose_name=_("verdamping"),
         help_text=_("meetreeks verdamping in [mm/dag]"),
         related_name='configuration_evaporation')
-    
+ 
     seepage = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("kwel"),
@@ -747,6 +752,7 @@ class Bucket(models.Model):
         verbose_name=_("resultaten"),
         help_text=_("Berekeningsresultaten van een bakje"),
         null=True, blank=True,
+        editable=False,
         related_name='bucket_results')
 
     # TODO these values are optional: change their definition accordingly
@@ -811,7 +817,7 @@ class Bucket(models.Model):
     # could be handy to store these values explicitly.
 
     def __unicode__(self):
-        return self.name
+        return '%s - %s'%(self.open_water.name, self.name)
     
     def retrieve_seepage(self, start_date, end_date):
         exception_msg = ""
@@ -849,6 +855,53 @@ class Bucket(models.Model):
         
         return info
 
+class SobekBucket(models.Model):
+    """Represents a *bakje*.
+
+    Instance variables:
+    * name -- name to show to the user
+    * surface -- surface in [m2]
+    * is_collapsed -- holds if and only if the bucket is a single bucket
+    * open_water -- link to the open water
+    * indraft -- link to input time serie for *intrek*
+    * drainage -- link to input time serie for drainage
+    * seepage -- link to input time serie for *kwel* in [mm/day]
+    * infiltration -- link to input time serie for *wegzijging*
+    * flow_off -- link to input time serie for *afstroming*
+    * computed_flow_off -- link to computed time serie for *afstroming*
+
+    """
+    class Meta:
+        verbose_name = _("Sobek Bakje")
+        verbose_name_plural = _("Sobek Bakjes")
+
+    name = models.CharField(verbose_name=_("naam"), max_length=64)
+
+    open_water = models.ForeignKey(OpenWater,
+                                   related_name='sobekbuckets')  #mooier als je deze naam niet zet, dan is het altijd consistent
+    
+    surface_type =  models.IntegerField(
+        verbose_name=_("oppervlakte type"),
+        choices=Bucket.SURFACE_TYPES,
+        default=Bucket.UNDRAINED_SURFACE)
+
+    flow_off = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("tijdserie oppervlakte afstroom"),
+        help_text=_("tijdserie met resultaat oppervlakte afstroom"),
+        null=True, blank=True,
+        related_name='sobekbucket_flow_off')
+
+    drainage_indraft = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("tijdserie uitstroom en intrek"),
+        help_text=_("tijdserie met resultaat grondwater uitstroom en intrek"),
+        null=True, blank=True,
+        related_name='sobekbucket_drainage_indraft')
+
+    def __unicode__(self):
+        return '%s - %s'%(self.open_water.name, self.name)
+
 class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.
 
@@ -866,8 +919,8 @@ class PumpingStation(models.Model):
     """
     class Meta:
         unique_together = (("open_water", "label"),)
-        verbose_name = _("Kunstwerk")
-        verbose_name_plural = _("Kunstwerken")
+        verbose_name = _("6 Kunstwerk")
+        verbose_name_plural = _("6 Kunstwerken")
 
     name = models.CharField(
         max_length=64,
@@ -904,6 +957,7 @@ class PumpingStation(models.Model):
         WaterbalanceTimeserie,
         verbose_name=_("resultaten"),
         null=True, blank=True,
+        editable=False,
         help_text=_("Berekeningsresultaten van een kunstwerk"),
         related_name='pumping_station_result')
 
@@ -966,8 +1020,8 @@ class WaterbalanceScenario(models.Model):
 
     """
     class Meta:
-        verbose_name = _("Waterbalans scenario")
-        verbose_name_plural = _("Waterbalans scenario's")
+        verbose_name = _("2 Waterbalans scenario")
+        verbose_name_plural = _("2 Waterbalans scenario's")
         ordering = ("order",)
 
     name = models.CharField(
@@ -1016,8 +1070,8 @@ class WaterbalanceArea(gis_models.Model):
 
     """
     class Meta:
-        verbose_name = _("Waterbalans gebied")
-        verbose_name_plural = _("Waterbalans gebieden")
+        verbose_name = _("1 Waterbalans gebied")
+        verbose_name_plural = _("1 Waterbalans gebieden")
         ordering = ("name",)
 
     name = gis_models.CharField(
@@ -1096,7 +1150,7 @@ def load_shapefile(shapefile_name, name_field, source_epsg):
                  #update geometry
                  wb_area.geom = geometry
              else:
-                 logger.debugger('new area: %s'%name)
+                 logger.debug('new area: %s'%name)
              wb_area.save()
 
 
@@ -1120,8 +1174,8 @@ class WaterbalanceConf(models.Model):
     """
     class Meta:
         unique_together = (("waterbalance_area", "waterbalance_scenario"),)
-        verbose_name = _("Waterbalans configuratie")
-        verbose_name_plural = _("Waterbalans configuraties")
+        verbose_name = _("3 Waterbalans configuratie")
+        verbose_name_plural = _("3 Waterbalans configuraties")
         ordering = ("waterbalance_area__name", "waterbalance_scenario__order")
 
     waterbalance_area = models.ForeignKey(
@@ -1132,16 +1186,16 @@ class WaterbalanceConf(models.Model):
         WaterbalanceScenario,
         verbose_name=_("waterbalans scenario"))
 
-    open_water = models.OneToOneField(OpenWater, null=True, blank=True)
+    open_water = models.OneToOneField(OpenWater, null=True, blank=True, editable=False)
 
     description = models.TextField(null=True,
                                    blank=True,
-                                   help_text="You can use markdown")
+                                   verbose_name="Beschrijving")
     
-    calculation_start_date = models.DateTimeField(verbose_name=_("start datum"),
+    calculation_start_date = models.DateTimeField(verbose_name=_("start datum berekening"),
                                                   help_text=_("vaste start datum van de berekening"))
     
-    calculation_end_date = models.DateTimeField(verbose_name=_("start datum"),
+    calculation_end_date = models.DateTimeField(verbose_name=_("eind datum berekening"),
                                                   help_text=_("vaste start datum van eind van de berekening (optioneel)"),
                                                   null=True,
                                                   blank=True)
@@ -1156,6 +1210,7 @@ class WaterbalanceConf(models.Model):
     results = models.ManyToManyField(
         WaterbalanceTimeserie,
         null=True, blank=True,
+        editable=False,
         verbose_name=_("resultaten"),
         help_text=_("Rekenresultaten"),
         related_name='configuration_results')
@@ -1244,15 +1299,16 @@ class WaterbalanceConf(models.Model):
         else:
             #precipitation
             last_precipitation = self.open_water.precipitation.get_last_event()
-            if last_precipitation:
-                last_precipitation = last_precipitation.time
+            end_date = last_precipitation.time
+            #if last_precipitation:
+            #    last_precipitation = last_precipitation.time
             #to do: else, warning
-                
-
-            if input_end_date_time > last_precipitation:
-                end_date = last_precipitation
-            else:
-                end_date = input_end_date_time
+            #    
+            #
+            #if input_end_date_time > last_precipitation:
+            #    end_date = last_precipitation
+            #else:
+            #    end_date = input_end_date_time
         
         return start_date, end_date
     
@@ -1352,10 +1408,12 @@ class Concentration(models.Model):
             default=0.0,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))       
     p_lower_concentration = models.FloatField(
+            editable = False, #even uitgezet. deze is gelijk aan stof
             verbose_name=_("P_ondergrens"),
             default=0.0,
             help_text=_("minimum concentratie in [mg/l]"))   
     p_incremental = models.FloatField(
+            editable = False, #even uitgezet. deze is gelijk aan stof
             verbose_name=_("P_increment"),
             default=0.0,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))   
@@ -1384,6 +1442,31 @@ def pre_save_slug(*args, **kwargs):
     logger.debug('created slug for %s'%str(kwargs['instance'].name))
     kwargs['instance'].slug = slugify(kwargs['instance'].name)
 
+def pre_save_configuration(*args, **kwargs):
+    logger.debug('created slug for %s'%str(kwargs['instance'].__unicode__()))
+    if kwargs['instance'].open_water == None:
+        dummy_parameter, new = Parameter.objects.get_or_create(name='dummy')
+        dummy_timeserie, new = WaterbalanceTimeserie.objects.get_or_create(name='selecteer', parameter=dummy_parameter)
+        
+        open_water = OpenWater()
+        open_water.name = kwargs['instance'].__unicode__()
+        open_water.bottom_height = -999.0
+        open_water.surface = 9999.0
+        
+        open_water.maximum_level = dummy_timeserie 
+        open_water.minimum_level = dummy_timeserie
+  
+        open_water.target_level = dummy_timeserie 
+        open_water.init_water_level = -999.0
+        open_water.precipitation = dummy_timeserie  
+        open_water.evaporation = dummy_timeserie
+        open_water.seepage = dummy_timeserie
+        open_water.infiltration = dummy_timeserie
+        open_water.save()
+        kwargs['instance'].open_water = open_water   
+        
+
 pre_save.connect(pre_save_slug, sender=Parameter)
 pre_save.connect(pre_save_slug, sender=WaterbalanceArea)
 pre_save.connect(pre_save_slug, sender=WaterbalanceScenario)
+pre_save.connect(pre_save_configuration, sender=WaterbalanceConf)

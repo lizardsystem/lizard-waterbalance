@@ -18,6 +18,13 @@ from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceScenario
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_waterbalance.models import SobekBucket
+
+class BucketInLine(admin.TabularInline):
+    model = Bucket
+    
+class SobekBucketInLine(admin.TabularInline):
+    model = SobekBucket   
 
 class BucketAdmin(admin.ModelAdmin):
     list_filter = ('open_water', 'surface_type')
@@ -25,9 +32,21 @@ class BucketAdmin(admin.ModelAdmin):
                      'upper_bucket_info', 'lower_bucket_info')
     search_fields = ['name', 'open_water', ]
 
+class OpenWaterAdmin(admin.ModelAdmin):
+    list_display = ('name', 'surface', 
+                    'bottom_height')
+    search_fields = ['name', ]
+    
+    inlines = [
+        BucketInLine,
+        SobekBucketInLine
+        ]
 
 
- 
+class SobekBucketAdmin(admin.ModelAdmin):
+    list_filter = ('open_water', 'surface_type')
+    list_display = ('name', 'open_water', 'surface_type')
+    search_fields = ['name', 'open_water' ] 
 
 
 class PumpLineAdmin(admin.ModelAdmin):
@@ -66,7 +85,7 @@ class ConcentrationInLine(admin.TabularInline):
 
 class WaterbalanceConfAdmin(admin.ModelAdmin):
     list_filter = ('waterbalance_scenario', 'waterbalance_area',  )
-    list_display = ('waterbalance_scenario', 'waterbalance_area',
+    list_display = ('waterbalance_area', 'waterbalance_scenario', 
                     'description')
     search_fields = ['waterbalance_scenario', 'waterbalance_area' ]
     
@@ -121,8 +140,9 @@ class WaterbalanceScenarioAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Bucket, BucketAdmin)
+#admin.site.register(SobekBucket, SobekBucketAdmin)
 #admin.site.register(Concentration)
-admin.site.register(OpenWater)
+admin.site.register(OpenWater, OpenWaterAdmin)
 admin.site.register(Parameter, ParameterAdmin)
 #admin.site.register(PumpLine, PumpLineAdmin)
 admin.site.register(PumpingStation, PumpingStationAdmin)
