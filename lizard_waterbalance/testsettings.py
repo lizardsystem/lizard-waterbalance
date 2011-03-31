@@ -5,13 +5,16 @@ TEMPLATE_DEBUG = True
 #DATABASE_NAME = 'test.db'
 
 DATABASES = {
-    # If you want to test with this database, put it in localsettings.py.
-    'default': { #postgres testdatabase at N&S
+    # If you want to use another database, consider putting the database
+    # settings in localsettings.py. Otherwise, if you change the settings in
+    # the current file and commit them to the repository, other developers will
+    # also use these settings whether they have that database or not.
+    'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'HOST': '127.0.0.1',
-        'NAME': 'krw_test',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres'
+        'NAME': 'waterbalance',
+        'USER': 'buildout',
+        'PASSWORD': 'buildout'
         },
     }
 
