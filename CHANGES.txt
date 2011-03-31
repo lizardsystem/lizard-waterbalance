@@ -5,7 +5,9 @@ Changelog of lizard-waterbalance
 0.14 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fixed the order of the radio buttons for the selection of the time unit of
+  the horizontal axis of each waterbalance graph. The order is now "jaar -
+  kwartaal - maand - dag" instead of "jaar - maand - kwartaal - dag".
 
 
 0.13 (2011-03-28)
