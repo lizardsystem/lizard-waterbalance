@@ -232,6 +232,15 @@ class TimeseriesFews(models.Model):
         help_text=_("lkey van de locatie in FEWS unblobbed"),
         null=True, blank=True)
 
+    default_value = models.FloatField(verbose_name=_("default value"),
+                                      null=True, blank=True,
+                                      default=0.0)
+
+    stick_to_last_value = models.NullBooleanField(verbose_name=_("reeks met 'geheugen'"),
+                                      null=True, blank=True,
+                                      help_text=_("moet een waarde geldig blijven tot de eerst volgende waarde (blok functie)"),
+                                      default=False)
+
     def __unicode__(self):
         return self.name
 
