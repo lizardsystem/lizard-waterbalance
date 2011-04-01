@@ -284,25 +284,30 @@ class TimeseriesFews(models.Model):
 
         return fews_timeseries
 
-
-
     def events(self, start_date=None, end_date=None):
-        """Return a generator to iterate over all events.
+        """Return a generator to iterate over all daily events.
 
-        The generator iterates over the events earliest date first.
+        The generator iterates over the events in the order they were added. If
+        dates are missing in between two successive events, this function fills
+        in the missing dates. Which value is inserted depends on the values of
+        self.stick_to_last_value and self.default.
 
-        TO DO: zelfde maken als bij tijdseries (met 0 waarden en stick_to_last_value)
         """
         fews_timeseries = self._get_fews_timeserie_object()
 
-        events = fews_timeseries.timeseriedata.filter().order_by('tsd_time')
-        if start_date:
-            events = events.filter(tsd_time__gte=start_date)
-        if end_date:
-            events = events.filter(tsd_time__lte=end_date)
+        ts_events = fews_timeseries.timeseriedata.filter().order_by('tsd_time')
+        if not start_date is None:
+            ts_events = ts_events.filter(tsd_time__gte=start_date)
+        if not end_date is None:
+            ts_events = ts_events.filter(tsd_time__lte=end_date)
 
-        for event in events:
-            yield event.tsd_time, event.tsd_value
+        events = ((event.tsd_time, event.tsd_value) for event in ts_events)
+        if self.stick_to_last_value:
+            for date, value in daily_sticky_events(events):
+                yield date, value
+        else:
+            for date, value in daily_events(events, default_value=self.default_value):
+                yield date, value
 
 
 class Parameter(models.Model):
