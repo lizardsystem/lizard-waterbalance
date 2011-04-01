@@ -49,6 +49,8 @@ from south.modelsinspector import add_ignored_fields
 add_ignored_fields(["^lizard_map\.models\.ColorField"])
 
 from timeseries.timeseriesstub import add_timeseries
+from timeseries.timeseriesstub import daily_events
+from timeseries.timeseriesstub import daily_sticky_events
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesStub
 
@@ -80,11 +82,11 @@ class Timeseries(models.Model):
         verbose_name=_("naam"),
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
         max_length=64, null=True, blank=True)
-    
+
     default_value = models.FloatField(verbose_name=_("default value"),
                                       null=True, blank=True,
                                       default=0.0)
-                                      
+
     stick_to_last_value = models.NullBooleanField(verbose_name=_("reeks met 'geheugen'"),
                                       null=True, blank=True,
                                       help_text=_("moet een waarde geldig blijven tot de eerst volgende waarde (blok functie)"),
@@ -102,57 +104,47 @@ class Timeseries(models.Model):
         not fill in the missing dates with value.
 
         """
-  
-        
+
+
         events = self.timeseries_events.filter().order_by('time')
         if start_date:
             events = events.filter(time__gte=start_date)
         if end_date:
             events = events.filter(time__lte=end_date)
-        
-        for event in events:        
+
+        for event in events:
             yield event.time, event.value
-            
+
     def get_last_event(self):
         """return event with latest datetime"""
         try:
             return self.timeseries_events.all().order_by('-time')[0]
         except:
             return None
-        
+
 
     def events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all daily events.
 
         The generator iterates over the events in the order they were added. If
         dates are missing in between two successive events, this function fills
-        in the missing dates with the value on the latest known date.
+        in the missing dates. Which value is inserted depends on the values of
+        self.stick_to_last_value and self.default.
 
         """
-        date_to_yield = None # we initialize this variable to silence pyflakes
-        previous_value = self.default_value
-        
-        events = self.timeseries_events.filter().order_by('time')
-        if start_date:
-            events = events.filter(time__gte=start_date)
-        if end_date:
-            events = events.filter(time__lte=end_date)
-        
-        
-        for event in events:
-            date = event.time
-            value = event.value
-            if not date_to_yield is None:
-                while date_to_yield < date:
-                    if self.stick_to_last_value:
-                        return_value = previous_value
-                    else:
-                        return_value = self.default_value
-                    yield date_to_yield, return_value
-                    date_to_yield = date_to_yield + datetime.timedelta(1)
-            yield date, value
-            previous_value = value
-            date_to_yield = date + datetime.timedelta(1)
+        ts_events = self.timeseries_events.filter().order_by('time')
+        if not start_date is None:
+            ts_events = ts_events.filter(time__gte=start_date)
+        if not end_date is None:
+            ts_events = ts_events.filter(time__lte=end_date)
+
+        events = ((event.time, event.value) for event in ts_events)
+        if self.stick_to_last_value:
+            for date, value in daily_sticky_events(events):
+                yield date, value
+        else:
+            for date, value in daily_events(events, default_value=self.default_value):
+                yield date, value
 
     @transaction.commit_manually
     def save_timeserie_stub(self,timeserie_stub):
@@ -242,19 +234,19 @@ class TimeseriesFews(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     def get_last_event(self):
         """return event with latest datetime"""
         self._get_fews_timeserie_object()
-        
+
         try:
             return self.events.all().order_by('-time')[0]
         except:
             return None
-    
+
     def _get_fews_timeserie_object(self):
         """
-        
+
         """
         fews_parameter = FewsParameter.objects.get(pkey=self.pkey)
         fews_filter = FewsFilter.objects.get(id=self.fkey)
@@ -280,16 +272,16 @@ class TimeseriesFews(models.Model):
                 exception_msg = "No Fews time series exists with parameter key %d, filter key %d, location %d and timestep \"%s\"" % (self.pkey, self.fkey, self.lkey, timestep)
                 logger.warning(exception_msg)
                 raise IncompleteData(exception_msg)
-            
+
         return fews_timeseries
-    
-    
-    
+
+
+
     def events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all events.
 
         The generator iterates over the events earliest date first.
-        
+
         TO DO: zelfde maken als bij tijdseries (met 0 waarden en stick_to_last_value)
         """
         fews_timeseries = self._get_fews_timeserie_object()
@@ -299,7 +291,7 @@ class TimeseriesFews(models.Model):
             events = events.filter(tsd_time__gte=start_date)
         if end_date:
             events = events.filter(tsd_time__lte=end_date)
-        
+
         for event in events:
             yield event.tsd_time, event.tsd_value
 
@@ -308,18 +300,18 @@ class Parameter(models.Model):
     """Identification of type of timeseries
 
     """
-    
+
     TYPE_OTHER = 0
     TYPE_MEASURED = 1
     TYPE_USERINPUT = 2
     TYPE_COMPUTED = 3
     TYPE_REFERENCE = 4
-    TYPES = ((TYPE_OTHER, 'overig'), 
-             (TYPE_MEASURED, 'gemeten'), 
-             (TYPE_USERINPUT, 'gebruikers invoer'), 
+    TYPES = ((TYPE_OTHER, 'overig'),
+             (TYPE_MEASURED, 'gemeten'),
+             (TYPE_USERINPUT, 'gebruikers invoer'),
              (TYPE_COMPUTED, 'berekend'))
-   
-    
+
+
     PARAMETER_OTHER = 0
     PARAMETER_WATERLEVEL = 1
     PARAMETER_CHLORIDE = 2
@@ -327,32 +319,32 @@ class Parameter(models.Model):
     PARAMETER_EVAPORATION = 4
     PARAMETER_SEEPAGE_INFILTRATION = 5
     PARAMETER_DISCHARGE = 6
-    
-    PARAMETERS = ((PARAMETER_OTHER, 'overig'), 
-                  (PARAMETER_WATERLEVEL, 'waterpeil'), 
+
+    PARAMETERS = ((PARAMETER_OTHER, 'overig'),
+                  (PARAMETER_WATERLEVEL, 'waterpeil'),
                   (PARAMETER_CHLORIDE, 'chloride'),
-                  (PARAMETER_PRECIPITATION, 'neerslag'), 
-                  (PARAMETER_EVAPORATION, 'verdamping'), 
+                  (PARAMETER_PRECIPITATION, 'neerslag'),
+                  (PARAMETER_EVAPORATION, 'verdamping'),
                   (PARAMETER_SEEPAGE_INFILTRATION, 'kwel/wegzijging'),
                   (PARAMETER_DISCHARGE, 'debiet'))
-    
+
     name = models.CharField(verbose_name=_("naam"),
                             help_text=_("naam van parameter"),
                             max_length=64)
-    
+
     slug = models.SlugField(verbose_name=_("code"),
                             editable=False,
                             help_text=_("vaste code voor referentie van programma"))
-    
+
     unit = models.CharField(
         verbose_name=_("eenheid"), max_length=64, null=True, blank=True)
-    
-    sourcetype = models.IntegerField(choices=TYPES, default=TYPE_OTHER)  
+
+    sourcetype = models.IntegerField(choices=TYPES, default=TYPE_OTHER)
     parameter = models.IntegerField(choices=PARAMETERS, default=PARAMETER_OTHER)
 
     def __unicode__(self):
         return self.name
-    
+
     @classmethod
     def related_to_calculated_timeseries(cls):
         """ Return parameters that are related to calculated
@@ -396,8 +388,8 @@ class WaterbalanceTimeserie(models.Model):
         (TIMESTEP_YEAR, 'year'),
         ]
 
-        
-        
+
+
     name = models.CharField(
         verbose_name=_("naam"),
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
@@ -439,7 +431,7 @@ class WaterbalanceTimeserie(models.Model):
         help_text=('Hint for datetime start of timerange. '
                    'Filled in by automatic process.'))
     hint_datetime_end = models.DateTimeField(
-        editable=False,                                     
+        editable=False,
         null=True, blank=True,
         help_text=('Hint for datetime end of timerange. '
                    'Filled in by automatic process.'))
@@ -461,14 +453,14 @@ class WaterbalanceTimeserie(models.Model):
         else:
             timeseries = self.local_timeseries
         return timeseries
-    
+
     def get_last_event(self):
         """ return last event """
         if self.use_fews:
             timeseries = self.fews_timeseries.get_last_event()
         else:
             timeseries = self.local_timeseries.get_last_event()
-        return timeseries       
+        return timeseries
 
     def in_daterange(self, dt):
         """
@@ -575,7 +567,7 @@ class OpenWater(models.Model):
     """
     class Meta:
         verbose_name = _("4 Open water")
- 
+
     name = models.CharField(
         verbose_name=_("naam"),
         help_text=_("naam om het open water eenvoudig te herkennen"),
@@ -610,13 +602,13 @@ class OpenWater(models.Model):
         verbose_name=_("neerslag"),
         help_text=_("meetreeks neerslag in [mm/dag]"),
         related_name='configuration_precipitation')
-    
+
     evaporation = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("verdamping"),
         help_text=_("meetreeks verdamping in [mm/dag]"),
         related_name='configuration_evaporation')
- 
+
     seepage = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("kwel"),
@@ -731,7 +723,7 @@ class Bucket(models.Model):
     # usual way to implement a one-to-many relationship.
     open_water = models.ForeignKey(OpenWater,
                                    related_name='buckets')  #mooier als je deze naam niet zet, dan is het altijd consistent
-    
+
     surface_type =  models.IntegerField(
         verbose_name=_("oppervlakte type"),
         choices=SURFACE_TYPES,
@@ -818,7 +810,7 @@ class Bucket(models.Model):
 
     def __unicode__(self):
         return '%s - %s'%(self.open_water.name, self.name)
-    
+
     def retrieve_seepage(self, start_date, end_date):
         exception_msg = ""
         if self.seepage is None:
@@ -830,7 +822,7 @@ class Bucket(models.Model):
                                         start_date=start_date,
                                         end_date=end_date)
     def upper_bucket_info(self):
-        
+
         info = ""
 
         info += "porositeit: %s, "%str(self.upper_porosity)
@@ -839,12 +831,12 @@ class Bucket(models.Model):
         info += "max peil: %s, "%str(self.upper_max_water_level)
         info += "min peil: %s, "%str(self.upper_min_water_level)
         info += "initieel peil: %s"%str(self.upper_init_water_level)
-        
+
         return info
-        
-        
+
+
     def lower_bucket_info(self):
- 
+
         info = ""
         info += "porositeit: %s, "%str(self.porosity)
         info += "drainage factor: %s, "%str(self.drainage_fraction)
@@ -852,7 +844,7 @@ class Bucket(models.Model):
         info += "max peil: %s, "%str(self.max_water_level)
         info += "min peil: %s, "%str(self.min_water_level)
         info += "initieel peil: %s"%str(self.init_water_level)
-        
+
         return info
 
 class SobekBucket(models.Model):
@@ -879,7 +871,7 @@ class SobekBucket(models.Model):
 
     open_water = models.ForeignKey(OpenWater,
                                    related_name='sobekbuckets')  #mooier als je deze naam niet zet, dan is het altijd consistent
-    
+
     surface_type =  models.IntegerField(
         verbose_name=_("oppervlakte type"),
         choices=Bucket.SURFACE_TYPES,
@@ -931,12 +923,12 @@ class PumpingStation(models.Model):
         OpenWater,
         help_text=_("open water waar deze pomp bij hoort"),
         related_name='pumping_stations')
-    
+
     label = models.ForeignKey(
         "Label",
         help_text=_("open water waar deze pomp bij hoort"),
-        related_name='pumping_stations')    
-    
+        related_name='pumping_stations')
+
     into = models.BooleanField(
         verbose_name=_("ingaande stroom"),
         help_text=_("aangevinkt als en alleen als de pomp een inlaat is"))
@@ -1045,7 +1037,7 @@ class WaterbalanceScenario(models.Model):
 
     def __unicode__(self):
         return unicode(self.name)
-    
+
 
 class WaterbalanceArea(gis_models.Model):
     """Represents the area of which we want to know the waterbalance.
@@ -1082,10 +1074,10 @@ class WaterbalanceArea(gis_models.Model):
     slug = gis_models.SlugField(
         editable=False,
         help_text=_("naam om de URL te maken"))
-    
+
     geom = gis_models.MultiPolygonField(
         'Region Border', srid=4326, null=True, blank=True)
-    
+
     active = models.BooleanField(
         verbose_name=_("Actief"),
         default=False,
@@ -1095,7 +1087,7 @@ class WaterbalanceArea(gis_models.Model):
 
     def __unicode__(self):
         return unicode(self.name)
-    
+
 
 def load_shapefile(shapefile_name, name_field, source_epsg):
      """ Load shapefile into waterbalance areas and update geometry if name exist
@@ -1191,15 +1183,15 @@ class WaterbalanceConf(models.Model):
     description = models.TextField(null=True,
                                    blank=True,
                                    verbose_name="Beschrijving")
-    
+
     calculation_start_date = models.DateTimeField(verbose_name=_("start datum berekening"),
                                                   help_text=_("vaste start datum van de berekening"))
-    
+
     calculation_end_date = models.DateTimeField(verbose_name=_("eind datum berekening"),
                                                   help_text=_("vaste start datum van eind van de berekening (optioneel)"),
                                                   null=True,
                                                   blank=True)
-    
+
     labels = models.ManyToManyField(
         "Label",
         through='Concentration',
@@ -1239,7 +1231,7 @@ class WaterbalanceConf(models.Model):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
-        
+
     def retrieve_evaporation(self, start_date, end_date):
         if self.open_water.evaporation is None:
             exception_msg = "No evaporation is defined for the waterbalance area %s" % self.__unicode__()
@@ -1264,25 +1256,25 @@ class WaterbalanceConf(models.Model):
 
     def get_waterbalance_computer(self, force_new=False):
         """get waterbalance computer"""
-        
+
         from lizard_waterbalance.compute import WaterbalanceComputer2
-     
+
         if force_new:
             waterbalance_computer = None
         else:
             waterbalance_computer = cache.get('wb_computer_%i_store'%self.id)
-    
+
         if not waterbalance_computer:
             waterbalance_computer = WaterbalanceComputer2(self)
-        
+
         return waterbalance_computer
-    
+
     def delete_cached_waterbalance_computer(self):
         """deletel waterbalance computer"""
-        
+
         cache.delete('wb_computer_%i_store'%self.id)
         cache.delete('wb_computer_%i_stored_date'%self.id)
-        
+
     def has_cached_waterbalance_computer(self):
         """check if there is a waterbalance computer in cache"""
         #check not on store date, is faster
@@ -1290,7 +1282,7 @@ class WaterbalanceConf(models.Model):
             return True
         else:
             return False
-           
+
     def get_calc_period(self, input_end_date_time=datetime.datetime.now()):
         """return calculation start_date and end_date """
         start_date = self.calculation_start_date
@@ -1303,15 +1295,15 @@ class WaterbalanceConf(models.Model):
             #if last_precipitation:
             #    last_precipitation = last_precipitation.time
             #to do: else, warning
-            #    
+            #
             #
             #if input_end_date_time > last_precipitation:
             #    end_date = last_precipitation
             #else:
             #    end_date = input_end_date_time
-        
+
         return start_date, end_date
-    
+
     def _retrieve_open_water(self):
         exception_msg = ""
         if self.open_water is None:
@@ -1343,29 +1335,29 @@ class Label(models.Model):
         verbose_name_plural = _("Labels")
         ordering = ('order', 'name', )
 
-        
+
 
     TYPE_OTHER = 0
     TYPE_IN = 1
     TYPE_OUT = 2
     TYPE_ERROR = 3
 
-    TYPES = ((TYPE_IN, 'in'), 
-             (TYPE_OUT, 'out'), 
-             (TYPE_ERROR, 'fout'), 
+    TYPES = ((TYPE_IN, 'in'),
+             (TYPE_OUT, 'out'),
+             (TYPE_ERROR, 'fout'),
              (TYPE_OTHER, 'overig'))
-    
+
 
     name = models.CharField(max_length=64)
     program_name = models.CharField(max_length=64, null=True, blank=True)
     parent = models.ForeignKey('Label', null=True, blank=True)
     flow_type = models.IntegerField(choices=TYPES, default=TYPE_IN)
-    
+
     order = models.IntegerField(
         verbose_name=_("volgorde"),
         default=0,
         help_text=_("lager is eerder in de lijst"))
-    
+
     color = ColorField()
     color_increment = ColorField()
 
@@ -1388,7 +1380,7 @@ class Concentration(models.Model):
         unique_together = (("configuration", "label"),)
         verbose_name = _("Concentratie")
         verbose_name_plural = _("Concentraties")
-        
+
 
     label = models.ForeignKey("Label", related_name='label_concentrations',
         verbose_name=_("Label"))
@@ -1398,37 +1390,37 @@ class Concentration(models.Model):
     stof_lower_concentration = models.FloatField(
             verbose_name=_("stof_ondergrens"),
             default=0.0,
-            help_text=_("minimum concentratie in [mg/l]"))   
+            help_text=_("minimum concentratie in [mg/l]"))
     stof_increment  = models.FloatField(
             verbose_name=_("stof_ondergrens"),
             default=0.0,
-            help_text=_("minimum concentratie in [mg/l]"))   
+            help_text=_("minimum concentratie in [mg/l]"))
     cl_concentration = models.FloatField(
             verbose_name=_("chloride concentratie"),
             default=0.0,
-            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))       
+            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     p_lower_concentration = models.FloatField(
             editable = False, #even uitgezet. deze is gelijk aan stof
             verbose_name=_("P_ondergrens"),
             default=0.0,
-            help_text=_("minimum concentratie in [mg/l]"))   
+            help_text=_("minimum concentratie in [mg/l]"))
     p_incremental = models.FloatField(
             editable = False, #even uitgezet. deze is gelijk aan stof
             verbose_name=_("P_increment"),
             default=0.0,
-            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))   
+            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     n_lower_concentration = models.FloatField(
             verbose_name=_("N_ondergrens"),
             blank=True, null=True,
-            help_text=_("minimum concentratie in [mg/l]"))   
+            help_text=_("minimum concentratie in [mg/l]"))
     n_incremental = models.FloatField(
             verbose_name=_("N_increment"),
             blank=True, null=True,
-            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))   
+            help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     so4_lower_concentration = models.FloatField(
             verbose_name=_("SO4_ondergrens"),
             blank=True, null=True,
-            help_text=_("minimum concentratie in [mg/l]"))  
+            help_text=_("minimum concentratie in [mg/l]"))
     so4_incremental = models.FloatField(
             verbose_name=_("SO4_increment"),
             blank=True, null=True,
@@ -1437,7 +1429,7 @@ class Concentration(models.Model):
     def __unicode__(self):
         return "%s - %s" % (self.configuration.__unicode__(), self.label.name)
 
-#@receiver(pre_save, sender=Parameter) #werkt pas vanaf versie 1.3    
+#@receiver(pre_save, sender=Parameter) #werkt pas vanaf versie 1.3
 def pre_save_slug(*args, **kwargs):
     logger.debug('created slug for %s'%str(kwargs['instance'].name))
     kwargs['instance'].slug = slugify(kwargs['instance'].name)
@@ -1447,24 +1439,24 @@ def pre_save_configuration(*args, **kwargs):
     if kwargs['instance'].open_water == None:
         dummy_parameter, new = Parameter.objects.get_or_create(name='dummy')
         dummy_timeserie, new = WaterbalanceTimeserie.objects.get_or_create(name='selecteer', parameter=dummy_parameter)
-        
+
         open_water = OpenWater()
         open_water.name = kwargs['instance'].__unicode__()
         open_water.bottom_height = -999.0
         open_water.surface = 9999.0
-        
-        open_water.maximum_level = dummy_timeserie 
+
+        open_water.maximum_level = dummy_timeserie
         open_water.minimum_level = dummy_timeserie
-  
-        open_water.target_level = dummy_timeserie 
+
+        open_water.target_level = dummy_timeserie
         open_water.init_water_level = -999.0
-        open_water.precipitation = dummy_timeserie  
+        open_water.precipitation = dummy_timeserie
         open_water.evaporation = dummy_timeserie
         open_water.seepage = dummy_timeserie
         open_water.infiltration = dummy_timeserie
         open_water.save()
-        kwargs['instance'].open_water = open_water   
-        
+        kwargs['instance'].open_water = open_water
+
 
 pre_save.connect(pre_save_slug, sender=Parameter)
 pre_save.connect(pre_save_slug, sender=WaterbalanceArea)
