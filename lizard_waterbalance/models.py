@@ -45,9 +45,6 @@ from lizard_fewsunblobbed.models import Parameter as FewsParameter
 from lizard_fewsunblobbed.models import Timeserie as FewsTimeserie
 from lizard_map.models import ColorField
 
-from south.modelsinspector import add_ignored_fields
-add_ignored_fields(["^lizard_map\.models\.ColorField"])
-
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import daily_events
 from timeseries.timeseriesstub import daily_sticky_events
