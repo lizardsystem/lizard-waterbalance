@@ -696,6 +696,9 @@ class OpenWater(models.Model):
         """Return the list of intakes."""
         return [intake for intake in self.retrieve_pumping_stations() \
                 if intake.into]
+        
+    def surface_in_ha(self):
+        return float(self.surface)/10000
 
     def retrieve_incoming_timeseries(self, only_input=False):
         """Return the dictionary of intake to measured time series.
@@ -905,6 +908,10 @@ class Bucket(models.Model):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
+        
+    def surface_in_ha(self):
+        return float(self.surface)/10000
+        
     def upper_bucket_info(self):
 
         info = ""
@@ -1099,6 +1106,9 @@ class WaterbalanceScenario(models.Model):
         verbose_name = _("2 Waterbalans scenario")
         verbose_name_plural = _("2 Waterbalans scenario's")
         ordering = ("order",)
+        permissions = (
+            ("see_not_public_scenarios", "Can see not public scenario's"),
+        )
 
     name = models.CharField(
         verbose_name=_("naam"),

@@ -17,7 +17,7 @@
 {% endblock portal-tabs %}
 
 {% block sidebar %}
-<div class="sidebarbox">
+<div class="sidebarbox sidebarbox-stretched">
   <h2>
     Info
     <span class="ss_sprite ss_calendar_view_day sidebarbox-action-icon popup-trigger"
@@ -40,25 +40,10 @@
       <dt>Naam</dt>
       <dd>{{ waterbalance_configuration.waterbalance_area.name }}</dd>
       <dt>Oppervlakte open water</dt>
-      <dd>{{ waterbalance_configuration.open_water.surface }} m2</dd>
-    </dl>
-  </div>
-</div>
-<div class="sidebarbox sidebarbox-stretched">
-  <h2>
-    <a class="ss_sprite ss_pencil sidebarbox-action-icon"
-       title="Bewerk instellingen"
-       id="activate-adjustment-form"
-       href="{% url waterbalance_area_edit area_slug=waterbalance_configuration.waterbalance_area.slug scenario_slug=waterbalance_configuration.waterbalance_scenario.slug %}">&nbsp;</a>
-    <span>
-      Bakjes
-    </span>
-  </h2>
-  <div>
-    <dl>
+      <dd>{{ waterbalance_configuration.open_water.surface_in_ha|floatformat:1 }} ha</dd>
       {% for bucket in waterbalance_configuration.open_water.buckets.all %}
       <dt>{{ bucket.name }}</dt>
-      <dd>{{ bucket.surface }} m2</dd>
+      <dd>{{ bucket.surface_in_ha|floatformat:1 }} ha</dd>
       {% endfor %}
     </dl>
     <form method="POST"

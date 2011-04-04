@@ -234,7 +234,9 @@ def waterbalance_start(
                                                                       ).select_related(
                                                                             'WaterbalanceArea',
                                                                             'WaterbalanceScenario')
-    #TO DO: waterbalance_configurations verder filteren op basis scenario__public op basis van gebruikersrechten
+    
+    if not request.user.is_authenticated() and not request.user.has_perm('lizard_waterbalance.see_not_public_scenarios'):
+        waterbalance_configurations = waterbalance_configurations.filter(waterbalance_scenario__public=True)
 
     return render_to_response(
         template,
