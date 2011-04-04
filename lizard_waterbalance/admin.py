@@ -20,6 +20,7 @@ from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import SobekBucket
 
+
 class BucketInLine(admin.TabularInline):
     model = Bucket
     
@@ -33,8 +34,26 @@ class BucketAdmin(admin.ModelAdmin):
     search_fields = ['name', 'open_water', ]
 
 class OpenWaterAdmin(admin.ModelAdmin):
+    fieldsets = (
+    (None, {
+        'fields': ('name', 'surface', 'bottom_height', 'init_water_level', 'precipitation', 'evaporation', 'seepage', 
+                   'infiltration', 'sewer' )
+    }),       
+        ('Waterpeil grenzen', {
+        'description': 'Instellingen voor mininumum en maximumpeil, waarbinnen het peil gehouden moet worden. Er zijn twee opties: \
+        (1) een vaste tijdreeks met minimum en maximum waarden of \
+        (2) een constante afwijking t.o.v. het gemeten peil',
+        'fields': ('use_min_max_level_relative_to_meas', ('waterlevel_measurement', 'min_level_relative_to_measurement',
+                   'max_level_relative_to_measurement'), ('minimum_level', 'maximum_level'))
+    }),  
+        ('Nutricalc', {
+        'classes': ('collapse',),
+        'fields': ('nutricalc_min', 'nutricalc_incr')
+    }))
+
+    
     list_display = ('name', 'surface', 
-                    'bottom_height')
+                    'bottom_height', 'init_water_level')
     search_fields = ['name', ]
     
     inlines = [
@@ -88,11 +107,11 @@ class WaterbalanceConfAdmin(admin.ModelAdmin):
     list_display = ('waterbalance_area', 'waterbalance_scenario', 
                     'description')
     search_fields = ['waterbalance_scenario', 'waterbalance_area' ]
+    filter_vertical = ['references']
     
     inlines = [
         ConcentrationInLine,
         ]
-
 
 
 class TimeseriesEventInline(admin.TabularInline):

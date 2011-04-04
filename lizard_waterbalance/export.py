@@ -61,7 +61,7 @@ def test_export():
 
 def export_excel_small(request, area_slug, scenario_slug):
     """ export van een configuratie naar Excel """
-
+    
     t1 = time.time()
 
     bucket_export = False
@@ -123,18 +123,19 @@ def export_excel_small(request, area_slug, scenario_slug):
     header = ['year', 'month', 'day']
     data_cols = {}
     data_cols[(2, 'neerslag', '[mm/dag]')] = input_ts['precipitation']
-    data_cols[(3, 'neerslag', '[mm/dag]')] = input_ts['evaporation']
+    data_cols[(3, 'verdamping', '[mm/dag]')] = input_ts['evaporation']
     data_cols[(5, 'min peil', '[mNAP]')] = configuration.open_water.minimum_level.get_timeseries()
     data_cols[(7, 'neerslag', '[mNAP]')] = configuration.open_water.maximum_level.get_timeseries()
-    try:
-        data_cols[(6, 'streefpeil', '[mNAP]')] = configuration.open_water.target_level.get_timeseries()
-    except:
-        pass
+#    try:
+#        data_cols[(6, 'streefpeil', '[mNAP]')] = configuration.open_water.target_level.get_timeseries()
+#    except:
+#        pass
 
     #in
     data_cols[(9, 'neerslag', '[m3/dag]')] = vertical_openwater['precipitation']
     data_cols[(10, 'verdamping', '[m3/dag]')] = vertical_openwater['seepage']
     data_cols[(11, 'verhard', '[m3/dag]')] = buckets_summary.hardened
+    data_cols[(12, 'riolering', '[m3/dag]')] = buckets_summary.sewer
     data_cols[(13, 'gedraineerd', '[m3/dag]')] = buckets_summary.drained
     data_cols[(14, 'uitspoelig', '[m3/dag]')] = buckets_summary.undrained
     data_cols[(15, 'afstroming', '[m3/dag]')] = buckets_summary.flow_off
@@ -165,6 +166,7 @@ def export_excel_small(request, area_slug, scenario_slug):
     data_cols[(69, 'fractie neerslag', '[-]')] = fractions['precipitation']
     data_cols[(70, 'fractie kwel', '[-]')] = fractions['seepage']
     data_cols[(71, 'fractie verhard', '[-]')] = fractions['hardened']
+    data_cols[(72, 'fractie riolering', '[-]')] = fractions['sewer']
     data_cols[(73, 'fractie gedraineerd', '[-]')] = fractions['drained']
     data_cols[(74, 'fractie uitspoeling', '[-]')] = fractions['undrained']
     data_cols[(75, 'fractie uitstroom', '[-]')] = fractions['flow_off']
@@ -210,6 +212,8 @@ def export_excel_small(request, area_slug, scenario_slug):
                 sheet.write(row,key[0],event[1])
 
         row = row + 1
+        if date > end_date:
+            break
     
     #for max: Formula('MAX(A1:B1)')
     buffer = StringIO()

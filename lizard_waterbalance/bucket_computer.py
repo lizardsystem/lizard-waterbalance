@@ -345,6 +345,23 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     return outcome
 
 
+def compute_timeseries_from_sewer(bucket, sewer):
+
+    # we first compute the upper bucket:
+    #   - the upper bucket does not have seepage
+    #   - the upper bucket has some of its own attributes
+
+
+    bucket = switch_bucket_upper_values(bucket)
+    first_date = next(sewer.events())[0]
+    outcome = empty_outcome(first_date)
+    print '-------'
+    print bucket.surface
+    
+    
+    outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
+    return outcome
+
 class BucketComputer:
 
     def __init__(self, bucket_computers=None):
@@ -357,7 +374,7 @@ class BucketComputer:
         else:
             self.bucket_computers = bucket_computers
 
-    def compute(self, bucket, precipitation, evaporation, seepage):
+    def compute(self, bucket, precipitation, evaporation, seepage, sewer=None):
         """Compute and return the waterbalance for a given bucket.
 
         Parameters:
@@ -376,7 +393,10 @@ class BucketComputer:
             logger.debug("calculate bucket %s of type %s", bucket.name,
                          surface_type_name)
             bucket_computer = self.bucket_computers[bucket.surface_type]
-            outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
+            if bucket.surface_type == Bucket.STEDELIJK_SURFACE:
+                outcome = compute_timeseries_from_sewer(bucket, sewer)
+            else:
+                outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
             result = outcome
         else:
             try:

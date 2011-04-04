@@ -111,7 +111,7 @@ class ConcentrationComputer2:
             del(events['total_outflow'])
             del(events['storage'])
             
-            out = storage_chloride/storage * total_outflow
+            out = (storage_chloride/storage) * total_outflow
             
             plus = 0.0
             for key, value in events.items():

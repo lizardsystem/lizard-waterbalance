@@ -62,6 +62,7 @@ class BucketsSummary:
         self.undrained = TimeseriesStub()
         self.flow_off = TimeseriesStub()
         self.indraft = TimeseriesStub()
+        self.sewer = TimeseriesStub()
         
     def __dict__(self):
         """returns dictionary of BucketOutcome to the given one."""
@@ -72,7 +73,8 @@ class BucketsSummary:
         'drained': self.drained,
         'undrained': self.undrained,
         'flow_off': self.flow_off,
-        'indraft': self.indraft}
+        'indraft': self.indraft,
+        'sewer': self.sewer}
 
 def event_tuple_values(events):
     """Return the list of event values from the given tuple of events."""
@@ -134,10 +136,12 @@ class BucketSummarizer:
         summary['undrained'] = -self.compute_sum_undrained_net_drainage()
         summary['flow_off'] = -self.compute_sum_undrained_flow_off()
         summary['indraft'] = -self.compute_sum_indraft()
+        summary['sewer'] = -self.compute_sum_sewer()
         summary['total_outgoing'] = summary['hardened'] + \
                          summary['drained'] + \
                          summary['undrained'] + \
-                         summary['flow_off'] 
+                         summary['flow_off'] + \
+                         summary['sewer']
         summary['total_incoming'] = summary['indraft']
         summary['total'] = summary['total_outgoing'] + summary['total_incoming']
                          
@@ -155,6 +159,15 @@ class BucketSummarizer:
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == Bucket.DRAINED_SURFACE:
                 sum += outcome[0]
+                net_drainage = outcome[1]
+                if net_drainage < 0:
+                    sum += net_drainage
+        return sum
+
+    def compute_sum_sewer(self):
+        sum = 0.0
+        for bucket, outcome in self.bucket2daily_outcome.iteritems():
+            if bucket.surface_type == Bucket.STEDELIJK_SURFACE:
                 net_drainage = outcome[1]
                 if net_drainage < 0:
                     sum += net_drainage
@@ -209,4 +222,5 @@ class BucketsSummarizer:
             buckets_summary.undrained.add_value(date, daily_summary['undrained'])
             buckets_summary.flow_off.add_value(date, daily_summary['flow_off'])
             buckets_summary.indraft.add_value(date, daily_summary['indraft'])
+            buckets_summary.sewer.add_value(date, daily_summary['sewer'])
         return buckets_summary

@@ -38,7 +38,7 @@ class LoadComputer:
 
     def compute(self, 
                 flow_dict, concentration_dict,
-                start_date, end_date):
+                start_date, end_date, nutricalc_timeseries=None):
         """Compute and return the concentration time series.
 
         Parameters:
@@ -50,27 +50,39 @@ class LoadComputer:
            
         loads = {}
         
+        if nutricalc_timeseries:
+            flow_dict['nutricalc'] = nutricalc_timeseries
+        
+        
         first_ts = True
         for events in enumerate_dict_events(flow_dict):
             date = events['date']
             del(events['date'])
+            
+            if nutricalc_timeseries:
+                del(events['drainage'])
+                del(events['undrained'])
+            
             for key, value in events.items():
                 if key in ['intakes', 'defined_input']:
                     for key_intake, value_intake in value.items():
                         if key_intake == 'intake_wl_control':
-                            concentration = value_intake[1] * concentration_dict[key_intake]
+                            load = value_intake[1] * concentration_dict[key_intake]
                             label = 'intake_wl_control'
                         else:
-                            concentration = value_intake[1] * concentration_dict[key_intake.label.program_name]
+                            load = value_intake[1] * concentration_dict[key_intake.label.program_name]
                             label = key_intake.label.program_name
+                elif key == 'nutricalc':
+                    label = key
+                    load = event['nutricalc']
                 else:
                     label = key
-                    concentration = value[1] * concentration_dict[key]
+                    load = value[1] * concentration_dict[key]
             
                 if first_ts:
                     loads[label] = TimeseriesStub()
                 
-                loads[label].add_value(date, concentration)
+                loads[label].add_value(date, load)
             first_ts = False
 
         return loads

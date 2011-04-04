@@ -137,7 +137,7 @@ BAR_WIDTH = {'year': 364,
              'month': 30,
              'day': 1}
 
-colors_list = ['blue', 'red', 'yellow', 'green', 'black', 'grey', 'purple', 'pink']
+colors_list = ['yellow', 'green', 'black', 'grey', 'purple', 'blue', 'red', 'pink']
 
 # Exceptions for boolean fields: used in tab edit forms.
 # Key is the field name, value is text used for (True, False).
@@ -875,8 +875,7 @@ def waterbalance_phosphate_impact(
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
     #get data and bars
-    impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water,
-                                                                               calc_start_datetime,
+    impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(calc_start_datetime,
                                                                                calc_end_datetime)
 
     bars_minimum = []
@@ -953,8 +952,6 @@ def waterbalance_area_graphs(request,
         waterbalance_scenario__slug=scenario_slug)
     waterbalance_computer = configuration.get_waterbalance_computer()
 
-
-
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
     #start_datetime, end_datetime = retrieve_horizon(request)
@@ -989,10 +986,6 @@ def waterbalance_area_graphs(request,
         graph = waterbalance_cum_discharges(
             configuration, waterbalance_computer, start_date, end_date,
             period, reset_period, width, height)
-    elif graph_type == 'fracties_fosfaat':
-        graph = waterbalance_fraction_distribution(
-            configuration, waterbalance_computer, start_date, end_date,
-            period, width, height, Parameter.PARAMETER_FOSFAAT)
     elif graph_type == 'fosfaatbelasting':
         graph = waterbalance_phosphate_impact(
            configuration, waterbalance_computer, start_date, end_date,
@@ -1071,6 +1064,8 @@ def graph_select(request):
             calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
 
             waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
+            waterbalance_computer.cache_if_updated()
+            
 
         return HttpResponse(json, mimetype='application/json')
     else:

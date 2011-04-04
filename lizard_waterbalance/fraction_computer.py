@@ -54,6 +54,7 @@ class FractionComputer:
         fractions_precipitation = TimeseriesStub()
         fractions_seepage = TimeseriesStub()
         fractions_hardened = TimeseriesStub()
+        fractions_sewer = TimeseriesStub()
         fractions_drained = TimeseriesStub()
         fractions_undrained = TimeseriesStub()
         fractions_flow_off = TimeseriesStub()
@@ -65,6 +66,7 @@ class FractionComputer:
         previous_precipitation = 0.0
         previous_seepage = 0.0
         previous_hardened = 0.0
+        previous_sewer = 0.0
         previous_drained = 0.0
         previous_undrained = 0.0
         previous_flow_off = 0.0
@@ -81,6 +83,7 @@ class FractionComputer:
         ts['flow_off'] = buckets_summary.flow_off
         ts['precipitation'] = precipitation_timeseries
         ts['seepage'] = seepage_timeseries
+        ts['sewer'] = buckets_summary.sewer
         ts['storage'] = storage_timeseries
         ts['total_output'] = total_output_timeseries
         ts['intakes'] = intakes_timeseries
@@ -119,6 +122,12 @@ class FractionComputer:
                                                   previous_hardened,
                                                   previous_storage)
 
+            sewer = self.compute_fraction(events['sewer'][1],
+                                                  total_output,
+                                                  current_storage,
+                                                  previous_sewer,
+                                                  previous_storage)
+            
             drained = self.compute_fraction(events['drained'][1],
                                                   total_output,
                                                   current_storage,
@@ -149,7 +158,7 @@ class FractionComputer:
             # of the previous day, this effect gets worse over time. To avoid
             # this effect, we divide each fraction by the sum of fractions.
 
-            total_fractions = initial + precipitation + seepage + hardened + \
+            total_fractions = initial + precipitation + seepage + sewer + hardened + \
                               drained + undrained + flow_off + sum(intakes.values())
                                   
                 #TO DO: dit is een correctie die niet mogelijk hoeft te zijn. graag een alert als dit niet klopt
@@ -170,6 +179,8 @@ class FractionComputer:
             previous_seepage = seepage
             fractions_hardened.add_value(date, hardened)
             previous_hardened = hardened
+            fractions_sewer.add_value(date, sewer)
+            previous_sewer = sewer
             fractions_drained.add_value(date, drained)
             previous_drained = drained
             fractions_undrained.add_value(date, undrained)
@@ -189,6 +200,7 @@ class FractionComputer:
                 'seepage':fractions_seepage,
                 'hardened':fractions_hardened,
                 'drained':fractions_drained,
+                'sewer':fractions_sewer,
                 'undrained':fractions_undrained,
                 'flow_off':fractions_flow_off,
                 'intakes': {} }

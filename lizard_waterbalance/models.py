@@ -214,6 +214,16 @@ class TimeseriesFews(models.Model):
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
         max_length=64, null=True, blank=True)
 
+    
+    default_value = models.FloatField(verbose_name=_("default value"),
+                                      null=True, blank=True,
+                                      default=0.0)
+                                      
+    stick_to_last_value = models.NullBooleanField(verbose_name=_("reeks met 'geheugen'"),
+                                      null=True, blank=True,
+                                      help_text=_("moet een waarde geldig blijven tot de eerst volgende waarde (blok functie)"),
+                                      default=False)
+    
     pkey = models.IntegerField(
         verbose_name=_("Parameter"),
         help_text=_("pkey van de parameter in FEWS unblobbed"),
@@ -589,6 +599,25 @@ class OpenWater(models.Model):
     bottom_height = models.FloatField(
         verbose_name=_("bodemhoogte"),
         help_text=_("bodemhoogte in meters boven NAP"))
+    use_min_max_level_relative_to_meas = models.BooleanField(
+        default=False,                                                     
+        verbose_name=_("gebruik min en max peil t.o.v. gemeten peil"),
+        help_text=_("bodemhoogte in meters boven NAP"))
+    waterlevel_measurement = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("gemeten waterpeil"),
+        help_text=_("gemeten waterpeil ten behoeve van minimum en maximumpeil"),
+        null=True, blank=True, related_name='open_water_waterlevel_measurement')
+    min_level_relative_to_measurement = models.FloatField(
+        default=0.0,
+        null=True, blank=True,
+        verbose_name=_("minimum level t.o.v. peilmeting"),
+        help_text=_("de afwijking in meter onder het gemeten peil")) 
+    max_level_relative_to_measurement = models.FloatField(
+        default=0.0,
+        null=True, blank=True,
+        verbose_name=_("maximum level t.o.v. peilmeting"),
+        help_text=_("de afwijking in meter onder het gemeten peil"))
     minimum_level = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("ondergrens"),
@@ -601,8 +630,9 @@ class OpenWater(models.Model):
         null=True, blank=True, related_name='open_water_max_level')
     target_level = models.ForeignKey(
         WaterbalanceTimeserie,
+        editable=False,
         verbose_name=_("streefpeil"),
-        help_text=_("tijdserie met streefpeil in meters"),
+        help_text=_("tijdserie met streefpeil in mNAP. Deze wordt niet gebruikt"),
         null=True, blank=True, related_name='open_water_targetlevel')
     init_water_level = models.FloatField(
         verbose_name=_("initiele waterstand"),
@@ -631,6 +661,30 @@ class OpenWater(models.Model):
         verbose_name=_("wegzijging"),
         help_text=_("tijdserie naar kwel"),
         related_name='open_water_infiltration')
+    
+    sewer = models.ForeignKey(
+        WaterbalanceTimeserie,
+        null=True, blank=True,
+        verbose_name=_("referentie riolerings reeks"),
+        related_name='open_water_sewer')
+    
+    nutricalc_min = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("Nutricalc minimum belasting"),
+        help_text=_("nutricalc resultaat met resultaten in mg/dag.\
+        Als dit veld leeg is wordt de belasting voor uitspoeling van ongedraineerde en gedraineerde bakjes \
+        berekend op basis van het concentraties en uitspoeldebiet."),
+        null=True, blank=True,
+        related_name='open_water_nutricalc_min')
+    
+    nutricalc_incr = models.ForeignKey(
+        WaterbalanceTimeserie,
+        verbose_name=_("Nutricalc incrementele belasting"),
+        help_text=_("nutricalc resultaat met resultaten in mg/dag.\
+        Als dit veld leeg is wordt de belasting voor uitspoeling van ongedraineerde en gedraineerde bakjes \
+        berekend op basis van het concentraties en uitspoeldebiet."),
+        null=True, blank=True,
+        related_name='open_water_nutricalc_incr')
 
     def __unicode__(self):
         return self.name
@@ -689,11 +743,30 @@ class OpenWater(models.Model):
                 outgoing_timeseries[pumping_station] = timeseries
         return outgoing_timeseries
 
+    def retrieve_sewer(self, start_date, end_date):
+        if self.sewer is None:
+            return None
+        timeseries = self.sewer.get_timeseries() #start_date, end_date
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
+
+
     def retrieve_minimum_level(self):
-        return self.minimum_level.get_timeseries()
+        if self.use_min_max_level_relative_to_meas:
+             min_level = TimeseriesWithMemoryStub()
+             min_level.add_value(datetime(1996,1,1), self.min_level_relative_to_measurement )
+             return add_timeseries(min_level, self.waterlevel_measurement)
+        else:
+            return self.minimum_level.get_timeseries()
 
     def retrieve_maximum_level(self):
-        return self.maximum_level.get_timeseries()
+        if self.use_min_max_level_relative_to_meas:
+             max_level = TimeseriesWithMemoryStub()
+             max_level.add_value(datetime(1996,1,1), self.max_level_relative_to_measurement )
+             return add_timeseries(max_level, self.waterlevel_measurement)
+        else:
+            return self.maximum_level.get_timeseries()
 
 
 class Bucket(models.Model):
@@ -1209,7 +1282,7 @@ class WaterbalanceConf(models.Model):
         null=True, blank=True,
         verbose_name=_("Labels en concentraties"),
         help_text=_("Labels concentraties"),
-        related_name='configuration_results')
+        related_name='configuration_label')
     results = models.ManyToManyField(
         WaterbalanceTimeserie,
         null=True, blank=True,
@@ -1270,12 +1343,20 @@ class WaterbalanceConf(models.Model):
 
         from lizard_waterbalance.compute import WaterbalanceComputer2
 
+        print cache.get(u'wb_computer_%i_stored_date'%self.id)
+
         if force_new:
+            logger.debug("force new calculation for configuration.")
+            waterbalance_computer = None
+        elif not cache.get(u'wb_computer_%i_stored_date'%self.id):           
+            logger.debug("no waterbalance computer in cache (wb_computer_%i_stored_date)"%self.id)
             waterbalance_computer = None
         else:
-            waterbalance_computer = cache.get('wb_computer_%i_store'%self.id)
+            logger.debug("try to get waterbalance computer from cache, with code: wb_computer_%i_store"%self.id)
+            waterbalance_computer = cache.get(u'wb_computer_%i_store'%self.id)
 
         if not waterbalance_computer:
+            logger.debug("create new waterbalance computer.")
             waterbalance_computer = WaterbalanceComputer2(self)
 
         return waterbalance_computer
@@ -1362,7 +1443,7 @@ class Label(models.Model):
     name = models.CharField(max_length=64)
     program_name = models.CharField(max_length=64, null=True, blank=True)
     parent = models.ForeignKey('Label', null=True, blank=True)
-    flow_type = models.IntegerField(choices=TYPES, default=TYPE_IN)
+    flow_type = models.IntegerField(choices=TYPES, default=TYPE_OTHER)
 
     order = models.IntegerField(
         verbose_name=_("volgorde"),
@@ -1392,48 +1473,47 @@ class Concentration(models.Model):
         verbose_name = _("Concentratie")
         verbose_name_plural = _("Concentraties")
 
-
     label = models.ForeignKey("Label", related_name='label_concentrations',
         verbose_name=_("Label"))
     configuration = models.ForeignKey(
         WaterbalanceConf, related_name='config_concentrations',
         verbose_name=_("Waterbalans configuratie"))
     stof_lower_concentration = models.FloatField(
-            verbose_name=_("stof_ondergrens"),
+            verbose_name=_("stof ondergrens"),
             default=0.0,
             help_text=_("minimum concentratie in [mg/l]"))
     stof_increment  = models.FloatField(
-            verbose_name=_("stof_ondergrens"),
+            verbose_name=_("stof incrementeel"),
             default=0.0,
-            help_text=_("minimum concentratie in [mg/l]"))
+            help_text=_("incerementele concentratie in [mg/l]"))   
     cl_concentration = models.FloatField(
             verbose_name=_("chloride concentratie"),
             default=0.0,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     p_lower_concentration = models.FloatField(
             editable = False, #even uitgezet. deze is gelijk aan stof
-            verbose_name=_("P_ondergrens"),
+            verbose_name=_("P ondergrens"),
             default=0.0,
             help_text=_("minimum concentratie in [mg/l]"))
     p_incremental = models.FloatField(
             editable = False, #even uitgezet. deze is gelijk aan stof
-            verbose_name=_("P_increment"),
+            verbose_name=_("P increment"),
             default=0.0,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     n_lower_concentration = models.FloatField(
-            verbose_name=_("N_ondergrens"),
+            verbose_name=_("N ondergrens"),
             blank=True, null=True,
             help_text=_("minimum concentratie in [mg/l]"))
     n_incremental = models.FloatField(
-            verbose_name=_("N_increment"),
+            verbose_name=_("N increment"),
             blank=True, null=True,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
     so4_lower_concentration = models.FloatField(
-            verbose_name=_("SO4_ondergrens"),
+            verbose_name=_("SO4 ondergrens"),
             blank=True, null=True,
             help_text=_("minimum concentratie in [mg/l]"))
     so4_incremental = models.FloatField(
-            verbose_name=_("SO4_increment"),
+            verbose_name=_("SO4 increment"),
             blank=True, null=True,
             help_text=_("increment t.o.v. minimum concentratie in [mg/l]"))
 
@@ -1447,6 +1527,7 @@ def pre_save_slug(*args, **kwargs):
 
 def pre_save_configuration(*args, **kwargs):
     logger.debug('created slug for %s'%str(kwargs['instance'].__unicode__()))
+    config = kwargs['instance']
     if kwargs['instance'].open_water == None:
         dummy_parameter, new = Parameter.objects.get_or_create(name='dummy')
         dummy_timeserie, new = WaterbalanceTimeserie.objects.get_or_create(name='selecteer', parameter=dummy_parameter)
@@ -1467,7 +1548,18 @@ def pre_save_configuration(*args, **kwargs):
         open_water.infiltration = dummy_timeserie
         open_water.save()
         kwargs['instance'].open_water = open_water
+    query = Label.objects.filter(flow_type=Label.TYPE_IN)
+    if kwargs['instance'].id:
+        query = query.exclude(configuration_label__id=kwargs['instance'].id)
+        
+    for label in query:
+        concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
 
+    try:
+        label = Label.objects.get(program_name='initial')
+        concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
+    except Label.DoesNotExist:
+        pass
 
 pre_save.connect(pre_save_slug, sender=Parameter)
 pre_save.connect(pre_save_slug, sender=WaterbalanceArea)
