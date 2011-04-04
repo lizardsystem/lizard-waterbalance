@@ -122,7 +122,6 @@ GRAPH_TYPES = (
     ('waterpeil_met_sluitfout', u'Waterpeil met sluitfout'),
     ('cumulatief_debiet', u'Cumulatief debiet'),
     ('fracties_chloride', u'Fracties Chloride'),
-    ('fracties_fosfaat', u'Fracties Fosfaat'),
     ('fosfaatbelasting', u'Fosfaatbelasting'),
 )
 IMPLEMENTED_GRAPH_TYPES = (
@@ -131,7 +130,6 @@ IMPLEMENTED_GRAPH_TYPES = (
     'waterpeil_met_sluitfout',
     'cumulatief_debiet',
     'fracties_chloride',
-    #'fracties_fosfaat',
     'fosfaatbelasting',
     )
 BAR_WIDTH = {'year': 364,
@@ -721,8 +719,8 @@ def waterbalance_cum_discharges(configuration,
             label = bar[2]
 
             times, values = get_cumulative_timeseries(
-                bar[1], date2datetime(calc_start_date),
-                date2datetime(calc_end_date), multiply= -1, time_shift=-31)#, reset_period="day")
+                bar[1], calc_start_datetime,
+                calc_end_datetime, multiply= -1, time_shift=-31)#, reset_period="day")
 
             color = bar[3]
             bottom = top_height.get_heights(times)
@@ -978,9 +976,6 @@ def waterbalance_area_graphs(request,
         graph = waterbalance_water_level(
             configuration, waterbalance_computer, start_date, end_date,
             period, reset_period, width, height, with_sluice_error=True)
-    elif graph_type == 'sluitfout':
-        return waterbalance_sluice_error(
-            area_slug, scenario_slug, _start_date, _end_date, width, height)
     elif graph_type == 'fracties_chloride':
         graph = waterbalance_fraction_distribution(
             configuration, waterbalance_computer, start_date, end_date,
