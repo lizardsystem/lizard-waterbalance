@@ -378,9 +378,13 @@ def get_cumulative_timeseries(timeseries, start, end, reset_period='hydro_year',
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply, time_shift=time_shift)
-                 if e[0] >= start and e[0] < end))
-
+    result = zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply, time_shift=time_shift)
+                   if e[0] >= start and e[0] < end))
+    if len(result) == 0:
+        # no cumulative events are present but the client expects two lists, so
+        # we return two lists
+        result = [], []
+    return result
 
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name.
@@ -718,9 +722,10 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
+            print label
             times, values = get_cumulative_timeseries(
-                bar[1], calc_start_datetime,
-                calc_end_datetime, multiply= -1, time_shift=-31)#, reset_period="day")
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date), period=period, multiply= -1)#, time_shift=-31)
 
             color = bar[3]
             bottom = top_height.get_heights(times)
@@ -734,7 +739,7 @@ def waterbalance_cum_discharges(configuration,
 
             times, values = get_cumulative_timeseries(
                 bar[1], date2datetime(start_date),
-                date2datetime(end_date))#, reset_period="day")
+                date2datetime(end_date), period=period)
 
             color = bar[3]
             graph.axes.plot(times, values, color=color, lw=2)
