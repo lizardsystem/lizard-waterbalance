@@ -204,7 +204,7 @@ class BucketSummarizer:
 
 class BucketsSummarizer:
     """Computes the BucketSummary from the outcome of each bucket."""
-    def compute(self, bucket2outcome):
+    def compute(self, bucket2outcome, start_date, end_date):
         """Returns the BucketsSummary of the given buckets.
 
         Parameters:
@@ -213,6 +213,11 @@ class BucketsSummarizer:
         """
         buckets_summary = BucketsSummary()
         for date, bucket2daily_outcome in total_daily_bucket_outcome(bucket2outcome):
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            
             daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
             buckets_summary.totals.add_value(date, daily_summary['total'])
             buckets_summary.total_outgoing.add_value(date, daily_summary['total_outgoing'])

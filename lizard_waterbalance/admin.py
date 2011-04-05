@@ -95,7 +95,7 @@ class ParameterAdmin(admin.ModelAdmin):
                     'sourcetype')
     search_fields = ['name']
     
-    prepopulated_fields = {'slug': ('name',)}
+    #prepopulated_fields = {'slug': ('name',)}
 
 
 class ConcentrationInLine(admin.TabularInline):

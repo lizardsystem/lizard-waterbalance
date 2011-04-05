@@ -57,10 +57,16 @@ class LoadComputer:
         first_ts = True
         for events in enumerate_dict_events(flow_dict):
             date = events['date']
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            
+            
             del(events['date'])
             
             if nutricalc_timeseries:
-                del(events['drainage'])
+                del(events['drained'])
                 del(events['undrained'])
             
             for key, value in events.items():
@@ -74,7 +80,7 @@ class LoadComputer:
                             label = key_intake.label.program_name
                 elif key == 'nutricalc':
                     label = key
-                    load = event['nutricalc']
+                    load = value[1]
                 else:
                     label = key
                     load = value[1] * concentration_dict[key]

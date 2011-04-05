@@ -35,7 +35,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 class FractionComputer:
 
     def compute(self, open_water, buckets_summary, precipitation_timeseries, seepage_timeseries, 
-                storage_timeseries, total_output_timeseries, intakes_timeseries):
+                storage_timeseries, total_output_timeseries, intakes_timeseries, start_date, end_date):
         """Compute and return the fraction series.
 
         This function returns the pair of TimeseriesStub(s) that consists of
@@ -91,6 +91,11 @@ class FractionComputer:
         first = True
         for events in enumerate_dict_events(ts):
             date = events['date']
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            
             if first:
                 first = False
                 previous_storage = (open_water.init_water_level - open_water.bottom_height) * open_water.surface

@@ -36,7 +36,7 @@ class LevelControlComputer:
 
     def compute(self, open_water, buckets_summary, precipitation, evaporation, seepage, infiltration,
                 minimum_level_timeseries, maximum_level_timeseries,
-                intakes_timeseries, pumps_timeseries):
+                intakes_timeseries, pumps_timeseries, start_date, end_date):
         """Compute and return the pair of intake and pump time series.
 
         This function returns the pair of TimeseriesStub(s) that consists of
@@ -80,6 +80,10 @@ class LevelControlComputer:
         
         for events in enumerate_dict_events(ts):
             date = events['date']
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
             
             if not events.has_key('intakes'):
                 events['intakes'] = {}

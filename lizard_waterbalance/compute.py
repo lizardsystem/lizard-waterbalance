@@ -170,17 +170,14 @@ class WaterbalanceComputer2:
             input_ts['sewer'] = self.configuration.open_water.retrieve_sewer(start_date, end_date)
 
             input_ts['open_water'] = {}
-            input_ts['open_water']['minimum_level'] = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.retrieve_minimum_level(),
-                                                            start_date=start_date,
-                                                            end_date=end_date)
-            input_ts['open_water']['maximum_level'] = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.retrieve_maximum_level(),
-                                                            start_date=start_date,
-                                                            end_date=end_date)
-            input_ts['open_water']['seepage'] = input_ts['seepage'] #temp solution
+            input_ts['open_water']['minimum_level'] = self.configuration.open_water.retrieve_minimum_level(start_date, end_date)
+            input_ts['open_water']['maximum_level'] = self.configuration.open_water.retrieve_maximum_level(start_date, end_date)
+
+            input_ts['open_water']['seepage'] = input_ts['seepage']
 
             for bucket in self.configuration.retrieve_buckets():
                 input_ts[bucket] = {}
-                input_ts[bucket]['seepage'] = input_ts['seepage']# tmp solution: bucket.retrieve_seepage(start_date, end_date)
+                input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
 
             input_ts['incoming_timeseries'] = {}
             for intake, timeseries in self.configuration.open_water.retrieve_incoming_timeseries(only_input=True).iteritems():
@@ -275,7 +272,7 @@ class WaterbalanceComputer2:
             
             buckets_outcome = self.get_buckets_timeseries(start_date, end_date)
 
-            buckets_summary = self.buckets_summarizer.compute(buckets_outcome)
+            buckets_summary = self.buckets_summarizer.compute(buckets_outcome, start_date, end_date)
 
             #store for later use (some kind of cache)
             self.outcome['buckets_summary'] = buckets_summary
@@ -320,7 +317,9 @@ class WaterbalanceComputer2:
                                                                 crop_evaporation_factor,
                                                                 input['precipitation'],
                                                                 transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
-                                                                input['seepage'])
+                                                                input['seepage'],
+                                                                start_date,
+                                                                end_date)
             #store for later use (some kind of cache)
             self.outcome['vertical_open_water'] = outcome
             self.outcome_info['vertical_open_water'] = {}
@@ -372,7 +371,9 @@ class WaterbalanceComputer2:
                 input['open_water']['minimum_level'],
                 input['open_water']['maximum_level'],
                 input['incoming_timeseries'],
-                input['outgoing_timeseries'])
+                input['outgoing_timeseries'],
+                start_date,
+                end_date)
 
             #cache
             self.outcome['level_control'] = outcome
@@ -556,10 +557,26 @@ class WaterbalanceComputer2:
             load = {}
             load_incremental = {}
 
+            if self.configuration.open_water.nutricalc_min:
+                nutricalc_min = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_min.get_timeseries(),
+                                                         start_date=start_date,
+                                                         end_date=end_date)
+            else:
+                nutricalc_min = None
+                
+            if self.configuration.open_water.nutricalc_incr:
+                nutricalc_incr = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_incr.get_timeseries(),
+                                                         start_date=start_date,
+                                                         end_date=end_date)
+            
+            else:
+                nutricalc_incr = None            
+
+
             load = self.load_computer.compute(flows, concentrations, start_date, 
-                                              end_date, self.configuration.open_water.nutricalc_min)
+                                              end_date, nutricalc_min)
             load_incremental = self.load_computer.compute(flows, concentrations_incremetal, start_date, end_date, 
-                                                          self.configuration.open_water.nutricalc_incr)
+                                                          nutricalc_incr)
 
             #self.outcome['loads'] = (load, load_incremental)
             #self.outcome_info['loads'] = {'start_date': start_date,
@@ -799,7 +816,9 @@ class WaterbalanceComputer2:
                                                        vertical_open_water_timeseries["precipitation"],
                                                        vertical_open_water_timeseries["seepage"],                                                       control['storage'],
                                                        control['total_outgoing'],
-                                                       intakes_timeseries)
+                                                       intakes_timeseries,
+                                                       start_date,
+                                                       end_date)
 
             self.outcome['fraction_water'] = fractions
             self.outcome_info['fraction_water'] = {}

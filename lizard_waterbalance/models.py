@@ -870,21 +870,25 @@ class OpenWater(models.Model):
                                         end_date=end_date)
 
 
-    def retrieve_minimum_level(self):
+    def retrieve_minimum_level(self, start_date, end_date):
         if self.use_min_max_level_relative_to_meas:
              min_level = TimeseriesWithMemoryStub()
-             min_level.add_value(datetime(1996,1,1), self.min_level_relative_to_measurement )
+             min_level.add_value(start_date, self.min_level_relative_to_measurement)
              return add_timeseries(min_level, self.waterlevel_measurement)
         else:
-            return self.minimum_level.get_timeseries()
+            return TimeseriesRestrictedStub(timeseries=self.minimum_level.get_timeseries(),
+                                        start_date=start_date,
+                                        end_date=end_date)
 
-    def retrieve_maximum_level(self):
+    def retrieve_maximum_level(self, start_date, end_date):
         if self.use_min_max_level_relative_to_meas:
              max_level = TimeseriesWithMemoryStub()
-             max_level.add_value(datetime(1996,1,1), self.max_level_relative_to_measurement )
+             max_level.add_value(start_date, self.max_level_relative_to_measurement)
              return add_timeseries(max_level, self.waterlevel_measurement)
         else:
-            return self.maximum_level.get_timeseries()
+            return TimeseriesRestrictedStub(timeseries=self.maximum_level.get_timeseries(),
+                                        start_date=start_date,
+                                        end_date=end_date)
 
 
 class Bucket(models.Model):

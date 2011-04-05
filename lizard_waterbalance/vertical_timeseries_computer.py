@@ -38,7 +38,7 @@ class VerticalTimeseriesComputer:
     """
 
     def compute(self, surface, crop_evaporation_factor, precipitation,
-                evaporation, seepage):
+                evaporation, seepage, start_date, end_date):
         """Compute and return the vertical time series for the given surface as dictionary.
 
         The incoming time series precipitation and evaporation always contain
@@ -71,6 +71,11 @@ class VerticalTimeseriesComputer:
         index_evaporation = 1
         for event_tuple in enumerate_events(*timeseries_list):
             date = event_tuple[0][0]
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            
             for index in range(0, len(timeseries_list)):
                 value = event_tuple[index][1] * surface * 0.001
                 if index == index_evaporation:

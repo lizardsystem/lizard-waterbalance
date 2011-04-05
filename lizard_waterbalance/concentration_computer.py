@@ -105,6 +105,11 @@ class ConcentrationComputer2:
         timeseries = TimeseriesStub()
         for events in enumerate_dict_events(dict(tuple(inflow_dict.items()) + (('total_outflow', total_outflow), ('storage', storage)))):
             date = events['date']
+            if date < start_date:
+                continue
+            if date >= end_date:
+                break
+            
             total_outflow = -events['total_outflow'][1]
             storage = events['storage'][1]
             del(events['date'])
