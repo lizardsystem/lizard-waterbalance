@@ -544,6 +544,7 @@ def waterbalance_area_graph(
     graph.axes.bar(times, negative_sluice_error, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
     top_height_out.stack_bars(times, values)
+    
 
     logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
     return graph
@@ -758,7 +759,9 @@ def waterbalance_fraction_distribution(
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
-    ax2 = graph.axes.twinx()
+    
+    # Add second axes.
+    graph.init_second_axes()
 
     if concentration == Parameter.PARAMETER_CHLORIDE:
         substance = "chloride"
@@ -833,7 +836,7 @@ def waterbalance_fraction_distribution(
             substance_timeseries, date2datetime(start_date), date2datetime(end_date),
             period=period)
 
-    ax2.plot(times, values, **style)
+    graph.ax2.plot(times, values, **style)
 
     #add metingen
     if concentration == Parameter.PARAMETER_CHLORIDE:
@@ -849,12 +852,15 @@ def waterbalance_fraction_distribution(
         times, values = get_raw_timeseries(tijdserie.get_timeseries(),
                                             date2datetime(start_date),
                                             date2datetime(end_date))
-        ax2.plot(times, values, **style)
+        graph.ax2.plot(times, values, **style)
         handles.append(Line2D([], [], **style))
         names.append(tijdserie.name[:15] + " gemeten")
 
     graph.legend_space()
     graph.legend(handles, names)
+    
+    graph.axes.set_ylim(0, 1.1)
+    graph.ax2.set_ylim(ymin=0)
 
     logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
     return graph
@@ -995,9 +1001,12 @@ def waterbalance_area_graphs(request,
 
     #graph.add_today()
 
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
+    #canvas = FigureCanvas(graph.figure)
+    #response = HttpResponse(content_type='image/png')
+    
+    response = graph.http_png()
+    response['Cache-Control'] = 'max-age=600'
+    #canvas.print_png(response)
 
     waterbalance_computer.cache_if_updated()
 
@@ -1105,11 +1114,17 @@ def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
 
-        conf = WaterbalanceConf.objects.get(
-            waterbalance_area__slug=area_slug,
-            waterbalance_scenario__slug=scenario_slug)
+        configuration = WaterbalanceConf.objects.get(
+                                                    waterbalance_area__slug=area_slug,
+                                                    waterbalance_scenario__slug=scenario_slug)
 
-        conf.delete_cached_waterbalance_computer()
+        configuration.delete_cached_waterbalance_computer()
+        
+        waterbalance_computer = configuration.get_waterbalance_computer()
+        calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
+        waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
+        waterbalance_computer.cache_if_updated()        
+        
 
         return HttpResponseRedirect(
             reverse(

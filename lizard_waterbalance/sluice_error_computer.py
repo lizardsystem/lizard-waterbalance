@@ -76,13 +76,19 @@ class SluiceErrorComputer:
         
         for events in enumerate_dict_events(ts):
             date = events['date']
+            
+            if date < start_date_calc:
+                continue
+            elif date > end_date_calc:
+                break
+                
             intake = events['calc_intake'][1] - events['total_intakes'][1]
             outtake = events['calc_outtake'][1] + events['total_outtakes'][1]
             total = outtake - intake
             sluice_error_timeseries.add_value(date, total)
             #sluice_error_intake.add_value(date, intake)
             #sluice_error_outtake.add_value(date, outtake)
-            total_meas_outtakes.add_value(date, -1*events['total_outtakes'][1])    
+            total_meas_outtakes.add_value(date, -1*events['total_outtakes'][1])
          
         return sluice_error_timeseries, total_meas_outtakes #, sluice_error_intake, sluice_error_outtake
 

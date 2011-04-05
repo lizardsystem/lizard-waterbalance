@@ -110,7 +110,7 @@ def export_excel_small(request, area_slug, scenario_slug):
     fractions = waterbalance_computer.get_fraction_timeseries(start_date, end_date)
     sluice_error = waterbalance_computer.calc_sluice_error_timeseries(start_date, end_date)
     chloride_concentration, delta_concentration = waterbalance_computer.get_concentration_timeseries(start_date, end_date)
-    impact_minimum, impact_incremental = waterbalance_computer.get_impact_timeseries(configuration.open_water, start_date, end_date)
+    impact_minimum, impact_incremental = waterbalance_computer.get_impact_timeseries(start_date, end_date)
 
     logger.debug("%s seconds - got all values", time.time() - t1)
 

@@ -155,7 +155,7 @@ class WaterbalanceComputer2:
         """
         if (self.input.has_key('timeseries') and
             self.input_info['timeseries']['start_date']==start_date and
-            self.input_info['timeseries']['end_date']<=end_date):
+            self.input_info['timeseries']['end_date']>=end_date):
             return self.input['timeseries']
         else:
             logger.debug("get input timeseries (%s - %s)..." % (
@@ -219,7 +219,7 @@ class WaterbalanceComputer2:
         """
         if (self.outcome.has_key('buckets') and 
             self.outcome_info['buckets']['start_date']==start_date and 
-            self.outcome_info['buckets']['end_date']<=end_date):
+            self.outcome_info['buckets']['end_date']>=end_date):
             return self.outcome['buckets']
         else:
             logger.debug("Calculating buckets (%s - %s)..." % (
@@ -266,7 +266,7 @@ class WaterbalanceComputer2:
 
         if (self.outcome.has_key('buckets_summary') and
             self.outcome_info['buckets_summary']['start_date']==start_date and
-            self.outcome_info['buckets_summary']['end_date']<=end_date):
+            self.outcome_info['buckets_summary']['end_date']>=end_date):
             return self.outcome['buckets_summary']
         else:
             logger.debug("Calculating bucket_summary (%s - %s)..." % (
@@ -304,7 +304,7 @@ class WaterbalanceComputer2:
         """
         if (self.outcome.has_key('vertical_open_water') and 
             self.outcome_info['vertical_open_water']['start_date']==start_date and 
-            self.outcome_info['vertical_open_water']['end_date']<=end_date):
+            self.outcome_info['vertical_open_water']['end_date']>=end_date):
             return self.outcome['vertical_open_water']
         else:
             logger.debug("Calculating vertical open water flows (%s - %s)..." % (
@@ -350,7 +350,7 @@ class WaterbalanceComputer2:
 
         if (self.outcome.has_key('level_control') and 
             self.outcome_info['level_control']['start_date']==start_date and 
-            self.outcome_info['level_control']['end_date']<=end_date):
+            self.outcome_info['level_control']['end_date']>=end_date):
             return self.outcome['level_control']
         else:
             logger.debug("Calculating level control (%s - %s)..." % (
@@ -448,7 +448,7 @@ class WaterbalanceComputer2:
         """
         if (self.references and 
             self.reference_info['start_date']==start_date and 
-            self.reference_info['end_date']<=end_date):
+            self.reference_info['end_date']>=end_date):
             return self.references
         else:
             logger.debug("get structure reference timeseries (%s - %s)..." % (
@@ -505,7 +505,7 @@ class WaterbalanceComputer2:
         """ Alleen chloride op dit moment"""
         if (self.outcome.has_key('concentration') and 
             self.outcome_info['concentration']['start_date']==start_date and 
-            self.outcome_info['concentration']['end_date']<=end_date):
+            self.outcome_info['concentration']['end_date']>=end_date):
             return self.outcome['concentration']
         else:
             logger.debug("Calculating concentration (%s - %s)..." % (
@@ -539,7 +539,7 @@ class WaterbalanceComputer2:
         # water to specify it in [mg/m2/m3].
         if (self.outcome.has_key('loads') and 
             self.outcome_info['loads']['start_date']==start_date and 
-            self.outcome_info['loads']['end_date']<=end_date):
+            self.outcome_info['loads']['end_date']>=end_date):
             return self.outcome['loads']
         else:
             logger.debug("Calculating load (%s - %s)..." % (
@@ -575,7 +575,7 @@ class WaterbalanceComputer2:
 
         if (self.outcome.has_key('impact') and 
             self.outcome_info['impact']['start_date']==start_date and 
-            self.outcome_info['impact']['end_date']<=end_date):
+            self.outcome_info['impact']['end_date']>=end_date):
             return self.outcome['impact']
         else:
             logger.debug("Calculating impact (%s - %s)..." % (
@@ -624,7 +624,7 @@ class WaterbalanceComputer2:
         
         if (self.outcome.has_key('sluice_error') and 
             self.outcome_info['sluice_error']['start_date']==start_date and 
-            self.outcome_info['sluice_error']['end_date']<=end_date):
+            self.outcome_info['sluice_error']['end_date']>=end_date):
             return self.outcome['sluice_error']
         else:        
             logger.debug("Calculating sluice error (%s - %s)..." % (
@@ -771,7 +771,7 @@ class WaterbalanceComputer2:
         """
         if (self.outcome.has_key('fraction_water') and
             self.outcome_info['fraction_water']['start_date']==start_date and
-            self.outcome_info['fraction_water']['end_date']<=end_date):
+            self.outcome_info['fraction_water']['end_date']>=end_date):
 
             return self.outcome['fraction_water']
         else:

@@ -53,7 +53,7 @@ class OpenWaterAdmin(admin.ModelAdmin):
 
     
     list_display = ('name', 'surface', 
-                    'bottom_height', 'init_water_level')
+                    'bottom_height', 'init_water_level', 'linked_with_configuration')
     search_fields = ['name', ]
     
     inlines = [
@@ -118,10 +118,19 @@ class TimeseriesEventInline(admin.TabularInline):
     model = TimeseriesEvent
 
 
+def delete_timeseries_no_confirm(modeladmin, request, queryset):
+    queryset.delete()
+delete_timeseries_no_confirm.short_description = "verwijder geselecteerde tijdreeksen zonder goedkeuring"
+
+
+
 class TimeseriesAdmin(admin.ModelAdmin):
     inlines = [
         TimeseriesEventInline,
         ]
+    actions = [delete_timeseries_no_confirm]
+    list_display = ('name', 'waterbalance_timeserie_info' )
+
 
 
 class TimeseriesFewsAdmin(admin.ModelAdmin):
@@ -139,7 +148,7 @@ class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
     list_filter = ('use_fews', 'parameter', 'configuration', 'timestep' )
     list_display = ( 'name', 'use_fews', 'parameter',
                      'fews_timeseries', 'local_timeseries',
-                     'configuration', 'timestep')
+                     'configuration', 'timestep', 'linked_with_info')
     search_fields = ['name',  ]
 
     form = WaterbalanceTimeserieForm

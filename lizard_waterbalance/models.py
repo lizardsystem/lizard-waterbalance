@@ -118,6 +118,12 @@ class Timeseries(models.Model):
             return self.timeseries_events.all().order_by('-time')[0]
         except:
             return None
+        
+    def waterbalance_timeserie_info(self):
+        result = ""
+        for link in self.wb_local.all():
+            result += "waterbalance timeserie '%s' (%i)"%(link.__unicode__(), link.id)
+        return result
 
 
     def events(self, start_date=None, end_date=None):
@@ -425,13 +431,13 @@ class WaterbalanceTimeserie(models.Model):
         TimeseriesFews,
         verbose_name=_("FEWS"),
         help_text=_("tijdreeks opgeslagen in FEWS unblobbed database"),
-        null=True, blank=True, related_name='+')
+        null=True, blank=True, related_name='wb_fews')
 
     local_timeseries = models.ForeignKey(
         Timeseries,
         verbose_name=_("Waterbalans tijdserie"),
         help_text=_("tijdreeks opgeslagen in eigen database"),
-        null=True, blank=True, related_name='+')
+        null=True, blank=True, related_name='wb_local')
 
     # Belongs to what configuration? Optional, but needed for
     # adapter/lizard-map.
@@ -565,7 +571,65 @@ class WaterbalanceTimeserie(models.Model):
         TODO: will now crash on fews timeseries.
         """
         return self.get_timeseries().times_values(start_date, end_date)
+    
+    def linked_with_info(self):
+        """ shows information about where timeserie is linked with"""
+        
+        #configuration
+        result = ""
+        for link in self.configuration_results.all():
+            result += "resultaat van configuratie '%s' (id:%i); "%(link.__unicode__(), link.id)
+            
+        for link in self.configuration_references.all():
+            result += "referentie van configuratie '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_waterlevel_measurement.all():
+            result += "gemeten waterpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
 
+        for link in self.open_water_min_level.all():
+            result += "minimumpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_max_level.all():
+            result += "maximumpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+         
+        for link in self.open_water_targetlevel.all():
+            result += "streefpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+            
+        for link in self.configuration_evaporation.all():
+            result += "verdamping van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.configuration_precipitation.all():
+            result += "neerslag van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_seepage.all():
+            result += "kwel van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_infiltration.all():
+            result += "wegzijging van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_sewer.all():
+            result += "rioleringsreeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_nutricalc_min.all():
+            result += "nutricalc minimumreeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
+        
+        for link in self.open_water_nutricalc_incr.all():
+            result += "nutricalc incrementele reeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)      
+
+        for link in self.bucket_seepage.all():
+            result += "kwel van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)  
+            
+        for link in self.bucket_results.all():
+            result += "resultaat van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)  
+
+        for link in self.pumping_station_result.all():
+            result += "resultaat van kunstwerk '%s' (id:%i); "%(link.__unicode__(), link.id)  
+
+        for link in self.pump_line_timeserie.all():
+            result += "resultaat van pomplijn '%s' (id:%i); "%(link.__unicode__(), link.id)
+            
+        return result 
+            
 
 class OpenWater(models.Model):
     """Represents the *open water*.
@@ -699,6 +763,9 @@ class OpenWater(models.Model):
         
     def surface_in_ha(self):
         return float(self.surface)/10000
+    
+    def linked_with_configuration(self):
+        return str(self.waterbalanceconf)
 
     def retrieve_incoming_timeseries(self, only_input=False):
         """Return the dictionary of intake to measured time series.
