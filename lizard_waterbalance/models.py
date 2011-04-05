@@ -55,6 +55,37 @@ from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
+def generate_events(events, default_value, sticky, start_date, end_date):
+    """Return a generator to iterate over all the given events.
+
+    If sticky holds, this method returns values for each day between the
+    specified start and end, assuming start and end are not None. This means
+    that for each day before the start or after the and for which no event
+    exists, this method returns the default value.
+
+    """
+    if sticky:
+        if start_date is None or end_date is None:
+            date_before_first_event = False
+        else:
+            date_before_first_event = True
+            date = start_date
+        value = default_value
+        for event_date, event_value in daily_sticky_events(events):
+            while date_before_first_event and date < event_date:
+                yield date, default_value
+                date = date + datetime.timedelta(1)
+            yield event_date, event_value
+            date_before_first_event = False
+            date = event_date + datetime.timedelta(1)
+            value = event_value
+        while end_date is not None and date <= end_date:
+            yield date, value
+            date = date + datetime.timedelta(1)
+    else:
+        for date, value in daily_events(events, default_value=default_value):
+            yield date, value
+
 
 class IncompleteData(Exception):
     """Implements the exception when the model is not completely defined."""
@@ -132,7 +163,20 @@ class Timeseries(models.Model):
         The generator iterates over the events in the order they were added. If
         dates are missing in between two successive events, this function fills
         in the missing dates. Which value is inserted depends on the values of
-        self.stick_to_last_value and self.default.
+        self.stick_to_last_value and self.default, for details also see the doc
+        string of functions timeseries.daily_events and
+        timeseries.daily_sticky_events.
+
+        If self.stick_to_last_value holds, this method returns values for each
+        day between the specified start and end, assuming start and end are not
+        None. This means that for each day before the start or after the and
+        for which no event exists, this method returns the default value.
+
+        .. todo::
+
+           Method Timeseries.events returns the dates including the end date, whereas
+           on other locations in the code the end date is not included. The same holds
+           for method TimeseriesFews.events.
 
         """
         ts_events = self.timeseries_events.filter().order_by('time')
@@ -142,12 +186,10 @@ class Timeseries(models.Model):
             ts_events = ts_events.filter(time__lte=end_date)
 
         events = ((event.time, event.value) for event in ts_events)
-        if self.stick_to_last_value:
-            for date, value in daily_sticky_events(events):
-                yield date, value
-        else:
-            for date, value in daily_events(events, default_value=self.default_value):
-                yield date, value
+        for date, value in generate_events(events, self.default_value,
+                                           self.stick_to_last_value,
+                                           start_date, end_date):
+            yield date, value
 
     @transaction.commit_manually
     def save_timeserie_stub(self,timeserie_stub):
@@ -220,16 +262,16 @@ class TimeseriesFews(models.Model):
         help_text=_("naam om de tijdreeks eenvoudig te herkennen"),
         max_length=64, null=True, blank=True)
 
-    
+
     default_value = models.FloatField(verbose_name=_("default value"),
                                       null=True, blank=True,
                                       default=0.0)
-                                      
+
     stick_to_last_value = models.NullBooleanField(verbose_name=_("reeks met 'geheugen'"),
                                       null=True, blank=True,
                                       help_text=_("moet een waarde geldig blijven tot de eerst volgende waarde (blok functie)"),
                                       default=False)
-    
+
     pkey = models.IntegerField(
         verbose_name=_("Parameter"),
         help_text=_("pkey van de parameter in FEWS unblobbed"),
@@ -315,12 +357,10 @@ class TimeseriesFews(models.Model):
             ts_events = ts_events.filter(tsd_time__lte=end_date)
 
         events = ((event.tsd_time, event.tsd_value) for event in ts_events)
-        if self.stick_to_last_value:
-            for date, value in daily_sticky_events(events):
-                yield date, value
-        else:
-            for date, value in daily_events(events, default_value=self.default_value):
-                yield date, value
+        for date, value in generate_events(events, self.default_value,
+                                           self.stick_to_last_value,
+                                           start_date, end_date):
+            yield date, value
 
 
 class Parameter(models.Model):
@@ -473,8 +513,14 @@ class WaterbalanceTimeserie(models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_timeseries(self, start_date=None, end_date=None, stick_to_last_value=False, default_value=0.0):
-        """Returns the time series this WaterbalanceTimeserie refers to."""
+    def get_timeseries(self):
+        """Return the time series this WaterbalanceTimeserie refers to.
+
+        This method does not retrieve the actual events of the time series. To
+        retrieve the events you have to call the events method on the time
+        series that is returned.
+
+        """
         if self.use_fews:
             timeseries = self.fews_timeseries
         else:
@@ -664,7 +710,7 @@ class OpenWater(models.Model):
         verbose_name=_("bodemhoogte"),
         help_text=_("bodemhoogte in meters boven NAP"))
     use_min_max_level_relative_to_meas = models.BooleanField(
-        default=False,                                                     
+        default=False,
         verbose_name=_("gebruik min en max peil t.o.v. gemeten peil"),
         help_text=_("bodemhoogte in meters boven NAP"))
     waterlevel_measurement = models.ForeignKey(
@@ -676,7 +722,7 @@ class OpenWater(models.Model):
         default=0.0,
         null=True, blank=True,
         verbose_name=_("minimum level t.o.v. peilmeting"),
-        help_text=_("de afwijking in meter onder het gemeten peil")) 
+        help_text=_("de afwijking in meter onder het gemeten peil"))
     max_level_relative_to_measurement = models.FloatField(
         default=0.0,
         null=True, blank=True,
@@ -725,13 +771,13 @@ class OpenWater(models.Model):
         verbose_name=_("wegzijging"),
         help_text=_("tijdserie naar kwel"),
         related_name='open_water_infiltration')
-    
+
     sewer = models.ForeignKey(
         WaterbalanceTimeserie,
         null=True, blank=True,
         verbose_name=_("referentie riolerings reeks"),
         related_name='open_water_sewer')
-    
+
     nutricalc_min = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("Nutricalc minimum belasting"),
@@ -740,7 +786,7 @@ class OpenWater(models.Model):
         berekend op basis van het concentraties en uitspoeldebiet."),
         null=True, blank=True,
         related_name='open_water_nutricalc_min')
-    
+
     nutricalc_incr = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("Nutricalc incrementele belasting"),
@@ -760,7 +806,7 @@ class OpenWater(models.Model):
         """Return the list of intakes."""
         return [intake for intake in self.retrieve_pumping_stations() \
                 if intake.into]
-        
+
     def surface_in_ha(self):
         return float(self.surface)/10000
     
@@ -975,10 +1021,10 @@ class Bucket(models.Model):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
-        
+
     def surface_in_ha(self):
         return float(self.surface)/10000
-        
+
     def upper_bucket_info(self):
 
         info = ""
@@ -1425,7 +1471,7 @@ class WaterbalanceConf(models.Model):
         if force_new:
             logger.debug("force new calculation for configuration.")
             waterbalance_computer = None
-        elif not cache.get(u'wb_computer_%i_stored_date'%self.id):           
+        elif not cache.get(u'wb_computer_%i_stored_date'%self.id):
             logger.debug("no waterbalance computer in cache (wb_computer_%i_stored_date)"%self.id)
             waterbalance_computer = None
         else:
@@ -1562,7 +1608,7 @@ class Concentration(models.Model):
     stof_increment  = models.FloatField(
             verbose_name=_("stof incrementeel"),
             default=0.0,
-            help_text=_("incerementele concentratie in [mg/l]"))   
+            help_text=_("incerementele concentratie in [mg/l]"))
     cl_concentration = models.FloatField(
             verbose_name=_("chloride concentratie"),
             default=0.0,
@@ -1628,7 +1674,7 @@ def pre_save_configuration(*args, **kwargs):
     query = Label.objects.filter(flow_type=Label.TYPE_IN)
     if kwargs['instance'].id:
         query = query.exclude(configuration_label__id=kwargs['instance'].id)
-        
+
     for label in query:
         concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
 

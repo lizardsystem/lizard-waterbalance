@@ -383,8 +383,8 @@ def get_cumulative_timeseries(timeseries, start, end, reset_period='hydro_year',
     result = zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply, time_shift=time_shift)
                    if e[0] >= start and e[0] < end))
     if len(result) == 0:
-        # no cumulative events are present but the client expects two lists, so
-        # we return two lists
+        # no cumulative events are present but the caller expects two lists, so
+        # we return two empty lists
         result = [], []
     return result
 

@@ -85,14 +85,14 @@ class TimeseriesTests(TestCase):
         self.assertEqual(expected_events, list(events))
 
     def test_c(self):
-        """Test a sticky Timeseries fills in defaults after the last event."""
+        """Test a sticky Timeseries fills in the last event value after the last event."""
         timeseries = self.setup_sticky_timeseries()
         events = timeseries.events(datetime(2011, 4, 8), datetime(2011, 4, 12))
         expected_events = [(datetime(2011, 4, 8), 10.0),
                            (datetime(2011, 4, 9), 10.0),
-                           (datetime(2011, 4, 10), 5.0),
-                           (datetime(2011, 4, 11), 5.0),
-                           (datetime(2011, 4, 12), 5.0)]
+                           (datetime(2011, 4, 10), 10.0),
+                           (datetime(2011, 4, 11), 10.0),
+                           (datetime(2011, 4, 12), 10.0)]
         self.assertEqual(expected_events, list(events))
 
     def test_d(self):
