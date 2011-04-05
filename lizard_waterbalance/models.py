@@ -60,8 +60,10 @@ def generate_events(events, default_value, sticky, start_date, end_date):
 
     If sticky holds, this method returns values for each day between the
     specified start and end, assuming start and end are not None. This means
-    that for each day before the start or after the and for which no event
-    exists, this method returns the default value.
+    that for each day before the start for which no event exists, this method
+    returns the default value. For each dat after the start for which no event
+    exists, this method returns the value of the last event or if not present,
+    the default value.
 
     """
     if sticky:
@@ -149,7 +151,7 @@ class Timeseries(models.Model):
             return self.timeseries_events.all().order_by('-time')[0]
         except:
             return None
-        
+
     def waterbalance_timeserie_info(self):
         result = ""
         for link in self.wb_local.all():
@@ -617,65 +619,65 @@ class WaterbalanceTimeserie(models.Model):
         TODO: will now crash on fews timeseries.
         """
         return self.get_timeseries().times_values(start_date, end_date)
-    
+
     def linked_with_info(self):
         """ shows information about where timeserie is linked with"""
-        
+
         #configuration
         result = ""
         for link in self.configuration_results.all():
             result += "resultaat van configuratie '%s' (id:%i); "%(link.__unicode__(), link.id)
-            
+
         for link in self.configuration_references.all():
             result += "referentie van configuratie '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_waterlevel_measurement.all():
             result += "gemeten waterpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
 
         for link in self.open_water_min_level.all():
             result += "minimumpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_max_level.all():
             result += "maximumpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-         
+
         for link in self.open_water_targetlevel.all():
             result += "streefpeil van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-            
+
         for link in self.configuration_evaporation.all():
             result += "verdamping van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.configuration_precipitation.all():
             result += "neerslag van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_seepage.all():
             result += "kwel van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_infiltration.all():
             result += "wegzijging van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_sewer.all():
             result += "rioleringsreeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_nutricalc_min.all():
             result += "nutricalc minimumreeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
-        
+
         for link in self.open_water_nutricalc_incr.all():
-            result += "nutricalc incrementele reeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)      
+            result += "nutricalc incrementele reeks van openwater '%s' (id:%i); "%(link.__unicode__(), link.id)
 
         for link in self.bucket_seepage.all():
-            result += "kwel van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)  
-            
+            result += "kwel van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)
+
         for link in self.bucket_results.all():
-            result += "resultaat van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)  
+            result += "resultaat van bakje '%s' (id:%i); "%(link.__unicode__(), link.id)
 
         for link in self.pumping_station_result.all():
-            result += "resultaat van kunstwerk '%s' (id:%i); "%(link.__unicode__(), link.id)  
+            result += "resultaat van kunstwerk '%s' (id:%i); "%(link.__unicode__(), link.id)
 
         for link in self.pump_line_timeserie.all():
             result += "resultaat van pomplijn '%s' (id:%i); "%(link.__unicode__(), link.id)
-            
-        return result 
-            
+
+        return result
+
 
 class OpenWater(models.Model):
     """Represents the *open water*.
@@ -809,7 +811,7 @@ class OpenWater(models.Model):
 
     def surface_in_ha(self):
         return float(self.surface)/10000
-    
+
     def linked_with_configuration(self):
         return str(self.waterbalanceconf)
 
