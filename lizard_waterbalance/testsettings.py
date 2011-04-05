@@ -1,8 +1,16 @@
+import os.path
+
 DEBUG = True
 TEMPLATE_DEBUG = True
 
-#DATABASE_ENGINE = 'sqlite3'
-#DATABASE_NAME = 'test.db'
+# SETTINGS_DIR allows media paths and so to be relative to this settings file
+# instead of hardcoded to c:\only\on\my\computer.
+SETTINGS_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# BUILDOUT_DIR is for access to the "surrounding" buildout, for instance for
+# BUILDOUT_DIR/var/static files to give django-staticfiles a proper place
+# to place all collected static files.
+BUILDOUT_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, '..'))
 
 DATABASES = {
     # If you want to use another database, consider putting the database
@@ -21,12 +29,17 @@ DATABASES = {
         'USER': 'buildout',
         'PASSWORD': 'buildout'
         },
+    'fews-unblobbed': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BUILDOUT_DIR, 'fews_unblobbed_readwrite.db')
+        },
     }
 
 
 SITE_ID = 1
 INSTALLED_APPS = [
     'lizard_waterbalance',
+    'lizard_fewsunblobbed',
     'lizard_map',
     'lizard_ui',
     #'south',
@@ -41,6 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     ]
 ROOT_URLCONF = 'lizard_waterbalance.urls'
+
+DATABASE_ROUTERS = ['lizard_fewsunblobbed.routers.FewsUnblobbedRouter', ]
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
