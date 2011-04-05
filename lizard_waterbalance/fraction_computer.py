@@ -62,7 +62,7 @@ class FractionComputer:
         for key in intakes_timeseries.keys():
             fractions_intakes[key] = TimeseriesStub()
       
-        previous_initial = 1.0
+        previous_initial = 100.0
         previous_precipitation = 0.0
         previous_seepage = 0.0
         previous_hardened = 0.0
@@ -213,9 +213,9 @@ class FractionComputer:
     def compute_fraction(self, current_input, current_total_output, current_storage, previous_fraction, previous_storage):
 
         input = current_input
-        output = previous_fraction * current_total_output
-        new_storage_fraction = previous_fraction * previous_storage + input - output
-        fraction = new_storage_fraction / current_storage
+        output = previous_fraction/100 * current_total_output
+        new_storage_fraction = previous_fraction/100 * previous_storage + input - output
+        fraction = 100 * new_storage_fraction / current_storage
         return fraction
 
     def initial_storage(self, open_water):
