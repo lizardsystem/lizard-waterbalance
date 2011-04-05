@@ -203,95 +203,104 @@ def indicator_graph(request,
         name = 'geen tijdreeks beschikbaar'
         timeseriedata = MockTimeSerieData()
 
-def move_forward(dates, period):
-    """Return the given set of dates but moved forward almost one 'period'."""
-    last_time = datetime.time(23, 59, 59)
-    if period == 'day':
-        result = [datetime.datetime.combine(date, last_time) for date in dates]
-    elif period == 'month':
-        result = []
-        for date in dates:
-            new_month = date.month + 1
-            month = (new_month - 1) % 12 + 1
-            year = date.year + (new_month - 1) / 12
-            new_date = datetime.datetime(year, month, date.day) - \
-                       datetime.timedelta(1)
-            result.append(datetime.datetime.combine(new_date, last_time))
-    elif period == 'quarter':
-        result = []
-        for date in dates:
-            new_month = date.month + 3
-            month = (new_month - 1) % 12 + 1
-            year = date.year + (new_month - 1) / 12
-            new_date = datetime.datetime(year, month, date.day) - \
-                       datetime.timedelta(1)
-            result.append(datetime.datetime.combine(new_date, last_time))
-    elif period == 'year':
-        result = []
-        for date in dates:
-            new_date = datetime.datetime(date.year + 1, date.month, date.day) - \
-                       datetime.timedelta(1)
-            result.append(datetime.datetime.combine(new_date, last_time))
-    return result
 
-def insert_restart(dates, values, reset_period):
-    """Return the pair of dates and values with an additional reset.
+class DataForCumulativeGraph:
+    """Prepares the cumulative events for drawing.
 
-    A reset is a the value 0.0 and this function insetrs that reset at the start of each
-    reset period.
+    The cumulative events as calculated do not correspond to the data points in
+    the graph. For example, the date of each cumulative event is the first day
+    of each period. However, as as the events contain cumulative values, they
+    should be drawn at the end of each period. An object of this class
+    prepares the data for drawing.
+
+    Instance variables:
+      * dates *
+        sequence of datetime objects
+      * values
+        sequence of values, one for each date
 
     """
-    new_dates, new_values = [], []
-    if reset_period == 'month':
+
+    def __init__(self, dates, values):
+        self.dates = dates
+        self.values = values
+
+    def retrieve_for_drawing(self, period, reset_period):
+        """Return copies of the stored events but suitable for drawing."""
+        dates = self.move_forward(self.dates, period)
+        dates, values = self.insert_restart(dates, self.values, reset_period)
+        return dates, values
+
+    def move_forward(self, dates, period):
+        """Return a copy of the dates moved to the last second of its period.
+
+        The date of each event is the first day of each period but as the
+        corresponding values are cumulative, they should be drawn at the end of
+        each period. This method returns a list of copies of each date where
+        each copy is moved to the last second of the period.
+
+        """
+        last_time = datetime.time(23, 59, 59)
+        if period == 'day':
+            result = [datetime.datetime.combine(date, last_time) for date in dates]
+        elif period == 'month':
+            result = []
+            for date in dates:
+                new_month = date.month + 1
+                month = (new_month - 1) % 12 + 1
+                year = date.year + (new_month - 1) / 12
+                new_date = datetime.datetime(year, month, date.day) - \
+                           datetime.timedelta(1)
+                result.append(datetime.datetime.combine(new_date, last_time))
+        elif period == 'quarter':
+            result = []
+            for date in dates:
+                new_month = date.month + 3
+                month = (new_month - 1) % 12 + 1
+                year = date.year + (new_month - 1) / 12
+                new_date = datetime.datetime(year, month, date.day) - \
+                           datetime.timedelta(1)
+                result.append(datetime.datetime.combine(new_date, last_time))
+        elif period == 'year':
+            result = []
+            for date in dates:
+                new_date = datetime.datetime(date.year + 1, date.month, date.day) - \
+                           datetime.timedelta(1)
+                result.append(datetime.datetime.combine(new_date, last_time))
+        return result
+
+    def insert_restart(self, dates, values, reset_period):
+        """Return the pair of copied dates and values with an additional reset.
+
+        A reset is an event that resets the cumulative dates and values to the
+        value 0.0 at a specific date and time. This function inserts such a
+        reset at the start of each reset period.
+
+        """
+        new_dates, new_values = [], []
         previous_date = None
         for date, value in zip(dates, values):
             if not previous_date is None:
-                first_date_of_month = datetime.datetime(date.year, date.month, 1)
-                if previous_date < first_date_of_month and \
-                   first_date_of_month <= date:
-                    new_dates.append(first_date_of_month)
+                first_date = self.first_date(date, reset_period)
+                if previous_date < first_date and first_date <= date:
+                    new_dates.append(first_date)
                     new_values.append(0.0)
             new_dates.append(date)
             new_values.append(value)
             previous_date = date
-    elif reset_period == 'quarter':
-        previous_date = None
-        for date, value in zip(dates, values):
-            if not previous_date is None:
-                month = 1 + ((date.month - 1) / 3 * 3)
-                first_date_of_quarter = datetime.datetime(date.year, month, 1)
-                if previous_date < first_date_of_quarter and \
-                   first_date_of_quarter <= date:
-                    new_dates.append(first_date_of_quarter)
-                    new_values.append(0.0)
-            new_dates.append(date)
-            new_values.append(value)
-            previous_date = date
-    elif reset_period == 'hydro_year':
-        previous_date = None
-        for date, value in zip(dates, values):
-            if not previous_date is None:
-                first_date_of_year = datetime.datetime(date.year, 10, 1)
-                if previous_date < first_date_of_year and \
-                   first_date_of_year <= date:
-                    new_dates.append(first_date_of_year)
-                    new_values.append(0.0)
-            new_dates.append(date)
-            new_values.append(value)
-            previous_date = date
-    elif reset_period == 'year':
-        previous_date = None
-        for date, value in zip(dates, values):
-            if not previous_date is None:
-                first_date_of_year = datetime.datetime(date.year, 1, 1)
-                if previous_date < first_date_of_year and \
-                   first_date_of_year <= date:
-                    new_dates.append(first_date_of_year)
-                    new_values.append(0.0)
-            new_dates.append(date)
-            new_values.append(value)
-            previous_date = date
-    return new_dates, new_values
+        return new_dates, new_values
+
+    def first_date(self, date, reset_period):
+        if reset_period == 'month':
+            date = datetime.datetime(date.year, date.month, 1)
+        elif reset_period == 'quarter':
+            month = 1 + ((date.month - 1) / 3 * 3)
+            date = datetime.datetime(date.year, month, 1)
+        elif reset_period == 'hydro_year':
+            date = datetime.datetime(date.year, 10, 1)
+        elif reset_period == 'year':
+            date = datetime.datetime(date.year, 1, 1)
+        return date
 
 def waterbalance_start(
     request,
@@ -773,7 +782,6 @@ def waterbalance_cum_discharges(configuration,
     graph.suptitle("Cumulatieve debieten")
     bar_width = BAR_WIDTH[period]
 
-    print reset_period
     t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
@@ -840,15 +848,15 @@ def waterbalance_cum_discharges(configuration,
             times, values = get_cumulative_timeseries( bar[1],
                 date2datetime(start_date), date2datetime(end_date),
                 period=period, reset_period=reset_period)
-            # The cumulative values are placed at the first of the period which
-            # is not correct for lines. These values are obtained at the end of
-            # a period but drawn at the beginning of that period. For that
-            # reason we move the times one 'period' to the future.
-            times = move_forward(times, period)
-            # After each 'reset_period, the cumulative values have to start at
-            # zero. Unfortunately, times and values do not contain such a zero
-            # value and we have to insert that manually.
-            times, values = insert_restart(times, values, reset_period)
+
+            # The cumulative events (times, values) do not correspond to the
+            # data points in the graph. For example, the date of each event is
+            # the first day of each period but as the events contain cumulative
+            # values, they should be drawn at the end of each period. The
+            # following snippet of code prepares the data for drawing.
+
+            data = DataForCumulativeGraph(times, values)
+            times, values = data.retrieve_for_drawing(period, reset_period)
 
             color = bar[3]
             graph.axes.plot(times, values, color=color, lw=2)
