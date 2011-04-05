@@ -4,7 +4,9 @@
 
 import datetime
 import logging
-import time
+from time import gmtime
+from time import strftime
+from time import time
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -94,7 +96,7 @@ def profile(log_file):
             # Add a timestamp to the profile output when the callable
             # is actually called.
             (base, ext) = os.path.splitext(log_file)
-            base = base + "-" + time.strftime("%Y%m%dT%H%M%S", time.gmtime())
+            base = base + "-" + strftime("%Y%m%dT%H%M%S", gmtime())
             final_log_file = base + ext
 
             prof = hotshot.Profile(final_log_file)
@@ -201,6 +203,82 @@ def indicator_graph(request,
         name = 'geen tijdreeks beschikbaar'
         timeseriedata = MockTimeSerieData()
 
+def move_forward(dates, period):
+    """Return the given set of dates but moved forward almost one 'period'."""
+    last_time = datetime.time(23, 59, 59)
+    if period == 'day':
+        result = [datetime.datetime.combine(date, last_time) for date in dates]
+    elif period == 'month':
+        result = []
+        for date in dates:
+            new_month = date.month + 1
+            month = (new_month - 1) % 12 + 1
+            year = date.year + (new_month - 1) / 12
+            new_date = datetime.datetime(year, month, date.day) - \
+                       datetime.timedelta(1)
+            result.append(datetime.datetime.combine(new_date, last_time))
+    elif period == 'quarter':
+        result = []
+        for date in dates:
+            new_month = date.month + 3
+            month = (new_month - 1) % 12 + 1
+            year = date.year + (new_month - 1) / 12
+            new_date = datetime.datetime(year, month, date.day) - \
+                       datetime.timedelta(1)
+            result.append(datetime.datetime.combine(new_date, last_time))
+    elif period == 'year':
+        result = []
+        for date in dates:
+            new_date = datetime.datetime(date.year + 1, date.month, date.day) - \
+                       datetime.timedelta(1)
+            result.append(datetime.datetime.combine(new_date, last_time))
+    return result
+
+def insert_restart(dates, values, reset_period):
+    """Return the pair of dates and values with an additional reset.
+
+    A reset is a the value 0.0 and this function insetrs that reset at the start of each
+    reset period.
+
+    """
+    new_dates, new_values = [], []
+    if reset_period == 'month':
+        previous_date = None
+        for date, value in zip(dates, values):
+            if not previous_date is None:
+                first_date_of_month = datetime.datetime(date.year, date.month, 1)
+                if previous_date < first_date_of_month and \
+                   first_date_of_month <= date:
+                    new_dates.append(first_date_of_month)
+                    new_values.append(0.0)
+            new_dates.append(date)
+            new_values.append(value)
+            previous_date = date
+    elif reset_period == 'hydro_year':
+        previous_date = None
+        for date, value in zip(dates, values):
+            if not previous_date is None:
+                first_date_of_year = datetime.datetime(date.year, 10, 1)
+                if previous_date < first_date_of_year and \
+                   first_date_of_year <= date:
+                    new_dates.append(first_date_of_year)
+                    new_values.append(0.0)
+            new_dates.append(date)
+            new_values.append(value)
+            previous_date = date
+    elif reset_period == 'year':
+        previous_date = None
+        for date, value in zip(dates, values):
+            if not previous_date is None:
+                first_date_of_year = datetime.datetime(date.year, 1, 1)
+                if previous_date < first_date_of_year and \
+                   first_date_of_year <= date:
+                    new_dates.append(first_date_of_year)
+                    new_values.append(0.0)
+            new_dates.append(date)
+            new_values.append(value)
+            previous_date = date
+    return new_dates, new_values
 
 def waterbalance_start(
     request,
@@ -234,7 +312,7 @@ def waterbalance_start(
                                                                       ).select_related(
                                                                             'WaterbalanceArea',
                                                                             'WaterbalanceScenario')
-    
+
     if not request.user.is_authenticated() and not request.user.has_perm('lizard_waterbalance.see_not_public_scenarios'):
         waterbalance_configurations = waterbalance_configurations.filter(waterbalance_scenario__public=True)
 
@@ -449,7 +527,7 @@ def waterbalance_area_graph(
     graph.suptitle("Waterbalans [m3]")
     bar_width = BAR_WIDTH[period]
 
-    t1 = time.time()
+    t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
@@ -544,9 +622,9 @@ def waterbalance_area_graph(
     graph.axes.bar(times, negative_sluice_error, bar_width, color=color, edgecolor=color,
                                bottom=bottom)
     top_height_out.stack_bars(times, values)
-    
 
-    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+
+    logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
 
 
@@ -612,7 +690,7 @@ def waterbalance_water_level(configuration,
         title = "Waterpeil [m NAP]"
     graph.suptitle(title)
 
-    t1 = time.time()
+    t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
@@ -658,7 +736,7 @@ def waterbalance_water_level(configuration,
         color = label.color
         graph.axes.plot(times, values, color=color)
 
-    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
 
 def waterbalance_cum_discharges(configuration,
@@ -676,7 +754,7 @@ def waterbalance_cum_discharges(configuration,
     graph.suptitle("Cumulatieve debieten")
     bar_width = BAR_WIDTH[period]
 
-    t1 = time.time()
+    t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
@@ -725,7 +803,6 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            print label
             times, values = get_cumulative_timeseries(
                 bar[1], date2datetime(start_date),
                 date2datetime(end_date), period=period, multiply= -1)#, time_shift=-31)
@@ -743,11 +820,20 @@ def waterbalance_cum_discharges(configuration,
             times, values = get_cumulative_timeseries(
                 bar[1], date2datetime(start_date),
                 date2datetime(end_date), period=period)
+            # The cumulative values are placed at the first of the period which
+            # is not correct for lines. These values are obtained at the end of
+            # a period but drawn at the beginning of that period. For that
+            # reason we move the times one 'period' to the future.
+            times = move_forward(times, period)
+            # After each 'reset_period, the cumulative values have to start at
+            # zero. Unfortunately, times and values do not contain such a zero
+            # value and we have to insert that manually.
+            times, values = insert_restart(times, values, reset_period)
 
             color = bar[3]
             graph.axes.plot(times, values, color=color, lw=2)
 
-    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
 
 #@profile("waterbalance_fraction_distribution.prof")
@@ -759,7 +845,7 @@ def waterbalance_fraction_distribution(
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
-    
+
     # Add second axes.
     graph.init_second_axes()
 
@@ -771,7 +857,7 @@ def waterbalance_fraction_distribution(
     graph.suptitle(title)
     bar_width = BAR_WIDTH[period]
 
-    t1 = time.time()
+    t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
@@ -858,11 +944,11 @@ def waterbalance_fraction_distribution(
 
     graph.legend_space()
     graph.legend(handles, names)
-    
+
     graph.axes.set_ylim(0, 105)
     graph.ax2.set_ylim(ymin=0)
 
-    logger.debug("Grabbing all graph data took %s seconds.", time.time() - t1)
+    logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
 
 
@@ -878,7 +964,7 @@ def waterbalance_phosphate_impact(
 
     bar_width = BAR_WIDTH[period]
 
-    t1 = time.time()
+    t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
@@ -907,7 +993,7 @@ def waterbalance_phosphate_impact(
         legend.append((label.order + 1000, name_incremental, label.color_increment))
 
     logger.debug('1: Got bars in %s seconds' %
-                 (time.time() - t1))
+                 (time() - t1))
 
     legend = sorted(legend, key=lambda bar:-bar[0])
 
@@ -940,7 +1026,7 @@ def waterbalance_phosphate_impact(
             top_height.stack_bars(times, values)
 
     logger.debug('1: Got axes in %s seconds' %
-                 (time.time() - t1))
+                 (time() - t1))
 
     return graph
 
@@ -1003,7 +1089,7 @@ def waterbalance_area_graphs(request,
 
     #canvas = FigureCanvas(graph.figure)
     #response = HttpResponse(content_type='image/png')
-    
+
     response = graph.http_png()
     response['Cache-Control'] = 'max-age=600'
     #canvas.print_png(response)
@@ -1076,7 +1162,7 @@ def graph_select(request):
 
             waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
             waterbalance_computer.cache_if_updated()
-            
+
 
         return HttpResponse(json, mimetype='application/json')
     else:
@@ -1119,12 +1205,12 @@ def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
                                                     waterbalance_scenario__slug=scenario_slug)
 
         configuration.delete_cached_waterbalance_computer()
-        
+
         waterbalance_computer = configuration.get_waterbalance_computer()
         calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
         waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
-        waterbalance_computer.cache_if_updated()        
-        
+        waterbalance_computer.cache_if_updated()
+
 
         return HttpResponseRedirect(
             reverse(
