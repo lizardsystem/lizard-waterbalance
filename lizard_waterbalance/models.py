@@ -1678,17 +1678,18 @@ def pre_save_configuration(*args, **kwargs):
         open_water.save()
         kwargs['instance'].open_water = open_water
     query = Label.objects.filter(flow_type=Label.TYPE_IN)
-    if kwargs['instance'].id:
+    if kwargs['instance'].id is not None:
         query = query.exclude(configuration_label__id=kwargs['instance'].id)
 
-    for label in query:
-        concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
+        for label in query:
+            concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
 
-    try:
-        label = Label.objects.get(program_name='initial')
-        concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
-    except Label.DoesNotExist:
-        pass
+        try:
+            
+            label = Label.objects.get(program_name='initial')
+            concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
+        except Label.DoesNotExist:
+            pass
 
 pre_save.connect(pre_save_slug, sender=Parameter)
 pre_save.connect(pre_save_slug, sender=WaterbalanceArea)
