@@ -102,6 +102,24 @@
         {% endfor %}
       </ul>
 
+      <ul class="without-bullets">
+        {% for reset_period_id, reset_period_label, checked in reset_periods %}
+        <li>
+          <input id="reset-period-id-{{ reset_period_id }}"
+                 type="radio"
+                 value="{{ reset_period_id }}"
+                 name="reset_period"
+                 {% if checked %}
+                 checked="checked"
+                 {% endif %}
+                 />
+          <label for="reset-period-id-{{ reset_period_id }}">
+            {{ reset_period_label }}
+          </label>
+        </li>
+        {% endfor %}
+      </ul>
+
       <input type="hidden"
              name="area_slug"
              value="{{ waterbalance_configuration.waterbalance_area.slug }}" />
@@ -110,7 +128,7 @@
              value="{{ waterbalance_configuration.waterbalance_scenario.slug }}" />
       <input type="submit" name="submit" value="Toon"
              id="graph-type-select-submit" />
-             
+
     </form>
     <form method="POST"
           action="{% url waterbalance_excel_export_small waterbalance_configuration.waterbalance_area.slug waterbalance_configuration.waterbalance_scenario.slug %}"

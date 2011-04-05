@@ -254,6 +254,19 @@ def insert_restart(dates, values, reset_period):
             new_dates.append(date)
             new_values.append(value)
             previous_date = date
+    elif reset_period == 'quarter':
+        previous_date = None
+        for date, value in zip(dates, values):
+            if not previous_date is None:
+                month = 1 + ((date.month - 1) / 3 * 3)
+                first_date_of_quarter = datetime.datetime(date.year, month, 1)
+                if previous_date < first_date_of_quarter and \
+                   first_date_of_quarter <= date:
+                    new_dates.append(first_date_of_quarter)
+                    new_values.append(0.0)
+            new_dates.append(date)
+            new_values.append(value)
+            previous_date = date
     elif reset_period == 'hydro_year':
         previous_date = None
         for date, value in zip(dates, values):
@@ -381,12 +394,18 @@ def waterbalance_area_summary(
                ('day', 'Per dag', False)]
     # ^^^ True/False: whether it is the default radio button.  So month is.
 
+    reset_periods = [('hydro_year', 'Hydrologisch jaar', True),
+                     ('year', 'Jaar', False),
+                     ('quarter', 'Kwartaal', False),
+                     ('month', 'Maand', False)]
+
     return render_to_response(
         template,
         {'waterbalance_configuration': waterbalance_configuration,
          'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
          'periods': periods,
+         'reset_periods': reset_periods,
          'crumbs': crumbs},
         context_instance=RequestContext(request))
 
@@ -754,6 +773,7 @@ def waterbalance_cum_discharges(configuration,
     graph.suptitle("Cumulatieve debieten")
     bar_width = BAR_WIDTH[period]
 
+    print reset_period
     t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
@@ -803,9 +823,9 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            times, values = get_cumulative_timeseries(
-                bar[1], date2datetime(start_date),
-                date2datetime(end_date), period=period, multiply= -1)#, time_shift=-31)
+            times, values = get_cumulative_timeseries( bar[1],
+                date2datetime(start_date), date2datetime(end_date),
+                period=period, reset_period=reset_period, multiply= -1)
 
             color = bar[3]
             bottom = top_height.get_heights(times)
@@ -817,9 +837,9 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            times, values = get_cumulative_timeseries(
-                bar[1], date2datetime(start_date),
-                date2datetime(end_date), period=period)
+            times, values = get_cumulative_timeseries( bar[1],
+                date2datetime(start_date), date2datetime(end_date),
+                period=period, reset_period=reset_period)
             # The cumulative values are placed at the first of the period which
             # is not correct for lines. These values are obtained at the end of
             # a period but drawn at the beginning of that period. For that
@@ -1137,6 +1157,7 @@ def graph_select(request):
         scenario_slug = request.POST['scenario_slug']
         selected_graph_types = request.POST.getlist('graphs')
         period = request.POST['period']
+        reset_period = request.POST['reset_period']
 
         for graph_type, name in GRAPH_TYPES:
             if not graph_type in selected_graph_types:
@@ -1146,7 +1167,8 @@ def graph_select(request):
                            kwargs={'area_slug': area_slug,
                                    'scenario_slug': scenario_slug,
                                    'graph_type': graph_type}) +
-                   '?period=' + period)
+                   '?period=' + period +
+                   '&reset_period=' + reset_period)
             graphs.append(url)
         json = simplejson.dumps(graphs)
 
