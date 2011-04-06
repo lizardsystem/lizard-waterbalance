@@ -973,7 +973,7 @@ def waterbalance_fraction_distribution(
     graph.legend_space()
     graph.legend(handles, names)
 
-    graph.axes.set_ylim(0, 105)
+    graph.axes.set_ylim(0, 100)
     graph.ax2.set_ylim(ymin=0)
 
     logger.debug("Grabbing all graph data took %s seconds.", time() - t1)

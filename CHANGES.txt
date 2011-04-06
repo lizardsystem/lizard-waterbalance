@@ -2,13 +2,25 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.14 (unreleased)
+0.14 (2011-04-06)
 -----------------
 
+- Implemented the caching of the graphs for the fraction distribution for
+  phosphates and the phosphate impact.
+- Implemented the selection of the reset period for the cumulative graphs.
+- Implemented initial support for rights management.
+- Improved the layout of the left sidebar of the waterbalance summary page.
+- Improved the axes of the graph for the fraction distribution for chlorides:
+  the maximum value of the left axis is 100, the minimum value of the right
+  axis is 0.
+- Removed the (unused) graph for the fraction distribution for phosphates.
 - Fixed the order of the radio buttons for the selection of the time unit of
   the horizontal axis of each waterbalance graph. The order is now "jaar -
   kwartaal - maand - dag" instead of "jaar - maand - kwartaal - dag".
-
+- Fixed the graph for the cumulative discharge for each quarter.
+- Fixed resizing issues with IE 7 and 8 and Chrome.
+- Fixed issues with the cache when multiple graphs have to be displayed.
+- Upgraded timeseries to 0.4
 
 0.13 (2011-03-28)
 -----------------
