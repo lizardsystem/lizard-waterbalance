@@ -48,10 +48,14 @@ from lizard_map.models import ColorField
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import daily_events
 from timeseries.timeseriesstub import daily_sticky_events
+from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesStub
 
-from django.db import transaction
+# The following constant is defined because the length of the name of an
+# OpenWater is used in two places, viz. in the definition of the name field and
+# in the function pre_save_configuration
+MAXLENGTH_OPENWATER_NAME = 64
 
 logger = logging.getLogger(__name__)
 
@@ -303,10 +307,11 @@ class TimeseriesFews(models.Model):
 
     def get_last_event(self):
         """return event with latest datetime"""
-        self._get_fews_timeserie_object()
+        fews_timeseries = self._get_fews_timeserie_object()
 
         try:
-            return self.events.all().order_by('-time')[0]
+            ts_events = fews_timeseries.timeseriedata.filter().order_by('-tsd_time')
+            return ts_events[0]
         except:
             return None
 
@@ -362,7 +367,8 @@ class TimeseriesFews(models.Model):
         for date, value in generate_events(events, self.default_value,
                                            self.stick_to_last_value,
                                            start_date, end_date):
-            yield date, value
+            if date is not None and value is not None:
+                yield date, value
 
 
 class Parameter(models.Model):
@@ -926,7 +932,8 @@ class Bucket(models.Model):
         (STEDELIJK_SURFACE, _("stedelijk"))
     )
 
-    name = models.CharField(verbose_name=_("naam"), max_length=64)
+    name = models.CharField(verbose_name=_("naam"),
+                            max_length=MAXLENGTH_OPENWATER_NAME)
 
     # We couple a bucket to the open water although from a semantic point of
     # view, an open water should reference the buckets. However, this is the
@@ -1292,15 +1299,15 @@ class WaterbalanceArea(gis_models.Model):
         editable=False,
         help_text=_("naam om de URL te maken"))
 
-    geom = gis_models.MultiPolygonField(
-        'Region Border', srid=4326, null=True, blank=True)
+    #geom = gis_models.MultiPolygonField(
+    #    'Region Border', srid=4326, null=True, blank=True)
 
     active = models.BooleanField(
         verbose_name=_("Actief"),
         default=False,
         help_text=_("is het gebied actief en te benaderen"))
 
-    objects = gis_models.GeoManager()
+    #objects = gis_models.GeoManager()
 
     def __unicode__(self):
         return unicode(self.name)
@@ -1487,6 +1494,7 @@ class WaterbalanceConf(models.Model):
         else:
             logger.debug("try to get waterbalance computer from cache, with code: wb_computer_%i_store"%self.id)
             waterbalance_computer = cache.get(u'wb_computer_%i_store'%self.id)
+            logger.debug("[done] try to get waterbalance computer from cache")
 
         if not waterbalance_computer:
             logger.debug("create new waterbalance computer.")
@@ -1516,7 +1524,10 @@ class WaterbalanceConf(models.Model):
         else:
             #precipitation
             last_precipitation = self.open_water.precipitation.get_last_event()
-            end_date = last_precipitation.time
+            try:
+                end_date = last_precipitation.time
+            except AttributeError:
+                end_date = last_precipitation.tsd_time
             #if last_precipitation:
             #    last_precipitation = last_precipitation.time
             #to do: else, warning
@@ -1666,7 +1677,7 @@ def pre_save_configuration(*args, **kwargs):
         dummy_timeserie, new = WaterbalanceTimeserie.objects.get_or_create(name='selecteer', parameter=dummy_parameter)
 
         open_water = OpenWater()
-        open_water.name = kwargs['instance'].__unicode__()
+        open_water.name = kwargs['instance'].__unicode__()[:MAXLENGTH_OPENWATER_NAME-1]
         open_water.bottom_height = -999.0
         open_water.surface = 9999.0
 
@@ -1689,7 +1700,7 @@ def pre_save_configuration(*args, **kwargs):
             concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
 
         try:
-            
+
             label = Label.objects.get(program_name='initial')
             concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
         except Label.DoesNotExist:
