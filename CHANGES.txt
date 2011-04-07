@@ -5,7 +5,11 @@ Changelog of lizard-waterbalance
 0.15 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fixed a bug that prevented the save to the database of a new WaterbalanceConf.
+- Fixed a bug in TimeseriesFews, which prevented the retrieval of the last
+  event of a time series.
+- Enhanced TimeseriesFews so it can also handle events that have a valid date
+  but have None for a value.
 
 
 0.14 (2011-04-06)
