@@ -754,12 +754,9 @@ def waterbalance_water_level(configuration,
 
     for bar in bars:
         label = bar[2]
-        #try:
-        if True:
-            times, values = get_average_timeseries(
-                bar[1], date2datetime(start_date),
-                date2datetime(end_date), period=period)
-
+        times, values = get_average_timeseries(
+            bar[1], date2datetime(start_date),
+            date2datetime(end_date), period=period)
 
         color = label.color
         graph.axes.plot(times, values, color=color)
