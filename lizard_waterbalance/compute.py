@@ -323,6 +323,10 @@ class WaterbalanceComputer2:
             # variable of the open water. Apparently the variable is a constant
             # so we just fill it in.
             crop_evaporation_factor = 1.0
+
+            # We compute the vertical time series for a specific range of
+            # dates. To do so, we set an instance method that can determine
+            # whether a given date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.vertical_timeseries_computer.inside_range = date_range.inside
             outcome = self.vertical_timeseries_computer.compute(self.configuration.open_water.surface,
@@ -330,6 +334,7 @@ class WaterbalanceComputer2:
                                                                 input['precipitation'],
                                                                 transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
                                                                 input['seepage'])
+
             #store for later use (some kind of cache)
             self.outcome['vertical_open_water'] = outcome
             self.outcome_info['vertical_open_water'] = {}
@@ -371,6 +376,10 @@ class WaterbalanceComputer2:
             vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
 
             #to do: label timeseries
+
+            # We compute the level control for a specific range of time. To do
+            # so, we set an instance method that can determine whether a given
+            # dat is inside that range.
             date_range = DateRange(start_date, end_date)
             self.level_control_computer.inside_range = date_range.inside
             outcome = self.level_control_computer.compute(
@@ -383,9 +392,7 @@ class WaterbalanceComputer2:
                 input['open_water']['minimum_level'],
                 input['open_water']['maximum_level'],
                 input['incoming_timeseries'],
-                input['outgoing_timeseries'],
-                start_date,
-                end_date)
+                input['outgoing_timeseries'])
 
             #cache
             self.outcome['level_control'] = outcome
@@ -850,8 +857,21 @@ class WaterbalanceComputer2:
             updated = self.updated
             self.updated = False
 
+            # Unfortunately, Python is not able to pickle instance methods or
+            # functions. So to be able to cache a Waterbalancecomputer2, we
+            # have to "unset" the instance methods we may have set on the
+            # LevelControlComputer and VerticalTimeseriesComputer.
+
+            previous_inside_range_l = self.level_control_computer.inside_range
+            previous_inside_range_v = self.vertical_timeseries_computer.inside_range
+            self.level_control_computer.inside_range = None
+            self.vertical_timeseries_computer.inside_range = None
+
             cache.set(u'wb_computer_%i_store'%self.configuration.id, self, 24*60*60)
             cache.set(u'wb_computer_%i_stored_date'%self.configuration.id, time.time(), 24*60*60)
+
+            self.vertical_timeseries_computer.inside_range = previous_inside_range_v
+            self.level_control_computer.inside_range = previous_inside_range_l
 
             self.updated = updated
 

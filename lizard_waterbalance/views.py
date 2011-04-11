@@ -42,7 +42,7 @@ from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import Parameter
-from timeseries.timeseriesstub import SparseTimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
 from timeseries.timeseriesstub import cumulative_event_values
 from timeseries.timeseriesstub import multiply_timeseries
@@ -559,67 +559,42 @@ def waterbalance_area_graph(
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
 
-    logger.debug("try to retrieve graph info from the cache")
-    incoming_bars = cache.get("incoming_bars")
-    outgoing_bars = cache.get("outgoing_bars")
-    sluice_error = cache.get("sluice_error")
-    total_meas_outtakes = cache.get("total_meas_outtakes")
+    #collect all data
+    incoming = waterbalance_computer.get_open_water_incoming_flows(
+        calc_start_datetime,
+        calc_end_datetime)
+    sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime,
+                                                                                           calc_end_datetime)
+    outgoing = waterbalance_computer.get_open_water_outgoing_flows(calc_start_datetime,
+                                                                   calc_end_datetime)
 
-    if incoming_bars is None or outgoing_bars is None or sluice_error is None or total_meas_outtakes is None:
-        logger.debug("failed to retrieve all graph info from the cache")
-        #collect all data
-        incoming = waterbalance_computer.get_open_water_incoming_flows(
-            calc_start_datetime,
-            calc_end_datetime)
-        sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime,
-                                                                                               calc_end_datetime)
-        outgoing = waterbalance_computer.get_open_water_outgoing_flows(calc_start_datetime,
-                                                                       calc_end_datetime)
+    #define bars, without sluice error
+    incoming_bars = []
+    incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened']),
+                     (labels["drained"].name, incoming["drained"], labels['drained']),
+                     (labels["flow_off"].name, incoming["flow_off"], labels['flow_off']),
+                     (labels["undrained"].name, incoming["undrained"], labels['undrained']),
+                     (labels["precipitation"].name, incoming["precipitation"], labels['precipitation']),
+                     (labels["seepage"].name, incoming["seepage"], labels['seepage'])]
 
-        #define bars, without sluice error
-        incoming_bars = []
-        incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened']),
-                         (labels["drained"].name, incoming["drained"], labels['drained']),
-                         (labels["flow_off"].name, incoming["flow_off"], labels['flow_off']),
-                         (labels["undrained"].name, incoming["undrained"], labels['undrained']),
-                         (labels["precipitation"].name, incoming["precipitation"], labels['precipitation']),
-                         (labels["seepage"].name, incoming["seepage"], labels['seepage'])]
+    incoming_bars += [
+        (structure.name, timeserie, structure.label) for structure, timeserie in
+        incoming['defined_input'].items()]
+    incoming_bars.append(
+        (labels['intake_wl_control'].name, incoming["intake_wl_control"], labels['intake_wl_control']))
 
-        incoming_bars += [
-            (structure.name, timeserie, structure.label) for structure, timeserie in
-            incoming['defined_input'].items()]
-        incoming_bars.append(
-            (labels['intake_wl_control'].name, incoming["intake_wl_control"], labels['intake_wl_control']))
+    outgoing_bars = [
+        (labels["indraft"].name, outgoing["indraft"], labels['indraft']),
+        (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation']),
+        (labels["infiltration"].name, outgoing["infiltration"], labels['infiltration'])
+         ]
 
-        outgoing_bars = [
-            (labels["indraft"].name, outgoing["indraft"], labels['indraft']),
-            (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation']),
-            (labels["infiltration"].name, outgoing["infiltration"], labels['infiltration'])
-             ]
+    outgoing_bars += [(structure.name, timeserie, structure.label) for structure, timeserie in outgoing['defined_output'].items()]
+    outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
 
-        outgoing_bars += [(structure.name, timeserie, structure.label) for structure, timeserie in outgoing['defined_output'].items()]
-        outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
-
-        #sort
-        incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
-        outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
-
-        logger.debug("try to store all graph info in the cache")
-        for bar in incoming_bars:
-            logger.debug(bar[0])
-            if isinstance(bar[1], SparseTimeseriesStub):
-                logger.debug("SparseTimeseriesStub")
-            # cache.set("test", bar, 24 * 60 * 60)
-        logger.debug("Number of incoming bars: %d", len(incoming_bars))
-        logger.debug("precipitation bar size: %d", len(list(incoming_bars[4][1].events())))
-        logger.debug("seepage bar size: %d", len(list(incoming_bars[5][1].events())))
-        cache.set("incoming_bars", incoming_bars, 24 * 60 * 60)
-        logger.debug("Number of outgoing bars: %d", len(outgoing_bars))
-        cache.set("outgoing_bars", outgoing_bars, 24 * 60 * 60)
-        cache.set("sluice_error", sluice_error, 24 * 60 * 60)
-        cache.set("total_meas_outtakes", total_meas_outtakes, 24 * 60 * 60)
-        if cache.get("incoming_bars") is None:
-            logger.debug("failed to store all graph info in the cache")
+    #sort
+    incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
+    outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
 
     #define legend
     names = ["sluitfout t.o.v. gemaal"] + [bar[0] for bar in incoming_bars + outgoing_bars]
@@ -1094,7 +1069,7 @@ def waterbalance_area_graphs(request,
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
-    waterbalance_computer = configuration.get_waterbalance_computer(force_new=True)
+    waterbalance_computer = configuration.get_waterbalance_computer()
 
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
