@@ -36,7 +36,7 @@ from timeseries.timeseriesstub import create_empty_timeseries
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
 logger = logging.getLogger(__name__)
@@ -63,11 +63,11 @@ class BucketOutcome:
     """
     def __init__(self):
 
-        self.storage = TimeseriesStub()
-        self.flow_off = TimeseriesStub()
-        self.net_drainage = TimeseriesStub()
-        self.seepage = TimeseriesStub()
-        self.net_precipitation = TimeseriesStub()
+        self.storage = SparseTimeseriesStub()
+        self.flow_off = SparseTimeseriesStub()
+        self.net_drainage = SparseTimeseriesStub()
+        self.seepage = SparseTimeseriesStub()
+        self.net_precipitation = SparseTimeseriesStub()
 
     def name2timeseries(self):
         return {"storage": self.storage,
@@ -357,8 +357,8 @@ def compute_timeseries_from_sewer(bucket, sewer):
     outcome = empty_outcome(first_date)
     print '-------'
     print bucket.surface
-    
-    
+
+
     outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
     return outcome
 

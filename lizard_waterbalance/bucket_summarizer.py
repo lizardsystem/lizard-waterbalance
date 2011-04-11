@@ -29,7 +29,7 @@
 import logging
 
 from lizard_waterbalance.models import Bucket
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
 from timeseries.timeseriesstub import add_timeseries
@@ -54,16 +54,16 @@ class BucketsSummary:
 
     """
     def __init__(self):
-        self.totals = TimeseriesStub()
-        self.total_incoming = TimeseriesStub()
-        self.total_outgoing = TimeseriesStub()
-        self.hardened = TimeseriesStub()
-        self.drained = TimeseriesStub()
-        self.undrained = TimeseriesStub()
-        self.flow_off = TimeseriesStub()
-        self.indraft = TimeseriesStub()
-        self.sewer = TimeseriesStub()
-        
+        self.totals = SparseTimeseriesStub()
+        self.total_incoming = SparseTimeseriesStub()
+        self.total_outgoing = SparseTimeseriesStub()
+        self.hardened = SparseTimeseriesStub()
+        self.drained = SparseTimeseriesStub()
+        self.undrained = SparseTimeseriesStub()
+        self.flow_off = SparseTimeseriesStub()
+        self.indraft = SparseTimeseriesStub()
+        self.sewer = SparseTimeseriesStub()
+
     def __dict__(self):
         """returns dictionary of BucketOutcome to the given one."""
         return {'total': self.totals,
@@ -144,7 +144,7 @@ class BucketSummarizer:
                          summary['sewer']
         summary['total_incoming'] = summary['indraft']
         summary['total'] = summary['total_outgoing'] + summary['total_incoming']
-                         
+
         return summary
 
     def compute_sum_hardened(self):
@@ -217,7 +217,7 @@ class BucketsSummarizer:
                 continue
             if date >= end_date:
                 break
-            
+
             daily_summary = BucketSummarizer(bucket2daily_outcome).compute()
             buckets_summary.totals.add_value(date, daily_summary['total'])
             buckets_summary.total_outgoing.add_value(date, daily_summary['total_outgoing'])

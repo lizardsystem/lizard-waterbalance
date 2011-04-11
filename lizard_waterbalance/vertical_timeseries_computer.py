@@ -25,9 +25,14 @@
 #
 #******************************************************************************
 
+import logging
+
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
+
+logger = logging.getLogger(__name__)
+
 
 class VerticalTimeseriesComputer:
     """Implements the computation of the vertical time series of an open water.
@@ -37,8 +42,27 @@ class VerticalTimeseriesComputer:
 
     """
 
+    def __init__(self, inside_range=lambda date: 0):
+        """Set the function to determine if a date lies in a specific range.
+
+        The level control only has to be computed for dates that lie in a
+        specific range of dates. The given function should return a
+          - negative number if the given date is before the start of the range,
+          - positive number if the given date is at the end of the range or
+            later, and
+          - zero if the given date lies in the range.
+
+        If the caller does not supply a function at the construction of a
+        LevelControlComputer, the LevelControlComputer stores a function that
+        considers every date to lie in the aforementioned range. However, the
+        caller is free to override that function, which is referenced by
+        self.inside_range, at a later time.
+
+        """
+        self.inside_range = inside_range
+
     def compute(self, surface, crop_evaporation_factor, precipitation,
-                evaporation, seepage, start_date, end_date):
+                evaporation, seepage):
         """Compute and return the vertical time series for the given surface as dictionary.
 
         The incoming time series precipitation and evaporation always contain
@@ -63,19 +87,19 @@ class VerticalTimeseriesComputer:
         * seepage -- seepage time series in [mm/day]
 
         """
-        vertical_timeseries_list = [TimeseriesStub(),
-                                    TimeseriesStub(),
-                                    TimeseriesStub(),
-                                    TimeseriesStub()]
+        vertical_timeseries_list = [SparseTimeseriesStub(),
+                                    SparseTimeseriesStub(),
+                                    SparseTimeseriesStub(),
+                                    SparseTimeseriesStub()]
         timeseries_list = [precipitation, evaporation, seepage]
         index_evaporation = 1
         for event_tuple in enumerate_events(*timeseries_list):
             date = event_tuple[0][0]
-            if date < start_date:
+            if self.inside_range(date) < 0:
                 continue
-            if date >= end_date:
+            elif self.inside_range(date) > 0:
                 break
-            
+
             for index in range(0, len(timeseries_list)):
                 value = event_tuple[index][1] * surface * 0.001
                 if index == index_evaporation:
@@ -85,6 +109,9 @@ class VerticalTimeseriesComputer:
                 vertical_timeseries_list[index].add_value(date, value)
         vertical_timeseries_list[3], vertical_timeseries_list[2] = \
                                      split_timeseries(vertical_timeseries_list[2])
+        logger.debug("precipitation size: %d", len(list(vertical_timeseries_list[0].events())))
+        logger.debug("seepage size: %d", len(list(vertical_timeseries_list[2].events())))
+
         return {"precipitation":vertical_timeseries_list[0],
                       "evaporation":vertical_timeseries_list[1],
                       "seepage":vertical_timeseries_list[2],

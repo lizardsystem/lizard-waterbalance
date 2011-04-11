@@ -29,39 +29,39 @@ from datetime import timedelta
 
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 
 class FractionComputer:
 
-    def compute(self, open_water, buckets_summary, precipitation_timeseries, seepage_timeseries, 
+    def compute(self, open_water, buckets_summary, precipitation_timeseries, seepage_timeseries,
                 storage_timeseries, total_output_timeseries, intakes_timeseries, start_date, end_date):
         """Compute and return the fraction series.
 
-        This function returns the pair of TimeseriesStub(s) that consists of
+        This function returns the pair of SparseTimeseriesStub(s) that consists of
         the intake time series and pump time series for the given open water.
 
         Parameters:
         * open_water -- OpenWater for which to compute the fractions
         * buckets_summary -- BucketsSummary with the summed buckets outcome
-        * precipitation, 
-        * seepage, 
+        * precipitation,
+        * seepage,
         * storage_timeseries -- storage time series in [m3/day]
         * intakes_timeseries -- list of intake timeseries in [m3/day]
 
         """
-        fractions_initial = TimeseriesStub()
-        fractions_precipitation = TimeseriesStub()
-        fractions_seepage = TimeseriesStub()
-        fractions_hardened = TimeseriesStub()
-        fractions_sewer = TimeseriesStub()
-        fractions_drained = TimeseriesStub()
-        fractions_undrained = TimeseriesStub()
-        fractions_flow_off = TimeseriesStub()
+        fractions_initial = SparseTimeseriesStub()
+        fractions_precipitation = SparseTimeseriesStub()
+        fractions_seepage = SparseTimeseriesStub()
+        fractions_hardened = SparseTimeseriesStub()
+        fractions_sewer = SparseTimeseriesStub()
+        fractions_drained = SparseTimeseriesStub()
+        fractions_undrained = SparseTimeseriesStub()
+        fractions_flow_off = SparseTimeseriesStub()
         fractions_intakes = {}
         for key in intakes_timeseries.keys():
-            fractions_intakes[key] = TimeseriesStub()
-      
+            fractions_intakes[key] = SparseTimeseriesStub()
+
         previous_initial = 100.0
         previous_precipitation = 0.0
         previous_seepage = 0.0
@@ -95,15 +95,15 @@ class FractionComputer:
                 continue
             if date >= end_date:
                 break
-            
+
             if first:
                 first = False
                 previous_storage = (open_water.init_water_level - open_water.bottom_height) * open_water.surface
 
-            
+
             total_output = -1 * events['total_output'][1]
             current_storage = events['storage'][1]
-            
+
             initial = self.compute_fraction(0,
                                             total_output,
                                             current_storage,
@@ -132,7 +132,7 @@ class FractionComputer:
                                                   current_storage,
                                                   previous_sewer,
                                                   previous_storage)
-            
+
             drained = self.compute_fraction(events['drained'][1],
                                                   total_output,
                                                   current_storage,
@@ -165,7 +165,7 @@ class FractionComputer:
 
             total_fractions = initial + precipitation + seepage + sewer + hardened + \
                               drained + undrained + flow_off + sum(intakes.values())
-                                  
+
                 #TO DO: dit is een correctie die niet mogelijk hoeft te zijn. graag een alert als dit niet klopt
                 #initial /= total_fractions
                 #precipitation /= total_fractions
@@ -175,7 +175,7 @@ class FractionComputer:
                 #undrained /= total_fractions
                 #flow_off /= total_fractions
                 #intakes = [intake / total_fractions for intake in intakes]
-    
+
             fractions_initial.add_value(date, initial)
             previous_initial = initial
             fractions_precipitation.add_value(date, precipitation)
@@ -192,14 +192,14 @@ class FractionComputer:
             previous_undrained = undrained
             fractions_flow_off.add_value(date, flow_off)
             previous_flow_off = flow_off
-            
+
             previous_intakes = {}
             for key in intakes.keys():
                 fractions_intakes[key].add_value(date, intakes[key])
                 previous_intakes[key] = intakes[key]
 
             previous_storage = current_storage
-        
+
         result = {'initial':fractions_initial,
                 'precipitation':fractions_precipitation,
                 'seepage':fractions_seepage,

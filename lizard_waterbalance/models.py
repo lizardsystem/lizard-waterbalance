@@ -50,7 +50,7 @@ from timeseries.timeseriesstub import daily_events
 from timeseries.timeseriesstub import daily_sticky_events
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 # The following constant is defined because the length of the name of an
 # OpenWater is used in two places, viz. in the definition of the name field and
@@ -1179,7 +1179,7 @@ class PumpingStation(models.Model):
 
     def retrieve_sum_timeseries(self):
         """Return the sum of the time series of each of its PumpLine(s)."""
-        result = TimeseriesStub()
+        result = SparseTimeseriesStub()
         for pump_line in self.retrieve_pump_lines():
             result = add_timeseries(result, pump_line.retrieve_timeseries())
         return result
@@ -1363,6 +1363,7 @@ def load_shapefile(shapefile_name, name_field, source_epsg):
                  geometry = MultiPolygon(geometry)
              wb_area, new = WaterbalanceArea.objects.get_or_create(name=name, defaults={'geom':geometry})
              if not new:
+
                  #update geometry
                  wb_area.geom = geometry
              else:
@@ -1482,8 +1483,6 @@ class WaterbalanceConf(models.Model):
         """get waterbalance computer"""
 
         from lizard_waterbalance.compute import WaterbalanceComputer2
-
-        print cache.get(u'wb_computer_%i_stored_date'%self.id)
 
         if force_new:
             logger.debug("force new calculation for configuration.")

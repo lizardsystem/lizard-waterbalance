@@ -28,38 +28,70 @@
 from datetime import timedelta
 
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
+class DateRange:
+
+    def __init__(self, start_date, end_date):
+        self.start_date = start_date
+        self.end_date = end_date
+
+    def inside(self, date):
+        if date < self.start_date:
+            result = -1
+        elif date < self.end_date:
+            result = 0
+        else:
+            result = 1
+        return result
 
 class LevelControlComputer:
 
+    def __init__(self, inside_range=lambda date: 0):
+        """Set the function to determine if a date lies in a specific range.
+
+        The level control only has to be computed for dates that lie in a
+        specific range of dates. The given function should return a
+          - negative number if the given date is before the start of the range,
+          - positive number if the given date is at the end of the range or
+            later, and
+          - zero if the given date lies in the range.
+
+        If the caller does not supply a function at the construction of a
+        LevelControlComputer, the LevelControlComputer stores a function that
+        considers every date to lie in the aforementioned range. However, the
+        caller is free to override that function, which is referenced by
+        self.inside_range, at a later time.
+
+        """
+        self.inside_range = inside_range
+
     def compute(self, open_water, buckets_summary, precipitation, evaporation, seepage, infiltration,
                 minimum_level_timeseries, maximum_level_timeseries,
-                intakes_timeseries, pumps_timeseries, start_date, end_date):
+                intakes_timeseries, pumps_timeseries):
         """Compute and return the pair of intake and pump time series.
 
-        This function returns the pair of TimeseriesStub(s) that consists of
+        This function returns the pair of SparseTimeseriesStub(s) that consists of
         the intake time series and pump time series for the given open water.
 
         Parameters:
         * open_water -- OpenWater for which to compute the level control
         * buckets_summary -- BucketsSummary with the summed buckets outcome
-        * precipitation, 
-        * evaporation, 
-        * seepage, 
+        * precipitation,
+        * evaporation,
+        * seepage,
         * infiltration
         * intakes_timeseries -- dict of intake timeseries in [m3/day]
         * pumps_timeseries -- dict of pump timeseries in [m3/day]
 
         """
-        storage = TimeseriesStub()
-        result = TimeseriesStub()
-        water_level_timeseries = TimeseriesStub()
-        pump_time_series = TimeseriesStub()
-        intake_time_series = TimeseriesStub()
-        total_incoming = TimeseriesStub()
-        total_outgoing = TimeseriesStub()
+        storage = SparseTimeseriesStub()
+        result = SparseTimeseriesStub()
+        water_level_timeseries = SparseTimeseriesStub()
+        pump_time_series = SparseTimeseriesStub()
+        intake_time_series = SparseTimeseriesStub()
+        total_incoming = SparseTimeseriesStub()
+        total_outgoing = SparseTimeseriesStub()
 
         surface = 1.0 * open_water.surface
         water_level = open_water.init_water_level
@@ -73,70 +105,70 @@ class LevelControlComputer:
         ts['infiltration'] = infiltration
         ts['min_level'] = minimum_level_timeseries
         ts['max_level'] = maximum_level_timeseries
-       
+
         ts['intakes'] = intakes_timeseries
         ts['pumps'] = pumps_timeseries
 
-        
+
         for events in enumerate_dict_events(ts):
             date = events['date']
-            if date < start_date:
+            if self.inside_range(date) < 0:
                 continue
-            if date >= end_date:
+            elif self.inside_range(date) > 0:
                 break
-            
+
             if not events.has_key('intakes'):
                 events['intakes'] = {}
-            
+
             incoming_value = [ events['bucket_total_outgoing'][1],
                                   events['precipitation'][1],
                                   events['seepage'][1]] + \
                                   [event[1] for event in events['intakes'].values()]
-                                  
+
             incoming_value = sum(incoming_value)
-            
+
             if not events.has_key('pumps'):
                 events['pumps'] = {}
-            
+
             outgoing_value = [ events['bucket_total_incoming'][1],
                                   events['infiltration'][1],
                                   events['evaporation'][1]] + \
                                   [-1 * event[1] for event in events['pumps'].values()]
-                                  
+
             outgoing_value = sum(outgoing_value)
 
             water_level += (incoming_value + outgoing_value) / surface
 
             level_control = self._compute_level_control(surface, water_level, events['min_level'][1], events['max_level'][1])
             water_level += level_control / surface
-            
+
             if level_control < 0:
                 pump = level_control
                 intake = 0
             else:
                 pump = 0
-                intake = level_control               
-            
+                intake = level_control
+
             pump_time_series.add_value(date, pump)
             intake_time_series.add_value(date, intake)
-            
+
             water_level_timeseries.add_value(date, water_level)
 
             storage_value = (water_level - open_water.bottom_height) * surface
             storage.add_value(date, storage_value)
 
             result.add_value(date, level_control)
-            
+
             total_incoming.add_value(date, sum([incoming_value, intake]))
-            total_outgoing.add_value(date, sum([outgoing_value, pump]))        
-            
+            total_outgoing.add_value(date, sum([outgoing_value, pump]))
+
             date += timedelta(1)
 
-        return {'intake_wl_control':intake_time_series, 
-                'outtake_wl_control':pump_time_series, 
-                'storage':storage, 
-                'water_level':water_level_timeseries, 
-                'total_incoming':total_incoming, 
+        return {'intake_wl_control':intake_time_series,
+                'outtake_wl_control':pump_time_series,
+                'storage':storage,
+                'water_level':water_level_timeseries,
+                'total_incoming':total_incoming,
                 'total_outgoing':total_outgoing}
 
     def _compute_level_control(self, surface, water_level, minimum_water_level, maximum_water_level):

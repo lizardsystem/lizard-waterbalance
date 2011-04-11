@@ -30,11 +30,11 @@ from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.bucket_summarizer import BucketsSummary
+from lizard_waterbalance.level_control_computer import DateRange
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.models import OpenWater
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 from timeseries.timeseriesstub import TimeseriesStub
-
 
 class LevelControlComputerTests(TestCase):
     """Contains tests for the level control computation of an open water."""
@@ -62,9 +62,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],                                          
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -91,9 +91,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            water_levels,
                                            water_levels,
                                            intakes_timeseries,
@@ -115,9 +115,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -139,9 +139,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -163,9 +163,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -188,9 +188,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -213,19 +213,19 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 4.0)),
                                TimeseriesStub((self.today, 0.0)))
-        
+
         print next(timeseries['intake_wl_control'].events())
         print next(timeseries['outtake_wl_control'].events())
-        
+
         self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
         self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
@@ -242,9 +242,9 @@ class LevelControlComputerTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.water_levels,
                                            self.water_levels,
                                            intakes_timeseries,
@@ -287,9 +287,9 @@ class StorageTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.minimum_water_levels,
                                            self.maximum_water_levels,
                                            intakes_timeseries,
@@ -313,9 +313,9 @@ class StorageTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.minimum_water_levels,
                                            self.maximum_water_levels,
                                            intakes_timeseries,
@@ -339,9 +339,9 @@ class StorageTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            self.minimum_water_levels,
                                            self.maximum_water_levels,
                                            intakes_timeseries,
@@ -371,9 +371,9 @@ class StorageTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            minimum_water_levels,
                                            maximum_water_levels,
                                            intakes_timeseries,
@@ -401,9 +401,9 @@ class StorageTests(TestCase):
         timeseries = level_control.compute(self.open_water,
                                            self.buckets_summary,
                                            vertical_timeseries[0],
-                                           vertical_timeseries[1],  
-                                           vertical_timeseries[2], 
-                                           vertical_timeseries[3],  
+                                           vertical_timeseries[1],
+                                           vertical_timeseries[2],
+                                           vertical_timeseries[3],
                                            minimum_water_levels,
                                            maximum_water_levels,
                                            intakes_timeseries,
@@ -411,3 +411,27 @@ class StorageTests(TestCase):
         expected_timeseries = TimeseriesStub((self.today, 12.0),
                                              (tomorrow, 8.0))
         self.assertEqual(expected_timeseries, timeseries['storage'])
+
+class DateRangeCaller:
+
+    def __init__(self, start_date, end_date):
+        self.date_range = DateRange(start_date, end_date)
+        self.inside_range = self.date_range.inside
+
+    def inside_range(self, date):
+        return self.inside_range(date)
+
+class DateRangeTests(TestCase):
+
+    def test_a(self):
+
+        caller = DateRangeCaller(datetime(2011, 4, 11), \
+                                 datetime(2011, 4, 18))
+
+        self.assertEqual(-1, caller.inside_range(datetime(2011, 4, 10)))
+        self.assertEqual( 0, caller.inside_range(datetime(2011, 4, 17)))
+        self.assertEqual( 1, caller.inside_range(datetime(2011, 4, 18)))
+
+
+
+

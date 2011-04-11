@@ -27,7 +27,6 @@
 #******************************************************************************
 
 from timeseries.timeseriesstub import multiply_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
 
 
 class LevelControlAssignment:
@@ -42,7 +41,7 @@ class LevelControlAssignment:
         The total incoming and total outgoing level control volumes have to be
         assigned to the intakes and pumps that can be used for level control. This
         method computes that assignment and returns it as a dictionary of
-        PumpingStation to TimeseriesStub.
+        PumpingStation to SparseTimeseriesStub.
 
         The keys of the returned dictionary are the intakes and pumps that can
         be used for level control. The associated value is the level control

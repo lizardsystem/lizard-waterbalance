@@ -27,32 +27,32 @@
 
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 
 class SluiceErrorComputer:
     "Implements the functionality to compute the sluice error."""
 
     def compute(self,
-            open_water,            
+            open_water,
             calc_intake,
             calc_outtake,
             ref_intakes,
             ref_outtakes,
-            start_date_calc, 
+            start_date_calc,
             end_date_calc):
         """Compute and return the sluice error.
 
         The sluice error on a specific day is defined as the sum of the
         computed intake and pump values minus the sum of the measured intake
-        and pump values. This function returns the TimeseriesStub that contains
+        and pump values. This function returns the SparseTimeseriesStub that contains
         the sluice error for each day in the given horizon.
 
         Parameters:
           * open_water *
             OpenWater for which to compute the level control
           * level_control *
-            pair of TimeseriesStub(s) where the first TimeseriesStub contains
+            pair of SparseTimeseriesStub(s) where the first SparseTimeseriesStub contains
             the total computed discharges of level control intakes and the
             second the total computed discharges of level control pumps
           * start_date *
@@ -62,26 +62,26 @@ class SluiceErrorComputer:
             error
 
         """
-        
-        total_meas_outtakes = TimeseriesStub()
-        sluice_error_timeseries = TimeseriesStub()
-        #sluice_error_intake = TimeseriesStub()
-        #sluice_error_outtake = TimeseriesStub()
-        
+
+        total_meas_outtakes = SparseTimeseriesStub()
+        sluice_error_timeseries = SparseTimeseriesStub()
+        #sluice_error_intake = SparseTimeseriesStub()
+        #sluice_error_outtake = SparseTimeseriesStub()
+
         ts = {
         'calc_intake':calc_intake,
         'calc_outtake':calc_outtake,
         'total_intakes':add_timeseries(*ref_intakes.values()),
         'total_outtakes':add_timeseries(*ref_outtakes.values())}
-        
+
         for events in enumerate_dict_events(ts):
             date = events['date']
-            
+
             if date < start_date_calc:
                 continue
             elif date > end_date_calc:
                 break
-                
+
             intake = events['calc_intake'][1] - events['total_intakes'][1]
             outtake = events['calc_outtake'][1] + events['total_outtakes'][1]
             total = outtake - intake
@@ -89,7 +89,7 @@ class SluiceErrorComputer:
             #sluice_error_intake.add_value(date, intake)
             #sluice_error_outtake.add_value(date, outtake)
             total_meas_outtakes.add_value(date, -1*events['total_outtakes'][1])
-         
+
         return sluice_error_timeseries, total_meas_outtakes #, sluice_error_intake, sluice_error_outtake
 
     def _retrieve_measured_timeseries(self):
@@ -127,7 +127,7 @@ class SluiceErrorComputer:
 
         """
 
-        net_timeseries = TimeseriesStub()
+        net_timeseries = SparseTimeseriesStub()
         timeseries = self.open_water.retrieve_incoming_timeseries(only_input=only_input).values()
         timeseries += self.open_water.retrieve_outgoing_timeseries(only_input=only_input).values()
         for events in enumerate_events(*timeseries):

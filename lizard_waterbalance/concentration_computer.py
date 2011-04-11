@@ -31,12 +31,12 @@ from random import randrange
 
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import split_timeseries
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 
 class ConcentrationComputer:
 
-    def compute(self, 
+    def compute(self,
                 fractions_dict, concentration_dict,
                 start_date, end_date):
         """Compute and return the concentration time series.
@@ -44,12 +44,12 @@ class ConcentrationComputer:
         Parameters:
         * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
         * concentration_list -- dict of label keys with concentration values in [mg/l]
-        
+
         Computation is based on constant concentration of the fractions
         """
-          
-       
-        timeseries = TimeseriesStub()
+
+
+        timeseries = SparseTimeseriesStub()
         for events in enumerate_dict_events(fractions_dict):
             date = events['date']
             del(events['date'])
@@ -63,14 +63,14 @@ class ConcentrationComputer:
                             concentration += value_intake[1] * concentration_dict[key_intake.label.program_name]
                 else:
                     concentration += value[1] * concentration_dict[key]
-            
+
             timeseries.add_value(date, concentration)
 
         return timeseries
-    
+
 class ConcentrationComputer2:
 
-    def compute(self, 
+    def compute(self,
                 inflow_dict, outflow_dict, storage, concentration_dict,
                 start_date, end_date):
         """Compute and return the concentration time series.
@@ -78,11 +78,11 @@ class ConcentrationComputer2:
         Parameters:
         * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
         * concentration_list -- dict of label keys with concentration values in [mg/l]
-        
+
         Computation is based on constant concentration of the fractions
         """
-        
-        total_outflow = TimeseriesStub()
+
+        total_outflow = SparseTimeseriesStub()
         for events in enumerate_dict_events(outflow_dict):
             date = events['date']
             del(events['evaporation'])
@@ -95,42 +95,42 @@ class ConcentrationComputer2:
                 else:
                      total += event[1]
             total_outflow.add_value(date, total)
-            
-            
+
+
         start_storage = next(storage.events(start_date, end_date))[1]
         storage_chloride = start_storage * concentration_dict['initial']
-        
-        delta = TimeseriesStub()
-       
-        timeseries = TimeseriesStub()
+
+        delta = SparseTimeseriesStub()
+
+        timeseries = SparseTimeseriesStub()
         for events in enumerate_dict_events(dict(tuple(inflow_dict.items()) + (('total_outflow', total_outflow), ('storage', storage)))):
             date = events['date']
             if date < start_date:
                 continue
             if date >= end_date:
                 break
-            
+
             total_outflow = -events['total_outflow'][1]
             storage = events['storage'][1]
             del(events['date'])
             del(events['total_outflow'])
             del(events['storage'])
-            
+
             out = (storage_chloride/storage) * total_outflow
-            
+
             plus = 0.0
             for key, value in events.items():
                 if key in ['intakes', 'defined_input']:
                     for key_intake, value_intake in value.items():
                         if key_intake == 'intake_wl_control':
-                            plus += value_intake[1] * concentration_dict[key_intake] 
+                            plus += value_intake[1] * concentration_dict[key_intake]
                         else:
-                            plus += value_intake[1] * concentration_dict[key_intake.label.program_name] 
+                            plus += value_intake[1] * concentration_dict[key_intake.label.program_name]
                 else:
                     plus += value[1] * concentration_dict[key]
             storage_chloride = storage_chloride + plus - out
             timeseries.add_value(date, storage_chloride/storage)
             delta.add_value(date, plus - out)
 
-        return timeseries, delta  
-    
+        return timeseries, delta
+
