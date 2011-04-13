@@ -24,14 +24,17 @@ from lizard_waterbalance.models import SobekBucket
 class BucketInLine(admin.TabularInline):
     model = Bucket
 
+
 class SobekBucketInLine(admin.TabularInline):
     model = SobekBucket
+
 
 class BucketAdmin(admin.ModelAdmin):
     list_filter = ('open_water', 'surface_type')
     list_display = ('name', 'open_water', 'surface_type', 'surface', 'crop_evaporation_factor', 'min_crop_evaporation_factor',
                      'upper_bucket_info', 'lower_bucket_info')
     search_fields = ['name', 'open_water', ]
+
 
 class OpenWaterAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -50,7 +53,6 @@ class OpenWaterAdmin(admin.ModelAdmin):
         'classes': ('collapse',),
         'fields': ('nutricalc_min', 'nutricalc_incr')
     }))
-
 
     list_display = ('name', 'surface',
                     'bottom_height', 'init_water_level', 'linked_with_configuration')
@@ -88,6 +90,7 @@ class PumpingStationAdmin(admin.ModelAdmin):
         PumpLineInLine,
         ]
     form = PumpingStationForm
+
 
 class ParameterAdmin(admin.ModelAdmin):
     list_filter = ('sourcetype', 'parameter')
@@ -139,7 +142,6 @@ class TimeseriesAdmin(admin.ModelAdmin):
         ]
     actions = [delete_timeseries_no_confirm]
     list_display = ('name', 'waterbalance_timeserie_info' )
-
 
 
 class TimeseriesFewsAdmin(admin.ModelAdmin):
