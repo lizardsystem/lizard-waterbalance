@@ -2,7 +2,9 @@
 
 # Create your views here.
 
-import datetime
+from datetime import datetime
+from datetime import time as datetime_time
+from datetime import timedelta
 import logging
 from time import gmtime
 from time import strftime
@@ -58,7 +60,7 @@ except:
     PROFILE_LOG_BASE = "/tmp"
 
 
-date2datetime = lambda d: datetime.datetime(d.year, d.month, d.day)
+date2datetime = lambda d: datetime(d.year, d.month, d.day)
 
 
 def configuration_edit(request, template=None):
@@ -139,7 +141,8 @@ BAR_WIDTH = {'year': 364,
              'month': 30,
              'day': 1}
 
-colors_list = ['yellow', 'green', 'black', 'grey', 'purple', 'blue', 'red', 'pink']
+colors_list = ['yellow', 'green', 'black', 'grey', 'purple', 'blue', 'red',
+               'pink']
 
 # Exceptions for boolean fields: used in tab edit forms.
 # Key is the field name, value is text used for (True, False).
@@ -240,33 +243,33 @@ class DataForCumulativeGraph:
         each copy is moved to the last second of the period.
 
         """
-        last_time = datetime.time(23, 59, 59)
+        last_time = datetime_time(23, 59, 59)
         if period == 'day':
-            result = [datetime.datetime.combine(date, last_time) for date in dates]
+            result = [datetime.combine(date, last_time) for date in dates]
         elif period == 'month':
             result = []
             for date in dates:
                 new_month = date.month + 1
                 month = (new_month - 1) % 12 + 1
                 year = date.year + (new_month - 1) / 12
-                new_date = datetime.datetime(year, month, date.day) - \
-                           datetime.timedelta(1)
-                result.append(datetime.datetime.combine(new_date, last_time))
+                new_date = datetime(year, month, date.day) - \
+                           timedelta(1)
+                result.append(datetime.combine(new_date, last_time))
         elif period == 'quarter':
             result = []
             for date in dates:
                 new_month = date.month + 3
                 month = (new_month - 1) % 12 + 1
                 year = date.year + (new_month - 1) / 12
-                new_date = datetime.datetime(year, month, date.day) - \
-                           datetime.timedelta(1)
-                result.append(datetime.datetime.combine(new_date, last_time))
+                new_date = datetime(year, month, date.day) - \
+                           timedelta(1)
+                result.append(datetime.combine(new_date, last_time))
         elif period == 'year':
             result = []
             for date in dates:
-                new_date = datetime.datetime(date.year + 1, date.month, date.day) - \
-                           datetime.timedelta(1)
-                result.append(datetime.datetime.combine(new_date, last_time))
+                new_date = datetime(date.year + 1, date.month, date.day) - \
+                           timedelta(1)
+                result.append(datetime.combine(new_date, last_time))
         return result
 
     def insert_restart(self, dates, values, reset_period):
@@ -292,14 +295,14 @@ class DataForCumulativeGraph:
 
     def first_date(self, date, reset_period):
         if reset_period == 'month':
-            date = datetime.datetime(date.year, date.month, 1)
+            date = datetime(date.year, date.month, 1)
         elif reset_period == 'quarter':
             month = 1 + ((date.month - 1) / 3 * 3)
-            date = datetime.datetime(date.year, month, 1)
+            date = datetime(date.year, month, 1)
         elif reset_period == 'hydro_year':
-            date = datetime.datetime(date.year, 10, 1)
+            date = datetime(date.year, 10, 1)
         elif reset_period == 'year':
-            date = datetime.datetime(date.year, 1, 1)
+            date = datetime(date.year, 1, 1)
         return date
 
 def waterbalance_start(
@@ -326,21 +329,24 @@ def waterbalance_start(
         get_object_or_404(Workspace, pk=WATERBALANCE_HOMEPAGE_KEY)
 
 
-    waterbalance_configurations = WaterbalanceConf.objects.filter(waterbalance_area__active=True,
-                                                                  waterbalance_scenario__active=True
-                                                                  ).order_by(
-                                                                      'waterbalance_area__name',
-                                                                      'waterbalance_scenario__order'
-                                                                      ).select_related(
-                                                                            'WaterbalanceArea',
-                                                                            'WaterbalanceScenario')
+    wb_configurations = \
+        WaterbalanceConf.objects.filter(waterbalance_area__active=True,
+                                        waterbalance_scenario__active=True
+                                        ).order_by(
+            'waterbalance_area__name',
+            'waterbalance_scenario__order').select_related(
+                'WaterbalanceArea',
+                'WaterbalanceScenario')
 
-    if not request.user.is_authenticated() and not request.user.has_perm('lizard_waterbalance.see_not_public_scenarios'):
-        waterbalance_configurations = waterbalance_configurations.filter(waterbalance_scenario__public=True)
+    permission = 'lizard_waterbalance.see_not_public_scenarios'
+    if not request.user.is_authenticated() and \
+       not request.user.has_perm(permission):
+        wb_configurations = wb_configurations.filter(
+            waterbalance_scenario__public=True)
 
     return render_to_response(
         template,
-        {'waterbalance_configurations': waterbalance_configurations,
+        {'waterbalance_configurations': wb_configurations,
          'workspaces': {'user': [special_homepage_workspace]},
          'javascript_hover_handler': 'popup_hover_handler',
          'javascript_click_handler': 'waterbalance_area_click_handler',
@@ -447,7 +453,7 @@ def split_date_value(timeseries):
     assert grouper is not None
 
     for date, event in timeseries.raw_events():
-         yield date, event
+        yield date, event
 
 def get_raw_timeseries(timeseries, start, end):
     """Return the events for the given timeseries in the given range.
@@ -473,10 +479,14 @@ def get_average_timeseries(timeseries, start, end, period='month'):
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in grouped_event_values(timeseries, period, average=True)
+    return zip(*(e for e in grouped_event_values(timeseries,
+                                                 period,
+                                                 average=True)
                  if e[0] >= start and e[0] < end))
 
-def get_cumulative_timeseries(timeseries, start, end, reset_period='hydro_year', period='month', multiply=1, time_shift=0):
+def get_cumulative_timeseries(timeseries, start, end,
+                              reset_period='hydro_year', period='month',
+                              multiply=1, time_shift=0):
     """Return the events for the given timeseries in the given range.
 
     Parameters:
@@ -486,7 +496,11 @@ def get_cumulative_timeseries(timeseries, start, end, reset_period='hydro_year',
     * period -- 'year', 'month' or 'day'
 
     """
-    result = zip(*(e for e in cumulative_event_values(timeseries, reset_period=reset_period, period=period, multiply=multiply, time_shift=time_shift)
+    result = zip(*(e for e in cumulative_event_values(timeseries,
+                                                      reset_period=reset_period,
+                                                      period=period,
+                                                      multiply=multiply,
+                                                      time_shift=time_shift)
                    if e[0] >= start and e[0] < end))
     if len(result) == 0:
         # no cumulative events are present but the caller expects two lists, so
@@ -511,20 +525,20 @@ def get_timeseries_label(name):
 
 
 def retrieve_horizon(request):
-    """Return the start and end datetime.datetime on the horizontal axis.
+    """Return the start and end datetime on the horizontal axis.
 
     The user selects the start and end date but not the date and time. This method returns
     the start date at 00:00 and the end date at 23:59:59.
 
     """
     start_date, end_date = current_start_end_dates(request)
-    start_datetime = datetime.datetime(start_date.year,
+    start_datetime = datetime(start_date.year,
                                        start_date.month,
                                        start_date.day,
                                        0,
                                        0,
                                        0)
-    end_datetime = datetime.datetime(end_date.year,
+    end_datetime = datetime(end_date.year,
                                      end_date.month,
                                      end_date.day,
                                      23,
@@ -532,7 +546,7 @@ def retrieve_horizon(request):
                                      59)
     return start_datetime, end_datetime
 
-class CachedWaterbalanceComputer(object):
+class CachedWaterbalanceComputer(WaterbalanceComputer2):
     """Wraps a given WaterbalanceComputer2 and caches its results.
 
     Instance variables:
@@ -540,9 +554,9 @@ class CachedWaterbalanceComputer(object):
         the WaterbalanceComputer whose results are cached
 
     """
-    def __init__(self, waterbalance_computer):
+    def __init__(self, *args, **kwargs):
 
-        self.wb_computer = waterbalance_computer
+        super(CachedWaterbalanceComputer, self).__init__(*args, **kwargs)
 
     def calc_sluice_error_timeseries(self, start_date, end_date):
 
@@ -550,9 +564,10 @@ class CachedWaterbalanceComputer(object):
         total_outtakes = cache.get("total_outtakes")
         if sluice_error is None or total_outtakes is None:
 
+            parent = super(CachedWaterbalanceComputer, self)
             sluice_error, total_outtakes = \
-                          self.wb_computer.calc_sluice_error_timeseries(start_date,
-                                                                        end_date)
+                parent.calc_sluice_error_timeseries(start_date,
+                                                    end_date)
 
             cache.set("sluice_error", sluice_error, 24 * 60 * 60)
             cache.set("total_outtakes", total_outtakes, 24 * 60 * 60)
@@ -566,8 +581,9 @@ class CachedWaterbalanceComputer(object):
         incoming = cache.get("incoming")
         if incoming is None:
 
-            incoming = self.wb_computer.get_open_water_incoming_flows(start_date,
-                                                                      end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            incoming = parent.get_open_water_incoming_flows(start_date,
+                                                            end_date)
             cache.set("incoming", incoming, 24 * 60 * 60)
 
         return incoming
@@ -579,8 +595,9 @@ class CachedWaterbalanceComputer(object):
         outgoing = cache.get("outgoing")
         if outgoing is None:
 
-            outgoing = self.wb_computer.get_open_water_outgoing_flows(start_date,
-                                                                      end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            outgoing = parent.get_open_water_outgoing_flows(start_date,
+                                                            end_date)
             cache.set("outgoing", outgoing, 24 * 60 * 60)
 
         return outgoing
@@ -590,8 +607,9 @@ class CachedWaterbalanceComputer(object):
         outcome = cache.get("outcome")
         if outcome is None:
 
-            outcome = self.wb_computer.get_level_control_timeseries(start_date,
-                                                                    end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            outcome = parent.get_level_control_timeseries(start_date,
+                                                          end_date)
             cache.set("outcome", outcome, 24 * 60 * 60)
 
         return outcome
@@ -602,8 +620,9 @@ class CachedWaterbalanceComputer(object):
         ref_out = cache.get("ref_out")
         if ref_in is None or ref_out is None:
 
-            ref_in, ref_out = self.wb_computer.get_reference_timeseries(start_date,
-                                                                        end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            ref_in, ref_out = parent.get_reference_timeseries(start_date,
+                                                              end_date)
             cache.set("ref_in", ref_in, 24 * 60 * 60)
             cache.set("ref_out", ref_out, 24 * 60 * 60)
 
@@ -615,11 +634,15 @@ class CachedWaterbalanceComputer(object):
         sluice_error_waterlevel = cache.get("sluice_error_waterlevel")
         if sluice_error_waterlevel is None:
 
-            sluice_error_waterlevel = self.wb_computer.get_waterlevel_with_sluice_error(start_date,
-                                                                                        end_date,
-                                                                                        reset_period,
-                                                                                        reset_timeseries)
-            cache.set("sluice_error_waterlevel", sluice_error_waterlevel, 24 * 60 * 60)
+            parent = super(CachedWaterbalanceComputer, self)
+            sluice_error_waterlevel = parent.get_waterlevel_with_sluice_error(
+                start_date,
+                end_date,
+                reset_period,
+                reset_timeseries)
+            cache.set("sluice_error_waterlevel",
+                      sluice_error_waterlevel,
+                      24 * 60 * 60)
 
         return sluice_error_waterlevel
 
@@ -629,8 +652,9 @@ class CachedWaterbalanceComputer(object):
         fractions_2 = cache.get("fractions_2")
         if fractions_1 is None or fractions_2 is None:
 
-            fractions = self.wb_computer.get_fraction_timeseries(start_date,
-                                                                 end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            fractions = parent.get_fraction_timeseries(start_date,
+                                                       end_date)
             logger.debug("len(fractions.keys()) = %d", len(fractions.keys()))
 
             fractions_1 = {}
@@ -657,8 +681,9 @@ class CachedWaterbalanceComputer(object):
         concentrations = cache.get("concentrations")
         if concentrations is None:
 
-            concentrations = self.wb_computer.get_concentration_timeseries(start_date,
-                                                                           end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            concentrations = parent.get_concentration_timeseries(start_date,
+                                                                 end_date)
             cache.set("concentrations", concentrations, 24 * 60 * 60)
 
         return concentrations
@@ -669,8 +694,9 @@ class CachedWaterbalanceComputer(object):
         impact_incremental = cache.get("impact_incremental")
         if impact is None or impact_incremental is None:
 
-            impact, impact_incremental = self.wb_computer.get_impact_timeseries(start_date,
-                                                                                end_date)
+            parent = super(CachedWaterbalanceComputer, self)
+            impact, impact_incremental = parent.get_impact_timeseries(
+                start_date, end_date)
             logger.debug("len(impact.keys()) = %d", len(impact.keys()))
             cache.set("impact", impact, 24 * 60 * 60)
             cache.set("impact_incremental", impact_incremental, 24 * 60 * 60)
@@ -693,9 +719,11 @@ def waterbalance_area_graph(
     start_datetime, end_datetime: start and enddate for calculation
     width, height: width and height of output image
     """
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(waterbalance_computer.configuration)
 
-    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    calc_start_datetime, calc_end_datetime = \
+        configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Waterbalans [m3]")
@@ -703,16 +731,18 @@ def waterbalance_area_graph(
 
     t1 = time()
 
-    labels = dict([(label.program_name, label) for label in Label.objects.all()])
+    labels = dict([(label.program_name, label) for
+                   label in Label.objects.all()])
 
     #collect all data
     incoming = waterbalance_computer.get_open_water_incoming_flows(
         calc_start_datetime,
         calc_end_datetime)
-    sluice_error, total_meas_outtakes = waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime,
-                                                                                           calc_end_datetime)
-    outgoing = waterbalance_computer.get_open_water_outgoing_flows(calc_start_datetime,
-                                                                   calc_end_datetime)
+    sluice_error, total_meas_outtakes = \
+        waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime,
+                                                           calc_end_datetime)
+    outgoing = waterbalance_computer.get_open_water_outgoing_flows(
+        calc_start_datetime, calc_end_datetime)
 
     #define bars, without sluice error
     incoming_bars = []
@@ -806,7 +836,7 @@ def waterbalance_sluice_error(
     configuration, waterbalance_computer, start_date, end_date, width, height):
     """Draw sluice error.
     """
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
     # Enforces that data is calculated between start_date and end_date
     ts = waterbalance_computer.get_sluice_error_timeseries(
         date2datetime(start_date), date2datetime(end_date),
@@ -856,7 +886,7 @@ def waterbalance_water_level(configuration,
                              with_sluice_error=False):
     """Draw the graph for the given area en scenario and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -921,7 +951,7 @@ def waterbalance_cum_discharges(configuration,
                              width, height):
     """Draw the graph for the given area en scenario and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1016,7 +1046,7 @@ def waterbalance_fraction_distribution(
             period, width, height, concentration=Parameter.PARAMETER_CHLORIDE):
     """Draw the graph for the given area and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1132,7 +1162,7 @@ def waterbalance_phosphate_impact(
             period, width, height):
     """Draw the graph for the given area and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer)
+    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1226,7 +1256,7 @@ def waterbalance_area_graphs(request,
     reset_period = request.GET.get('reset_period', 'year')
     #start_datetime, end_datetime = retrieve_horizon(request)
     #start_date = start_datetime.date()
-    #end_date = end_datetime.date() + datetime.timedelta(1)
+    #end_date = end_datetime.date() + timedelta(1)
 
     # Don't know the difference in above start/end dates. This seems
     # better, but not sure if it works correctly with existing

@@ -72,7 +72,7 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
 
 
 
-class WaterbalanceComputer2:
+class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
 
     for the given configuration.
@@ -451,8 +451,6 @@ class WaterbalanceComputer2:
 
         return outgoing
 
-
-
     def get_reference_timeseries(self, start_date, end_date):
         """return (and collect) all timeseries, used for reference (measured flows at structures, waterlevel and concentrations)
         Args:
@@ -476,7 +474,6 @@ class WaterbalanceComputer2:
                     end_date.strftime('%Y-%m-%d')))
             intakes = {}
             outtakes = {}
-            intakes_timeseries = []
             for pumping_station in self.configuration.open_water.pumping_stations.filter(computed_level_control = True):
                 if pumping_station.into:
                     intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
