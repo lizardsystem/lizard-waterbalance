@@ -154,7 +154,7 @@ class TopHeight:
     * key_to_height -- dictionary that maps each bar to its total height
 
     Each bar is identified by a key, which often is its horizontal position in
-    the chart. Let key be such anidentifier, then key_to_height[key] specifies
+    the chart. Let key be such an identifier, then key_to_height[key] specifies
     the total height of the bar.
 
     """
@@ -777,10 +777,6 @@ def waterbalance_area_graph(
     start_datetime, end_datetime: start and enddate for calculation
     width, height: width and height of output image
     """
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
-
     calc_start_datetime, calc_end_datetime = \
         configuration.get_calc_period(date2datetime(end_date))
 
@@ -895,9 +891,6 @@ def waterbalance_sluice_error(
     configuration, waterbalance_computer, start_date, end_date, width, height):
     """Draw sluice error.
     """
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
     # Enforces that data is calculated between start_date and end_date
     ts = waterbalance_computer.get_sluice_error_timeseries(
         date2datetime(start_date), date2datetime(end_date),
@@ -946,10 +939,6 @@ def waterbalance_water_level(configuration,
                              width, height,
                              with_sluice_error=False):
     """Draw the graph for the given area en scenario and of the given type."""
-
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1013,10 +1002,6 @@ def waterbalance_cum_discharges(configuration,
                              reset_period,
                              width, height):
     """Draw the graph for the given area en scenario and of the given type."""
-
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1110,10 +1095,6 @@ def waterbalance_fraction_distribution(
             configuration, waterbalance_computer, start_date, end_date,
             period, width, height, concentration=Parameter.PARAMETER_CHLORIDE):
     """Draw the graph for the given area and of the given type."""
-
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1228,10 +1209,6 @@ def waterbalance_phosphate_impact(
            configuration, waterbalance_computer, start_date, end_date,
             period, width, height):
     """Draw the graph for the given area and of the given type."""
-
-    waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration),
-                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1314,12 +1291,11 @@ def waterbalance_area_graphs(request,
     Return area graph.
 
     """
-
-
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
-    waterbalance_computer = configuration.get_waterbalance_computer(force_new=True)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration), configuration)
 
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
@@ -1405,8 +1381,6 @@ def graph_select(request):
     """
     Processes ajax call, return appropriate png urls.
     """
-
-    graphs = []
     if request.is_ajax():
         area_slug = request.POST['area_slug']
         scenario_slug = request.POST['scenario_slug']
@@ -1414,6 +1388,7 @@ def graph_select(request):
         period = request.POST['period']
         reset_period = request.POST['reset_period']
 
+        graphs = []
         for graph_type, name in GRAPH_TYPES:
             if not graph_type in selected_graph_types:
                 continue
@@ -1427,19 +1402,22 @@ def graph_select(request):
             graphs.append(url)
         json = simplejson.dumps(graphs)
 
-        #check is graph is cached, otherwise do it now (otherwise all graphs start a computer on their own)
+        # If the data has not been cached, we make sure we compute and cache it
+        # now, otherwise all graphs start a computation on their own.
+
         configuration = WaterbalanceConf.objects.get(
-                                                     waterbalance_area__slug=area_slug,
-                                                     waterbalance_scenario__slug=scenario_slug)
+            waterbalance_area__slug=area_slug,
+            waterbalance_scenario__slug=scenario_slug)
 
-        if not configuration.has_cached_waterbalance_computer():
-            waterbalance_computer = configuration.get_waterbalance_computer()
-            #compute all cached outcomes
-            calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
+        cache_key_name = CacheKeyName(configuration)
+        waterbalance_computer = CachedWaterbalanceComputer(cache_key_name,
+                                                           configuration)
 
-            waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
-            waterbalance_computer.cache_if_updated()
-
+        if waterbalance_computer.get_cached_data("sluice_error") is None:
+            calc_start_datetime, calc_end_datetime = \
+                configuration.get_calc_period()
+            waterbalance_computer.compute(calc_start_datetime,
+                                          calc_end_datetime)
 
         return HttpResponse(json, mimetype='application/json')
     else:
@@ -1474,11 +1452,13 @@ def _actual_recalculation(request, area_slug, scenario_slug):
 
 
 def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
-    """Recalculate the graph data by emptying the cache."""
+    """Recalculate the graph data and store the data in the cache."""
     if request.method == "POST":
+
         configuration = WaterbalanceConf.objects.get(
              waterbalance_area__slug=area_slug,
              waterbalance_scenario__slug=scenario_slug)
+
         cache_key_name = CacheKeyName(configuration)
         names = [ "sluice_error", "total_outtakes", "incoming", "outgoing",
             "outcome", "ref_in", "ref_out", "sluice_error_waterlevel",
@@ -1487,12 +1467,11 @@ def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
         key_names = [cache_key_name.get(name) for name in names]
         cache.delete_many(key_names)
 
-        # configuration.delete_cached_waterbalance_computer()
-
-        # waterbalance_computer = configuration.get_waterbalance_computer()
-        # calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
-        # waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
-        # waterbalance_computer.cache_if_updated()
+        waterbalance_computer = \
+                              CachedWaterbalanceComputer(cache_key_name,
+                                                         configuration)
+        calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
+        waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
 
         return HttpResponseRedirect(
             reverse(
