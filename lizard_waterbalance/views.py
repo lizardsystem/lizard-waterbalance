@@ -18,11 +18,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template.defaultfilters import slugify
 from django.utils import simplejson
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.lines import Line2D
 import mapnik
-import pkg_resources
 
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
@@ -31,24 +31,18 @@ from lizard_map.daterange import current_start_end_dates
 from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.compute import WaterbalanceComputer2
-#from lizard_waterbalance.forms import WaterbalanceAreaEditForm
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
 from lizard_waterbalance.forms import PumpingStationEditForm
 from lizard_waterbalance.forms import create_location_label
-from lizard_waterbalance.models import Concentration
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
-from lizard_waterbalance.models import WaterbalanceScenario
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import Parameter
-from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import grouped_event_values
 from timeseries.timeseriesstub import cumulative_event_values
-from timeseries.timeseriesstub import multiply_timeseries
-from timeseries.timeseriesstub import split_timeseries
 
 import hotshot
 import os
@@ -546,22 +540,83 @@ def retrieve_horizon(request):
                                      59)
     return start_datetime, end_datetime
 
+class CacheKeyName(object):
+    """Implements the creation of key names for data in the cache.
+
+    The key name of specific data in the cache, for example the sluice error
+    time series, should be different for different configurations, otherwise
+    the view code would retrieve the same data from the cache for those
+    configurations.
+
+    Instance variables:
+      * configuration_slug *
+        the string that will be appended to each cache key name
+
+    The configuration slug is used to create cache key names that differ for
+    different configurations.
+
+    """
+
+    def __init__(self, configuration):
+        """Set the configuration_slug instance variable.
+
+        The configuration_slug is created from the return value of a call to
+        the __unicode__ method of the configuration.
+
+        """
+        self.configuration_slug = slugify(configuration.__unicode__())
+
+    def get(self, name):
+        """Return a key name for one configuration based on the given name.
+
+        """
+        return name + "::" + self.configuration_slug
+
 class CachedWaterbalanceComputer(WaterbalanceComputer2):
     """Wraps a given WaterbalanceComputer2 and caches its results.
 
     Instance variables:
-      * wb_computer *
-        the WaterbalanceComputer whose results are cached
+      * cache_key_name *
+        a CacheKeyName to creates the key names for data in the cache
 
     """
     def __init__(self, *args, **kwargs):
+        """Set the configuration_slug instance variable.
 
-        super(CachedWaterbalanceComputer, self).__init__(*args, **kwargs)
+        The configuration_slug is created from the return value of a call to
+        the __unicode__ method of the configuration. The configuration itself
+        is passed as the first non-keyword parameter.
+
+        """
+        assert len(args) > 1
+        self.cache_key_name = args[0]
+
+        super(CachedWaterbalanceComputer, self).__init__(*args[1:], **kwargs)
+
+    def get_cached_data(self, name):
+        """Return the data from the cache using a key based on the given name.
+
+        This method uses self.cache_key_name to retrieve the right key name for
+        the current configuration.
+
+        """
+        key_name = self.cache_key_name.get(name)
+        return cache.get(key_name)
+
+    def set_cached_data(self, name, data):
+        """Store the data in the cache using a key based on the given name.
+
+        This method uses self.cache_key_name to retrieve the right key for
+        the current configuration.
+
+        """
+        key_name = self.cache_key_name.get(name)
+        cache.set(key_name, data, 24 * 60 * 60)
 
     def calc_sluice_error_timeseries(self, start_date, end_date):
 
-        sluice_error = cache.get("sluice_error")
-        total_outtakes = cache.get("total_outtakes")
+        sluice_error = self.get_cached_data("sluice_error")
+        total_outtakes = self.get_cached_data("total_outtakes")
         if sluice_error is None or total_outtakes is None:
 
             parent = super(CachedWaterbalanceComputer, self)
@@ -569,8 +624,8 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                 parent.calc_sluice_error_timeseries(start_date,
                                                     end_date)
 
-            cache.set("sluice_error", sluice_error, 24 * 60 * 60)
-            cache.set("total_outtakes", total_outtakes, 24 * 60 * 60)
+            self.set_cached_data("sluice_error", sluice_error)
+            self.set_cached_data("total_outtakes", total_outtakes)
 
         return sluice_error, total_outtakes
 
@@ -578,13 +633,13 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                                       start_date,
                                       end_date):
 
-        incoming = cache.get("incoming")
+        incoming = self.get_cached_data("incoming")
         if incoming is None:
 
             parent = super(CachedWaterbalanceComputer, self)
             incoming = parent.get_open_water_incoming_flows(start_date,
                                                             end_date)
-            cache.set("incoming", incoming, 24 * 60 * 60)
+            self.set_cached_data("incoming", incoming)
 
         return incoming
 
@@ -592,46 +647,46 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                                       start_date,
                                       end_date):
 
-        outgoing = cache.get("outgoing")
+        outgoing = self.get_cached_data("outgoing")
         if outgoing is None:
 
             parent = super(CachedWaterbalanceComputer, self)
             outgoing = parent.get_open_water_outgoing_flows(start_date,
                                                             end_date)
-            cache.set("outgoing", outgoing, 24 * 60 * 60)
+            self.set_cached_data("outgoing", outgoing)
 
         return outgoing
 
     def get_level_control_timeseries(self, start_date, end_date):
 
-        outcome = cache.get("outcome")
+        outcome = self.get_cached_data("outcome")
         if outcome is None:
 
             parent = super(CachedWaterbalanceComputer, self)
             outcome = parent.get_level_control_timeseries(start_date,
                                                           end_date)
-            cache.set("outcome", outcome, 24 * 60 * 60)
+            self.set_cached_data("outcome", outcome)
 
         return outcome
 
     def get_reference_timeseries(self, start_date, end_date):
 
-        ref_in = cache.get("ref_in")
-        ref_out = cache.get("ref_out")
+        ref_in = self.get_cached_data("ref_in")
+        ref_out = self.get_cached_data("ref_out")
         if ref_in is None or ref_out is None:
 
             parent = super(CachedWaterbalanceComputer, self)
             ref_in, ref_out = parent.get_reference_timeseries(start_date,
                                                               end_date)
-            cache.set("ref_in", ref_in, 24 * 60 * 60)
-            cache.set("ref_out", ref_out, 24 * 60 * 60)
+            self.set_cached_data("ref_in", ref_in)
+            self.set_cached_data("ref_out", ref_out)
 
         return ref_in, ref_out
 
     def get_waterlevel_with_sluice_error(self, start_date, end_date,
                                          reset_period, reset_timeseries = None):
 
-        sluice_error_waterlevel = cache.get("sluice_error_waterlevel")
+        sluice_error_waterlevel = self.get_cached_data("sluice_error_waterlevel")
         if sluice_error_waterlevel is None:
 
             parent = super(CachedWaterbalanceComputer, self)
@@ -640,23 +695,26 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                 end_date,
                 reset_period,
                 reset_timeseries)
-            cache.set("sluice_error_waterlevel",
-                      sluice_error_waterlevel,
-                      24 * 60 * 60)
+            self.set_cached_data("sluice_error_waterlevel",
+                                 sluice_error_waterlevel)
 
         return sluice_error_waterlevel
 
     def get_fraction_timeseries(self, start_date, end_date):
 
-        fractions_1 = cache.get("fractions_1")
-        fractions_2 = cache.get("fractions_2")
+        fractions_1 = self.get_cached_data("fractions_1")
+        fractions_2 = self.get_cached_data("fractions_2")
         if fractions_1 is None or fractions_2 is None:
 
             parent = super(CachedWaterbalanceComputer, self)
             fractions = parent.get_fraction_timeseries(start_date,
                                                        end_date)
-            logger.debug("len(fractions.keys()) = %d", len(fractions.keys()))
 
+            # When we use memcached as the backend, the default maximum size
+            # for a single object in the cache is 1 MB. It turned out that the
+            # fractions dictionary could easily exceed that limit. For that
+            # reason we partition the fractions in two dictionaries and store
+            # each part separately.
             fractions_1 = {}
             fractions_2 = {}
             key_count = 0
@@ -667,8 +725,8 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                     fractions_2[key] = values
                 key_count = key_count + 1
 
-            cache.set("fractions_1", fractions_1, 24 * 60 * 60)
-            cache.set("fractions_2", fractions_2, 24 * 60 * 60)
+            self.set_cached_data("fractions_1", fractions_1)
+            self.set_cached_data("fractions_2", fractions_2)
 
         fractions = fractions_1
         for key, values in fractions_2.iteritems():
@@ -684,7 +742,7 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
             parent = super(CachedWaterbalanceComputer, self)
             concentrations = parent.get_concentration_timeseries(start_date,
                                                                  end_date)
-            cache.set("concentrations", concentrations, 24 * 60 * 60)
+            self.set_cached_data("concentrations", concentrations)
 
         return concentrations
 
@@ -697,11 +755,11 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
             parent = super(CachedWaterbalanceComputer, self)
             impact, impact_incremental = parent.get_impact_timeseries(
                 start_date, end_date)
-            logger.debug("len(impact.keys()) = %d", len(impact.keys()))
-            cache.set("impact", impact, 24 * 60 * 60)
-            cache.set("impact_incremental", impact_incremental, 24 * 60 * 60)
+            self.set_cached_data("impact", impact)
+            self.set_cached_data("impact_incremental", impact_incremental)
 
         return impact, impact_incremental
+
 
 # @profile("waterbalance_area_graph.prof")
 def waterbalance_area_graph(
@@ -720,7 +778,8 @@ def waterbalance_area_graph(
     width, height: width and height of output image
     """
     waterbalance_computer = \
-        CachedWaterbalanceComputer(waterbalance_computer.configuration)
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
 
     calc_start_datetime, calc_end_datetime = \
         configuration.get_calc_period(date2datetime(end_date))
@@ -836,7 +895,9 @@ def waterbalance_sluice_error(
     configuration, waterbalance_computer, start_date, end_date, width, height):
     """Draw sluice error.
     """
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
     # Enforces that data is calculated between start_date and end_date
     ts = waterbalance_computer.get_sluice_error_timeseries(
         date2datetime(start_date), date2datetime(end_date),
@@ -886,7 +947,9 @@ def waterbalance_water_level(configuration,
                              with_sluice_error=False):
     """Draw the graph for the given area en scenario and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -951,7 +1014,9 @@ def waterbalance_cum_discharges(configuration,
                              width, height):
     """Draw the graph for the given area en scenario and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1046,7 +1111,9 @@ def waterbalance_fraction_distribution(
             period, width, height, concentration=Parameter.PARAMETER_CHLORIDE):
     """Draw the graph for the given area and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1162,7 +1229,9 @@ def waterbalance_phosphate_impact(
             period, width, height):
     """Draw the graph for the given area and of the given type."""
 
-    waterbalance_computer = CachedWaterbalanceComputer(waterbalance_computer.configuration)
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration),
+                                   waterbalance_computer.configuration)
     calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
@@ -1407,18 +1476,23 @@ def _actual_recalculation(request, area_slug, scenario_slug):
 def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
     """Recalculate the graph data by emptying the cache."""
     if request.method == "POST":
-
         configuration = WaterbalanceConf.objects.get(
-                                                    waterbalance_area__slug=area_slug,
-                                                    waterbalance_scenario__slug=scenario_slug)
+             waterbalance_area__slug=area_slug,
+             waterbalance_scenario__slug=scenario_slug)
+        cache_key_name = CacheKeyName(configuration)
+        names = [ "sluice_error", "total_outtakes", "incoming", "outgoing",
+            "outcome", "ref_in", "ref_out", "sluice_error_waterlevel",
+            "fractions_1", "fractions_2", "concentrations", "impact",
+            "impact_incremental" ]
+        key_names = [cache_key_name.get(name) for name in names]
+        cache.delete_many(key_names)
 
-        configuration.delete_cached_waterbalance_computer()
+        # configuration.delete_cached_waterbalance_computer()
 
-        waterbalance_computer = configuration.get_waterbalance_computer()
-        calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
-        waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
-        waterbalance_computer.cache_if_updated()
-
+        # waterbalance_computer = configuration.get_waterbalance_computer()
+        # calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
+        # waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
+        # waterbalance_computer.cache_if_updated()
 
         return HttpResponseRedirect(
             reverse(

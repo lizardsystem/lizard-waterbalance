@@ -1,8 +1,11 @@
 from datetime import datetime
 from unittest import TestCase
 
-from lizard_waterbalance.views import DataForCumulativeGraph
+from mock import Mock
 
+from lizard_waterbalance.views import CacheKeyName
+from lizard_waterbalance.views import CachedWaterbalanceComputer
+from lizard_waterbalance.views import DataForCumulativeGraph
 
 class DataForCumulativeGraphTests(TestCase):
 
@@ -95,3 +98,24 @@ class DataForCumulativeGraphTests(TestCase):
         dates, values = data.insert_restart(dates, values, 'month')
         self.assertEqual(expected_dates, dates)
         self.assertEqual(expected_values, values)
+
+class CacheKeyNameTests(TestCase):
+
+    def test_a(self):
+        """Test the case for a __unicode__ return value without spaces."""
+        configuration = Mock({"__unicode__": "hello"})
+        cache_key_name = CacheKeyName(configuration)
+        self.assertEqual("hello", cache_key_name.configuration_slug)
+
+    def test_b(self):
+        """Test the case for a __unicode__ return value with spaces."""
+        configuration = Mock({"__unicode__": "hello world"})
+        cache_key_name = CacheKeyName(configuration)
+        self.assertEqual("hello-world", cache_key_name.configuration_slug)
+
+    def test_c(self):
+        """Test method get."""
+        configuration = Mock({"__unicode__": "hello world"})
+        cache_key_name = CacheKeyName(configuration)
+        self.assertEqual("sluice_error::hello-world",
+                         cache_key_name.get("sluice_error"))
