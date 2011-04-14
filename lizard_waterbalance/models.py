@@ -36,15 +36,12 @@ from django.db.models import Min
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save
-from django.core.cache import cache
-
 
 from lizard_fewsunblobbed.models import Filter as FewsFilter
 from lizard_fewsunblobbed.models import Location as FewsLocation
 from lizard_fewsunblobbed.models import Parameter as FewsParameter
 from lizard_fewsunblobbed.models import Timeserie as FewsTimeserie
 from lizard_map.models import ColorField
-
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import daily_events
 from timeseries.timeseriesstub import daily_sticky_events
@@ -1478,42 +1475,6 @@ class WaterbalanceConf(models.Model):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
-
-    def get_waterbalance_computer(self, force_new=False):
-        """get waterbalance computer"""
-
-        from lizard_waterbalance.compute import WaterbalanceComputer2
-
-        if force_new:
-            logger.debug("force new calculation for configuration.")
-            waterbalance_computer = None
-        elif not cache.get(u'wb_computer_%i_stored_date'%self.id):
-            logger.debug("no waterbalance computer in cache (wb_computer_%i_stored_date)"%self.id)
-            waterbalance_computer = None
-        else:
-            logger.debug("try to get waterbalance computer from cache, with code: wb_computer_%i_store"%self.id)
-            waterbalance_computer = cache.get(u'wb_computer_%i_store'%self.id)
-            logger.debug("[done] try to get waterbalance computer from cache")
-
-        if not waterbalance_computer:
-            logger.debug("create new waterbalance computer.")
-            waterbalance_computer = WaterbalanceComputer2(self)
-
-        return waterbalance_computer
-
-    def delete_cached_waterbalance_computer(self):
-        """deletel waterbalance computer"""
-
-        cache.delete('wb_computer_%i_store'%self.id)
-        cache.delete('wb_computer_%i_stored_date'%self.id)
-
-    def has_cached_waterbalance_computer(self):
-        """check if there is a waterbalance computer in cache"""
-        #check not on store date, is faster
-        if cache.get('wb_computer_%i_stored_date'%self.id):
-            return True
-        else:
-            return False
 
     def get_calc_period(self, input_end_date_time=datetime.datetime.now()):
         """return calculation start_date and end_date """

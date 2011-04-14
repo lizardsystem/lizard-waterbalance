@@ -1345,8 +1345,6 @@ def waterbalance_area_graphs(request,
     response['Cache-Control'] = 'max-age=600'
     #canvas.print_png(response)
 
-    waterbalance_computer.cache_if_updated()
-
     return response
 
 

@@ -28,7 +28,6 @@
 
 import datetime
 import logging
-import time
 
 from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import DateRange
@@ -40,13 +39,11 @@ from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import multiply_timeseries
-from django.core.cache import cache
 
 from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer2
 from lizard_waterbalance.load_computer import LoadComputer
-
 from lizard_waterbalance.models import Parameter
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
@@ -844,37 +841,6 @@ class WaterbalanceComputer2(object):
             self.updated = True
 
             return fractions
-
-    def cache_if_updated(self):
-        """ save computer to cache """
-        if self.updated:
-            logger.debug("save waterbalance computer from cache, with code: wb_computer_%i_store"%self.configuration.id)
-
-            t1 = time.time()
-            updated = self.updated
-            self.updated = False
-
-            # Unfortunately, Python is not able to pickle instance methods or
-            # functions. So to be able to cache a Waterbalancecomputer2, we
-            # have to "unset" the instance methods we may have set on the
-            # LevelControlComputer and VerticalTimeseriesComputer.
-
-            previous_inside_range_l = self.level_control_computer.inside_range
-            previous_inside_range_v = self.vertical_timeseries_computer.inside_range
-            self.level_control_computer.inside_range = None
-            self.vertical_timeseries_computer.inside_range = None
-
-            cache.set(u'wb_computer_%i_store'%self.configuration.id, self, 24*60*60)
-            cache.set(u'wb_computer_%i_stored_date'%self.configuration.id, time.time(), 24*60*60)
-
-            self.vertical_timeseries_computer.inside_range = previous_inside_range_v
-            self.level_control_computer.inside_range = previous_inside_range_l
-
-            self.updated = updated
-
-            logger.debug("Saved updated watercomputer to cache in %s seconds", time.time() - t1)
-
-
 
     def compute(self, start_date, end_date):
         """Compute the waterbalance-related time series
