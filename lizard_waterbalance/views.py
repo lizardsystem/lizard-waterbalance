@@ -573,19 +573,36 @@ class CacheKeyName(object):
         return name + "::" + self.configuration_slug
 
 class CachedWaterbalanceComputer(WaterbalanceComputer2):
-    """Wraps a given WaterbalanceComputer2 and caches its results.
+    """Wraps subclasses given WaterbalanceComputer and caches its results.
+
+    A CachedWaterbalanceComputer reimplements those WaterbalanceComputer
+    methods that are used in this module. Each reimplemented method checks
+    whether the requested results of the parent method are already present in
+    the Django cache. If these results are present, the reimplemented method
+    retrieves and returns them to the caller. If the results are not present,
+    each reimplemented method calls the parent method, stores the results in
+    the cache and then returns them to the caller.
+
+    This class takes some care to be able to use memcached as a backend. By
+    default, memcached can only store objects that are up to 1 MB in size. For
+    our test case this meant that the results of the call to
+    WaterbalanceComputer.get_fraction_timeseries did not fit in the
+    cache. Therefore, the reimplementation of this method stores the results in
+    two separate objects.
+
+    Note that if specific data cannot be stored in the cache, the view still
+    functions but it will take longer to display the graphs. The data not in
+    the cache will have to be recalculated each time it is requested.
 
     Instance variables:
-      * cache_key_name *
-        a CacheKeyName to creates the key names for data in the cache
+      *cache_key_name*
+        a CacheKeyName to create the key names for data in the cache
 
     """
     def __init__(self, *args, **kwargs):
-        """Set the configuration_slug instance variable.
+        """Set the CacheKeyName to create the key names for data in the cache.
 
-        The configuration_slug is created from the return value of a call to
-        the __unicode__ method of the configuration. The configuration itself
-        is passed as the first non-keyword parameter.
+        The first non-keyword argument should be the CacheKeyName to set.
 
         """
         assert len(args) > 1
