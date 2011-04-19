@@ -112,7 +112,18 @@ class ParameterAdmin(admin.ModelAdmin):
 
 class ConcentrationInLine(admin.TabularInline):
     model = Concentration
+    # the following line states that there should not be extra fields for new
+    # concentration (as the user should not be able to add them)
+    extra = 0
 
+    def get_readonly_fields(self, request, obj=None):
+        """Render the label field read-only.
+
+        A user should not be able to edit the label.
+        """
+        if obj: # editing an existing object
+            return self.readonly_fields + ('label',)
+        return self.readonly_fields
 
 class WaterbalanceConfAdmin(admin.ModelAdmin):
     list_filter = ('waterbalance_scenario', 'waterbalance_area',  )
@@ -124,7 +135,6 @@ class WaterbalanceConfAdmin(admin.ModelAdmin):
     inlines = [
         ConcentrationInLine,
         ]
-
 
 class TimeseriesEventInline(admin.TabularInline):
     model = TimeseriesEvent

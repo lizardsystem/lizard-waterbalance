@@ -1652,15 +1652,21 @@ def pre_save_configuration(*args, **kwargs):
         open_water.infiltration = dummy_timeserie
         open_water.save()
         kwargs['instance'].open_water = open_water
-    query = Label.objects.filter(flow_type=Label.TYPE_IN)
+
     if kwargs['instance'].id is not None:
+        # retrieve all labels that have flow type Label.TYPE_IN
+        query = Label.objects.filter(flow_type=Label.TYPE_IN)
+        # exclude those labels to which the current configuration points
         query = query.exclude(configuration_label__id=kwargs['instance'].id)
 
+        # retrieve the concentrations (and possibly create them) for the
+        # aforementioned labels and that belong to the current config
         for label in query:
             concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
 
+        # do the same for label "initial", which does not belong to the
+        # aforementioned labels
         try:
-
             label = Label.objects.get(program_name='initial')
             concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
         except Label.DoesNotExist:
