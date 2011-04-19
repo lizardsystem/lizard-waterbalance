@@ -36,7 +36,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 
 class LoadComputer:
 
-    def compute(self, 
+    def compute(self,
                 flow_dict, concentration_dict,
                 start_date, end_date, nutricalc_timeseries=None):
         """Compute and return the concentration time series.
@@ -47,13 +47,13 @@ class LoadComputer:
 
 
         """
-           
+
         loads = {}
-        
+
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
-        
-        
+
+
         first_ts = True
         for events in enumerate_dict_events(flow_dict):
             date = events['date']
@@ -61,14 +61,14 @@ class LoadComputer:
                 continue
             if date >= end_date:
                 break
-            
-            
+
+
             del(events['date'])
-            
+
             if nutricalc_timeseries:
                 del(events['drained'])
                 del(events['undrained'])
-            
+
             for key, value in events.items():
                 if key in ['intakes', 'defined_input']:
                     for key_intake, value_intake in value.items():
@@ -84,10 +84,10 @@ class LoadComputer:
                 else:
                     label = key
                     load = value[1] * concentration_dict[key]
-            
+
                 if first_ts:
                     loads[label] = TimeseriesStub()
-                
+
                 loads[label].add_value(date, load)
             first_ts = False
 

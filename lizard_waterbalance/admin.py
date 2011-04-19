@@ -112,14 +112,23 @@ class ParameterAdmin(admin.ModelAdmin):
 
 class ConcentrationInLine(admin.TabularInline):
     model = Concentration
-    # the following line states that there should not be extra fields for new
-    # concentration (as the user should not be able to add them)
+    # The user should not be able to add a new concentration, delete an
+    # existing one or change the label of an existing one. First, the following
+    # two assignments remove the extra fields that allow the user to enter a
+    # new concentration and remove the check boxes that allow the user to
+    # delete existings ones.
     extra = 0
+    can_delete = False
+    # Furthermore, we override the inline template in order to remove the
+    # button that allows the user to add a new concentration.
+    template = "admin/lizard_waterbalance/concentration/tabular.html"
 
+    # Finally, we make the drop down box that contains the label read-only so
+    # the user cannot modify it.
     def get_readonly_fields(self, request, obj=None):
         """Render the label field read-only.
 
-        A user should not be able to edit the label.
+        A user should not be able to edit the label of a concentration.
         """
         if obj: # editing an existing object
             return self.readonly_fields + ('label',)
