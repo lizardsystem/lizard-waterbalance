@@ -7,51 +7,27 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        
+        # Changing field 'OpenWater.maximum_level'
+        db.alter_column('lizard_waterbalance_openwater', 'maximum_level_id', self.gf('django.db.models.fields.related.ForeignKey')(default=-1, to=orm['lizard_waterbalance.WaterbalanceTimeserie']))
 
-        # Adding field 'OpenWater.use_min_max_level_relative_to_meas'
-        db.add_column('lizard_waterbalance_openwater', 'use_min_max_level_relative_to_meas', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        # Changing field 'OpenWater.minimum_level'
+        db.alter_column('lizard_waterbalance_openwater', 'minimum_level_id', self.gf('django.db.models.fields.related.ForeignKey')(default=-1, to=orm['lizard_waterbalance.WaterbalanceTimeserie']))
 
-        # Adding field 'OpenWater.waterlevel_measurement'
-        db.add_column('lizard_waterbalance_openwater', 'waterlevel_measurement', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='open_water_waterlevel_measurement', null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']), keep_default=False)
-
-        # Adding field 'OpenWater.min_level_relative_to_measurement'
-        db.add_column('lizard_waterbalance_openwater', 'min_level_relative_to_measurement', self.gf('django.db.models.fields.FloatField')(default=0.0, null=True, blank=True), keep_default=False)
-
-        # Adding field 'OpenWater.max_level_relative_to_measurement'
-        db.add_column('lizard_waterbalance_openwater', 'max_level_relative_to_measurement', self.gf('django.db.models.fields.FloatField')(default=0.0, null=True, blank=True), keep_default=False)
-
-        # Adding field 'OpenWater.sewer'
-        db.add_column('lizard_waterbalance_openwater', 'sewer', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='open_water_sewer', null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']), keep_default=False)
-
-        # Adding field 'OpenWater.nutricalc_min'
-        db.add_column('lizard_waterbalance_openwater', 'nutricalc_min', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='open_water_nutricalc_min', null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']), keep_default=False)
-
-        # Adding field 'OpenWater.nutricalc_incr'
-        db.add_column('lizard_waterbalance_openwater', 'nutricalc_incr', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='open_water_nutricalc_incr', null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']), keep_default=False)
+        # Deleting field 'WaterbalanceArea.geom'
+        db.delete_column('lizard_waterbalance_waterbalancearea', 'geom')
 
 
     def backwards(self, orm):
+        
+        # Changing field 'OpenWater.maximum_level'
+        db.alter_column('lizard_waterbalance_openwater', 'maximum_level_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']))
 
-        # Deleting field 'OpenWater.use_min_max_level_relative_to_meas'
-        db.delete_column('lizard_waterbalance_openwater', 'use_min_max_level_relative_to_meas')
+        # Changing field 'OpenWater.minimum_level'
+        db.alter_column('lizard_waterbalance_openwater', 'minimum_level_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['lizard_waterbalance.WaterbalanceTimeserie']))
 
-        # Deleting field 'OpenWater.waterlevel_measurement'
-        db.delete_column('lizard_waterbalance_openwater', 'waterlevel_measurement_id')
-
-        # Deleting field 'OpenWater.min_level_relative_to_measurement'
-        db.delete_column('lizard_waterbalance_openwater', 'min_level_relative_to_measurement')
-
-        # Deleting field 'OpenWater.max_level_relative_to_measurement'
-        db.delete_column('lizard_waterbalance_openwater', 'max_level_relative_to_measurement')
-
-        # Deleting field 'OpenWater.sewer'
-        db.delete_column('lizard_waterbalance_openwater', 'sewer_id')
-
-        # Deleting field 'OpenWater.nutricalc_min'
-        db.delete_column('lizard_waterbalance_openwater', 'nutricalc_min_id')
-
-        # Deleting field 'OpenWater.nutricalc_incr'
-        db.delete_column('lizard_waterbalance_openwater', 'nutricalc_incr_id')
+        # Adding field 'WaterbalanceArea.geom'
+        db.add_column('lizard_waterbalance_waterbalancearea', 'geom', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')(null=True, blank=True), keep_default=False)
 
 
     models = {
@@ -116,9 +92,9 @@ class Migration(SchemaMigration):
             'infiltration': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'open_water_infiltration'", 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
             'init_water_level': ('django.db.models.fields.FloatField', [], {}),
             'max_level_relative_to_measurement': ('django.db.models.fields.FloatField', [], {'default': '0.0', 'null': 'True', 'blank': 'True'}),
-            'maximum_level': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'open_water_max_level'", 'null': 'True', 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
+            'maximum_level': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'open_water_max_level'", 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
             'min_level_relative_to_measurement': ('django.db.models.fields.FloatField', [], {'default': '0.0', 'null': 'True', 'blank': 'True'}),
-            'minimum_level': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'open_water_min_level'", 'null': 'True', 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
+            'minimum_level': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'open_water_min_level'", 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'nutricalc_incr': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'open_water_nutricalc_incr'", 'null': 'True', 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
             'nutricalc_min': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'open_water_nutricalc_min'", 'null': 'True', 'to': "orm['lizard_waterbalance.WaterbalanceTimeserie']"}),
@@ -194,7 +170,6 @@ class Migration(SchemaMigration):
         'lizard_waterbalance.waterbalancearea': {
             'Meta': {'ordering': "('name',)", 'object_name': 'WaterbalanceArea'},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'geom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
@@ -224,11 +199,11 @@ class Migration(SchemaMigration):
         'lizard_waterbalance.waterbalancetimeserie': {
             'Meta': {'unique_together': "(('name', 'parameter', 'configuration', 'timestep'),)", 'object_name': 'WaterbalanceTimeserie'},
             'configuration': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lizard_waterbalance.WaterbalanceConf']", 'null': 'True', 'blank': 'True'}),
-            'fews_timeseries': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['lizard_waterbalance.TimeseriesFews']"}),
+            'fews_timeseries': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'wb_fews'", 'null': 'True', 'to': "orm['lizard_waterbalance.TimeseriesFews']"}),
             'hint_datetime_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'hint_datetime_start': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'local_timeseries': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['lizard_waterbalance.Timeseries']"}),
+            'local_timeseries': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'wb_local'", 'null': 'True', 'to': "orm['lizard_waterbalance.Timeseries']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'parameter': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lizard_waterbalance.Parameter']"}),
             'timestep': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),

@@ -741,12 +741,12 @@ class OpenWater(models.Model):
         WaterbalanceTimeserie,
         verbose_name=_("ondergrens"),
         help_text=_("tijdserie naar ondergrens peil in meters"),
-        null=True, blank=True, related_name='open_water_min_level')
+        related_name='open_water_min_level')
     maximum_level = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("bovengrens"),
         help_text=_("tijdserie naar bovengrens peil in meters"),
-        null=True, blank=True, related_name='open_water_max_level')
+        related_name='open_water_max_level')
     target_level = models.ForeignKey(
         WaterbalanceTimeserie,
         editable=False,
