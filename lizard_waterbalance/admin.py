@@ -1,4 +1,8 @@
+import logging
+
 from django.contrib import admin
+import django.forms as forms
+from django.utils.translation import ugettext as _
 
 from lizard_waterbalance.forms import PumpingStationForm
 from lizard_waterbalance.forms import TimeseriesFewsForm
@@ -20,6 +24,8 @@ from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import SobekBucket
 
+logger = logging.getLogger(__name__)
+
 
 class BucketInLine(admin.TabularInline):
     model = Bucket
@@ -34,6 +40,41 @@ class BucketAdmin(admin.ModelAdmin):
     list_display = ('name', 'open_water', 'surface_type', 'surface', 'crop_evaporation_factor', 'min_crop_evaporation_factor',
                      'upper_bucket_info', 'lower_bucket_info')
     search_fields = ['name', 'open_water', ]
+
+
+class OpenWaterAdminForm(forms.ModelForm):
+
+    def clean(self):
+        """Return the dictionary of cleaned data if and only if it is correct.
+
+        This method checks whether the user has specified the required fields
+        for level control. If that is the case, this method returns the
+        dictionary of cleaned data, otherwise this method throws a
+        forms.ValidationError.
+        """
+        message = None
+        cleaned_data = self.cleaned_data
+        if cleaned_data.get("use_min_max_level_relative_to_meas", False):
+            if self._a_field_is_empty(["waterlevel_measurement"]):
+                message = "Als het minimum en maximum peil ten opzichte van " \
+                          "het gemeten peil gebruikt dienen te worden, dan " \
+                          "moet het gemeten peil ook zijn ingevuld."
+        else:
+            if self._a_field_is_empty(["minimum_level", "maximum_level"]):
+                message = "Als het minimum en maximum peil gebruikt dienen " \
+                          "te worden, dan moeten deze ook zijn ingevuld."
+        if not message is None:
+            raise forms.ValidationError(_(message))
+        return self.cleaned_data
+
+    def _a_field_is_empty(self, field_names):
+        """Return True if and only if a given field name is missing or None.
+
+        """
+        for field_name in field_names:
+            if self.cleaned_data.get(field_name, None) is None:
+                return True
+        return False
 
 
 class OpenWaterAdmin(admin.ModelAdmin):
@@ -62,6 +103,9 @@ class OpenWaterAdmin(admin.ModelAdmin):
         BucketInLine,
         SobekBucketInLine
         ]
+
+    form = OpenWaterAdminForm
+
 
 
 class SobekBucketAdmin(admin.ModelAdmin):
