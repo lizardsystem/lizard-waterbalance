@@ -36,6 +36,7 @@ from django.db.models import Min
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
 from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 
 from lizard_fewsunblobbed.models import Filter as FewsFilter
 from lizard_fewsunblobbed.models import Location as FewsLocation
@@ -1653,22 +1654,36 @@ def pre_save_configuration(*args, **kwargs):
         open_water.save()
         kwargs['instance'].open_water = open_water
 
+def post_save_configuration(*args, **kwargs):
+    """Set the concentrations of the given WaterbalanceConf.
+
+    This method creates the concentrations that are required for a
+    WaterbalanceConf.
+
+    """
+    conf = kwargs['instance']
+    logger.debug("Set the concentrations of WaterbalanceConf %s",
+                 str(conf.__unicode__()))
+
     if kwargs['instance'].id is not None:
         # retrieve all labels that have flow type Label.TYPE_IN
         query = Label.objects.filter(flow_type=Label.TYPE_IN)
         # exclude those labels to which the current configuration points
         query = query.exclude(configuration_label__id=kwargs['instance'].id)
 
+        objects = Concentration.objects
         # retrieve the concentrations (and possibly create them) for the
         # aforementioned labels and that belong to the current config
         for label in query:
-            concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
+            concentration, new = objects.get_or_create(label=label,
+                                                       configuration=conf)
 
         # do the same for label "initial", which does not belong to the
         # aforementioned labels
         try:
             label = Label.objects.get(program_name='initial')
-            concentration, new = Concentration.objects.get_or_create(label=label, configuration=config)
+            concentration, new = objects.get_or_create(label=label,
+                                                       configuration=conf)
         except Label.DoesNotExist:
             pass
 
@@ -1676,3 +1691,4 @@ pre_save.connect(pre_save_slug, sender=Parameter)
 pre_save.connect(pre_save_slug, sender=WaterbalanceArea)
 pre_save.connect(pre_save_slug, sender=WaterbalanceScenario)
 pre_save.connect(pre_save_configuration, sender=WaterbalanceConf)
+post_save.connect(post_save_configuration, sender=WaterbalanceConf)
