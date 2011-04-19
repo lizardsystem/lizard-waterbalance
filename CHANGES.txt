@@ -5,22 +5,20 @@ Changelog of lizard-waterbalance
 0.15 (unreleased)
 -----------------
 
-
 - Improved the cache mechanism to be able to handle more performant cache
   backends (read memcached).
 - Fixed the bug that caused an integrity error when the user tried to add a
-  previously removed concentration (ticket 2572 at
-  https://office.nelen-schuurmans.nl/trac/ticket/2572).
+  previously removed concentration (ticket 2572).
 - Fixed the bug that caused the computation to abort because the required time
-  series for the water level computation are not present (ticket 2543 and 2576
-  at https://office.nelen-schuurmans.nl/trac/ticket/2543 and
-  https://office.nelen-schuurmans.nl/trac/ticket/2576 recpectively).
+  series for the water level computation are not present (tickets 2543 and
+  2576).
+- Fixed the bug that caused the concentrations of a configurations to be
+  created only after the second time the configuration was saved (ticket 2547)
 - Fixed a bug that prevented the save to the database of a new WaterbalanceConf.
 - Fixed a bug in TimeseriesFews, which prevented the retrieval of the last
   event of a time series.
 - Enhanced TimeseriesFews so it can also handle events that have a valid date
   but have None for a value.
-
 
 
 0.14 (2011-04-06)
