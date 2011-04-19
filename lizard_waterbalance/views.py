@@ -753,7 +753,7 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
 
     def get_concentration_timeseries(self, start_date, end_date):
 
-        concentrations = cache.get("concentrations")
+        concentrations = self.get_cached_data("concentrations")
         if concentrations is None:
 
             parent = super(CachedWaterbalanceComputer, self)
@@ -765,8 +765,8 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
 
     def get_impact_timeseries(self, start_date, end_date):
 
-        impact = cache.get("impact")
-        impact_incremental = cache.get("impact_incremental")
+        impact = self.get_cached_data("impact")
+        impact_incremental = self.get_cached_data("impact_incremental")
         if impact is None or impact_incremental is None:
 
             parent = super(CachedWaterbalanceComputer, self)
