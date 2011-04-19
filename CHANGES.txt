@@ -11,6 +11,10 @@ Changelog of lizard-waterbalance
 - Fixed the bug that caused an integrity error when the user tried to add a
   previously removed concentration (ticket 2572 at
   https://office.nelen-schuurmans.nl/trac/ticket/2572).
+- Fixed the bug that caused the computation to abort because the required time
+  series for the water level computation are not present (ticket 2543 and 2576
+  at https://office.nelen-schuurmans.nl/trac/ticket/2543 and
+  https://office.nelen-schuurmans.nl/trac/ticket/2576 recpectively).
 - Fixed a bug that prevented the save to the database of a new WaterbalanceConf.
 - Fixed a bug in TimeseriesFews, which prevented the retrieval of the last
   event of a time series.
