@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.15 (unreleased)
+0.15 (2011-04-19)
 -----------------
 
 - Improved the cache mechanism to be able to handle more performant cache
@@ -19,6 +19,7 @@ Changelog of lizard-waterbalance
   event of a time series.
 - Enhanced TimeseriesFews so it can also handle events that have a valid date
   but have None for a value.
+- Upgraded timeseries to 0.5.
 
 
 0.14 (2011-04-06)
