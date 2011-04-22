@@ -61,7 +61,7 @@ function activate_adjustment_form_action(event) {
         $("#adjustment-form").addClass("double-vertical-item");
         divideVerticalSpaceEqually();
         reloadGraphs();
-        $("ul.tabs").tabs("div.panes > div", {effect: 'ajax'});    
+        $("ul.tabs").tabs("div.panes > div", {effect: 'ajax'});
     });
 }
 
@@ -99,7 +99,7 @@ function single_edit_link_click(event) {
     // Also used for the single edit page's back link, btw.
     var url;
     event.preventDefault();
-    console.log($(this).attr("href"));
+    //console.log($(this).attr("href"));
     $("#multiple").load($(this).attr("href"));
 }
 
