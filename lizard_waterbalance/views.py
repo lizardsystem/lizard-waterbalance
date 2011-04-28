@@ -852,8 +852,8 @@ def waterbalance_area_graph(
     outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
 
     #sort
-    # incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
-    # outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
+    incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
+    outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
 
     #define legend
     names = ["sluitfout t.o.v. gemaal"] + [bar[0] for bar in incoming_bars + outgoing_bars]
@@ -861,7 +861,7 @@ def waterbalance_area_graph(
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
     graph.legend_space()
     graph.legend(handles, names)
-    # incoming_bars.reverse()
+    incoming_bars.reverse()
 
     #send bars to graph
     top_height_in = TopHeight()

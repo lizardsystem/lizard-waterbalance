@@ -194,7 +194,7 @@ class WaterbalanceComputer2(object):
 
             input_ts['outgoing_timeseries'] = {}
             for pump, timeseries in self.configuration.open_water.retrieve_outgoing_timeseries(only_input=True).iteritems():
-                input_ts['outgoing_timeseries'][intake] = TimeseriesRestrictedStub(timeseries=timeseries,
+                input_ts['outgoing_timeseries'][pump] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date)
 
@@ -376,7 +376,7 @@ class WaterbalanceComputer2(object):
 
             # We compute the level control for a specific range of time. To do
             # so, we set an instance method that can determine whether a given
-            # dat is inside that range.
+            # date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.level_control_computer.inside_range = date_range.inside
             outcome = self.level_control_computer.compute(
