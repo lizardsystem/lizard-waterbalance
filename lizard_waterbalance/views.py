@@ -459,8 +459,13 @@ def get_raw_timeseries(timeseries, start, end):
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in timeseries.raw_events()
-                 if e[0] >= start and e[0] < end))
+    result =  zip(*(e for e in timeseries.raw_events()
+                    if e[0] >= start and e[0] < end))
+    if len(result) == 0:
+        # no raw events are present but the caller expects two lists, so we
+        # return two empty lists
+        result = [], []
+    return result
 
 
 def get_average_timeseries(timeseries, start, end, period='month'):
@@ -473,10 +478,16 @@ def get_average_timeseries(timeseries, start, end, period='month'):
     * period -- 'year', 'month' or 'day'
 
     """
-    return zip(*(e for e in grouped_event_values(timeseries,
-                                                 period,
-                                                 average=True)
-                 if e[0] >= start and e[0] < end))
+    result = zip(*(e for e in grouped_event_values(timeseries,
+                                                   period,
+                                                   average=True)
+                   if e[0] >= start and e[0] < end))
+    if len(result) == 0:
+        # no average events are present but the caller expects two lists, so we
+        # return two empty lists
+        result = [], []
+    return result
+
 
 def get_cumulative_timeseries(timeseries, start, end,
                               reset_period='hydro_year', period='month',
@@ -703,7 +714,8 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
     def get_waterlevel_with_sluice_error(self, start_date, end_date,
                                          reset_period, reset_timeseries = None):
 
-        sluice_error_waterlevel = self.get_cached_data("sluice_error_waterlevel")
+        key_name = "sluice_error_waterlevel"
+        sluice_error_waterlevel = self.get_cached_data(key_name)
         if sluice_error_waterlevel is None:
 
             parent = super(CachedWaterbalanceComputer, self)
@@ -712,8 +724,7 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
                 end_date,
                 reset_period,
                 reset_timeseries)
-            self.set_cached_data("sluice_error_waterlevel",
-                                 sluice_error_waterlevel)
+            self.set_cached_data(key_name, sluice_error_waterlevel)
 
         return sluice_error_waterlevel
 
@@ -841,8 +852,8 @@ def waterbalance_area_graph(
     outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
 
     #sort
-    incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
-    outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
+    # incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
+    # outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
 
     #define legend
     names = ["sluitfout t.o.v. gemaal"] + [bar[0] for bar in incoming_bars + outgoing_bars]
@@ -850,29 +861,35 @@ def waterbalance_area_graph(
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
     graph.legend_space()
     graph.legend(handles, names)
-    incoming_bars.reverse()
+    # incoming_bars.reverse()
 
     #send bars to graph
     top_height_in = TopHeight()
     top_height_out = TopHeight()
 
-    for bars, top_height in [(incoming_bars, top_height_in), (outgoing_bars, top_height_out)]:
+    for bars, top_height in [(incoming_bars, top_height_in), \
+                             (outgoing_bars, top_height_out)]:
         for bar in bars:
             label = bar[2]
-            times, values = get_average_timeseries(bar[1], date2datetime(start_date), date2datetime(end_date),
-                                           period=period)
+            logger.debug("name, label: %s, %s", bar[0], bar[2])
+            times, values = get_average_timeseries(bar[1],
+                                                   date2datetime(start_date),
+                                                   date2datetime(end_date),
+                                                   period=period)
 
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
             color = label.color
             bottom = top_height.get_heights(times)
-            graph.axes.bar(times, values, bar_width, color=color, edgecolor=color,
-                               bottom=bottom)
+            graph.axes.bar(times, values, bar_width, color=color,
+                           edgecolor=color, bottom=bottom)
             top_height.stack_bars(times, values)
 
     #sluice error
     label = labels['sluice_error']
-    times, values = get_average_timeseries(sluice_error, date2datetime(start_date), date2datetime(end_date),
+    times, values = get_average_timeseries(sluice_error,
+                                           date2datetime(start_date),
+                                           date2datetime(end_date),
                                            period=period)
 
     positive_sluice_error = []
@@ -889,16 +906,15 @@ def waterbalance_area_graph(
 
     #first incoming sluice_error
     bottom = top_height_in.get_heights(times)
-    graph.axes.bar(times, positive_sluice_error, bar_width, color=color, edgecolor=color,
-                               bottom=bottom)
+    graph.axes.bar(times, positive_sluice_error, bar_width, color=color,
+                   edgecolor=color, bottom=bottom)
     top_height_in.stack_bars(times, values)
 
     #next outgoing sluice_error
     bottom = top_height_out.get_heights(times)
-    graph.axes.bar(times, negative_sluice_error, bar_width, color=color, edgecolor=color,
-                               bottom=bottom)
+    graph.axes.bar(times, negative_sluice_error, bar_width, color=color,
+                   edgecolor=color, bottom=bottom)
     top_height_out.stack_bars(times, values)
-
 
     logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
@@ -956,7 +972,8 @@ def waterbalance_water_level(configuration,
                              width, height,
                              with_sluice_error=False):
     """Draw the graph for the given area en scenario and of the given type."""
-    calc_start_datetime, calc_end_datetime = configuration.get_calc_period(date2datetime(end_date))
+    calc_start_datetime, calc_end_datetime = \
+                         configuration.get_calc_period(date2datetime(end_date))
 
     graph = Graph(start_date, end_date, width, height)
     if with_sluice_error:
@@ -967,7 +984,7 @@ def waterbalance_water_level(configuration,
 
     t1 = time()
 
-    labels = dict([(label.program_name, label) for label in Label.objects.all()])
+    labels = dict([(l.program_name, l) for l in Label.objects.all()])
 
     #define bars
     bars = []
