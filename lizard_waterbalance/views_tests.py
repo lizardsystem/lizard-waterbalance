@@ -3,9 +3,11 @@ from unittest import TestCase
 
 from mock import Mock
 
+from lizard_waterbalance.models import Label
+from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.views import CacheKeyName
-from lizard_waterbalance.views import CachedWaterbalanceComputer
 from lizard_waterbalance.views import DataForCumulativeGraph
+from lizard_waterbalance.views import retrieve_legend_info
 
 class DataForCumulativeGraphTests(TestCase):
 
@@ -119,3 +121,61 @@ class CacheKeyNameTests(TestCase):
         cache_key_name = CacheKeyName(configuration)
         self.assertEqual("sluice_error::hello-world",
                          cache_key_name.get("sluice_error"))
+
+class TestSuiteForTheFunctionToRetrieveTheLabelforaLegend(TestCase):
+
+    def test_a(self):
+        """Test the case the correct legend name is returned when the key is a string."""
+        label = Label()
+        label.name = "neerslag"
+        label.program_name = "precipitation"
+        label.save()
+        (legend_name, label) = retrieve_legend_info("precipitation")
+        self.assertEqual("neerslag", legend_name)
+        label.delete()
+
+    def test_b(self):
+        """Test the case the correct Label is returned when the key is a string."""
+        label = Label()
+        label.name = "neerslag"
+        label.program_name = "precipitation"
+        label.save()
+        stored_label = Label.objects.get(name__iexact="neerslag")
+        (legend_name, label) = retrieve_legend_info("precipitation")
+        self.assertEqual(stored_label.pk, label.pk)
+        label.delete()
+
+    def test_c(self):
+        """Test the case the correct legend name is returned when the key is a PumpingStation."""
+        label = Label()
+        label.name = "inlaat 1"
+        label.program_name = "inlet1"
+        label.save()
+        intake = PumpingStation()
+        intake.name = "dijklek"
+        intake.label = label
+        # Note that we do not save the intake to the database. To save a
+        # PumpingStation, we need to create a whole tree of objects. But that
+        # is not necessary as long as retrieve_legend_info does not query the
+        # database to retrieve an object of that tree.
+        (legend_name, label) = retrieve_legend_info(intake)
+        self.assertEqual("dijklek", legend_name)
+        label.delete()
+
+    def test_d(self):
+        """Test the case the correct legend Label is returned when the key is a PumpingStation."""
+        label = Label()
+        label.name = "inlaat 1"
+        label.program_name = "inlet1"
+        label.save()
+        intake = PumpingStation()
+        intake.name = "dijklek"
+        intake.label = label
+        # Note that we do not save the intake to the database. To save a
+        # PumpingStation, we need to create a whole tree of objects. But that
+        # is not necessary as long as retrieve_legend_info does not query the
+        # database to retrieve an object of that tree.
+        stored_label = Label.objects.get(name__iexact="inlaat 1")
+        (legend_name, label) = retrieve_legend_info(intake)
+        self.assertEqual(stored_label.pk, label.pk)
+        label.delete()

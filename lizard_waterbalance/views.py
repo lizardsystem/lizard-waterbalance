@@ -1239,6 +1239,24 @@ def waterbalance_fraction_distribution(
     return graph
 
 
+def retrieve_legend_info(key):
+    """Return the tuple (legend name, Label) for the given key.
+
+    The key is either a string or a PumpingStation. When it is a string, the
+    string is the program name of a Label l and this method returns the tuple
+    (l.name, l). When it is a PumpingStation p, this method returns the tuple
+    (t.name, t.label).
+
+    """
+    if isinstance(key, PumpingStation):
+        label_name, label = key.name, key.label
+    else:
+        labels = dict([(label.program_name, (label.name, label)) for label in Label.objects.all()])
+        label_name, label = labels[key]
+
+    return label_name, label
+
+
 def waterbalance_phosphate_impact(
            configuration, waterbalance_computer, start_date, end_date,
             period, width, height):
@@ -1252,8 +1270,6 @@ def waterbalance_phosphate_impact(
 
     t1 = time()
 
-    labels = dict([(label.program_name, label) for label in Label.objects.all()])
-
     #get data and bars
     impacts, impacts_incremental = waterbalance_computer.get_impact_timeseries(calc_start_datetime,
                                                                                calc_end_datetime)
@@ -1263,9 +1279,10 @@ def waterbalance_phosphate_impact(
     legend = []
 
     for key, impact in impacts.items():
-        label = labels[key]
-        name = '%s (min)' % label.name
-        name_incremental = '%s (incr)' % label.name
+        logger.debug("key: %s", key)
+        label_name, label = retrieve_legend_info(key)
+        name = '%s (min)' % label_name
+        name_incremental = '%s (incr)' % label_name
 
         bars_minimum.append((name,
                      impact,
