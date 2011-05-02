@@ -1239,22 +1239,35 @@ def waterbalance_fraction_distribution(
     return graph
 
 
-def retrieve_legend_info(key):
-    """Return the tuple (legend name, Label) for the given key.
+class LegendInfo(object):
+    """Implements the retrieval of the legend information of each flow.
 
-    The key is either a string or a PumpingStation. When it is a string, the
-    string is the program name of a Label l and this method returns the tuple
-    (l.name, l). When it is a PumpingStation p, this method returns the tuple
-    (t.name, t.label).
+    See the doc string of method 'retrieve' for more information.
 
     """
-    if isinstance(key, PumpingStation):
-        label_name, label = key.name, key.label
-    else:
-        labels = dict([(label.program_name, (label.name, label)) for label in Label.objects.all()])
-        label_name, label = labels[key]
 
-    return label_name, label
+    def retrieve_labels(self):
+        """Retrieve the label information from the database.
+
+        """
+        labels = Label.objects.all()
+        self.labels = dict([(l.program_name, (l.name, l)) for l in labels])
+
+    def retrieve(self, key):
+        """Return the tuple (legend name, Label) for the given key.
+
+        The key is either a string or a PumpingStation. When it is a string,
+        the string is the program name of a Label l and this method returns the
+        tuple (l.name, l). When it is a PumpingStation p, this method returns
+        the tuple (t.name, t.label).
+
+        """
+        if isinstance(key, PumpingStation):
+            label_name, label = key.name, key.label
+        else:
+            label_name, label = self.labels[key]
+
+        return label_name, label
 
 
 def waterbalance_phosphate_impact(
@@ -1278,9 +1291,11 @@ def waterbalance_phosphate_impact(
     bars_increment = []
     legend = []
 
+    legend_info = LegendInfo()
+    legend_info.retrieve_labels()
     for key, impact in impacts.items():
         logger.debug("key: %s", key)
-        label_name, label = retrieve_legend_info(key)
+        label_name, label = legend_info.retrieve(key)
         name = '%s (min)' % label_name
         name_incremental = '%s (incr)' % label_name
 
