@@ -25,12 +25,7 @@
 #
 #******************************************************************************
 
-from datetime import datetime
-from datetime import timedelta
-from random import randrange
-
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
 
@@ -42,9 +37,24 @@ class LoadComputer:
         """Compute and return the concentration time series.
 
         Parameters:
-        * flow_list -- dict of incoming waterflows
-        * concentration_list -- dict of label keys with concentration values in [mg/l]
+          *flow_list*
+            dictionary of incoming waterflows
+          *concentration_list*
+            dict of label keys with concentration values in [mg/l]
 
+        This method returns a dictionary of flow to time series. The flow can
+        be (specified by) a string such as 'precipitation', 'seepage' or
+        'drained', or can be (specified by) a PumpingStation.
+
+        In an earlier version of this method the keys of the returned
+        dictionary where always a string but that has been changed to solve the
+        problem reported in ticket:2542.
+
+        Remarks:
+          * flows_dict['defined_input'] is a dictionary from intake to time
+            series
+          * this method would benefit from additional documentation and a
+            review
 
         """
 
@@ -52,7 +62,6 @@ class LoadComputer:
 
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
-
 
         first_ts = True
         for events in enumerate_dict_events(flow_dict):
@@ -62,7 +71,6 @@ class LoadComputer:
             if date >= end_date:
                 break
 
-
             del(events['date'])
 
             if nutricalc_timeseries:
@@ -70,14 +78,20 @@ class LoadComputer:
                 del(events['undrained'])
 
             for key, value in events.items():
+                # key never seems to be equal to 'intakes'
                 if key in ['intakes', 'defined_input']:
                     for key_intake, value_intake in value.items():
                         if key_intake == 'intake_wl_control':
-                            load = value_intake[1] * concentration_dict[key_intake]
+                            # if key is indeed never equal to 'intakes',
+                            # key_intake will never be equal to
+                            # 'intake_wl_control'
+                            load = value_intake[1] * \
+                                   concentration_dict[key_intake]
                             label = 'intake_wl_control'
                         else:
-                            load = value_intake[1] * concentration_dict[key_intake.label.program_name]
-                            label = key_intake.label.program_name
+                            load = value_intake[1] * \
+                                   concentration_dict[key_intake.label.program_name]
+                            label = key_intake
                 elif key == 'nutricalc':
                     label = key
                     load = value[1]

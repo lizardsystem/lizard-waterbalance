@@ -125,7 +125,7 @@ class CacheKeyNameTests(TestCase):
 class LegendInfoTestSuite(TestCase):
 
     def test_a(self):
-        """Test the case the correct legend name is returned when the key is a string."""
+        """Test the correct legend name is returned when the key is a string."""
         label = Label()
         label.name = "neerslag"
         label.program_name = "precipitation"
@@ -137,7 +137,7 @@ class LegendInfoTestSuite(TestCase):
         label.delete()
 
     def test_b(self):
-        """Test the case the correct Label is returned when the key is a string."""
+        """Test the correct Label is returned when the key is a string."""
         label = Label()
         label.name = "neerslag"
         label.program_name = "precipitation"
@@ -150,7 +150,11 @@ class LegendInfoTestSuite(TestCase):
         label.delete()
 
     def test_c(self):
-        """Test the case the correct legend name is returned when the key is a PumpingStation."""
+        """Test the correct legend name is returned when the key is an intake.
+
+        An intake is implemented by a PumpingStation.
+
+        """
         label = Label()
         label.name = "inlaat 1"
         label.program_name = "inlet1"
@@ -169,7 +173,11 @@ class LegendInfoTestSuite(TestCase):
         label.delete()
 
     def test_d(self):
-        """Test the case the correct legend Label is returned when the key is a PumpingStation."""
+        """Test the correct legend Label is returned when the key is an intake.
+
+        An intake is implemented by a PumpingStation.
+
+        """
         label = Label()
         label.name = "inlaat 1"
         label.program_name = "inlet1"

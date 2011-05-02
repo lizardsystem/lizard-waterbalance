@@ -561,6 +561,9 @@ class WaterbalanceComputer2(object):
                     end_date.strftime('%Y-%m-%d')))
 
             flows = self.get_open_water_incoming_flows(start_date, end_date)
+            # flows['defined_input'] is a dictionary from intake to time
+            # series, where each intake is an intake that is not used for level
+            # control
             concentrations = {}
             concentrations_incremetal = {}
             for concentr in self.configuration.config_concentrations.all().select_related('Label'):
