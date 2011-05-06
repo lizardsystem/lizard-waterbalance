@@ -27,26 +27,17 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
-from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.models import PumpLine
 from lizard_waterbalance.models import PumpingStation
-from lizard_waterbalance.models import WaterbalanceArea
-from lizard_waterbalance.models import WaterbalanceTimeserie
-from lizard_waterbalance.bucket_computer import BucketOutcome
 from lizard_waterbalance.bucket_computer import compute
 from lizard_waterbalance.bucket_computer import compute_net_drainage
 from lizard_waterbalance.bucket_computer import compute_net_precipitation
 from lizard_waterbalance.bucket_computer import compute_seepage
 from lizard_waterbalance.bucket_computer import compute_timeseries
-from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.bucket_summarizer import BucketSummarizer
-from lizard_waterbalance.bucket_summarizer import total_daily_bucket_outcome
+from lizard_waterbalance.compute import find_intake_level_control
 from lizard_waterbalance.mock import Mock
-from lizard_waterbalance.models import Timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
 
@@ -468,7 +459,7 @@ class computeTestSuite(TestCase):
 #    """
 #    open_water = create_saveable_openwater()
 #    open_water.save()
-#    
+#
 #    bucket = Bucket()
 #    bucket.open_water = open_water
 #    bucket.surface_type = Bucket.UNDRAINED_SURFACE
@@ -923,4 +914,31 @@ class WaterbalanceComputerTests(TestCase):
     #     self.assertEqual([timeseries], intakes_timeseries)
 
 
+class FindIntakeLevelControlSuite(TestCase):
 
+    def test_a(self):
+        """Test the case that there is one intake available for level control.
+
+        """
+        pumping_stations = [PumpingStation()]
+        pumping_stations[0].into = True
+        pumping_stations[0].computed_level_control = True
+        intake = find_intake_level_control(pumping_stations)
+        self.assertEqual(pumping_stations[0], intake)
+
+    def test_b(self):
+        """Test the case that there are no intakes or pumps available."""
+        pumping_stations = []
+        intake = find_intake_level_control(pumping_stations)
+        self.assertTrue(intake is None)
+
+    def test_c(self):
+        """Test the case are no intakes or pumps for level control available.
+
+        """
+        pumping_stations = [PumpingStation()]
+        pumping_stations[0].name = "Inlaat Vecht"
+        pumping_stations[0].into = True
+        pumping_stations[0].computed_level_control = False
+        intake = find_intake_level_control(pumping_stations)
+        self.assertTrue(intake is None)

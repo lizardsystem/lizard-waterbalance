@@ -33,6 +33,7 @@ from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import DateRange
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_assignment import LevelControlAssignment
+from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from timeseries.timeseriesstub import enumerate_events
@@ -67,6 +68,20 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
 
     return result
 
+
+def find_intake_level_control(pumping_stations):
+    """Find and return the intake to be used for level control.
+
+    Parameter:
+      *pumping_stations*
+        iterable of all PumpingStation objects
+    """
+    intake = None
+    for pumping_station in pumping_stations:
+        if pumping_station.into and pumping_station.computed_level_control:
+            intake = pumping_station
+            break
+    return intake
 
 
 class WaterbalanceComputer2(object):
@@ -825,12 +840,14 @@ class WaterbalanceComputer2(object):
                 intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
                                                        end_date=end_date)
-            intakes_timeseries['intake_wl_control'] = control['intake_wl_control']
+            intake = find_intake_level_control(PumpingStation.objects.all())
+            intakes_timeseries[intake] = control['intake_wl_control']
 
             fractions = self.fraction_computer.compute(self.configuration.open_water,
                                                        buckets_summary,
                                                        vertical_open_water_timeseries["precipitation"],
-                                                       vertical_open_water_timeseries["seepage"],                                                       control['storage'],
+                                                       vertical_open_water_timeseries["seepage"],
+                                                       control['storage'],
                                                        control['total_outgoing'],
                                                        intakes_timeseries,
                                                        start_date,
