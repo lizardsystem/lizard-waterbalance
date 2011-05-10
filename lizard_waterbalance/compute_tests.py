@@ -27,26 +27,19 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import timedelta
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
+from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.models import PumpLine
 from lizard_waterbalance.models import PumpingStation
-from lizard_waterbalance.models import WaterbalanceArea
-from lizard_waterbalance.models import WaterbalanceTimeserie
-from lizard_waterbalance.bucket_computer import BucketOutcome
 from lizard_waterbalance.bucket_computer import compute
 from lizard_waterbalance.bucket_computer import compute_net_drainage
 from lizard_waterbalance.bucket_computer import compute_net_precipitation
 from lizard_waterbalance.bucket_computer import compute_seepage
 from lizard_waterbalance.bucket_computer import compute_timeseries
-from lizard_waterbalance.compute import WaterbalanceComputer2
-from lizard_waterbalance.bucket_summarizer import BucketSummarizer
-from lizard_waterbalance.bucket_summarizer import total_daily_bucket_outcome
+from lizard_waterbalance.compute import find_intake_level_control
 from lizard_waterbalance.mock import Mock
-from lizard_waterbalance.models import Timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
 
@@ -468,7 +461,7 @@ class computeTestSuite(TestCase):
 #    """
 #    open_water = create_saveable_openwater()
 #    open_water.save()
-#    
+#
 #    bucket = Bucket()
 #    bucket.open_water = open_water
 #    bucket.surface_type = Bucket.UNDRAINED_SURFACE
@@ -923,4 +916,107 @@ class WaterbalanceComputerTests(TestCase):
     #     self.assertEqual([timeseries], intakes_timeseries)
 
 
+class FindIntakeLevelControlSuite(TestCase):
+    """Implements tests for function find_intake_level_control.
 
+    Class variable:
+      *label_index*
+        index used to create unique labels in the database
+
+    """
+    # To store PumpingStation in the database, we have to create an OpenWater
+    # and a Label to which it refers. But the OpenWater / Label combination has
+    # to be unique for each PumpingStation. To facilitate the creation of
+    # unique pairs, we assign each Label a different pk value.
+    label_pk = 1
+
+    def create_pumping_station(self):
+        """Create a pumping station and save it to the database."""
+        # Before we can create and save a PumpingStation, we have to set the
+        # required fields.
+
+        # If a required field refers to another model, we do not save that model
+        # to the database, otherwise we would also have to create the required
+        # fields of that model.
+        open_water = OpenWater()
+        open_water.pk = 1
+        # If we do not set the pk field of the model or set it after we have
+        # assigned the model to the PumpingStation, we get an IntegrityError.
+        label = Label()
+        label.pk = self.label_pk
+        self.label_pk += 1
+
+        pumping_station = PumpingStation()
+        pumping_station.open_water = open_water
+        pumping_station.label = label
+        pumping_station.into = True
+        pumping_station.computed_level_control = True
+        pumping_station.percentage = 100
+        pumping_station.save()
+
+        return pumping_station
+
+    def setUp(self):
+        """Create a pumping station and save it to the database."""
+        self.pumping_station = self.create_pumping_station()
+
+    def tearDown(self):
+        """Remove the PumpingStation that was saved to the database."""
+        self.pumping_station.delete()
+
+    def test_a(self):
+        """Test one intake is available for level control."""
+        intake = find_intake_level_control(self.pumping_station.open_water)
+        self.assertEqual(self.pumping_station, intake)
+
+    def test_b(self):
+        """Test no intake are available for level control.
+
+        There is an intake available for level control but that belongs to
+        another open water.
+        """
+        open_water = OpenWater()
+        open_water.pk = 2
+        intake = find_intake_level_control(open_water)
+        self.assertTrue(intake is None)
+
+    def test_c(self):
+        """Test multiple intakes are available for level control."""
+
+        pumping_station = self.create_pumping_station()
+        self.assertEqual(2, PumpingStation.objects.count())
+
+        intake = find_intake_level_control(pumping_station.open_water)
+        self.assertTrue((intake == self.pumping_station) ^
+                        (intake == pumping_station))
+
+        pumping_station.delete()
+
+    def test_d(self):
+        """Test no intakes are available for level control.
+
+        There is an intake available but that intake cannot be used for level
+        control.
+        """
+        self.pumping_station.computed_level_control = False
+        self.pumping_station.save()
+        intake = find_intake_level_control(self.pumping_station.open_water)
+        self.assertTrue(intake is None)
+
+    def test_e(self):
+        """Test no intakes are available for level control.
+
+        There is a pump available for level control.
+        """
+        self.pumping_station.into = False
+        self.pumping_station.save()
+        intake = find_intake_level_control(self.pumping_station.open_water)
+        self.assertTrue(intake is None)
+
+
+def test_no_intakes_or_pumps_exist():
+    """Test no intakes or pumps exist."""
+    open_water = OpenWater()
+    open_water.pk = 1
+    intake = find_intake_level_control(open_water)
+    assert intake is None

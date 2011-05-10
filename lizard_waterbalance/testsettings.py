@@ -23,11 +23,8 @@ DATABASES = {
     # the specified database exists. When the tests cannot run, Jenkins sees
     # that as an error.
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': '127.0.0.1',
-        'NAME': 'waterbalance',
-        'USER': 'buildout',
-        'PASSWORD': 'buildout'
+        'ENGINE': 'sqlite3',
+        'NAME': 'test.db',
         },
     'fews-unblobbed': {
         'ENGINE': 'django.db.backends.sqlite3',
