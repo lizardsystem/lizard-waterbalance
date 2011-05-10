@@ -1161,9 +1161,7 @@ def waterbalance_fraction_distribution(
             (labels['flow_off'].name, fractions["flow_off"], labels['flow_off'])]
 
     for key, timeserie in fractions['intakes'].items():
-        name = key.name
-        label = key.label
-        bars.append((name, timeserie, label))
+        bars.append((key.name, timeserie, key.label))
 
     #sort
     bars = sorted(bars, key=lambda bar:-bar[2].order)

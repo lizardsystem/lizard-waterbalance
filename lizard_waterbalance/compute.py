@@ -69,19 +69,17 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-def find_intake_level_control(pumping_stations):
+def find_intake_level_control(open_water):
     """Find and return the intake to be used for level control.
 
     Parameter:
-      *pumping_stations*
-        iterable of all PumpingStation objects
+      *open_water*
+        open water to which the intake should belong
     """
-    intake = None
-    for pumping_station in pumping_stations:
-        if pumping_station.into and pumping_station.computed_level_control:
-            intake = pumping_station
-            break
-    return intake
+    intakes_level_control = \
+        PumpingStation.objects.filter(open_water=open_water, into=True,
+                                      computed_level_control=True)
+    return next((intake for intake in intakes_level_control), None)
 
 
 class WaterbalanceComputer2(object):
@@ -833,15 +831,17 @@ class WaterbalanceComputer2(object):
             control = self.get_level_control_timeseries(start_date, end_date)
 
 
-            #intakes, tmp_timeseries = self.retrieve_intakes_timeseries(configuration.open_water)
-            #TO DO
             intakes_timeseries = {}
             for key, timeseries in input['incoming_timeseries'].items():
                 intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
                                                        end_date=end_date)
-            intake = find_intake_level_control(PumpingStation.objects.all())
-            intakes_timeseries[intake] = control['intake_wl_control']
+            intake = find_intake_level_control(self.configuration.open_water)
+            if intake is None:
+                logger.warning("No intake for level control is present for "
+                               "configuration %s", self.configuration)
+            else:
+                intakes_timeseries[intake] = control['intake_wl_control']
 
             fractions = self.fraction_computer.compute(self.configuration.open_water,
                                                        buckets_summary,
