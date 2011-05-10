@@ -1059,8 +1059,12 @@ def waterbalance_cum_discharges(configuration,
                                     calc_start_datetime,
                                     calc_end_datetime)
     #define bars
-    line_out.append((labels['outtake_wl_control'].name, control['outtake_wl_control'], labels['outtake_wl_control'], '#000000'))
-    line_in.append((labels['intake_wl_control'].name, control['intake_wl_control'], labels['intake_wl_control'], '#000000'))
+    line_out.append((labels['outtake_wl_control'].name + " (berekend)",
+                     control['outtake_wl_control'],
+                     labels['outtake_wl_control'], '#000000'))
+    line_in.append((labels['intake_wl_control'].name + " (berekend)",
+                    control['intake_wl_control'],
+                    labels['intake_wl_control'], '#000000'))
 
     nr = 0
     for structure in ref_out:
