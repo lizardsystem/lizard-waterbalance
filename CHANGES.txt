@@ -11,6 +11,8 @@ Changelog of lizard-waterbalance
   2542).
 - Fixed the ordering of the locations in the Admin screen to modify an existing
   time series FEWS or add a new one (ticket 2605).
+- Fixed the ordering of the time series of a Pumpline in the Admin screen to
+  modify an existing pumping station or add a new one (ticket 2608).
 - In the legend of the cumulative discharge graph, added the text " (berekend)"
   to the names of the pumping stations of the computed level control to clarify
   their meaning (ticket 2611).

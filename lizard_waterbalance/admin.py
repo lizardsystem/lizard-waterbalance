@@ -123,6 +123,20 @@ class PumpLineAdmin(admin.ModelAdmin):
 class PumpLineInLine(admin.TabularInline):
     model = PumpLine
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Order the time series in the select list of each PumpLine.
+
+        This solution was found in the documentation of Django,
+        http://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.formfield_for_foreignkey
+
+        """
+        if db_field.name == "timeserie":
+            kwargs["queryset"] = \
+                WaterbalanceTimeserie.objects.filter().order_by('name')
+        return super(PumpLineInLine, self).formfield_for_foreignkey(db_field,
+                                                                    request,
+                                                                    **kwargs)
+
 
 class PumpingStationAdmin(admin.ModelAdmin):
     list_filter = ('open_water', 'into', 'computed_level_control' )
