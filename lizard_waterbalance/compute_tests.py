@@ -38,7 +38,7 @@ from lizard_waterbalance.bucket_computer import compute_net_drainage
 from lizard_waterbalance.bucket_computer import compute_net_precipitation
 from lizard_waterbalance.bucket_computer import compute_seepage
 from lizard_waterbalance.bucket_computer import compute_timeseries
-from lizard_waterbalance.compute import find_intake_level_control
+from lizard_waterbalance.compute import find_pumping_station_level_control
 from lizard_waterbalance.mock import Mock
 from timeseries.timeseriesstub import TimeseriesStub
 
@@ -917,7 +917,7 @@ class WaterbalanceComputerTests(TestCase):
 
 
 class FindIntakeLevelControlSuite(TestCase):
-    """Implements tests for function find_intake_level_control.
+    """Implements tests for function find_pumping_station_level_control.
 
     Class variable:
       *label_index*
@@ -966,7 +966,8 @@ class FindIntakeLevelControlSuite(TestCase):
 
     def test_a(self):
         """Test one intake is available for level control."""
-        intake = find_intake_level_control(self.pumping_station.open_water)
+        open_water = self.pumping_station.open_water
+        intake = find_pumping_station_level_control(open_water, True)
         self.assertEqual(self.pumping_station, intake)
 
     def test_b(self):
@@ -977,7 +978,7 @@ class FindIntakeLevelControlSuite(TestCase):
         """
         open_water = OpenWater()
         open_water.pk = 2
-        intake = find_intake_level_control(open_water)
+        intake = find_pumping_station_level_control(open_water, True)
         self.assertTrue(intake is None)
 
     def test_c(self):
@@ -986,7 +987,8 @@ class FindIntakeLevelControlSuite(TestCase):
         pumping_station = self.create_pumping_station()
         self.assertEqual(2, PumpingStation.objects.count())
 
-        intake = find_intake_level_control(pumping_station.open_water)
+        open_water = pumping_station.open_water
+        intake = find_pumping_station_level_control(open_water, True)
         self.assertTrue((intake == self.pumping_station) ^
                         (intake == pumping_station))
 
@@ -1000,7 +1002,8 @@ class FindIntakeLevelControlSuite(TestCase):
         """
         self.pumping_station.computed_level_control = False
         self.pumping_station.save()
-        intake = find_intake_level_control(self.pumping_station.open_water)
+        open_water = self.pumping_station.open_water
+        intake = find_pumping_station_level_control(open_water, True)
         self.assertTrue(intake is None)
 
     def test_e(self):
@@ -1010,7 +1013,8 @@ class FindIntakeLevelControlSuite(TestCase):
         """
         self.pumping_station.into = False
         self.pumping_station.save()
-        intake = find_intake_level_control(self.pumping_station.open_water)
+        open_water = self.pumping_station.open_water
+        intake = find_pumping_station_level_control(open_water, True)
         self.assertTrue(intake is None)
 
 
@@ -1018,5 +1022,5 @@ def test_no_intakes_or_pumps_exist():
     """Test no intakes or pumps exist."""
     open_water = OpenWater()
     open_water.pk = 1
-    intake = find_intake_level_control(open_water)
+    intake = find_pumping_station_level_control(open_water, True)
     assert intake is None

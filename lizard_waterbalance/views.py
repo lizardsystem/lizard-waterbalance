@@ -697,6 +697,17 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
 
         return outcome
 
+    def get_level_control_pumping_stations(self):
+
+        pair = self.get_cached_data("pair")
+        if pair is None:
+
+            parent = super(CachedWaterbalanceComputer, self)
+            pair = parent.get_level_control_pumping_stations()
+            self.set_cached_data("pair", pair)
+
+        return pair
+
     def get_reference_timeseries(self, start_date, end_date):
 
         ref_in = self.get_cached_data("ref_in")
@@ -1054,15 +1065,16 @@ def waterbalance_cum_discharges(configuration,
     control = waterbalance_computer.get_level_control_timeseries(
                                     calc_start_datetime,
                                     calc_end_datetime)
+    intake, pump = waterbalance_computer.get_level_control_pumping_stations()
 
     ref_in, ref_out = waterbalance_computer.get_reference_timeseries(
                                     calc_start_datetime,
                                     calc_end_datetime)
     #define bars
-    line_out.append((labels['outtake_wl_control'].name + " (berekend)",
+    line_out.append((intake.name + " (berekend)",
                      control['outtake_wl_control'],
                      labels['outtake_wl_control'], '#000000'))
-    line_in.append((labels['intake_wl_control'].name + " (berekend)",
+    line_in.append((pump.name + " (berekend)",
                     control['intake_wl_control'],
                     labels['intake_wl_control'], '#000000'))
 
@@ -1292,7 +1304,6 @@ def waterbalance_phosphate_impact(
     legend_info = LegendInfo()
     legend_info.retrieve_labels()
     for key, impact in impacts.items():
-        logger.debug("key: %s", key)
         label_name, label = legend_info.retrieve(key)
         name = '%s (min)' % label_name
         name_incremental = '%s (incr)' % label_name

@@ -69,17 +69,20 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-def find_intake_level_control(open_water):
-    """Find and return the intake to be used for level control.
+def find_pumping_station_level_control(open_water, into):
+    """Find and return the PumpingStation to be used for level control.
 
     Parameter:
       *open_water*
         open water to which the intake should belong
+      *into*
+        holds if and only if the PumpingStation should be an intake
+
     """
-    intakes_level_control = \
-        PumpingStation.objects.filter(open_water=open_water, into=True,
+    stations_level_control = \
+        PumpingStation.objects.filter(open_water=open_water, into=into,
                                       computed_level_control=True)
-    return next((intake for intake in intakes_level_control), None)
+    return next((station for station in stations_level_control), None)
 
 
 class WaterbalanceComputer2(object):
@@ -413,6 +416,19 @@ class WaterbalanceComputer2(object):
 
             self.updated = True
             return outcome
+
+    def get_level_control_pumping_stations(self):
+        """Return the pair (intake, pump) pumping stations for level control.
+
+        If the user did not define an intake for level control, this funtion
+        returns None for that intake. The same holds for the pump for level
+        control.
+
+        """
+        open_water = self.configuration.open_water
+        find_intake = True
+        return find_pumping_station_level_control(open_water, find_intake), \
+               find_pumping_station_level_control(open_water, not find_intake)
 
     def get_open_water_incoming_flows(self, start_date, end_date):
         """ Return incoming waterflows.
@@ -836,7 +852,8 @@ class WaterbalanceComputer2(object):
                 intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
                                                        end_date=end_date)
-            intake = find_intake_level_control(self.configuration.open_water)
+            open_water = self.configuration.open_water
+            intake = find_pumping_station_level_control(open_water, True)
             if intake is None:
                 logger.warning("No intake for level control is present for "
                                "configuration %s", self.configuration)
