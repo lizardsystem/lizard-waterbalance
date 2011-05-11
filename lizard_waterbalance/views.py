@@ -882,7 +882,6 @@ def waterbalance_area_graph(
                              (outgoing_bars, top_height_out)]:
         for bar in bars:
             label = bar[2]
-            logger.debug("name, label: %s, %s", bar[0], bar[2])
             times, values = get_average_timeseries(bar[1],
                                                    date2datetime(start_date),
                                                    date2datetime(end_date),
@@ -1065,19 +1064,20 @@ def waterbalance_cum_discharges(configuration,
     control = waterbalance_computer.get_level_control_timeseries(
                                     calc_start_datetime,
                                     calc_end_datetime)
+
     intake, pump = waterbalance_computer.get_level_control_pumping_stations()
+    if intake is not None:
+        line_in.append((intake.name + " (berekend)",
+                        control['intake_wl_control'],
+                        labels['intake_wl_control'], '#000000'))
+    if pump is not None:
+        line_out.append((pump.name + " (berekend)",
+                         control['outtake_wl_control'],
+                         labels['outtake_wl_control'], '#000000'))
 
     ref_in, ref_out = waterbalance_computer.get_reference_timeseries(
                                     calc_start_datetime,
                                     calc_end_datetime)
-    #define bars
-    line_out.append((intake.name + " (berekend)",
-                     control['outtake_wl_control'],
-                     labels['outtake_wl_control'], '#000000'))
-    line_in.append((pump.name + " (berekend)",
-                    control['intake_wl_control'],
-                    labels['intake_wl_control'], '#000000'))
-
     nr = 0
     for structure in ref_out:
         for pump_line in structure.pump_lines.all():
@@ -1087,8 +1087,6 @@ def waterbalance_cum_discharges(configuration,
         for pump_line in structure.pump_lines.all():
             bars_in.append((pump_line.name, pump_line.retrieve_timeseries(), structure.label, colors_list[nr]))
             nr += 1
-
-
 
     names = [bar[0] for bar in bars_out + bars_in]
     colors = [bar[3] for bar in bars_out + bars_in ]
@@ -1534,7 +1532,7 @@ def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
 
         cache_key_name = CacheKeyName(configuration)
         names = [ "sluice_error", "total_outtakes", "incoming", "outgoing",
-            "outcome", "ref_in", "ref_out", "sluice_error_waterlevel",
+            "outcome", "pair", "ref_in", "ref_out", "sluice_error_waterlevel",
             "fractions_1", "fractions_2", "concentrations", "impact",
             "impact_incremental" ]
         key_names = [cache_key_name.get(name) for name in names]
