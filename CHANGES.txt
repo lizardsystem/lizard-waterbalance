@@ -9,6 +9,8 @@ Changelog of lizard-waterbalance
 - Fixed the bug that caused the legend of the phosphate impact graph to list
   the name of the label instead of the name of the intake or pump (ticket
   2542).
+- Fixed the ordering of the locations in the Admin screen to modify an existing
+  time series FEWS or add a new one (ticket 2605).
 - In the legend of the cumulative discharge graph, added the text " (berekend)"
   to the names of the pumping stations of the computed level control to clarify
   their meaning (ticket 2611).

@@ -1502,6 +1502,7 @@ def search_fews_lkeys(request):
         timeseries = Timeserie.objects.filter(parameterkey=pkey, filterkey=fkey)
         timeseries = timeseries.distinct().order_by("locationkey")
         lkeys = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
+        lkeys.sort(key=lambda pair: pair[1])
         json = simplejson.dumps(lkeys)
         return HttpResponse(json, mimetype='application/json')
     else:

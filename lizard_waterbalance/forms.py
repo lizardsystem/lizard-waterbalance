@@ -8,7 +8,6 @@ from lizard_fewsunblobbed.models import Timeserie
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import TimeseriesFews
-#from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
@@ -93,6 +92,7 @@ class TimeseriesFewsForm(forms.ModelForm):
             timeseries = Timeserie.objects.filter(parameterkey=pkey.pkey, filterkey=fkey.id)
             timeseries = timeseries.distinct().order_by("locationkey")
             choices = [(ts.locationkey.lkey, create_location_label(ts.locationkey)) for ts in timeseries]
+            choices.sort(key=lambda pair: pair[1])
             self.fields['name_location'].widget.choices = choices
             if not self.instance is None and not self.instance.lkey is None:
                 self.fields['name_location'].initial = str(self.instance.lkey)
