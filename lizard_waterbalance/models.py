@@ -1494,26 +1494,21 @@ class WaterbalanceConf(models.Model):
                                         end_date=end_date)
 
     def get_calc_period(self, input_end_date_time=datetime.datetime.now()):
-        """return calculation start_date and end_date """
+        """Return the start and end date (and time) for the calculation horizon.
+
+        """
         start_date = self.calculation_start_date
         if self.calculation_end_date:
             end_date = self.calculation_end_date
         else:
-            #precipitation
             last_precipitation = self.open_water.precipitation.get_last_event()
-            try:
-                end_date = last_precipitation.time
-            except AttributeError:
-                end_date = last_precipitation.tsd_time
-            #if last_precipitation:
-            #    last_precipitation = last_precipitation.time
-            #to do: else, warning
-            #
-            #
-            #if input_end_date_time > last_precipitation:
-            #    end_date = last_precipitation
-            #else:
-            #    end_date = input_end_date_time
+            if last_precipitation is None:
+                end_date = input_end_date_time
+            else:
+                try:
+                    end_date = last_precipitation.time
+                except AttributeError:
+                    end_date = last_precipitation.tsd_time
 
         return start_date, end_date
 
