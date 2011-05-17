@@ -256,8 +256,8 @@ class TimeseriesFews(models.Model):
 
     """
     class Meta:
-        verbose_name = _("7b tijdreeks FEWS")
-        verbose_name_plural = _("7b tijdreeksen FEWS")
+        verbose_name = _("7b Tijdreeks FEWS")
+        verbose_name_plural = _("7b Tijdreeksen FEWS")
 
     name = models.CharField(
         verbose_name=_("naam"),
@@ -501,7 +501,7 @@ class WaterbalanceTimeserie(models.Model):
 
     local_timeseries = models.ForeignKey(
         Timeseries,
-        verbose_name=_("Waterbalans tijdserie"),
+        verbose_name=_("Waterbalans tijdreeks"),
         help_text=_("tijdreeks opgeslagen in eigen database"),
         null=True, blank=True, related_name='wb_local')
 
@@ -530,8 +530,8 @@ class WaterbalanceTimeserie(models.Model):
                    'Filled in by automatic process.'))
 
     class Meta:
-        verbose_name = _("7 Waterbalans tijdseries")
-        verbose_name_plural = _("7 Waterbalans tijdseries")
+        verbose_name = _("7 Waterbalans tijdreeks")
+        verbose_name_plural = _("7 Waterbalans tijdreeks")
         unique_together = (("name", "parameter",
                             "configuration", "timestep"),
                            )
@@ -757,18 +757,18 @@ class OpenWater(models.Model):
     minimum_level = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("ondergrens"),
-        help_text=_("tijdserie naar ondergrens peil in meters"),
+        help_text=_("tijdreeks naar ondergrens peil in meters"),
         null=True, blank=True, related_name='open_water_min_level')
     maximum_level = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("bovengrens"),
-        help_text=_("tijdserie naar bovengrens peil in meters"),
+        help_text=_("tijdreeks naar bovengrens peil in meters"),
         null=True, blank=True, related_name='open_water_max_level')
     target_level = models.ForeignKey(
         WaterbalanceTimeserie,
         editable=False,
         verbose_name=_("streefpeil"),
-        help_text=_("tijdserie met streefpeil in mNAP. Deze wordt niet gebruikt"),
+        help_text=_("tijdreeks met streefpeil in mNAP. Deze wordt niet gebruikt"),
         null=True, blank=True, related_name='open_water_targetlevel')
     init_water_level = models.FloatField(
         verbose_name=_("initiele waterstand"),
@@ -789,13 +789,13 @@ class OpenWater(models.Model):
     seepage = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("kwel"),
-        help_text=_("tijdserie naar kwel"),
+        help_text=_("tijdsreeks naar kwel"),
         related_name='open_water_seepage')
 
     infiltration = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("wegzijging"),
-        help_text=_("tijdserie naar kwel"),
+        help_text=_("tijdreeks naar kwel"),
         related_name='open_water_infiltration')
 
     sewer = models.ForeignKey(
@@ -966,7 +966,7 @@ class Bucket(models.Model):
     seepage = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("kwel"),
-        help_text=_("tijdserie naar kwel"),
+        help_text=_("tijdreeks naar kwel"),
         null=True, blank=True,
         related_name='bucket_seepage')
 
@@ -1114,15 +1114,15 @@ class SobekBucket(models.Model):
 
     flow_off = models.ForeignKey(
         WaterbalanceTimeserie,
-        verbose_name=_("tijdserie oppervlakte afstroom"),
-        help_text=_("tijdserie met resultaat oppervlakte afstroom"),
+        verbose_name=_("tijdreeks oppervlakte afstroom"),
+        help_text=_("tijdreeks met resultaat oppervlakte afstroom"),
         null=True, blank=True,
         related_name='sobekbucket_flow_off')
 
     drainage_indraft = models.ForeignKey(
         WaterbalanceTimeserie,
-        verbose_name=_("tijdserie uitstroom en intrek"),
-        help_text=_("tijdserie met resultaat grondwater uitstroom en intrek"),
+        verbose_name=_("tijdreeks uitstroom en intrek"),
+        help_text=_("tijdreeks met resultaat grondwater uitstroom en intrek"),
         null=True, blank=True,
         related_name='sobekbucket_drainage_indraft')
 
