@@ -1503,6 +1503,8 @@ class WaterbalanceConf(models.Model):
         else:
             last_precipitation = self.open_water.precipitation.get_last_event()
             if last_precipitation is None:
+                logger.warning("The precipitation time series does not have "
+                               "any events.")
                 end_date = input_end_date_time
             else:
                 try:
