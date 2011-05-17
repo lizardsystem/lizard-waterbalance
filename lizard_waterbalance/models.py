@@ -136,8 +136,6 @@ class Timeseries(models.Model):
         not fill in the missing dates with value.
 
         """
-
-
         events = self.timeseries_events.filter().order_by('time')
         if start_date:
             events = events.filter(time__gte=start_date)
@@ -343,6 +341,24 @@ class TimeseriesFews(models.Model):
                 raise IncompleteData(exception_msg)
 
         return fews_timeseries
+
+    def raw_events(self, start_date=None, end_date=None):
+        """Return a generator to iterate over all events.
+
+        If dates are missing in between two successive events, this function
+        does not fill in the missing dates with a value.
+
+        """
+        fews_timeseries = self._get_fews_timeserie_object()
+
+        ts_events = fews_timeseries.timeseriedata.filter().order_by('tsd_time')
+        if not start_date is None:
+            ts_events = ts_events.filter(tsd_time__gte=start_date)
+        if not end_date is None:
+            ts_events = ts_events.filter(tsd_time__lte=end_date)
+
+        for event in ts_events:
+            yield event.tsd_time, event.tsd_value
 
     def events(self, start_date=None, end_date=None):
         """Return a generator to iterate over all daily events.

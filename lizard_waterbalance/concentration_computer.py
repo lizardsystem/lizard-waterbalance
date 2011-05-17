@@ -20,10 +20,6 @@
 # Copyright 2011 Nelen & Schuurmans
 #
 #******************************************************************************
-#
-# Initial programmer: Pieter Swinkels
-#
-#******************************************************************************
 
 from datetime import datetime
 from datetime import timedelta

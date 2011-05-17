@@ -121,3 +121,4 @@ class TimeseriesTests(TestCase):
                            (datetime(2011, 4, 8), 10.0),
                            (datetime(2011, 4, 9), 10.0)]
         self.assertEqual(expected_events, list(events))
+
