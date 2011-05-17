@@ -16,8 +16,8 @@ Changelog of lizard-waterbalance
 - In the legend of the cumulative discharge graph, added the text " (berekend)"
   to the names of the pumping stations of the computed level control to clarify
   their meaning (ticket 2611).
-- Fixed the bug that caused the drawing of the waterbalance graph to fail
-  although the calculation ended successfully (ticket 2650)
+- Added the functionality to list the raw events of a FEWS time seriee (ticket
+  2613).
 - Fixed the bug that caused the legend of the waterbalance graph to list an
   incorrect name for a pump that is not for level control (ticket 2651).
 - Fixed the bug that caused the legend of the fraction chloride graph to list
