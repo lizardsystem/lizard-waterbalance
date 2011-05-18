@@ -9,6 +9,8 @@ Changelog of lizard-waterbalance
 - Fixed the bug that caused the legend of the phosphate impact graph to list
   the name of the label instead of the name of the intake or pump (ticket
   2542).
+- Fixed the naming of the time series in the Admin screen: all time series are
+  now called "tijdreeks" (ticket 2602).
 - Fixed the ordering of the locations in the Admin screen to modify an existing
   time series FEWS or add a new one (ticket 2605).
 - Fixed the ordering of the time series of a Pumpline in the Admin screen to
@@ -18,6 +20,8 @@ Changelog of lizard-waterbalance
   their meaning (ticket 2611).
 - Added the functionality to list the raw events of a FEWS time seriee (ticket
   2613).
+- Fixed the bug that caused the drawing of the waterbalance graph to fail
+  although the calculations were succesfull (ticket 2650)
 - Fixed the bug that caused the legend of the waterbalance graph to list an
   incorrect name for a pump that is not for level control (ticket 2651).
 - Fixed the bug that caused the legend of the fraction chloride graph to list
