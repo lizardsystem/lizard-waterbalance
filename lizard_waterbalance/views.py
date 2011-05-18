@@ -373,9 +373,6 @@ def waterbalance_area_summary(
 
     area = waterbalance_configuration.waterbalance_area
 
-    date_range_form = DateRangeForm(
-        current_start_end_dates(request, for_form=True))
-
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
@@ -411,7 +408,6 @@ def waterbalance_area_summary(
     return render_to_response(
         template,
         {'waterbalance_configuration': waterbalance_configuration,
-         'date_range_form': date_range_form,
          'graph_type_formitems': graph_type_formitems,
          'periods': periods,
          'reset_periods': reset_periods,
