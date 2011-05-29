@@ -538,16 +538,16 @@ class WaterbalanceComputer2(object):
         # We have computed the sluice error in [m3/day], however we
         # will display it as a difference in water level, so
         # [m/day]. We make that translation here.
-        surface = self.configuration.open_water.surface
-        previous_year = None
+        surface = 1.0 * self.configuration.open_water.surface
+        # previous_year = None
         for events in enumerate_events(calc_waterlevel, sluice_error, reset_timeseries):
             date = events[0][0]
-            if previous_year is None or previous_year < date.year:
-                waterlevel = events[2][1]
-                cum_sluice_error = 0
-                previous_year = date.year
-            cum_sluice_error += events[1][1]
-            waterlevel = events[0][1] - cum_sluice_error / surface
+            # if previous_year is None or previous_year < date.year:
+            #     waterlevel = events[2][1]
+            #     cum_sluice_error = 0
+            #     previous_year = date.year
+            # cum_sluice_error += events[1][1]
+            waterlevel = events[0][1] - events[1][1] / surface
             sluice_error_waterlevel.add_value(date, waterlevel)
         return sluice_error_waterlevel
 

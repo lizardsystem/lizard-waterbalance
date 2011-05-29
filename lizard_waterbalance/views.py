@@ -1017,12 +1017,11 @@ def waterbalance_water_level(configuration,
 
     # Add sluice error to bars.
     if with_sluice_error:
-
-        bars.append(("waterpeilen, met sluitfout",
-                     waterbalance_computer.get_waterlevel_with_sluice_error(calc_start_datetime,
-                                                                            calc_end_datetime,
-                                                                            reset_period,
-                                                                            reset_timeseries=reset_timeseries),
+        sluice_error_waterlevel = waterbalance_computer.get_waterlevel_with_sluice_error(calc_start_datetime,
+                                                                                         calc_end_datetime,
+                                                                                         reset_period,
+                                                                                         reset_timeseries=reset_timeseries)
+        bars.append(("waterpeilen, met sluitfout", sluice_error_waterlevel,
                      labels['sluice_error']))
 
     names = [bar[0] for bar in bars]
@@ -1034,9 +1033,23 @@ def waterbalance_water_level(configuration,
 
     for bar in bars:
         label = bar[2]
-        times, values = get_average_timeseries(
-            bar[1], date2datetime(start_date),
-            date2datetime(end_date), period=period)
+        if bar[0] == "waterpeilen, met sluitfout":
+            times, values = get_cumulative_timeseries(bar[1],
+                                                      calc_start_datetime,
+                                                      calc_end_datetime,
+                                                      reset_period=reset_period,
+                                                      period=period)
+            # The cumulative events (times, values) do not correspond to the
+            # data points in the graph. For example, the date of each event is
+            # the first day of each period but as the events contain cumulative
+            # values, they should be drawn at the end of each period. The
+            # following snippet of code prepares the data for drawing.
+            data = DataForCumulativeGraph(times, values)
+            times, values = data.retrieve_for_drawing(period, reset_period)
+        else:
+            times, values = get_average_timeseries(
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date), period=period)
 
         color = label.color
         graph.axes.plot(times, values, color=color)
