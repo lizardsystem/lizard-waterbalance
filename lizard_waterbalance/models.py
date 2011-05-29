@@ -898,7 +898,7 @@ class OpenWater(models.Model):
         if self.use_min_max_level_relative_to_meas:
              min_level = TimeseriesWithMemoryStub()
              min_level.add_value(start_date, self.min_level_relative_to_measurement)
-             return add_timeseries(min_level, self.waterlevel_measurement)
+             return add_timeseries(min_level, self.waterlevel_measurement.get_timeseries())
         else:
             return TimeseriesRestrictedStub(timeseries=self.minimum_level.get_timeseries(),
                                         start_date=start_date,
@@ -908,12 +908,38 @@ class OpenWater(models.Model):
         if self.use_min_max_level_relative_to_meas:
              max_level = TimeseriesWithMemoryStub()
              max_level.add_value(start_date, self.max_level_relative_to_measurement)
-             return add_timeseries(max_level, self.waterlevel_measurement)
+             return add_timeseries(max_level, self.waterlevel_measurement.get_timeseries())
         else:
             return TimeseriesRestrictedStub(timeseries=self.maximum_level.get_timeseries(),
                                         start_date=start_date,
                                         end_date=end_date)
-
+            
+    def get_max_intake(self):
+        max_discharge = 0.0
+        is_none = True
+        for station in self.pumping_stations.filter(into=True, computed_level_control=True):
+            if station.max_discharge is not None:
+               max_discharge += station.max_discharge
+               is_none = False
+               
+        if is_none:
+            return None
+        else:
+            return max_discharge
+        
+    def get_max_outlet(self):
+        max_discharge = 0.0
+        is_none = True
+        for station in self.pumping_stations.filter(into=False, computed_level_control=True):
+            if station.max_discharge is not None:
+               max_discharge += station.max_discharge
+               is_none = False
+               
+        if is_none:
+            return None
+        else:
+            return max_discharge
+        
 
 class Bucket(models.Model):
     """Represents a *bakje*.
@@ -1128,6 +1154,31 @@ class SobekBucket(models.Model):
 
     def __unicode__(self):
         return '%s - %s'%(self.open_water.name, self.name)
+    
+    def get_outcome(self, start_date, end_date):
+        from lizard_waterbalance.bucket_computer import BucketOutcome
+        
+        outcome = BucketOutcome()
+        outcome.storage = TimeseriesWithMemoryStub()
+        outcome.seepage = TimeseriesWithMemoryStub()
+        outcome.net_precipitation = TimeseriesWithMemoryStub()
+    
+        outcome.storage.add_value(start_date, 0)
+        
+        outcome.net_drainage.add_value(start_date, 0)
+        outcome.seepage.add_value(start_date, 0)
+        outcome.net_precipitation.add_value(start_date, 0)
+        
+        outcome.flow_off = TimeseriesRestrictedStub(timeseries=self.flow_off.get_timeseries(),
+                                        start_date=start_date,
+                                        end_date=end_date)
+        outcome.net_drainage = TimeseriesRestrictedStub(timeseries=self.drainage_indraft.get_timeseries(),
+                                        start_date=start_date,
+                                        end_date=end_date)
+        
+        return outcome 
+            
+
 
 class PumpingStation(models.Model):
     """Represents a pump that pumps water into or out of the open water.
@@ -1524,8 +1575,11 @@ class WaterbalanceConf(models.Model):
 
     def retrieve_buckets(self):
         open_water = self._retrieve_open_water()
-
         return open_water.buckets.all()
+    
+    def retrieve_sobek_buckets(self):
+        open_water = self._retrieve_open_water()
+        return open_water.sobekbuckets.all()    
 
 
 class Label(models.Model):

@@ -257,6 +257,10 @@ class WaterbalanceComputer2(object):
                                                                        input['evaporation'],
                                                                        bucket.retrieve_seepage(start_date, end_date),
                                                                        input['sewer'])
+            
+            
+            for bucket in self.configuration.retrieve_sobek_buckets():
+                buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
             #store for later use (some kind of cache)
             #self.outcome['buckets'] = buckets_outcome
             #self.outcome_info['buckets'] = {}
@@ -395,6 +399,9 @@ class WaterbalanceComputer2(object):
             # date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.level_control_computer.inside_range = date_range.inside
+            
+            
+            
             outcome = self.level_control_computer.compute(
                 self.configuration.open_water,
                 buckets_summary,
@@ -405,7 +412,9 @@ class WaterbalanceComputer2(object):
                 input['open_water']['minimum_level'],
                 input['open_water']['maximum_level'],
                 input['incoming_timeseries'],
-                input['outgoing_timeseries'])
+                input['outgoing_timeseries'],
+                self.configuration._retrieve_open_water().get_max_intake(),
+                self.configuration._retrieve_open_water().get_max_outlet())
 
             #cache
             self.outcome['level_control'] = outcome

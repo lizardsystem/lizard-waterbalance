@@ -68,7 +68,8 @@ class LevelControlComputer:
 
     def compute(self, open_water, buckets_summary, precipitation, evaporation, seepage, infiltration,
                 minimum_level_timeseries, maximum_level_timeseries,
-                intakes_timeseries, pumps_timeseries):
+                intakes_timeseries, pumps_timeseries,
+                max_intake = None, max_outtake = None):
         """Compute and return the pair of intake and pump time series.
 
         This function returns the pair of SparseTimeseriesStub(s) that consists of
@@ -140,14 +141,21 @@ class LevelControlComputer:
             water_level += (incoming_value + outgoing_value) / surface
 
             level_control = self._compute_level_control(surface, water_level, events['min_level'][1], events['max_level'][1])
-            water_level += level_control / surface
 
             if level_control < 0:
-                pump = level_control
+                if max_outtake is not None:
+                    pump = max(level_control, -1*max_outtake)
+                else:
+                    pump = level_control
                 intake = 0
             else:
                 pump = 0
-                intake = level_control
+                if max_intake is not None:
+                    intake = min(level_control, max_intake)
+                else:
+                    intake = level_control
+                
+            water_level += (pump + intake) / surface
 
             pump_time_series.add_value(date, pump)
             intake_time_series.add_value(date, intake)
