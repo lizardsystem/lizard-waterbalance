@@ -17,7 +17,7 @@
 {% endblock portal-tabs %}
 
 {% block sidebar %}
-<div class="sidebarbox sidebarbox-stretched">
+<div id="area_info" class="sidebarbox sidebarbox-stretched">
   <h2>
     Info
   </h2>
@@ -27,7 +27,7 @@
       <dd>{{ waterbalance_configuration.waterbalance_area.name }}</dd>
       <dt>Oppervlakte open water</dt>
       <dd>{{ waterbalance_configuration.open_water.surface_in_ha|floatformat:1 }} ha</dd>
-      {% for bucket in waterbalance_configuration.open_water.buckets.all %}
+      {% for bucket in buckets %}
       <dt>{{ bucket.name }}</dt>
       <dd>{{ bucket.surface_in_ha|floatformat:1 }} ha</dd>
       {% endfor %}
@@ -46,7 +46,10 @@
   </div>
 </div>
 <div class="sidebarbox">
-  <h2>Grafieken</h2>
+  <h2>Grafieken
+    <span class="ss_sprite ss_arrow_out sidebarbox-action-icon"
+         id="graph-wide-button">&nbsp;</span>
+  </h2>
   <div>
     <form method="POST"
           action="{% url waterbalance_graph_select %}"
@@ -61,6 +64,9 @@
                  name="graphs"
                  {% if formitem.disabled %}
                  disabled="true"
+                 {% endif %}
+                 {% if formitem.checked %}
+                 checked="checked"
                  {% endif %}
                  />
           <label for="{{ formitem.id }}">
@@ -134,12 +140,14 @@
 
 
 {% block content %}
-<div id="evenly-spaced-vertical">
-  <div class="vertical-item img-use-my-size">
-    <p>Selecteer links grafieken.</p>
-  </div>
-  <div id="adjustment-form"
-       style="display: none;">
+<div id="graph_window">
+  <div id="evenly-spaced-vertical">
+    <div class="vertical-item img-use-my-size">
+      <p>Selecteer links grafieken.</p>
+    </div>
+    <div id="adjustment-form"
+         style="display: none;">
+    </div>
   </div>
 </div>
 {% endblock %}

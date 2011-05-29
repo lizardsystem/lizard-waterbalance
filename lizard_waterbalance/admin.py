@@ -233,10 +233,10 @@ class LabelAdmin(admin.ModelAdmin):
     search_fields = ['name', ]
 
 class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
-    list_filter = ('use_fews', 'parameter', 'configuration', 'timestep' )
+    list_filter = ('use_fews', 'parameter' )
     list_display = ( 'name', 'use_fews', 'parameter',
                      'fews_timeseries', 'local_timeseries',
-                     'configuration', 'timestep', 'linked_with_info')
+                     'linked_with_info')
     search_fields = ['name',  ]
 
     form = WaterbalanceTimeserieForm

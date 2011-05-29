@@ -9,11 +9,20 @@ function graph_type_select(event) {
     event.preventDefault();
     $form = $(this).parents("#graphtype-select-form");
     url = $form.attr("action");
+    
+    $button = $("#graph-type-select-submit");
+    original_text = $button.attr("value");
+    $button.attr("value", "Aan het berekenen...");
+    $button.attr("disabled", "true");
+    $button.effect("pulsate", {"times": 2}, 2000);
+    
     $.ajax({
         url: url,
         data: $form.serialize(),
         type: "POST",
         success: function (data, textStatus, xhr) {
+            $button.attr("value", original_text);
+            $button.removeAttr("disabled");
             $('div#evenly-spaced-vertical .vertical-item').remove();
             $.each(data, function (index, val) {
                 // console.log(val);
@@ -24,6 +33,11 @@ function graph_type_select(event) {
                 div.insertBefore('#adjustment-form');
             });
             restretchExistingElements();
+        },
+        error: function (data, textStatus, xhr) {
+            $button.attr("value", original_text);
+            $button.removeAttr("disabled");
+            $('div#evenly-spaced-vertical .vertical-item').remove();
         }
     });
 }
@@ -113,6 +127,27 @@ function redirect_to_area(data) {
     }
 }
 
+function make_graphs_wide(event) {
+	$("#graph_window").css("overflow","scroll");
+	$("#evenly-spaced-vertical").css("width",6000);
+	$("input#graph-type-select-submit").click();	
+}
+
+function divideVerticalSpaceEqually() {
+/* 
+Overwrites Lizard function, to ensure space below the graphs for scrollbar
+TO DO: change this overwrite of function
+*/
+  var space_below = 20; 
+  var numberOfItems, numberOfDoubleItems;
+  numberOfItems = $('#evenly-spaced-vertical > .vertical-item').length;
+  numberOfDoubleItems = $('#evenly-spaced-vertical > .double-vertical-item').length;
+  verticalItemHeight = Math.floor(
+  ((mainContentHeight-space_below) / (numberOfItems + 2 * numberOfDoubleItems))) - 1;
+  $('#evenly-spaced-vertical > .vertical-item').height(verticalItemHeight);
+  $('#evenly-spaced-vertical > .double-vertical-item').height(2 * verticalItemHeight);
+} 
+
 
 function waterbalance_area_click_handler(x, y, map) {
     $("#map_OpenLayers_ViewPort").css("cursor", "progress");
@@ -129,8 +164,10 @@ $(document).ready(function () {
     $("input#graph-type-select-submit").click(graph_type_select);
     $("input#recalculate-submit").click(recalculate_action);
     $("#activate-adjustment-form").click(activate_adjustment_form_action);
+    $("#graph-wide-button").click(make_graphs_wide);
     $("#edit-sub-form-submit").live('click', adjustment_form_submit);
     $(".edit-single-link").live('click', single_edit_link_click);
     $(".back-to-multiple").live('click', single_edit_link_click);
+    $("input#graph-type-select-submit").click();
 });
 

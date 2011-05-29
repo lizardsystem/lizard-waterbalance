@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -129,6 +130,11 @@ IMPLEMENTED_GRAPH_TYPES = (
     'cumulatief_debiet',
     'fracties_chloride',
     'fosfaatbelasting',
+    )
+
+INITIAL_SELECTED_GRAPH_TYPES = (
+    'waterbalans',
+    'fracties_chloride',
     )
 BAR_WIDTH = {'year': 364,
              'quarter': 90,
@@ -362,17 +368,19 @@ def waterbalance_area_summary(
     * crumbs_prepend -- list of breadcrumbs
 
     """
-    # waterbalance_configuration = get_object_or_404(
-    #     WaterbalanceConf,
-    #     waterbalance_area__slug=area,
-    #     waterbalance_scenario__slug=scenario)
-    #logger.debug('%s - %s' % (area, scenario))
-    waterbalance_configuration = WaterbalanceConf.objects.get(
-        waterbalance_area__slug=area_slug,
-        waterbalance_scenario__slug=scenario_slug)
+    waterbalance_configuration = get_object_or_404(
+         WaterbalanceConf,
+         waterbalance_area__slug=area_slug,
+         waterbalance_scenario__slug=scenario_slug)
+    logger.debug('%s - %s' % (area_slug, scenario_slug))
 
+    if not waterbalance_configuration.waterbalance_scenario.public and not request.user.has_perm('lizard_waterbalance.see_not_public_scenarios'):
+        return HttpResponseForbidden()
+    
     area = waterbalance_configuration.waterbalance_area
-
+    
+    buckets = waterbalance_configuration.open_water.buckets.filter(surface__gte=1)
+    
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
@@ -393,6 +401,7 @@ def waterbalance_area_summary(
         formitem['value'] = graph_type
         formitem['label'] = name
         formitem['disabled'] = (graph_type not in IMPLEMENTED_GRAPH_TYPES)
+        formitem['checked'] = (graph_type in INITIAL_SELECTED_GRAPH_TYPES)
         graph_type_formitems.append(formitem)
     periods = [('year', 'Per jaar', False),
                ('quarter', 'Per kwartaal', False),
@@ -408,6 +417,7 @@ def waterbalance_area_summary(
     return render_to_response(
         template,
         {'waterbalance_configuration': waterbalance_configuration,
+         'buckets':buckets,
          'graph_type_formitems': graph_type_formitems,
          'periods': periods,
          'reset_periods': reset_periods,
