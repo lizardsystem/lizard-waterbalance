@@ -6,6 +6,7 @@ Changelog of lizard-waterbalance
 -----------------
 
 - Changed the form to change period.
+- Fixed a bug in the Excel export of the results that resulted in a stack trace.
 - Fixed the bug that caused the legend of the phosphate impact graph to list
   the name of the label instead of the name of the intake or pump (ticket
   2542).
