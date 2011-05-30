@@ -26,6 +26,8 @@ Changelog of lizard-waterbalance
   incorrect name for a pump that is not for level control (ticket 2651).
 - Fixed the bug that caused the legend of the fraction chloride graph to list
   the name of the label instead of the name of the intake (ticket 2666).
+- Fixed the ordering of the several fields in the Admin form "Wijzig 7
+  Waterbalans tijdreeks" (ticket 2743)
 
 
 0.15 (2011-04-19)
