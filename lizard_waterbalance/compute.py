@@ -87,30 +87,6 @@ def find_pumping_station_level_control(open_water, find_intake):
     return next((station for station in stations_level_control), None)
 
 
-def get_cumulative_timeseries(timeseries, start, end,
-                              reset_period='hydro_year', period='month',
-                              multiply=1, time_shift=0):
-    """Return the events for the given timeseries in the given range.
-
-    Parameters:
-    * timeseries -- implementation of a time series that supports a method events()
-    * start -- the earliest date (and/or time) of a returned event
-    * end -- the latest date (and/or time) of a returned event
-    * period -- 'year', 'month' or 'day'
-
-    """
-    result = zip(*(e for e in cumulative_event_values(timeseries,
-                                                      reset_period=reset_period,
-                                                      period=period,
-                                                      multiply=multiply,
-                                                      time_shift=time_shift)
-                   if e[0] >= start and e[0] < end))
-    if len(result) == 0:
-        # no cumulative events are present but the caller expects two lists, so
-        # we return two empty lists
-        result = [], []
-    return result
-
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
 
@@ -548,8 +524,7 @@ class WaterbalanceComputer2(object):
 
         return intakes, outtakes
 
-    def get_waterlevel_with_sluice_error(self, start_date, end_date,
-                                         reset_period):
+    def get_waterlevel_with_sluice_error(self, start_date, end_date):
         """ """
 
         calc_waterlevel = self.get_level_control_timeseries(start_date, end_date)['water_level']
