@@ -8,6 +8,10 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import DataForCumulativeGraph
 from lizard_waterbalance.views import LegendInfo
+from lizard_waterbalance.views import raw_add_timeseries
+
+from timeseries.timeseriesstub import TimeseriesStub
+
 
 class DataForCumulativeGraphTests(TestCase):
 
@@ -195,3 +199,47 @@ class LegendInfoTestSuite(TestCase):
         (legend_name, label) = legend_info.retrieve(intake)
         self.assertEqual(stored_label.pk, label.pk)
         label.delete()
+
+class RawAddTestSuite(TestCase):
+
+    def test_a(self):
+        """Test the sum of two empty time series."""
+        timeserie_a = TimeseriesStub()
+        timeserie_b = TimeseriesStub()
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([], list(result.events()))
+
+    def test_b(self):
+        """Test the sum of two time series of which the first one is empty."""
+        timeserie_a = TimeseriesStub((datetime(2011, 5, 30), 10))
+        timeserie_b = TimeseriesStub()
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([(datetime(2011, 5, 30), 10)], list(result.events()))
+
+    def test_c(self):
+        """Test the sum of two time series of which the second one is empty."""
+        timeserie_a = TimeseriesStub()
+        timeserie_b = TimeseriesStub((datetime(2011, 5, 30), 10))
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([(datetime(2011, 5, 30), 10)], list(result.events()))
+
+    def test_d(self):
+        """Test the sum of two non-empty time series."""
+        timeserie_a = TimeseriesStub((datetime(2011, 5, 30), 10))
+        timeserie_b = TimeseriesStub((datetime(2011, 5, 30), 20))
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([(datetime(2011, 5, 30), 30)], list(result.events()))
+
+    def test_e(self):
+        """Test the sum of two non-empty time series."""
+        timeserie_a = TimeseriesStub((datetime(2011, 5, 30), 10))
+        timeserie_b = TimeseriesStub((datetime(2011, 5, 31), 20))
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([(datetime(2011, 5, 30), 10), (datetime(2011, 5, 31), 20)], list(result.events()))
+
+    def test_f(self):
+        """Test the sum of two non-empty time series."""
+        timeserie_a = TimeseriesStub((datetime(2011, 5, 31), 10))
+        timeserie_b = TimeseriesStub((datetime(2011, 5, 30), 20))
+        result = raw_add_timeseries(timeserie_a, timeserie_b)
+        self.assertEqual([(datetime(2011, 5, 30), 20), (datetime(2011, 5, 31), 10)], list(result.events()))

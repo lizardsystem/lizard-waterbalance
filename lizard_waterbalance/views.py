@@ -30,6 +30,7 @@ from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
+from lizard_waterbalance.compute import get_cumulative_timeseries
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
@@ -41,8 +42,11 @@ from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import Parameter
-from timeseries.timeseriesstub import grouped_event_values
 from timeseries.timeseriesstub import cumulative_event_values
+from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import grouped_event_values
+from timeseries.timeseriesstub import SparseTimeseriesStub
+from timeseries.timeseriesstub import TimeseriesStub
 
 import hotshot
 import os
@@ -305,6 +309,37 @@ class DataForCumulativeGraph:
             date = datetime(date.year, 1, 1)
         return date
 
+def raw_add_timeseries(timeserie_a, timeserie_b):
+    if next(timeserie_a.raw_events(), None) is None:
+        result = timeserie_b
+    elif next(timeserie_b.raw_events(), None) is None:
+        result = timeserie_a
+    else:
+        result = TimeseriesStub()
+        events_a = list(timeserie_a.raw_events())
+        index_a = 0
+        events_b = list(timeserie_b.raw_events())
+        index_b = 0
+        while index_a < len(events_a) and index_b < len(events_b):
+            if events_a[index_a][0] == events_b[index_b][0]:
+                result.add_value(events_a[index_a][0], events_a[index_a][1] + events_b[index_b][1])
+                index_a += 1
+                index_b += 1
+            elif events_a[index_a][0] < events_b[index_b][0]:
+                result.add_value(events_a[index_a][0], events_a[index_a][1])
+                index_a += 1
+            else:
+                result.add_value(events_b[index_b][0], events_b[index_b][1])
+                index_b += 1
+        while index_a < len(events_a):
+            result.add_value(events_a[index_a][0], events_a[index_a][1])
+            index_a +=1
+        while index_b < len(events_b):
+            result.add_value(events_b[index_b][0], events_b[index_b][1])
+            index_b +=1
+
+    return result
+
 def waterbalance_start(
     request,
     template='lizard_waterbalance/waterbalance-overview.html',
@@ -494,30 +529,6 @@ def get_average_timeseries(timeseries, start, end, period='month'):
         result = [], []
     return result
 
-
-def get_cumulative_timeseries(timeseries, start, end,
-                              reset_period='hydro_year', period='month',
-                              multiply=1, time_shift=0):
-    """Return the events for the given timeseries in the given range.
-
-    Parameters:
-    * timeseries -- implementation of a time series that supports a method events()
-    * start -- the earliest date (and/or time) of a returned event
-    * end -- the latest date (and/or time) of a returned event
-    * period -- 'year', 'month' or 'day'
-
-    """
-    result = zip(*(e for e in cumulative_event_values(timeseries,
-                                                      reset_period=reset_period,
-                                                      period=period,
-                                                      multiply=multiply,
-                                                      time_shift=time_shift)
-                   if e[0] >= start and e[0] < end))
-    if len(result) == 0:
-        # no cumulative events are present but the caller expects two lists, so
-        # we return two empty lists
-        result = [], []
-    return result
 
 def get_timeseries_label(name):
     """Return the WaterbalanceLabel wth the given name.
@@ -729,21 +740,17 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
         return ref_in, ref_out
 
     def get_waterlevel_with_sluice_error(self, start_date, end_date,
-                                         reset_period, reset_timeseries = None):
+                                         reset_period):
 
-        key_name = "sluice_error_waterlevel"
-        sluice_error_waterlevel = self.get_cached_data(key_name)
-        if sluice_error_waterlevel is None:
-
+        waterlevel = self.get_cached_data("waterlevel")
+        sluice_error = self.get_cached_data("sluice_error")
+        if waterlevel is None or sluice_error is None:
             parent = super(CachedWaterbalanceComputer, self)
-            sluice_error_waterlevel = parent.get_waterlevel_with_sluice_error(
-                start_date,
-                end_date,
-                reset_period,
-                reset_timeseries)
-            self.set_cached_data(key_name, sluice_error_waterlevel)
-
-        return sluice_error_waterlevel
+            waterlevel, sluice_error = parent.get_waterlevel_with_sluice_error(
+                start_date, end_date, reset_period)
+            self.set_cached_data("waterlevel", waterlevel)
+            self.set_cached_data("sluice_error", sluice_error)
+        return waterlevel, sluice_error
 
     def get_fraction_timeseries(self, start_date, end_date):
 
@@ -1017,10 +1024,50 @@ def waterbalance_water_level(configuration,
 
     # Add sluice error to bars.
     if with_sluice_error:
-        sluice_error_waterlevel = waterbalance_computer.get_waterlevel_with_sluice_error(calc_start_datetime,
-                                                                                         calc_end_datetime,
-                                                                                         reset_period,
-                                                                                         reset_timeseries=reset_timeseries)
+        waterlevel, sluice_error = waterbalance_computer.get_waterlevel_with_sluice_error(calc_start_datetime,
+                                                                                          calc_end_datetime,
+                                                                                          reset_period)
+        times, values = get_average_timeseries(waterlevel,
+                                               calc_start_datetime,
+                                               calc_end_datetime,
+                                               period=period)
+        times = DataForCumulativeGraph([], []).move_forward(times, period)
+        waterlevel = TimeseriesStub()
+        for date, value in zip(times, values):
+            waterlevel.add_value(date, value)
+
+        times, values = get_cumulative_timeseries(sluice_error,
+                                                  calc_start_datetime,
+                                                  calc_end_datetime,
+                                                  reset_period=reset_period,
+                                                  period=period)
+        times = DataForCumulativeGraph(times, values).move_forward(times, period)
+        # We have computed the cumulative sluice error in [m3/day], however we
+        # will display it as a difference in water level, so [m/day]. We make
+        # that translation here.
+        surface = 1.0 * configuration.open_water.surface
+        cumulative_sluice_error = TimeseriesStub()
+        for date, cumulative_value in zip(times, values):
+            value = - cumulative_value / surface
+            print date, value
+            cumulative_sluice_error.add_value(date, value)
+
+        # # We have computed the cumulative sluice error in [m3/day], however we
+        # # will display it as a difference in water level, so [m/day]. We make
+        # # that translation here.
+        # surface = 1.0 * configuration.open_water.surface
+        # sluice_error_waterlevel = TimeseriesStub()
+        # for events in enumerate_events(waterlevel, cumulative_sluice_error):
+        #     date = events[0][0]
+        #     value = events[0][1] - events[1][1] / surface
+        #     print date, value
+        #     if date > calc_end_datetime:
+        #         break
+        #     sluice_error_waterlevel.add_value(date, value)
+
+        sluice_error_waterlevel = raw_add_timeseries(waterlevel,
+                                                     cumulative_sluice_error)
+
         bars.append(("waterpeilen, met sluitfout", sluice_error_waterlevel,
                      labels['sluice_error']))
 
@@ -1034,18 +1081,9 @@ def waterbalance_water_level(configuration,
     for bar in bars:
         label = bar[2]
         if bar[0] == "waterpeilen, met sluitfout":
-            times, values = get_cumulative_timeseries(bar[1],
-                                                      calc_start_datetime,
-                                                      calc_end_datetime,
-                                                      reset_period=reset_period,
-                                                      period=period)
-            # The cumulative events (times, values) do not correspond to the
-            # data points in the graph. For example, the date of each event is
-            # the first day of each period but as the events contain cumulative
-            # values, they should be drawn at the end of each period. The
-            # following snippet of code prepares the data for drawing.
-            data = DataForCumulativeGraph(times, values)
-            times, values = data.retrieve_for_drawing(period, reset_period)
+            times, values = get_raw_timeseries(
+                bar[1], date2datetime(start_date),
+                date2datetime(end_date))
         else:
             times, values = get_average_timeseries(
                 bar[1], date2datetime(start_date),

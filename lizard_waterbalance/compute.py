@@ -48,6 +48,8 @@ from lizard_waterbalance.load_computer import LoadComputer
 from lizard_waterbalance.models import Parameter
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
+from timeseries.timeseriesstub import cumulative_event_values
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,6 +86,30 @@ def find_pumping_station_level_control(open_water, find_intake):
                                       computed_level_control=True)
     return next((station for station in stations_level_control), None)
 
+
+def get_cumulative_timeseries(timeseries, start, end,
+                              reset_period='hydro_year', period='month',
+                              multiply=1, time_shift=0):
+    """Return the events for the given timeseries in the given range.
+
+    Parameters:
+    * timeseries -- implementation of a time series that supports a method events()
+    * start -- the earliest date (and/or time) of a returned event
+    * end -- the latest date (and/or time) of a returned event
+    * period -- 'year', 'month' or 'day'
+
+    """
+    result = zip(*(e for e in cumulative_event_values(timeseries,
+                                                      reset_period=reset_period,
+                                                      period=period,
+                                                      multiply=multiply,
+                                                      time_shift=time_shift)
+                   if e[0] >= start and e[0] < end))
+    if len(result) == 0:
+        # no cumulative events are present but the caller expects two lists, so
+        # we return two empty lists
+        result = [], []
+    return result
 
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
@@ -257,8 +283,8 @@ class WaterbalanceComputer2(object):
                                                                        input['evaporation'],
                                                                        bucket.retrieve_seepage(start_date, end_date),
                                                                        input['sewer'])
-            
-            
+
+
             for bucket in self.configuration.retrieve_sobek_buckets():
                 buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
             #store for later use (some kind of cache)
@@ -399,9 +425,9 @@ class WaterbalanceComputer2(object):
             # date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.level_control_computer.inside_range = date_range.inside
-            
-            
-            
+
+
+
             outcome = self.level_control_computer.compute(
                 self.configuration.open_water,
                 buckets_summary,
@@ -523,33 +549,14 @@ class WaterbalanceComputer2(object):
         return intakes, outtakes
 
     def get_waterlevel_with_sluice_error(self, start_date, end_date,
-                                         reset_period, reset_timeseries = None):
+                                         reset_period):
         """ """
 
         calc_waterlevel = self.get_level_control_timeseries(start_date, end_date)['water_level']
 
         sluice_error = self.calc_sluice_error_timeseries(start_date, end_date)[0]
 
-        if not reset_timeseries:
-            reset_timeseries = calc_waterlevel
-
-        sluice_error_waterlevel = SparseTimeseriesStub()
-
-        # We have computed the sluice error in [m3/day], however we
-        # will display it as a difference in water level, so
-        # [m/day]. We make that translation here.
-        surface = 1.0 * self.configuration.open_water.surface
-        # previous_year = None
-        for events in enumerate_events(calc_waterlevel, sluice_error, reset_timeseries):
-            date = events[0][0]
-            # if previous_year is None or previous_year < date.year:
-            #     waterlevel = events[2][1]
-            #     cum_sluice_error = 0
-            #     previous_year = date.year
-            # cum_sluice_error += events[1][1]
-            waterlevel = events[0][1] - events[1][1] / surface
-            sluice_error_waterlevel.add_value(date, waterlevel)
-        return sluice_error_waterlevel
+        return calc_waterlevel, sluice_error
 
 
     def get_concentration_timeseries(self,
