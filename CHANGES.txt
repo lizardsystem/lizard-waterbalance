@@ -5,6 +5,10 @@ Changelog of lizard-waterbalance
 0.16 (unreleased)
 -----------------
 
+- Upgraded lizard-map to version 1.79 (from version 1.63)
+- Upgraded lizard-ui to version 1.63 (from version 1.54)
+- Upgraded timeseries to version 0.6 (from version 0.5)
+  - Fixed an error in the computation of cumulative event values.
 - Changed the form to change period.
 - Fixed a bug in the Excel export of the results that resulted in a stack trace.
 - Fixed the bug that caused the legend of the phosphate impact graph to list
