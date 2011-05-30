@@ -40,6 +40,8 @@ import pkg_resources
 from django.http import HttpResponse
 
 from lizard_waterbalance.models import WaterbalanceConf
+from lizard_waterbalance.views import CacheKeyName
+from lizard_waterbalance.views import CachedWaterbalanceComputer
 
 from timeseries.timeseriesstub import enumerate_dict_events
 
@@ -61,7 +63,7 @@ def test_export():
 
 def export_excel_small(request, area_slug, scenario_slug):
     """ export van een configuratie naar Excel """
-    
+
     t1 = time.time()
 
     bucket_export = False
@@ -70,7 +72,8 @@ def export_excel_small(request, area_slug, scenario_slug):
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
 
-    waterbalance_computer = configuration.get_waterbalance_computer()
+    waterbalance_computer = \
+        CachedWaterbalanceComputer(CacheKeyName(configuration), configuration)
 
     logger.debug("%s seconds - got waterbalance computer", time.time() - t1)
 
@@ -114,11 +117,6 @@ def export_excel_small(request, area_slug, scenario_slug):
 
     logger.debug("%s seconds - got all values", time.time() - t1)
 
-    waterbalance_computer.cache_if_updated()
-    logger.debug("%s seconds - saved to cache", time.time() - t1)
-
-
-
     #combine cols of table
     header = ['year', 'month', 'day']
     data_cols = {}
@@ -157,7 +155,7 @@ def export_excel_small(request, area_slug, scenario_slug):
     data_cols[(33, 'totaal uit', '[m3/dag]')] = level_control['total_outgoing']
     data_cols[(35, 'berekend waterpeil', '[mNAP]')] = level_control['water_level']
     data_cols[(36, 'berekende berging', '[m3]')] = level_control['storage']
-    
+
     data_cols[(50, 'verschil chloride', '[g]')] = delta_concentration
     data_cols[(51, 'chloride concentratie', '[mg/l]')] = chloride_concentration
 
@@ -214,7 +212,7 @@ def export_excel_small(request, area_slug, scenario_slug):
         row = row + 1
         if date > end_date:
             break
-    
+
     #for max: Formula('MAX(A1:B1)')
     buffer = StringIO()
     wb.save(buffer)
