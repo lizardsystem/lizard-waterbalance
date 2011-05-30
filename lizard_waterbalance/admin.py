@@ -241,6 +241,27 @@ class WaterbalanceTimeserieAdmin(admin.ModelAdmin):
 
     form = WaterbalanceTimeserieForm
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Order the the contents of several select lists.
+
+        This solution was found in the documentation of Django,
+        http://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.formfield_for_foreignkey
+
+        """
+        if db_field.name == "parameter":
+            kwargs["queryset"] = \
+                Parameter.objects.filter().order_by('name')
+        if db_field.name == "fews_timeseries":
+            kwargs["queryset"] = \
+                TimeseriesFews.objects.filter().order_by('name')
+        if db_field.name == "local_timeseries":
+            kwargs["queryset"] = \
+                Timeseries.objects.filter().order_by('name')
+
+        return super(WaterbalanceTimeserieAdmin, self).formfield_for_foreignkey(db_field,
+                                                                     request,
+                                                                     **kwargs)
+
 
 class WaterbalanceAreaAdmin(admin.ModelAdmin):
     list_filter = ('public', )
