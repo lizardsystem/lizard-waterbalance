@@ -28,6 +28,7 @@ Changelog of lizard-waterbalance
   the name of the label instead of the name of the intake (ticket 2666).
 - Fixed the ordering of the several fields in the Admin form "Wijzig 7
   Waterbalans tijdreeks" (ticket 2743)
+- Fixed the starting values of the cumulative discharge graph (ticket 2832).
 
 
 0.15 (2011-04-19)
