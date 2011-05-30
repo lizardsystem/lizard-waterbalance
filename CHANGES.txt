@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.16 (unreleased)
+0.16 (2011-05-31)
 -----------------
 
 - Upgraded lizard-map to version 1.79 (from version 1.63)
