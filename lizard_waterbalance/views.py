@@ -29,7 +29,6 @@ from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
-from lizard_map.daterange import DateRangeForm
 from lizard_map.models import Workspace
 from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
@@ -137,6 +136,7 @@ INITIAL_SELECTED_GRAPH_TYPES = (
     'fracties_chloride',
     )
 BAR_WIDTH = {'year': 364,
+             'hydro_year': 364,
              'quarter': 90,
              'month': 30,
              'day': 1}
@@ -1069,7 +1069,12 @@ def waterbalance_cum_discharges(configuration,
 
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Cumulatieve debieten")
-    bar_width = BAR_WIDTH[period]
+
+    if BAR_WIDTH[reset_period] < BAR_WIDTH[period]:
+        bar_width = BAR_WIDTH[reset_period]
+    else:
+        bar_width = BAR_WIDTH[period]
+
 
     t1 = time()
 
@@ -1155,7 +1160,6 @@ def waterbalance_cum_discharges(configuration,
             # the first day of each period but as the events contain cumulative
             # values, they should be drawn at the end of each period. The
             # following snippet of code prepares the data for drawing.
-
             data = DataForCumulativeGraph(times, values)
             times, values = data.retrieve_for_drawing(period, reset_period)
 
