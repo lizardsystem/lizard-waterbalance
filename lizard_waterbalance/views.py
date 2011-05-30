@@ -266,7 +266,7 @@ class DataForCumulativeGraph:
                 new_date = datetime(year, month, date.day) - \
                            timedelta(1)
                 result.append(datetime.combine(new_date, last_time))
-        elif period == 'year':
+        elif period == 'year' or period == 'hydro_year':
             result = []
             for date in dates:
                 new_date = datetime(date.year + 1, date.month, date.day) - \
@@ -302,7 +302,10 @@ class DataForCumulativeGraph:
             month = 1 + ((date.month - 1) / 3 * 3)
             date = datetime(date.year, month, 1)
         elif reset_period == 'hydro_year':
-            date = datetime(date.year, 10, 1)
+            if date.month > 9:
+                date = datetime(date.year, 10, 1)
+            else:
+                date = datetime(date.year - 1, 10, 1)
         elif reset_period == 'year':
             date = datetime(date.year, 1, 1)
         return date
@@ -1125,12 +1128,6 @@ def waterbalance_cum_discharges(configuration,
     graph = Graph(start_date, end_date, width, height)
     graph.suptitle("Cumulatieve debieten")
 
-    if BAR_WIDTH[reset_period] < BAR_WIDTH[period]:
-        bar_width = BAR_WIDTH[reset_period]
-    else:
-        bar_width = BAR_WIDTH[period]
-
-
     t1 = time()
 
     labels = dict([(label.program_name, label) for label in Label.objects.all()])
@@ -1177,6 +1174,29 @@ def waterbalance_cum_discharges(configuration,
 
     graph.legend_space()
     graph.legend(handles, names)
+
+    if reset_period == 'hydro_year' and period == 'year':
+        # This is a really strange combination for which the rest of this
+        # function is not suited. We fix that as follows.
+        period = 'hydro_year'
+
+    # When the reset period is smaller than the group period, it is possible
+    # that the grouper returns a date before the date of the resetter, for
+    # example when the reset period is a month and the group period a
+    # quarter. But to which cumulative time series should this lead?
+    #
+    # To "fix" this problem, we use the following rule:
+    #
+    #    When the reset period is smaller than the group period, use the reset
+    #    period also for the group period.
+    #
+    # In this way, the user always sees the reset.
+
+    keys = ['day', 'month', 'quarter', 'hydro_year', 'year']
+    if keys.index(reset_period) < keys.index(period):
+        period = reset_period
+
+    bar_width = BAR_WIDTH[period]
 
     top_height_in = TopHeight()
     top_height_out = TopHeight()
