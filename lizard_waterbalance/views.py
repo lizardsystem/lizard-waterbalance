@@ -376,11 +376,11 @@ def waterbalance_area_summary(
 
     if not waterbalance_configuration.waterbalance_scenario.public and not request.user.has_perm('lizard_waterbalance.see_not_public_scenarios'):
         return HttpResponseForbidden()
-    
+
     area = waterbalance_configuration.waterbalance_area
-    
+
     buckets = waterbalance_configuration.open_water.buckets.filter(surface__gte=1)
-    
+
     if crumbs_prepend is None:
         crumbs = [{'name': 'home', 'url': '/'}]
     else:
@@ -1124,8 +1124,12 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
-            times, values = get_cumulative_timeseries( bar[1],
-                date2datetime(start_date), date2datetime(end_date),
+            # Note that we have to compute the cumulative values for the
+            # complete time range. Should we only compute the cumulative values
+            # for the time range on the time axis of the graph, the cumulative
+            # values would start with the wrong value.
+            times, values = get_cumulative_timeseries(bar[1],
+                calc_start_datetime, calc_end_datetime,
                 period=period, reset_period=reset_period, multiply= -1)
 
             color = bar[3]
@@ -1138,8 +1142,12 @@ def waterbalance_cum_discharges(configuration,
         for bar in bars:
             label = bar[2]
 
+            # Note that we have to compute the cumulative values for the
+            # complete time range. Should we only compute the cumulative values
+            # for the time range on the time axis of the graph, the cumulative
+            # values would start with the wrong value.
             times, values = get_cumulative_timeseries( bar[1],
-                date2datetime(start_date), date2datetime(end_date),
+                calc_start_datetime, calc_end_datetime,
                 period=period, reset_period=reset_period)
 
             # The cumulative events (times, values) do not correspond to the
