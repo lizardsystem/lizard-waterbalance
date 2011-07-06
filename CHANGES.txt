@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.17 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fixed the problem that a water flow that is going out of a pump and which was
+  specified by a FEWS time series was treated as incoming water (ticket 3016).
 
 
 0.16 (2011-05-31)
