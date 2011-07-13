@@ -18,6 +18,7 @@ install_requires = [
     'lizard-map',
     'lizard-shape',
     'lizard-ui > 1.53',
+    'mock >= 0.7.2',
     'timeseries >= 0.2',
     'xlrd',
     'xlwt',

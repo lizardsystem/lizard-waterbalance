@@ -176,7 +176,7 @@ class LevelControlComputerTests(TestCase):
         self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_f(self):
-        """Test the case with a single intake time series."""
+        """Test the case with a single intake."""
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intakes_timeseries = {'a':TimeseriesStub((self.today, 10))}
@@ -197,15 +197,16 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 0.0)),
                                TimeseriesStub((self.today, -16.0)))
+
         self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
         self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_g(self):
-        """Test the case with a single pump time series."""
+        """Test the case with a single pump."""
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
-        pumps_timeseries = {'a':TimeseriesStub((self.today, 10))}
+        pumps_timeseries = {'a':TimeseriesStub((self.today, -10))}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
                                TimeseriesStub((self.today, 2.0)),
@@ -223,18 +224,15 @@ class LevelControlComputerTests(TestCase):
         expected_timeseries = (TimeseriesStub((self.today, 4.0)),
                                TimeseriesStub((self.today, 0.0)))
 
-        print next(timeseries['intake_wl_control'].events())
-        print next(timeseries['outtake_wl_control'].events())
-
         self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
         self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 
     def test_h(self):
-        """Test the case with multiple pump time series."""
+        """Test the case with multiple pumps."""
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
-        pumps_timeseries = {'a':TimeseriesStub((self.today, 10)), 'b':TimeseriesStub((self.today, 10))}
+        pumps_timeseries = {'a':TimeseriesStub((self.today, -10)), 'b':TimeseriesStub((self.today, -10))}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
                                TimeseriesStub((self.today, 2.0)),
@@ -251,8 +249,7 @@ class LevelControlComputerTests(TestCase):
                                            pumps_timeseries)
         expected_timeseries = (TimeseriesStub((self.today, 14.0)),
                                TimeseriesStub((self.today, 0.0)))
-        print next(timeseries['intake_wl_control'].events())
-        print next(timeseries['outtake_wl_control'].events())
+
         self.assertEqual(expected_timeseries[0], timeseries['intake_wl_control'])
         self.assertEqual(expected_timeseries[1], timeseries['outtake_wl_control'])
 

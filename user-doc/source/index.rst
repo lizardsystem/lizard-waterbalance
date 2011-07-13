@@ -12,6 +12,7 @@ Inhoud:
 
    instellingen
    grafieken
+   sluitfout
 
 Indexen en tabellen
 ===================

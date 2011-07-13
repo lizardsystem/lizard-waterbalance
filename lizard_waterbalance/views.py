@@ -687,18 +687,16 @@ class CachedWaterbalanceComputer(WaterbalanceComputer2):
     def calc_sluice_error_timeseries(self, start_date, end_date):
 
         sluice_error = self.get_cached_data("sluice_error")
-        total_outtakes = self.get_cached_data("total_outtakes")
-        if sluice_error is None or total_outtakes is None:
+        if sluice_error is None:
 
             parent = super(CachedWaterbalanceComputer, self)
-            sluice_error, total_outtakes = \
+            sluice_error = \
                 parent.calc_sluice_error_timeseries(start_date,
                                                     end_date)
 
             self.set_cached_data("sluice_error", sluice_error)
-            self.set_cached_data("total_outtakes", total_outtakes)
 
-        return sluice_error, total_outtakes
+        return sluice_error
 
     def get_open_water_incoming_flows(self,
                                       start_date,
@@ -870,7 +868,7 @@ def waterbalance_area_graph(
     incoming = waterbalance_computer.get_open_water_incoming_flows(
         calc_start_datetime,
         calc_end_datetime)
-    sluice_error, total_meas_outtakes = \
+    sluice_error = \
         waterbalance_computer.calc_sluice_error_timeseries(calc_start_datetime,
                                                            calc_end_datetime)
     outgoing = waterbalance_computer.get_open_water_outgoing_flows(
@@ -888,9 +886,8 @@ def waterbalance_area_graph(
     incoming_bars += [
         (structure.name, timeserie, structure.label) for structure, timeserie in
         incoming['defined_input'].items()]
-    incoming_bars.append(
-        (labels['intake_wl_control'].name, incoming["intake_wl_control"], labels['intake_wl_control']))
 
+    outgoing_bars = []
     outgoing_bars = [
         (labels["indraft"].name, outgoing["indraft"], labels['indraft']),
         (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation']),
@@ -898,7 +895,6 @@ def waterbalance_area_graph(
          ]
 
     outgoing_bars += [(structure.name, timeserie, structure.label) for structure, timeserie in outgoing['defined_output'].items()]
-    outgoing_bars.append(("gemaal gemeten", total_meas_outtakes, labels['outtake_wl_control']))
 
     #sort
     incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
@@ -940,29 +936,32 @@ def waterbalance_area_graph(
                                            date2datetime(end_date),
                                            period=period)
 
+    positive_times = []
     positive_sluice_error = []
+    negative_times = []
     negative_sluice_error = []
-    for value in values:
+    for timestamp, value in zip(times, values):
+        # logger.debug("%s, %f", timestamp.isoformat(), value)
         if value > 0:
+            positive_times.append(timestamp)
             positive_sluice_error.append(value)
-            negative_sluice_error.append(0)
         else:
-            positive_sluice_error.append(0)
+            negative_times.append(timestamp)
             negative_sluice_error.append(value)
 
     color = label.color
 
     #first incoming sluice_error
-    bottom = top_height_in.get_heights(times)
-    graph.axes.bar(times, positive_sluice_error, bar_width, color=color,
+    bottom = top_height_in.get_heights(positive_times)
+    graph.axes.bar(positive_times, positive_sluice_error, bar_width, color=color,
                    edgecolor=color, bottom=bottom)
-    top_height_in.stack_bars(times, values)
+    top_height_in.stack_bars(positive_times, positive_sluice_error)
 
     #next outgoing sluice_error
-    bottom = top_height_out.get_heights(times)
-    graph.axes.bar(times, negative_sluice_error, bar_width, color=color,
+    bottom = top_height_out.get_heights(negative_times)
+    graph.axes.bar(negative_times, negative_sluice_error, bar_width, color=color,
                    edgecolor=color, bottom=bottom)
-    top_height_out.stack_bars(times, values)
+    top_height_out.stack_bars(negative_times, negative_sluice_error)
 
     logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
@@ -1037,10 +1036,8 @@ def waterbalance_water_level(configuration,
     #define bars
     bars = []
     #gemeten waterpeilen
-    reset_timeseries = None
     for tijdserie in configuration.references.filter(parameter__sourcetype=Parameter.TYPE_MEASURED, parameter__parameter=Parameter.PARAMETER_WATERLEVEL):
         bars.append((tijdserie.name, tijdserie.get_timeseries(), labels['meas_waterlevel']))
-        reset_timeseries = tijdserie.get_timeseries()
 
     bars.append(("waterpeilen",
                  waterbalance_computer.get_level_control_timeseries(calc_start_datetime,
@@ -1082,7 +1079,7 @@ def waterbalance_water_level(configuration,
         surface = 1.0 * configuration.open_water.surface
         cumulative_sluice_error = TimeseriesStub()
         for date, cumulative_value in zip(times, values):
-            value = -cumulative_value / surface
+            value = cumulative_value / surface
             cumulative_sluice_error.add_value(date, value)
 
         sluice_error_waterlevel = add_timeseries(waterlevel, cumulative_sluice_error)
@@ -1090,7 +1087,7 @@ def waterbalance_water_level(configuration,
         bars.append(("waterpeilen, met sluitfout", sluice_error_waterlevel,
                      labels['sluice_error']))
 
-    names = [bar[0] for bar in bars]
+    names = [bar[2].name for bar in bars]
     colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
@@ -1333,7 +1330,6 @@ def waterbalance_fraction_distribution(
 
     nr = 0
     for tijdserie in configuration.references.filter(parameter__parameter=parameter, parameter__sourcetype=Parameter.TYPE_MEASURED):
-
         style = dict(color=colors_list[nr], markersize=10, marker='d', linestyle=" ")
         nr += 1
         times, values = get_raw_timeseries(tijdserie.get_timeseries(),

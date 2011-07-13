@@ -25,10 +25,14 @@
 #
 #******************************************************************************
 
+import logging
+
 from datetime import timedelta
 
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
+
+logger = logging.getLogger(__name__)
 
 class DateRange:
 
@@ -107,9 +111,15 @@ class LevelControlComputer:
         ts['min_level'] = minimum_level_timeseries
         ts['max_level'] = maximum_level_timeseries
 
-        ts['intakes'] = intakes_timeseries
-        ts['pumps'] = pumps_timeseries
+        ts['intakes'] = {}
+        for intake, timeseries in intakes_timeseries.iteritems():
+            if not intake.computed_level_control:
+                ts['intakes'][intake] = timeseries
 
+        ts['pumps'] = {}
+        for pump, timeseries in pumps_timeseries.iteritems():
+            if not pump.computed_level_control:
+                ts['pumps'][pump] = timeseries
 
         for events in enumerate_dict_events(ts):
             date = events['date']
@@ -134,7 +144,7 @@ class LevelControlComputer:
             outgoing_value = [ events['bucket_total_incoming'][1],
                                   events['infiltration'][1],
                                   events['evaporation'][1]] + \
-                                  [-1 * event[1] for event in events['pumps'].values()]
+                                  [event[1] for event in events['pumps'].values()]
 
             outgoing_value = sum(outgoing_value)
 
@@ -154,7 +164,7 @@ class LevelControlComputer:
                     intake = min(level_control, max_intake)
                 else:
                     intake = level_control
-                
+
             water_level += (pump + intake) / surface
 
             pump_time_series.add_value(date, pump)

@@ -48,8 +48,6 @@ from lizard_waterbalance.load_computer import LoadComputer
 from lizard_waterbalance.models import Parameter
 from lizard_waterbalance.models import WaterbalanceTimeserie
 
-from timeseries.timeseriesstub import cumulative_event_values
-
 logger = logging.getLogger(__name__)
 
 
@@ -202,7 +200,7 @@ class WaterbalanceComputer2(object):
                 input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
 
             input_ts['incoming_timeseries'] = {}
-            for intake, timeseries in self.configuration.open_water.retrieve_incoming_timeseries(only_input=True).iteritems():
+            for intake, timeseries in self.configuration.open_water.retrieve_incoming_timeseries(only_input=False).iteritems():
                 sparse_timeseries = SparseTimeseriesStub()
                 for event in timeseries.events():
                     sparse_timeseries.add_value(event[0], event[1])
@@ -211,7 +209,7 @@ class WaterbalanceComputer2(object):
                                                                 end_date=end_date)
 
             input_ts['outgoing_timeseries'] = {}
-            for pump, timeseries in self.configuration.open_water.retrieve_outgoing_timeseries(only_input=True).iteritems():
+            for pump, timeseries in self.configuration.open_water.retrieve_outgoing_timeseries(only_input=False).iteritems():
                 input_ts['outgoing_timeseries'][pump] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date)
@@ -529,7 +527,7 @@ class WaterbalanceComputer2(object):
 
         calc_waterlevel = self.get_level_control_timeseries(start_date, end_date)['water_level']
 
-        sluice_error = self.calc_sluice_error_timeseries(start_date, end_date)[0]
+        sluice_error = self.calc_sluice_error_timeseries(start_date, end_date)
 
         return calc_waterlevel, sluice_error
 
@@ -689,23 +687,19 @@ class WaterbalanceComputer2(object):
 
             ref_intakes, ref_outtakes = self.get_reference_timeseries(start_date, end_date)
 
-            sluice_error, total_outtakes = self.sluice_error_computer.compute(
-                self.configuration.open_water,
-                control["intake_wl_control"],
-                control["outtake_wl_control"],
-                ref_intakes,
-                ref_outtakes,
-                start_date, end_date)
+            sluice_error = self.sluice_error_computer.compute(
+                start_date, end_date,
+                [control["intake_wl_control"], control["outtake_wl_control"]],
+                ref_intakes.values() + ref_outtakes.values())
 
-
-            self.outcome['sluice_error'] = (sluice_error, total_outtakes)
+            self.outcome['sluice_error'] = sluice_error
             self.outcome_info['sluice_error'] = {}
             self.outcome_info['sluice_error']['start_date'] = start_date
             self.outcome_info['sluice_error']['end_date'] = end_date
 
             self.updated = True
 
-        return sluice_error, total_outtakes  # SparseTimeseriesStubs
+        return sluice_error
 
 
 
