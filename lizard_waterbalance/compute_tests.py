@@ -39,7 +39,7 @@ from lizard_waterbalance.bucket_computer import compute_net_precipitation
 from lizard_waterbalance.bucket_computer import compute_seepage
 from lizard_waterbalance.bucket_computer import compute_timeseries
 from lizard_waterbalance.compute import find_pumping_station_level_control
-from lizard_waterbalance.mock import Mock
+from lizard_waterbalance.localmock import Mock
 from timeseries.timeseriesstub import TimeseriesStub
 
 

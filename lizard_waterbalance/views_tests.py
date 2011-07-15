@@ -1,10 +1,12 @@
 from datetime import datetime
 from unittest import TestCase
 
-from mock import Mock
-
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceConf
+from lizard_waterbalance.models import WaterbalanceScenario
+from lizard_waterbalance.localmock import Mock
 from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import DataForCumulativeGraph
 from lizard_waterbalance.views import LegendInfo
@@ -243,3 +245,18 @@ class RawAddTestSuite(TestCase):
         timeserie_b = TimeseriesStub((datetime(2011, 5, 30), 20))
         result = raw_add_timeseries(timeserie_a, timeserie_b)
         self.assertEqual([(datetime(2011, 5, 30), 20), (datetime(2011, 5, 31), 10)], list(result.events()))
+
+class PermissionTests(TestCase):
+
+    def test_a(self):
+        """A user is allowed to view a public scenario.
+
+        The user is not logged in.
+
+        """
+        area = WaterbalanceArea()
+        area.save()
+        scenario = WaterbalanceScenario()
+        scenario.save()
+        conf = WaterbalanceConf()
+        # conf.save()

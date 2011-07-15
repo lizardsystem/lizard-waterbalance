@@ -29,10 +29,13 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
+from mock import Mock
+
 from lizard_waterbalance.bucket_summarizer import BucketsSummary
 from lizard_waterbalance.level_control_computer import DateRange
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.models import PumpingStation
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 from timeseries.timeseriesstub import TimeseriesStub
 
@@ -179,7 +182,9 @@ class LevelControlComputerTests(TestCase):
         """Test the case with a single intake."""
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
-        intakes_timeseries = {'a':TimeseriesStub((self.today, 10))}
+        intake = PumpingStation()
+        intake.computed_level_control = False
+        intakes_timeseries = {intake: TimeseriesStub((self.today, 10))}
         pumps_timeseries = {}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
@@ -206,7 +211,9 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
-        pumps_timeseries = {'a':TimeseriesStub((self.today, -10))}
+        pump = PumpingStation()
+        pump.computed_level_control = False
+        pumps_timeseries = {pump:TimeseriesStub((self.today, -10))}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
                                TimeseriesStub((self.today, 2.0)),
@@ -232,7 +239,13 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
-        pumps_timeseries = {'a':TimeseriesStub((self.today, -10)), 'b':TimeseriesStub((self.today, -10))}
+        pumps = [Mock(), Mock()]
+        pumps[0].computed_level_control = False
+        pumps[0].__hash__ = Mock(return_value=0)
+        pumps[1].computed_level_control = False
+        pumps[1].__hash__ = Mock(return_value=1)
+        pumps_timeseries = {pumps[0]: TimeseriesStub((self.today, -10)),
+                            pumps[1]: TimeseriesStub((self.today, -10))}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
                                TimeseriesStub((self.today, 2.0)),

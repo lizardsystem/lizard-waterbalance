@@ -26,17 +26,10 @@
 #******************************************************************************
 
 from datetime import datetime
-from datetime import timedelta
 from unittest import TestCase
 
-from mock import Mock
-from mock import ReturnValues
-
 from lizard_waterbalance.bucket_summarizer import BucketsSummary
-from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.models import OpenWater
-from timeseries.timeseriesstub import TimeseriesStub
-
 
 class FractionComputerTests(TestCase):
     """Contains tests for the fraction computation of an open water."""
