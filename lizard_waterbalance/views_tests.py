@@ -1,6 +1,11 @@
 from datetime import datetime
 from unittest import TestCase
 
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import Permission
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser
+
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
@@ -11,7 +16,7 @@ from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import DataForCumulativeGraph
 from lizard_waterbalance.views import LegendInfo
 from lizard_waterbalance.views import raw_add_timeseries
-
+from lizard_waterbalance.views import retrieve_viewable_configurations
 from timeseries.timeseriesstub import TimeseriesStub
 
 
@@ -246,7 +251,35 @@ class RawAddTestSuite(TestCase):
         result = raw_add_timeseries(timeserie_a, timeserie_b)
         self.assertEqual([(datetime(2011, 5, 30), 20), (datetime(2011, 5, 31), 10)], list(result.events()))
 
+
 class PermissionTests(TestCase):
+    """Implements the tests for function retrieve_viewable_configurations."""
+
+    def setUp(self):
+        """Create the database objects required for the tests."""
+        self.area = WaterbalanceArea()
+        self.area.active = True
+        self.area.name = "WaterbalanceArea for PermissionTests"
+        self.area.save()
+        self.scenario = WaterbalanceScenario()
+        self.scenario.active = True
+        self.scenario.name = "WaterbalanceScenario for PermissionTests"
+        self.scenario.public = True
+        self.scenario.save()
+        self.configuration = WaterbalanceConf()
+        self.configuration.waterbalance_area = self.area
+        self.configuration.waterbalance_scenario = self.scenario
+        self.configuration.calculation_start_date = datetime(2011, 7, 15)
+        self.configuration.calculation_end_date = datetime(2011, 7, 16)
+        self.configuration.save()
+        self.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+        self.user.save()
+
+    def tearDown(self):
+        """Delete the database objects we created for the tests."""
+        self.user.delete()
+        self.scenario.delete()
+        self.area.delete()
 
     def test_a(self):
         """A user is allowed to view a public scenario.
@@ -254,9 +287,83 @@ class PermissionTests(TestCase):
         The user is not logged in.
 
         """
-        area = WaterbalanceArea()
-        area.save()
-        scenario = WaterbalanceScenario()
-        scenario.save()
-        conf = WaterbalanceConf()
-        # conf.save()
+        configurations = retrieve_viewable_configurations(AnonymousUser())
+        self.assertEqual([self.configuration], list(configurations))
+
+    def test_b(self):
+        """A user is not allowed to view a non-public scenario.
+
+        The user is not logged in.
+
+        """
+        self.scenario.public = False
+        self.scenario.save()
+
+        configurations = retrieve_viewable_configurations(AnonymousUser())
+        self.assertEqual([], list(configurations))
+
+    def test_c(self):
+        """A user is allowed to view a public scenario.
+
+        The user is logged in.
+
+        """
+        user = authenticate(username="john", password="johnpassword")
+        assert user is not None
+
+        configurations = retrieve_viewable_configurations(user)
+        self.assertEqual([self.configuration], list(configurations))
+
+    def test_d(self):
+        """A user is not-allowed to view a non-public scenario.
+
+        The user is logged in.
+
+        """
+        self.scenario.public = False
+        self.scenario.save()
+        user = authenticate(username="john", password="johnpassword")
+        assert user is not None
+
+        configurations = retrieve_viewable_configurations(user)
+        self.assertEqual([], list(configurations))
+
+    def test_e(self):
+        """A user is allowed to view a non-public scenario.
+
+        The user is logged in and has the right to view non-public scenarios.
+
+        """
+        self.scenario.public = False
+        self.scenario.save()
+        permission = Permission.objects.get(codename="see_not_public_scenarios")
+        assert permission is not None
+        self.user.user_permissions.add(permission)
+        self.user.save()
+        user = authenticate(username="john", password="johnpassword")
+        assert user is not None
+
+        configurations = retrieve_viewable_configurations(user)
+        self.assertEqual([self.configuration], list(configurations))
+
+    def test_f(self):
+        """A user is not-allowed to view a non-public scenario.
+
+        The user is logged in, has the right to view non-public scenarios but
+        is inactive.
+
+        """
+        self.scenario.public = False
+        self.scenario.save()
+        permission = Permission.objects.get(codename="see_not_public_scenarios")
+        assert permission is not None
+        self.user.user_permissions.add(permission)
+        self.user.is_active = False
+        self.user.save()
+        user = authenticate(username="john", password="johnpassword")
+        assert user is not None
+        assert not user.is_active
+
+        configurations = retrieve_viewable_configurations(user)
+        self.assertEqual([], list(configurations))
+

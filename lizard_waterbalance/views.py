@@ -208,6 +208,23 @@ def indicator_graph(request,
         name = 'geen tijdreeks beschikbaar'
         timeseriedata = MockTimeSerieData()
 
+def retrieve_viewable_configurations(user):
+    """Return the Queryset of WaterbalanceConf the given user is allowed to see.
+
+    """
+    configurations = \
+        WaterbalanceConf.objects.filter(waterbalance_area__active=True,
+                                        waterbalance_scenario__active=True)
+    if not user.has_perm("lizard_waterbalance.see_not_public_scenarios"):
+        configurations = \
+            configurations.filter(waterbalance_scenario__public=True)
+
+    configurations.order_by('waterbalance_area__name',
+        'waterbalance_scenario__order').select_related('WaterbalanceArea',
+            'WaterbalanceScenario')
+
+    return configurations
+
 
 class DataForCumulativeGraph:
     """Prepares the cumulative events for drawing.
@@ -364,21 +381,7 @@ def waterbalance_start(
     special_homepage_workspace = \
         get_object_or_404(Workspace, pk=WATERBALANCE_HOMEPAGE_KEY)
 
-
-    wb_configurations = \
-        WaterbalanceConf.objects.filter(waterbalance_area__active=True,
-                                        waterbalance_scenario__active=True
-                                        ).order_by(
-            'waterbalance_area__name',
-            'waterbalance_scenario__order').select_related(
-                'WaterbalanceArea',
-                'WaterbalanceScenario')
-
-    permission = 'lizard_waterbalance.see_not_public_scenarios'
-    if not request.user.is_authenticated() and \
-       not request.user.has_perm(permission):
-        wb_configurations = wb_configurations.filter(
-            waterbalance_scenario__public=True)
+    wb_configurations = retrieve_viewable_configurations(request.user)
 
     return render_to_response(
         template,

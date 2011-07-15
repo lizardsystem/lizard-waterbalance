@@ -449,9 +449,9 @@ class Parameter(models.Model):
         return Parameter.objects.filter(
             waterbalancetimeserie__in=wb_ts).distinct()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Parameter, self).save()
+        super(Parameter, self).save(*args, **kwargs)
 
 class WaterbalanceTimeserie(models.Model):
     """Implements a time series.
