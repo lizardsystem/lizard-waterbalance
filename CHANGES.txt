@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.17 (unreleased)
+0.17 (2011-07-18)
 -----------------
 
 - Fixed an incorrectly computed and displayed sluice error (ticket 2983).
