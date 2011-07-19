@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.18 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fixed the Excel imports script, which still contained a reference to
+  (deleted) geom attribute of a WaterbalanceArea.
 
 
 0.17 (2011-07-18)
