@@ -43,7 +43,6 @@ class SluiceErrorComputer: # pylint: disable=W0232, R0903
         timeseries = level_control_timeseries + \
            [multiply_timeseries(ts, -1.0) for ts in measured_timeseries]
         for date, value in add_timeseries(*timeseries).events(): # pylint: disable=C0301, W0142
-            logger.debug("%s, %f", date.isoformat(), value)
             if date < start_date:
                 continue
             elif date < end_date:
