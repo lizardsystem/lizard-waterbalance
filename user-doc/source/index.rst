@@ -12,7 +12,7 @@ Inhoud:
 
    instellingen
    grafieken
-   login
+   zichtbaarheid
    sluitfout
 
 Indexen en tabellen

@@ -1375,15 +1375,10 @@ class WaterbalanceArea(gis_models.Model):
         editable=False,
         help_text=_("naam om de URL te maken"))
 
-    #geom = gis_models.MultiPolygonField(
-    #    'Region Border', srid=4326, null=True, blank=True)
-
     active = models.BooleanField(
         verbose_name=_("Actief"),
         default=False,
         help_text=_("is het gebied actief en te benaderen"))
-
-    #objects = gis_models.GeoManager()
 
     def __unicode__(self):
         return unicode(self.name)
