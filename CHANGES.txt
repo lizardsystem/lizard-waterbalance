@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.18 (unreleased)
+0.18 (2011-07-20)
 -----------------
 
 - Fixed the Excel imports script, which still contained a reference to
