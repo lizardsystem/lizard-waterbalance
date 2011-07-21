@@ -482,44 +482,10 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
     for colnr in range(8,9):
         if (not sheet.cell(72,colnr).value == None) and len(sheet.cell(72,colnr).value)>0:
             name = "%s"%sheet.cell(72,colnr)
-            if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
-                pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
-            else:
-                pump_line = PumpLine()
-                pump_line.pumping_station = pumping_station
-                pump_line.name = name
-                pump_line.save()
 
-            parameter = ['structure_discharge']
-            if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
-                wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
-                pump_line.timeserie = wb_timeserie
-            else:
-                wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
-            save_timeserie_into_database(wb_timeserie, sheet, 76, 0, colnr)
+            print 'pomplijn voor %s at %d, %d with name %s' % \
+                 (pumping_station.__unicode__(), 72, colnr, name)
 
-            pump_line.save()
-
-    inlaat_peilhandhaving = pumping_station
-
-    #uitlaat peilhandhaving
-    if PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving').count() > 0:
-        pumping_station = PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving')[0]
-    else:
-        pumping_station = PumpingStation()
-        pumping_station.open_water = open_water
-        pumping_station.name = 'uitlaat peilhandhaving'
-    pumping_station.into = False
-    pumping_station.percentage = 100
-    pumping_station.computed_level_control = True
-    pumping_station.label = labels['uitlaat peilhandhaving']
-    if type(sheet.cell(70,1).value)==type(1) or type(sheet.cell(70,1).value)==type(1.0):
-        pumping_station.max_discharge = sheet.cell(70,1).value
-    pumping_station.save()
-    for colnr in range(4, 8):
-        print colnr
-        if (not sheet.cell(72,colnr).value == None) and len(str(sheet.cell(72,colnr).value))>0:
-            name = "%s_%i"%(str(sheet.cell(72,colnr).value), colnr-3)
             if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
                 pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
             else:
@@ -537,7 +503,41 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
 
             pump_line.save()
 
-    uitlaat_peilhandhaving = pumping_station
+    #uitlaat peilhandhaving
+    if PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving').count() > 0:
+        pumping_station = PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving')[0]
+    else:
+        pumping_station = PumpingStation()
+        pumping_station.open_water = open_water
+        pumping_station.name = 'uitlaat peilhandhaving'
+    pumping_station.into = False
+    pumping_station.percentage = 100
+    pumping_station.computed_level_control = True
+    pumping_station.label = labels['uitlaat peilhandhaving']
+    if type(sheet.cell(70,1).value)==type(1) or type(sheet.cell(70,1).value)==type(1.0):
+        pumping_station.max_discharge = sheet.cell(70,1).value
+    pumping_station.save()
+    for colnr in range(4, 8):
+        if (not sheet.cell(72,colnr).value == None) and len(str(sheet.cell(72,colnr).value))>0:
+            name = "%s_%i"%(str(sheet.cell(72,colnr).value), colnr-3)
+            print 'pomplijn voor %s at %d, %d with name %s' % \
+                 (pumping_station.__unicode__(), 72, colnr, name)
+            if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
+                pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
+            else:
+                pump_line = PumpLine()
+                pump_line.pumping_station = pumping_station
+                pump_line.name = name
+
+            parameter = pars['structure_discharge']
+            if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
+                wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
+                pump_line.timeserie = wb_timeserie
+            else:
+                wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
+            save_timeserie_into_database(wb_timeserie, sheet, 76, 0, colnr)
+
+            pump_line.save()
 
     #inlaten opgedrukt
     inlaat_nr = 0
@@ -582,9 +582,10 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
 
 
             colnr = row - 13
+            # as row in range(23, 31), colnr in range(10, 18)
             if (not sheet.cell(72,colnr).value == None) and len(str(sheet.cell(72,colnr).value))>0:
-                print 'opgedrukte tijdreeks'
                 name = "%s_%i"%(str(sheet.cell(72,colnr).value), colnr-3)
+                print 'opgedrukte tijdreeks at %d, %d with name %s' % (72, colnr, name)
                 if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
                     pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
                 else:
