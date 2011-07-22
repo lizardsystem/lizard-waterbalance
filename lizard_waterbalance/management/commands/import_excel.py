@@ -38,8 +38,10 @@ from django.core.management.base import BaseCommand
 from lizard_waterbalance.models import WaterbalanceArea, WaterbalanceScenario, WaterbalanceConf, Parameter, WaterbalanceTimeserie, Timeseries, OpenWater, \
                                         Bucket, PumpingStation, PumpLine, Label, Concentration
 from timeseries.timeseriesstub import TimeseriesStub
-from django.contrib.gis.geos import GEOSGeometry
 
+NAME_INTAKE_LEVEL_CONTROL = "inlaat peilhandhaving"
+COORDS_MAX_DISCHARGE_INTAKE_LEVEL_CONTROL = [69, 1]
+COORDS_NAME_PUMPLINE_INTAKE_LEVEL_CONTROL = [72, 8]
 
 def save_timeserie_into_database(wb_timeserie, sheet, row, date_col, value_col, stick_to_last_value=False):
 
@@ -98,6 +100,85 @@ def create_save_yearly_timeserie_into_database(wb_timeserie, array_date_value, s
     wb_timeserie.save()
 
 
+def retrieve_intake_level_control(sheet, open_water, label):
+    """Find or create the intake for level control.
+
+    This method searches for the PumpingStation for the given OpenWater that
+    has the name NAME_INTAKE_LEVEL_CONTROL. If that PumpingStation does not
+    exist, it creates one for that OpenWater and with that name.
+
+    Note that whether such a PumpingStation exists or has to be created, this
+    method (re)sets it to be an intake for level control.
+
+    """
+    name = NAME_INTAKE_LEVEL_CONTROL
+    pumping_stations = PumpingStation.objects.filter(open_water=open_water, \
+        name=name)
+    if pumping_stations.count() > 0:
+        pumping_station = pumping_stations[0]
+    else:
+        pumping_station = PumpingStation()
+        pumping_station.open_water = open_water
+        pumping_station.name = name
+
+    pumping_station.into = True
+    pumping_station.percentage = 100
+    pumping_station.computed_level_control = True
+    pumping_station.label = label
+
+    cell = sheet.cell(*COORDS_MAX_DISCHARGE_INTAKE_LEVEL_CONTROL)
+    if type(cell).value == type(1) or type(cell).value == type(1.0):
+        pumping_station.max_discharge = cell.value
+
+    pumping_station.save()
+
+    return pumping_station
+
+def create_intake_for_level_control(open_water, labels, sheet, pars):
+    """Create a single intake for level control.
+
+    The intake is implemented by a PumpingStation with the name
+    NAME_INTAKE_LEVEL_CONTROL.
+
+    Parameters:
+      * open_water *
+        OpenWater to which the new PumpingStation should belong
+      * labels *
+        dictionary of name to Label
+      * sheet *
+        xlrd Sheet that contains that specifies the new PumpingStation
+      * pars *
+        dictionary of name to Parameter
+
+    """
+    label = labels[NAME_INTAKE_LEVEL_CONTROL]
+    pumping_station = retrieve_intake_level_control(sheet, open_water, label)
+
+    row, column = tuple(COORDS_NAME_PUMPLINE_INTAKE_LEVEL_CONTROL)
+    cell = sheet.cell(row, column)
+    if (not cell.value is None) and len(cell.value) > 0:
+        name = "%s" % cell.value
+
+        print 'pomplijn voor %s op %d, %d met naam %s' % \
+             (pumping_station.__unicode__(), row, column, name)
+        pump_lines = PumpLine.objects.filter(pumping_station=pumping_station, \
+            name=name)
+        if pump_lines.count() > 0:
+            pump_line = pump_lines[0]
+        else:
+            pump_line = PumpLine()
+            pump_line.pumping_station = pumping_station
+            pump_line.name = name
+
+        parameter = pars['structure_discharge']
+        if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
+            wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
+            pump_line.timeserie = wb_timeserie
+        else:
+            wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
+        save_timeserie_into_database(wb_timeserie, sheet, 76, 0, column)
+
+        pump_line.save()
 
 def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=False):
     """load settings from the waternet excelfile format
@@ -463,45 +544,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
 
     ################# PUMPINGSTATIONS ################
 
-    #inlaat peilhandhaving
-    if PumpingStation.objects.filter(open_water=open_water, name='inlaat peilhandhaving').count() > 0:
-        pumping_station = PumpingStation.objects.filter(open_water=open_water, name='inlaat peilhandhaving')[0]
-    else:
-        pumping_station = PumpingStation()
-        pumping_station.open_water = open_water
-        pumping_station.name = 'inlaat peilhandhaving'
-
-    pumping_station.into = True
-    pumping_station.percentage = 100
-    pumping_station.computed_level_control = True
-    pumping_station.label = labels['inlaat peilhandhaving']
-    if type(sheet.cell(69,1)).value==type(1) or type(sheet.cell(69,1)).value==type(1.0):
-        pumping_station.max_discharge = sheet.cell(69,1).value
-
-    pumping_station.save()
-    for colnr in range(8,9):
-        if (not sheet.cell(72,colnr).value == None) and len(sheet.cell(72,colnr).value)>0:
-            name = "%s"%sheet.cell(72,colnr)
-
-            print 'pomplijn voor %s at %d, %d with name %s' % \
-                 (pumping_station.__unicode__(), 72, colnr, name)
-
-            if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
-                pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
-            else:
-                pump_line = PumpLine()
-                pump_line.pumping_station = pumping_station
-                pump_line.name = name
-
-            parameter = pars['structure_discharge']
-            if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
-                wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
-                pump_line.timeserie = wb_timeserie
-            else:
-                wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
-            save_timeserie_into_database(wb_timeserie, sheet, 76, 0, colnr)
-
-            pump_line.save()
+    create_intake_for_level_control(open_water, labels, sheet, pars)
 
     #uitlaat peilhandhaving
     if PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving').count() > 0:
@@ -520,7 +563,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
     for colnr in range(4, 8):
         if (not sheet.cell(72,colnr).value == None) and len(str(sheet.cell(72,colnr).value))>0:
             name = "%s_%i"%(str(sheet.cell(72,colnr).value), colnr-3)
-            print 'pomplijn voor %s at %d, %d with name %s' % \
+            print 'pomplijn voor %s op %d, %d met naam %s' % \
                  (pumping_station.__unicode__(), 72, colnr, name)
             if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
                 pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
@@ -539,7 +582,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
 
             pump_line.save()
 
-    #inlaten opgedrukt
+    # in- en uitlaten niet voor peilhandhaving
     inlaat_nr = 0
     uitlaat_nr = 0
 
@@ -550,7 +593,6 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
             pass
         else:
             name = sheet.cell(row,0).value
-            print name
             if PumpingStation.objects.filter(open_water=open_water, name=name).count() > 0:
                 pumping_station = PumpingStation.objects.filter(open_water=open_water, name=name)[0]
             else:
@@ -579,13 +621,12 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                 pump_line.pumping_station = pumping_station
                 pump_line.name = pumping_station.name
 
-
-
             colnr = row - 13
             # as row in range(23, 31), colnr in range(10, 18)
             if (not sheet.cell(72,colnr).value == None) and len(str(sheet.cell(72,colnr).value))>0:
                 name = "%s_%i"%(str(sheet.cell(72,colnr).value), colnr-3)
-                print 'opgedrukte tijdreeks at %d, %d with name %s' % (72, colnr, name)
+                print 'opgedrukte pomplijn voor %s op rij %d, kolom %d met naam %s' % \
+                     (pumping_station.__unicode__(), 72, colnr, name)
                 if PumpLine.objects.filter(pumping_station=pumping_station, name=name):
                     pump_line = PumpLine.objects.filter(pumping_station=pumping_station, name=name)[0]
                 else:
@@ -602,9 +643,9 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                 save_timeserie_into_database(wb_timeserie, sheet, 76, 0, colnr)
 
                 pump_line.save()
-
             else:
-                print 'jaarlijkse reeks'
+                print 'opgedrukte jaarlijkse tijdreeks voor %s met naam %s' % \
+                      (pumping_station.__unicode__(), name)
 
                 #discharge
                 winter_value = 0
@@ -613,7 +654,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                     winter_value = float(sheet.cell(row,1).value)
                 if not sheet.cell(row,2).value in [0, '', None]:
                     summer_value = float(sheet.cell(row,2).value)
-
+                print row, winter_value, summer_value
                 array_with_values = [[1,1,winter_value],
                                      [4,1,summer_value],
                                      [10,1,winter_value],
@@ -626,33 +667,6 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                     wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
                 create_save_yearly_timeserie_into_database(wb_timeserie, array_with_values)
                 pump_line.save()
-
-
-
-
-
-    """
-    par_structure_discharge_excel, new = Parameter.objects.get_or_create(name='debiet excel', unit='m3/dag')
-
-    if load_excel_reference_results:
-        sheet_resultaten = xls.sheet_by_name('REKENHART')
-
-        parameter = par_structure_discharge_excel
-        if WaterbalanceTimeserie.objects.filter(parameter=parameter, pumping_station_result=uitlaat_peilhandhaving).count() == 0:
-            wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(uitlaat_peilhandhaving.__unicode__()[:30], parameter.name[:15] ))
-            uitlaat_peilhandhaving.results.add(wb_timeserie)
-        else:
-            wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pumping_station_result=uitlaat_peilhandhaving)[0]
-        save_timeserie_into_database(wb_timeserie, sheet_resultaten, 13, 0, 29)
-
-        parameter = par_structure_discharge_excel
-        if WaterbalanceTimeserie.objects.filter(parameter=parameter, pumping_station_result=inlaat_peilhandhaving).count() == 0:
-            wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(inlaat_peilhandhaving.__unicode__()[:30], parameter.name[:15] ))
-            inlaat_peilhandhaving.results.add(wb_timeserie)
-        else:
-            wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pumping_station_result=inlaat_peilhandhaving)[0]
-        save_timeserie_into_database(wb_timeserie, sheet_resultaten, 13, 0, 20)
-    """
 
 
 class Command(BaseCommand):
