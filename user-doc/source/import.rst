@@ -1,4 +1,4 @@
-Managemant command import_excel
+Management command import_excel
 ===============================
 
 Het import script kijkt alleen naar de sheet "Uitgangspunten".
