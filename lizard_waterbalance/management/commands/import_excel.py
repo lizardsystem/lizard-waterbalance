@@ -171,12 +171,15 @@ def create_intake_for_level_control(open_water, labels, sheet, pars):
             pump_line.name = name
 
         parameter = pars['structure_discharge']
-        if WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line).count() == 0:
-            wb_timeserie = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
-            pump_line.timeserie = wb_timeserie
+        timeseries_queryset = WaterbalanceTimeserie.objects.filter(parameter=parameter,\
+            pump_line_timeserie=pump_line)
+        if timeseries_queryset.count() > 0:
+            timeseries = timeseries_queryset[0]
         else:
-            wb_timeserie = WaterbalanceTimeserie.objects.filter(parameter=parameter, pump_line_timeserie=pump_line)[0]
-        save_timeserie_into_database(wb_timeserie, sheet, 76, 0, column)
+            timeseries = WaterbalanceTimeserie.objects.create(parameter=parameter, name="%s: %s"%(pump_line.__unicode__()[:30], parameter.name[:15] ))
+            pump_line.timeserie = timeseries
+
+        save_timeserie_into_database(timeseries, sheet, 76, 0, column)
 
         pump_line.save()
 
@@ -186,9 +189,6 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
     """
 
     print 'start import file %s'%xls_file_name
-
-    start_year = 1996
-    last_year = 2015
 
     xls = xlrd.open_workbook(xls_file_name)
     sheet = xls.sheet_by_name('uitgangspunten')

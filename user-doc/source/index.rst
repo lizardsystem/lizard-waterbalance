@@ -10,6 +10,7 @@ Inhoud:
 .. toctree::
    :maxdepth: 2
 
+   import
    instellingen
    grafieken
    zichtbaarheid
