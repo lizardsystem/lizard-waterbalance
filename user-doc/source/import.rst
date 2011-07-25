@@ -9,7 +9,7 @@ gebruikt voor peilhandhaving.
 
 Het script definieert altijd één inlaat voor peilhandhaving en één uitlaat voor
 peilhandhaving met de namen "inlaat peilhandhaving" respectievelijk "uitlaat
-peilhandhaving". Deze namen dien dan ook niet voor te komen voor de in- en
+peilhandhaving". Deze namen dienen dan ook niet voor te komen voor de in- en
 uitlaten die gedefinieerd worden in A24 tot en met A31.
 
 E73, F73, G73 en H73 bevatten de namen van de pomplijnen voor de uitlaat voor

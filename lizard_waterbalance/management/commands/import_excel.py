@@ -27,11 +27,9 @@
 
 from datetime import datetime
 from os.path import join
-import sys
 import glob
 import xlrd
-import os
-import csv
+
 
 from django.core.management.base import BaseCommand
 
@@ -100,15 +98,20 @@ def create_save_yearly_timeserie_into_database(wb_timeserie, array_date_value, s
     wb_timeserie.save()
 
 
-def retrieve_intake_level_control(sheet, open_water, label):
-    """Find or create the intake for level control.
+def retrieve_pumping_station_for_level_control(sheet, open_water, label):
+    """Return the single PumpingStation for level control.
 
-    This method searches for the PumpingStation for the given OpenWater that
-    has the name NAME_INTAKE_LEVEL_CONTROL. If that PumpingStation does not
-    exist, it creates one for that OpenWater and with that name.
+    This method finds the PumpingStation named NAME_INTAKE_LEVEL_CONTROL or
+    creates one with that name if it does not exist.
 
     Note that whether such a PumpingStation exists or has to be created, this
     method (re)sets it to be an intake for level control.
+
+    Parameters:
+      * open_water *
+        OpenWater to which the PumpingStation to retrieve belongs
+      * labels *
+        dictionary of PumpingStation name to Label
 
     """
     name = NAME_INTAKE_LEVEL_CONTROL
@@ -134,25 +137,28 @@ def retrieve_intake_level_control(sheet, open_water, label):
 
     return pumping_station
 
-def create_intake_for_level_control(open_water, labels, sheet, pars):
-    """Create a single intake for level control.
+def retrieve_intake_for_level_control(open_water, labels, sheet, pars):
+    """Return the single intake for level control.
 
-    The intake is implemented by a PumpingStation with the name
-    NAME_INTAKE_LEVEL_CONTROL.
+    This method finds the PumpingStation named NAME_INTAKE_LEVEL_CONTROL or
+    creates one with that name if it does not exist. It also finds or creates
+    each PumpLine for this PumpingStation and connects that PumpLine to its
+    time series.
 
     Parameters:
       * open_water *
-        OpenWater to which the new PumpingStation should belong
+        OpenWater to which the PumpingStation to retrieve belongs
       * labels *
-        dictionary of name to Label
+        dictionary of PumpingStation name to Label
       * sheet *
-        xlrd Sheet that contains that specifies the new PumpingStation
+        xlrd Sheet that contains all data
       * pars *
-        dictionary of name to Parameter
+        dictionary of PumpingStation name to Parameter
 
     """
     label = labels[NAME_INTAKE_LEVEL_CONTROL]
-    pumping_station = retrieve_intake_level_control(sheet, open_water, label)
+    pumping_station = retrieve_pumping_station_for_level_control(sheet,
+        open_water, label)
 
     row, column = tuple(COORDS_NAME_PUMPLINE_INTAKE_LEVEL_CONTROL)
     cell = sheet.cell(row, column)
@@ -544,7 +550,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
 
     ################# PUMPINGSTATIONS ################
 
-    create_intake_for_level_control(open_water, labels, sheet, pars)
+    retrieve_intake_for_level_control(open_water, labels, sheet, pars)
 
     #uitlaat peilhandhaving
     if PumpingStation.objects.filter(open_water=open_water, name='uitlaat peilhandhaving').count() > 0:
