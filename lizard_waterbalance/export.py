@@ -173,8 +173,7 @@ def export_excel_small(request, area_slug, scenario_slug):
         data_cols[(colnr, 'fractie %s'%str(key), '[-]')] = item
         colnr = colnr + 1
 
-    data_cols[(108, 'sluitfout', '[m3/dag]')] = sluice_error[0]
-    data_cols[(111, 'som gemeten pompdebieten', '[m3/dag]')] = sluice_error[1]
+    data_cols[(108, 'sluitfout', '[m3/dag]')] = sluice_error
 
     colnr = 135
     for key, item in impact_minimum.items():
