@@ -58,12 +58,34 @@ except:
 
 date2datetime = lambda d: datetime(d.year, d.month, d.day)
 
+# When the name of a legend entry is too long, the legend might overlap the
+# graph. See ticket 3191 for details.
+
+MAX_LEGEND_NAME_LENGTH = 24
+
+
+def abridged_legend_name(name, maximum_length = MAX_LEGEND_NAME_LENGTH ):
+    """Return an abridged version of the given name.
+
+    The abridged name will not exceed the MAX_LEGEND_NAME_LENGTH.
+
+    """
+    if len(name) > maximum_length:
+        name = name[:maximum_length - 1] + "."
+    return name
+
+
+def extended_legend_name(name, extension):
+    """Return an abridged version of the given name with the given extension.
+
+    """
+    maximum_length = MAX_LEGEND_NAME_LENGTH - len(extension)
+    return abridged_legend_name(name, maximum_length) + extension
+
 
 def configuration_edit(request, template=None):
     if template is None:
         template = 'lizard_waterbalance/configuration.html'
-
-
 
     return render_to_response(
         template,
@@ -904,7 +926,7 @@ def waterbalance_area_graph(
     outgoing_bars = sorted(outgoing_bars, key=lambda bar: bar[2].order)
 
     #define legend
-    names = ["sluitfout t.o.v. gemaal"] + [bar[0] for bar in incoming_bars + outgoing_bars]
+    names = ["sluitfout t.o.v. gemaal"] + [abridged_legend_name(bar[0]) for bar in incoming_bars + outgoing_bars]
     colors = [labels['sluice_error'].color] + [bar[2].color for bar in incoming_bars + outgoing_bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
     graph.legend_space()
@@ -1090,7 +1112,7 @@ def waterbalance_water_level(configuration,
         bars.append(("waterpeilen, met sluitfout", sluice_error_waterlevel,
                      labels['sluice_error']))
 
-    names = [bar[2].name for bar in bars]
+    names = [abridged_legend_name(bar[2].name) for bar in bars]
     colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
@@ -1143,11 +1165,11 @@ def waterbalance_cum_discharges(configuration,
 
     intake, pump = waterbalance_computer.get_level_control_pumping_stations()
     if intake is not None:
-        line_in.append((intake.name + " (berekend)",
+        line_in.append((extended_legend_name(intake.name, " (berekend)"),
                         control['intake_wl_control'],
                         labels['intake_wl_control'], '#000000'))
     if pump is not None:
-        line_out.append((pump.name + " (berekend)",
+        line_out.append((extended_legend_name(pump.name, " (berekend)"),
                          control['outtake_wl_control'],
                          labels['outtake_wl_control'], '#000000'))
 
@@ -1164,7 +1186,7 @@ def waterbalance_cum_discharges(configuration,
             bars_in.append((pump_line.name, pump_line.retrieve_timeseries(), structure.label, colors_list[nr]))
             nr += 1
 
-    names = [bar[0] for bar in bars_out + bars_in]
+    names = [abridged_legend_name(bar[0]) for bar in bars_out + bars_in]
     colors = [bar[3] for bar in bars_out + bars_in ]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
@@ -1287,7 +1309,7 @@ def waterbalance_fraction_distribution(
     bars = sorted(bars, key=lambda bar:-bar[2].order)
 
     #setup legend
-    names = [bar[0] for bar in bars]
+    names = [abridged_legend_name(bar[0]) for bar in bars]
     colors = [bar[2].color for bar in bars]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
@@ -1317,7 +1339,7 @@ def waterbalance_fraction_distribution(
 
     style = dict(color='black', lw=3)
     handles.append(Line2D([], [], **style))
-    names.append(substance + " berekend")
+    names.append(extended_legend_name(substance, " berekend"))
 
     times, values = get_average_timeseries(
             substance_timeseries, date2datetime(start_date), date2datetime(end_date),
@@ -1340,7 +1362,7 @@ def waterbalance_fraction_distribution(
                                             date2datetime(end_date))
         graph.ax2.plot(times, values, **style)
         handles.append(Line2D([], [], **style))
-        names.append(tijdserie.name[:15] + " gemeten")
+        names.append(extended_legend_name(tijdserie.name, " gemeten"))
 
     graph.legend_space()
     graph.legend(handles, names)
@@ -1408,8 +1430,8 @@ def waterbalance_phosphate_impact(
     legend_info.retrieve_labels()
     for key, impact in impacts.items():
         label_name, label = legend_info.retrieve(key)
-        name = '%s (min)' % label_name
-        name_incremental = '%s (incr)' % label_name
+        name = extended_legend_name(label_name, " (min)")
+        name_incremental = extended_legend_name(label_name, " (incr)")
 
         bars_minimum.append((name,
                      impact,
@@ -1427,7 +1449,7 @@ def waterbalance_phosphate_impact(
 
     legend = sorted(legend, key=lambda bar:-bar[0])
 
-    names = [line[1] for line in legend]
+    names = [abridged_legend_name(line[1]) for line in legend]
     colors = [line[2] for line in legend]
     handles = [Line2D([], [], color=color, lw=4) for color in colors]
 
