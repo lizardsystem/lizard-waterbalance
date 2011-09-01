@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fixed the problem that the legend of a graph would overlap the graph when a
+  name of a legend item was "too long" (ticket 3191).
 
 
 0.18 (2011-07-20)
