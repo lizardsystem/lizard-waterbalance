@@ -796,7 +796,7 @@ class OpenWater(models.Model):
     infiltration = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("wegzijging"),
-        help_text=_("tijdreeks naar kwel"),
+        help_text=_("tijdreeks naar wegzijging"),
         related_name='open_water_infiltration')
 
     sewer = models.ForeignKey(
