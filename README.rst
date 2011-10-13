@@ -1,10 +1,11 @@
-lizard-waterbalance
-==========================================
+lizard-waterbalance, branch VSS
+===============================
 
-Introduction
+This branch of lizard-waterbalance is used to split the current monolithic
+Django application into three seperate components to configure the model,
+compute the waterbalance and view the graphs.
 
 Usage, etc.
-
 
 Development installation
 ------------------------
