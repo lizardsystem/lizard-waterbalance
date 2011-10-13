@@ -5,6 +5,29 @@ This branch of lizard-waterbalance is used to split the current monolithic
 Django application into three seperate components to configure the model,
 compute the waterbalance and view the graphs.
 
+The lizard-waterbalance master branch has a structure that looks like this::
+
+  lizard-waterbalance/buildout.cfg
+  lizard-waterbalance/...
+  lizard-waterbalance/lizard-waterbalance/init.py
+  lizard-waterbalance/lizard-waterbalance/models.py
+  lizard-waterbalance/lizard-waterbalance/compute.py
+  lizard-waterbalance/lizard-waterbalance/views.py
+
+We agreed to move to a structure like the following::
+
+  lizard-waterbalance/buildout.cfg
+  lizard-waterbalance/...
+  lizard-waterbalance/computation/init.py
+  lizard-waterbalance/computation/compute.py
+  lizard-waterbalance/visualization/init.py
+  lizard-waterbalance/visualization/views.py
+  lizard-waterbalance/lizard-waterbalance/init.py
+  lizard-waterbalance/lizard-waterbalance/models.py
+
+Then we will split off the different components into their own Git
+repositories. To do so, we refer to http://stackoverflow.com/questions/359424
+
 Usage, etc.
 
 Development installation
