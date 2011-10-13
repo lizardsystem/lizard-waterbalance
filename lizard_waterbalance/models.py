@@ -1663,7 +1663,7 @@ class Concentration(models.Model):
     stof_increment  = models.FloatField(
             verbose_name=_("stof incrementeel"),
             default=0.0,
-            help_text=_("incerementele concentratie in [mg/l]"))
+            help_text=_("incrementele concentratie in [mg/l]"))
     cl_concentration = models.FloatField(
             verbose_name=_("chloride concentratie"),
             default=0.0,
