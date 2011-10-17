@@ -84,6 +84,48 @@ def find_pumping_station_level_control(open_water, find_intake):
                                       computed_level_control=True)
     return next((station for station in stations_level_control), None)
 
+class Configuration(object):
+    """Provides the interface to retrieve the information to compute a waterbalance."""
+
+    def retrieve_buckets(self): pass
+    def retrieve_evaporation(self): pass
+    def retrieve_open_water(self): pass
+    def retrieve_precipitation(self): pass
+    def retrieve_seepage(self): pass
+    def retrieve_sobek_buckets(self): pass
+    def save(self): pass
+    def __unicode__(self): pass
+
+    def calculation_end_date(self): pass
+    def calculation_start_date(self): pass
+    def waterbalance_area(self): pass
+    def waterbalance_scenario(self): pass
+
+    def get_all_config_concentrations(self): pass
+
+class OpenWater(object):
+
+    def nutricalc_incr_exists(self): pass
+    def get_nutricalc_incr_timeseries(self): pass
+    def nutricalc_min_exists(self): pass
+    def get_nutricalc_min_timeseries(self): pass
+    def get_retrieve_incoming_timeseries(self): pass
+    def get_retrieve_maximum_level(self): pass
+    def get_retrieve_minimum_level(self): pass
+    def get_retrieve_outgoing_timeseries(self): pass
+    def get_retrieve_sewer(self): pass
+    def get_surface(self): pass
+    def get_max_intake(self): pass
+    def get_max_outlet(self): pass
+
+    def get_pumping_stations_for_level_control(self): pass
+
+class Bucket(object):
+    pass
+
+# objs = conf.retrieve_buckets()
+# obj = objs[0]
+# self.assertTrue(hasattr(obj, "surface_type")
 
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
@@ -261,13 +303,6 @@ class WaterbalanceComputer2(object):
 
             for bucket in self.configuration.retrieve_sobek_buckets():
                 buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
-            #store for later use (some kind of cache)
-            #self.outcome['buckets'] = buckets_outcome
-            #self.outcome_info['buckets'] = {}
-            #self.outcome_info['buckets']['start_date'] = start_date
-            #self.outcome_info['buckets']['end_date'] = end_date
-
-            #self.updated = True
 
         return buckets_outcome
 
@@ -291,7 +326,7 @@ class WaterbalanceComputer2(object):
         if (self.outcome.has_key('buckets_summary') and
             self.outcome_info['buckets_summary']['start_date']==start_date and
             self.outcome_info['buckets_summary']['end_date']>=end_date):
-            return self.outcome['buckets_summary']
+            pass
         else:
             logger.debug("Calculating bucket_summary (%s - %s)..." % (
                     start_date.strftime('%Y-%m-%d'),
@@ -309,7 +344,7 @@ class WaterbalanceComputer2(object):
 
             self.updated = True
 
-        return buckets_summary
+        return self.outcome['buckets_summary']
 
     def get_vertical_open_water_timeseries(self, start_date, end_date):
         """return all timeseries directly related to openwater (vertical = rainfall, evaporation and seepage)
@@ -591,14 +626,14 @@ class WaterbalanceComputer2(object):
             load = {}
             load_incremental = {}
 
-            if self.configuration.open_water.nutricalc_min:
+            if self.configuration.open_water.nutricalc_min is not None:
                 nutricalc_min = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_min.get_timeseries(),
                                                          start_date=start_date,
                                                          end_date=end_date)
             else:
                 nutricalc_min = None
 
-            if self.configuration.open_water.nutricalc_incr:
+            if self.configuration.open_water.nutricalc_incr is not None:
                 nutricalc_incr = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_incr.get_timeseries(),
                                                          start_date=start_date,
                                                          end_date=end_date)
