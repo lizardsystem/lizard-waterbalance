@@ -23,6 +23,10 @@
 class Area(object):
     """Represents the area for which to compute a waterbalance.
 
+    An Area combines attributes of multiple lizard_waterbalance models,
+    viz. WaterbalanceConf and OpenWater. We tried to let the Area interface
+    mimic the interfaces of those two models.
+
     Apart from its methods, this object should define the following values:
 
       - *code*
@@ -36,12 +40,18 @@ class Area(object):
       - *use_min_max_level_relative_to_meas*
         True if and only if the waterbalance computation should use the
         (real) minimum and maximum water level
+      - *waterlevel_measurement*
+        timeseries of the measured water level
       - *min_level_relative_to_measurement*
         minimum water level in (real) [mNAP] relative to the time series of the
         measured water level
       - *max_level_relative_to_measurement*
         maximum water level in (real) [mNAP] relative to the time series of the
         measured water level
+      - *minimum_level*
+        time series of the minimum water level
+      - *maximum_level*
+        time series of the maximum water level
       - *init_water_level*
         initial water level in (real) [mNAP]
 
@@ -114,18 +124,6 @@ class Area(object):
 
     def retrieve_discharges_of_pumps(self):
         """Return the dict of pump to its discharge time series."""
-        pass
-
-    def retrieve_minimum_water_level(self):
-        """Return the time series of the minimum water level."""
-        pass
-
-    def retrieve_measured_water_level(self):
-        """Return the time series of the measured water level."""
-        pass
-
-    def retrieve_maximum_water_level(self):
-        """Return the time series of the maximum water level."""
         pass
 
     def retrieve_sewer(self):
