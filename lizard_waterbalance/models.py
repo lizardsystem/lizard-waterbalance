@@ -738,8 +738,7 @@ class OpenWater(models.Model):
         help_text=_("bodemhoogte in meters boven NAP"))
     use_min_max_level_relative_to_meas = models.BooleanField(
         default=False,
-        verbose_name=_("gebruik min en max peil t.o.v. gemeten peil"),
-        help_text=_("bodemhoogte in meters boven NAP"))
+        verbose_name=_("gebruik min en max peil t.o.v. gemeten peil"))
     waterlevel_measurement = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("gemeten waterpeil"),
@@ -754,7 +753,7 @@ class OpenWater(models.Model):
         default=0.0,
         null=True, blank=True,
         verbose_name=_("maximum level t.o.v. peilmeting"),
-        help_text=_("de afwijking in meter onder het gemeten peil"))
+        help_text=_("de afwijking in meter boven het gemeten peil"))
     minimum_level = models.ForeignKey(
         WaterbalanceTimeserie,
         verbose_name=_("ondergrens"),
@@ -773,7 +772,7 @@ class OpenWater(models.Model):
         null=True, blank=True, related_name='open_water_targetlevel')
     init_water_level = models.FloatField(
         verbose_name=_("initiele waterstand"),
-        help_text=_("initiele waterstand in meters"))
+        help_text=_("initiele waterstand in mNAP"))
 
     precipitation = models.ForeignKey(
         WaterbalanceTimeserie,

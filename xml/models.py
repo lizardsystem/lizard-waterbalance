@@ -21,11 +21,31 @@
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
 class Area(object):
-    """Provides the interface to the information to compute a waterbalance."""
+    """Represents the area for which to compute a waterbalance.
 
-    def retrieve_open_water(self):
-        """Return the open water."""
-        pass
+    Apart from its methods, this object should define the following values:
+
+      - *code*
+        string to uniquely identify the current area
+      - *name*
+        string to easily recognize the current area
+      - *surface*
+        surface of the open water in (integer) [m2]
+      - *bottom_height*
+        height of the bottom of the open water in (real) [mNAP]
+      - *use_min_max_level_relative_to_meas*
+        True if and only if the waterbalance computation should use the
+        (real) minimum and maximum water level
+      - *min_level_relative_to_measurement*
+        minimum water level in (real) [mNAP] relative to the time series of the
+        measured water level
+      - *max_level_relative_to_measurement*
+        maximum water level in (real) [mNAP] relative to the time series of the
+        measured water level
+      - *init_water_level*
+        initial water level in (real) [mNAP]
+
+    """
 
     def retrieve_buckets(self):
         """Return the buckets."""
@@ -89,15 +109,19 @@ class Area(object):
         pass
 
     def retrieve_discharges_of_intakes():
-        """Return all the time series of the discharge of each intake."""
+        """Return the dict of intake to its discharge time series."""
         pass
 
     def retrieve_discharges_of_pumps(self):
-        """Return all the time series of the discharge of each pump."""
+        """Return the dict of pump to its discharge time series."""
         pass
 
     def retrieve_minimum_water_level(self):
         """Return the time series of the minimum water level."""
+        pass
+
+    def retrieve_measured_water_level(self):
+        """Return the time series of the measured water level."""
         pass
 
     def retrieve_maximum_water_level(self):
@@ -108,17 +132,13 @@ class Area(object):
         """Return the time series of the sewer."""
         pass
 
-    def get_surface(self):
-        """Return the surface of the open water in [m2]."""
-        pass
-
-    def get_total_intake_capacity(self):
+    def get_max_intake(self):
         """Return the total capacity in [m3/day] of all the intakes combined.
 
         """
         pass
 
-    def get_total_pump_capacity(self):
+    def get_max_outlet(self):
         """Return the total capacity in [m3/day] of all the pumps combined.
         """
         pass
