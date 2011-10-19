@@ -54,100 +54,120 @@ class Area(object):
         time series of the maximum water level
       - *init_water_level*
         initial water level in (real) [mNAP]
+      - *nutricalc_min*
+        time series of the minimum nutricalc
+      - *nutricalc_incr*
+        time series of the minimum nutricalc
 
     """
 
     def retrieve_buckets(self):
-        """Return the buckets."""
+        """Return the buckets.
+
+        This method comes from lizard_waterbalance.WaterbalanceConf and is used
+        in lizard_waterbalance.compute.
+
+        """
         pass
 
     def retrieve_sobek_buckets(self):
-        """Return the buckets whose outcome is predefined."""
-        pass
+        """Return the buckets whose outcome is predefined.
 
-    def retrieve_precipitation(self):
-        """Return the time series that specifies the precipitation."""
-        pass
-
-    def retrieve_evaporation(self):
-        """Return the time series that specifies the evaporation."""
-        pass
-
-    def retrieve_seepage(self):
-        """Return the time series that specifies the seepage."""
-        pass
-
-    def save(self):
-        pass
-
-    def __unicode__(self):
-        pass
-
-    def calculation_start_date(self):
-        """Return the first date for which the waterbalance should be computed.
+        This method comes from lizard_waterbalance.WaterbalanceConf and is used
+        in lizard_waterbalance.compute.
 
         """
         pass
 
-    def calculation_end_date(self):
-        """Return the last date for which the waterbalance should be computed.
+    def retrieve_precipitation(self, start_date, end_date):
+        """Return the time series that specifies the precipitation.
+
+        Parameters:
+          *start_date*
+            first date of the returned time series
+          *end_date*
+            first date after the last date of the returned time series
+
+        This method comes from lizard_waterbalance.WaterbalanceConf and is used
+        in lizard_waterbalance.compute.
 
         """
         pass
 
-    def get_all_config_concentrations(self):
-        pass
+    def retrieve_evaporation(self, start_date, end_date):
+        """Return the time series that specifies the evaporation.
 
-    def nutricalc_minima_exists(self):
-        """Return whether a minimum time series for nutricalc is defined.
+        Parameters:
+          *start_date*
+            first date of the returned time series
+          *end_date*
+            first date after the last date of the returned time series
 
+        This method comes from lizard_waterbalance.WaterbalanceConf and is used
+        in lizard_waterbalance.compute.
         """
         pass
 
-    def retrieve_nutricalc_minima(self):
-        """Return the minimum time series for nutricalc."""
-        pass
+    def retrieve_seepage(self, start_date, end_date):
+        """Return the time series that specifies the seepage.
 
-    def nutricalc_increments_exists(self):
-        """Return whether an incremental time series for nutricalc is defined.
+        Parameters:
+          *start_date*
+            first date of the returned time series
+          *end_date*
+            first date after the last date of the returned time series
 
+        This method comes from lizard_waterbalance.WaterbalanceConf and is used
+        in lizard_waterbalance.compute.
         """
         pass
 
-    def retrieve_nutricalc_increments(self):
-        """Return the incremental time series for nutricalc."""
-        pass
 
-    def retrieve_discharges_of_intakes():
+    def retrieve_incoming_timeseries(self):
         """Return the dict of intake to its discharge time series."""
         pass
 
-    def retrieve_discharges_of_pumps(self):
+
+    def retrieve_outgoing_timeseries(self):
         """Return the dict of pump to its discharge time series."""
         pass
 
-    def retrieve_sewer(self):
-        """Return the time series of the sewer."""
+    def retrieve_sewer(self, start_date, end_date):
+        """Return the time series of sewer.
+
+        Parameters:
+          *start_date*
+            first date of the returned time series
+          *end_date*
+            date after the last date of the returned time series
+
+        """
         pass
 
-    def get_max_intake(self):
-        """Return the total capacity in [m3/day] of all the intakes combined.
+    def retrieve_minimum_level(self, start_date, end_date):
+        """Return the time series of the minimum water level
+
+        Parameters:
+          *start_date*
+            first date of the returned time series of the sewer
+          *end_date*
+            date after the last date of the returned time series of the sewer
 
         """
         pass
 
-    def get_max_outlet(self):
-        """Return the total capacity in [m3/day] of all the pumps combined.
+    def retrieve_maximum_level(self, start_date, end_date):
+        """Return the time series of the maximum water level
+
+        Parameters:
+          *start_date*
+            first date of the returned time series of the sewer
+          *end_date*
+            date after the last date of the returned time series of the sewer
+
         """
         pass
 
-
-    def retrieve_pumping_stations_for_level_control(self):
-        """Return the pair (intakes, pumps) pumping stations for level control.
-
-        If the user did not define an intake for level control, this funtion
-        returns None for that intake. The same holds for the pump for level
-        control.
-
-        """
+    def retrieve_pumping_stations(self):
+        """Return the pumping stations."""
         pass
