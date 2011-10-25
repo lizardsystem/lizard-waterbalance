@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# pylint: disable=C0111
+
 # The xml package provides the functionality to create from XML files the
 # configuration that is required by the computational core of the lizard
 # waterbalance Django app
