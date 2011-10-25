@@ -1,0 +1,30 @@
+PumpingStation
+--------------------------------------------------------------------------------
+    589:        <parameter id="code" name="Kunstwerk code">, niet gebruikt door waterbalans script
+
+De waterbalans module ontvangt de naam van het kunstwerk als het name attribuut
+van de group met model tag "PumpingStation" - parameter name wordt niet gebruikt:
+    593:        <parameter id="name" name="Naam van het kunstwerk">
+
+    597: <parameter id="opgedrukt" name="Opgedrukt">, is_computed, [boolean]
+--------------------------------------------------------------------------------
+Ik heb liever niet de volgende velden om te bepalen of iets een inlaat is of
+en gemaal:
+    601:        <parameter id="van_gcode" name="Van gebied">, from_area
+    605:        <parameter id="naar_gcode" name="Naar gebied">, to_area
+Is het mogelijk om een volgende parameter toe te voegen:
+                <parameter id="into" name="inlaat of gemaal">, [boolean], True als kunstwerk een inlaat is
+--------------------------------------------------------------------------------
+De waterbalans module ontvangt de waarden van de volgende parameters als
+tijdreeksen en dienen dan ook in Tijdreeksen.xml te vinden te zijn - de
+volgende parameters in deze group worden dan ook genegeerd:
+    609:        <parameter id="deb_is_ts" name="Debiet is tijdserie">, niet gebruikt door waterbalans script
+    613:        <parameter id="deb_zomer" name="Debiet zomer">, niet gebruikt door waterbalans script
+    617:        <parameter id="deb_wint" name="Debiet winter">, niet gebruikt door waterbalans script
+--------------------------------------------------------------------------------
+    621:        <parameter id="con_cl" name="Concentratie Cl">, concentr_chloride, [g/m3]
+    625:        <parameter id="con_p_min" name="Concentratie P minimaal">, min_concentr_phosphate, [g/m3]
+    629:        <parameter id="con_p_incr" name="Concentratie P incrementeel">, incr_concentr_phosphate, [g/m3]
+    633:        <parameter id="con_n_min" name="Concentratie N minimaal">, min_concentr_nitrogen, [g/m3]
+    637:        <parameter id="con_n_incr" name="Concentratie N incrementeel">, incr_concentr_nitrogen, [g/m3]
+--------------------------------------------------------------------------------

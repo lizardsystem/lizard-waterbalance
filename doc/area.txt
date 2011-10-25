@@ -1,0 +1,52 @@
+Area
+--------------------------------------------------------------------------------
+      5:        <parameter id="code" name="Gebied code">, niet gebruikt door waterbalans script
+
+De waterbalans module ontvangt de naam van het gebied als het name attribuut
+van de group met model tag "Area" - parameter name wordt niet gebruikt:
+      9:        <parameter id="name" name="Gebied naam">
+
+     13:        <parameter id="max_inl" name="Maximum inlaat capaciteit">, max_intake, [m3/dag]
+     17:        <parameter id="max_uitl" name="Maximum uitlaat capaciteit">, max_outtake, [m3/dag]
+     21:        <parameter id="oppervlak" name="Oppervlak openwater">, surface, [m2]
+     25:        <parameter id="bottom_height" name="Bodemhoogte">, bottom_height, [mNAP]
+--------------------------------------------------------------------------------
+De waterbalans module ontvangt de waarden van de volgende parameters als
+tijdreeksen en dienen dan ook in Tijdreeksen.xml te vinden te zijn - de
+volgende parameters in deze group worden dan ook genegeerd:
+
+     29:        <parameter id="kwel_is_ts" name="Kwel tijdreeks">, [boolean] of [mm/m2/dag]?
+     33:        <parameter id="kwel" name="Waarde kwel">, [mm/m2]
+     37:        <parameter id="wegz_is_ts" name="Wegzijging tijdreeks">, [boolean] of [mm/m2/dag]?
+     41:        <parameter id="wegz" name="Waarde wegzijging">, [mm/m2]
+
+Mij valt op dat je wel doorgeeft dat het streefpeil gebruikt moet worden, maar
+niet het streefpeil zelf:
+     45:        <parameter id="peilh_issp" name="Streefpeil gebruiken">
+
+     49:        <parameter id="marge_ond" name="Peilmarge ondergrens">, [mNAP/dag]
+     53:        <parameter id="marge_bov" name="Peilmarge bovengrens">, [mNAP/dag]
+     57:        <parameter id="nutc_min_1" name="nutricalc minimale belasting kwartaal 1">, [mg/dag]
+     61:        <parameter id="nutc_inc_1" name="nutricalc incrementele belasting kwartaal 1">, [mg/dag]
+     65:        <parameter id="nutc_min_2" name="nutricalc minimale belasting kwartaal 2">, [mg/dag]
+     69:        <parameter id="nutc_inc_2" name="nutricalc incrementele belasting kwartaal 2">, [mg/dag]
+     73:        <parameter id="nutc_min_3" name="nutricalc minimale belasting kwartaal 3">, [mg/dag]
+     77:        <parameter id="nutc_inc_3" name="nutricalc incrementele belasting kwartaal 3">, [mg/dag]
+     81:        <parameter id="nutc_min_4" name="nutricalc minimale belasting kwartaal 4">, [mg/dag]
+     85:        <parameter id="nutc_inc_4" name="nutricalc incrementele belasting kwartaal 4">, [mg/dag]
+--------------------------------------------------------------------------------
+Mij valt op dat je initiële chloride concentratie doorgeeft maar niet de
+initiële waterstand.
+     89:        <parameter id="ini_con_cl" name="Initiele chloride concentratie">, [g]
+
+     93:        <parameter id="ns_con_cl" name="Concentratie Cl neerslag">, concentr_chloride_precipitation, [g/m3]
+     97:        <parameter id="kw_con_cl" name="Concentratie Cl kwel">, concentr_chloride_seepage, [g/m3]
+    101:        <parameter id="ns_con_p_m" name="Concentratie P neerslag minimaal">, min_concentr_phosphate_precipitation, [g/m3]
+    105:        <parameter id="kw_con_p_m" name="Concentratie P kwel minimaal">, min_concentr_phopshate_seepage, [g/m3]
+    109:        <parameter id="ns_con_p_i" name="Concentratie P neerslag incrementeel">, incr_concentr_phosphate_precipitation, [g/m3]
+    113:        <parameter id="kw_con_p_i" name="Concentratie P kwel incrementeel">, incr_concentr_phosphate_seepage, [g/m3]
+    117:        <parameter id="ns_con_n_m" name="Concentratie N neerslag minimaal">, min_concentr_nitrogyn_precipitation, [g/m3]
+    121:        <parameter id="kw_con_n_m" name="Concentratie N kwel minimaal">, min_concentr_nitrogyn_seepage, [g/m3]
+    125:        <parameter id="ns_con_n_i" name="Concentratie N neerslag incrementeel">, incr_concentr_nitrogyn_precipitation, [g/m3]
+    129:        <parameter id="kw_con_n_i" name="Concentratie N kwel incrementeel"> incr_concentr_nitrogyn_seepage, [g/m3]
+--------------------------------------------------------------------------------

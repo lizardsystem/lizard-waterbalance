@@ -1,0 +1,66 @@
+Bucket
+--------------------------------------------------------------------------------
+    136:        <parameter id="code" name="Bakje code">, niet gebruikt door waterbalans script
+
+De waterbalans module ontvangt de naam van het bakje als het name attribuut
+van de group met model tag "Bucket" - parameter name wordt niet gebruikt:
+    140:        <parameter id="name" name="Naam van het bakje">
+
+Het type van het bakje is een integer:
+    - 0: ongedraineerd
+    - 1: verhard
+    - 2: gedraineerd
+    - 3: stedelijk
+    144:        <parameter id="type" name="Type bakje">, surface_type
+--------------------------------------------------------------------------------
+De volgende parameter wordt genegeerd:
+    148:        <parameter id="geb_code" name="Gebieds code">
+--------------------------------------------------------------------------------
+    152:        <parameter id="bel_is_nutc" name="belasting vervangen door nutricalc uitkomsten">, replace_impact_by_nutricalc, [boolean]
+    156:        <parameter id="is_berekend" name="berekend of opgedrukt">, is_computed, [boolean]
+    160:        <parameter id="oppervlak" name="Oppervlak">, surface, [m2]
+--------------------------------------------------------------------------------
+De waterbalans module ontvangt de waarden van de volgende parameters als
+tijdreeksen en dienen dan ook in Tijdreeksen.xml te vinden te zijn - de
+volgende parameters in deze group worden dan ook genegeerd:
+    164:        <parameter id="kwel_is_ts" name="Kwel/wewgzijging tijdreeks">, [boolean] of [mm/m2/dag]?
+    168:        <parameter id="kwel" name="Waarde kwel/wegzijging">, [mm/m2]
+--------------------------------------------------------------------------------
+    172:        <parameter id="poros" name="porositeit">, porosity, reëel getal in de range [0,1]
+    176:        <parameter id="gverd" name="gewasverdampingsfactor">, crop_evaporation_factor, reëel getal in de range [0,1]
+    180:        <parameter id="min_gverd" name="minimum gewasverdampingsfactor">, min_crop_evaporation_factor, reëel getal in de range [0,1]
+    184:        <parameter id="f_uitsp" name="fractie uitspoel">, drainage_fraction, reëel getal in de range [0,1]
+    188:        <parameter id="f_intr" name="factie intrek">, indraft_fraction, reëel getal in de range [0,1]
+    192:        <parameter id="max_ws" name="maximale waterstand">, max_water_level, [m]
+    196:        <parameter id="min_ws" name="minimale waterstand">, min_water_level, [m]
+
+Hier ontbreekt een veld voor equilibrium waterstand:
+     	       	<parameter id="equi_water_level" name="equilibrium waterstand">, equi_water_level, [m]
+
+    200:        <parameter id="o_poros" name="onderste bakje - porositeit">, bottom_porosity, reëel getal in de range [0,1]
+    204:        <parameter id="o_gverd" name="onderste bakje - gewasverdampingsfactor">, bottom_crop_evaporation_factor, reëel getal in de range [0,1]
+    208:        <parameter id="o_mn_gverd" name="onderste bakje - minimum gewasverdampingsfactor">, bottom_min_crop_evaporation_factor, reëel getal in de range [0,1]
+    212:        <parameter id="o_f_uitsp" name="onderste bakje - fractie uitspoel">, bottom_drainage_fraction, reëel getal in de range [0,1]
+    216:        <parameter id="o_f_intr" name="onderste bakje - factie intrek">, bottom_indraft_fraction, reëel getal in de range [0,1]
+    220:        <parameter id="o_max_ws" name="onderste bakje - maximale waterstand">, bottom_max_water_level, [m]
+    224:        <parameter id="o_min_ws" name="onderste bakje - minimale waterstand">, bottom_min_water_level, [m]
+
+Hier ontbreekt een veld voor equilibrium waterstand in het onderste waterbakje:
+     	       	<parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">, bottom_equi_water_level, [m]
+
+    228:        <parameter id="ini_ws" name="initiele waterstand bakje">, init_water_level, [m]
+    232:        <parameter id="o_ini_ws" name="initiele waterstand onderste bakje">, bottom_init_water_level, [m]
+
+    236:        <parameter id="concl_afs" name="Concentratie Cl oppervlakte afstroom">, concentr_chloride_flow_off, [g/m3]
+    240:        <parameter id="concl_uit" name="Concentratie Cl uitstroom">, concentr_chloride_drainage_indraft, [g/m3]
+    244:        <parameter id="conp_af_m" name="Concentratie P oppervlakte afstroom minimaal">, min_concentr_phosphate_flow_off, [g/m3]
+    248:        <parameter id="conp_uit_m" name="Concentratie P uitstroom minimaal">, min_concentr_phosphate_drainage_indraft, [g/m3]
+    252:        <parameter id="conp_af_i" name="Concentratie P oppervlakte afstroom incrementeel">, incr_concentr_phosphate_flow_off, [g/m3]
+    256:        <parameter id="conp_uit_i" name="Concentratie P uitstroom incrementeel">, incr_concentr_phosphate_drainage_indraft, [g/m3]
+    260:        <parameter id="conn_afs_m" name="Concentratie N oppervlakte afstroom minimaal">, min_concentr_nitrogen_flow_off, [g/m3]
+    264:        <parameter id="conn_uit_m" name="Concentratie N uitstroom minimaal">, min_concentr_nitrogen_drainage_indraft, [g/m3]
+    268:        <parameter id="conn_afs_i" name="Concentratie N oppervlakte afstroom incrementeel">, incr_concentr_nitrogen_flow_off, [g/m3]
+    272:        <parameter id="conn_uit_i" name="Concentratie N uitstroom incrementeel">, incr_concentr_nitrogen_drainage_indraft, [g/m3]
+    276:        <parameter id="lbl_afst" name="Label oppervlakte afstroom">, label_flow_off
+    280:        <parameter id="lbl_uitst" name="Label uitstroom">, label_drainaige_indraft
+--------------------------------------------------------------------------------
