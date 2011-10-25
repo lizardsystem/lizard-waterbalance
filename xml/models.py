@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+
 class Area(object):
     """Represents the area for which to compute a waterbalance.
 
@@ -124,11 +125,9 @@ class Area(object):
         """
         pass
 
-
     def retrieve_incoming_timeseries(self):
         """Return the dict of intake to its discharge time series."""
         pass
-
 
     def retrieve_outgoing_timeseries(self):
         """Return the dict of pump to its discharge time series."""
