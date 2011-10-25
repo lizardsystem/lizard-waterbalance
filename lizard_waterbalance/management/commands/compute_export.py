@@ -29,22 +29,7 @@ from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import CachedWaterbalanceComputer
 
-from timeseries.timeseries import TimeSeries
-
-
-def write_to_pi_file(*args, **kwargs):
-    """Write the given timeseries in PI XML format.
-
-    Parameters:
-      *kwargs['filename']*
-        name of PI XML file to create and write to
-      *kwargs['timeseries']*
-        time series with a method 'events' to generate all date, value pairs
-
-    """
-    ts = TimeSeries(*args, **kwargs)
-    ts.sorted_event_items = lambda : list(kwargs['timeseries'].events())
-    TimeSeries.write_to_pi_file(kwargs['filename'], [ts])
+from timeseries.timeseriesstub import write_to_pi_file
 
 
 class Waterbalance(object):
@@ -61,11 +46,10 @@ class Waterbalance(object):
         start, end = datetime(2000, 1, 1), datetime(2000,12, 31)
         computer.compute(start, end)
 
-        sparse_timeseries =  computer.calc_sluice_error_timeseries(start, end)
+        series =  computer.calc_sluice_error_timeseries(start, end)
+        write_to_pi_file(location_id = "SAP", parameter_id="sluice-error",
+                         filename="sluice-error.xml", timeseries=series)
 
-        timeseries = TimeSeries(location_id = "SAP", parameter_id="sluice-error")
-        timeseries.sorted_event_items = lambda : list(sparse_timeseries.events())
-        TimeSeries.write_to_pi_file("sluice-error.xml", [timeseries])
 
 class Command(BaseCommand):
     """Implements a management command to compute and export a waterbalance.
