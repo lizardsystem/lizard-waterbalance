@@ -132,7 +132,7 @@ class Command(BaseCommand):
         write_to_pi_file(location_id = "SAP", parameter_id = "concentration",
                          filename="concentration.xml", timeseries=series)
 
-        # impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)
-        # print impact_series
-        # write_to_pi_file(location_id = "SAP",
-        #                  filename="concentration.xml", timeseries=series)
+        impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)
+        print impact_series
+        write_to_pi_file(location_id = "SAP",
+                         filename="concentration.xml", timeseries=series)

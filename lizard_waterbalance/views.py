@@ -41,10 +41,11 @@ from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
 from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import Parameter
+from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import cumulative_event_values
 from timeseries.timeseriesstub import grouped_event_values
-from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import write_to_pi_file
 
 import hotshot
 import os
@@ -901,25 +902,25 @@ def waterbalance_area_graph(
 
     #define bars, without sluice error
     incoming_bars = []
-    incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened']),
-                     (labels["drained"].name, incoming["drained"], labels['drained']),
-                     (labels["flow_off"].name, incoming["flow_off"], labels['flow_off']),
-                     (labels["undrained"].name, incoming["undrained"], labels['undrained']),
-                     (labels["precipitation"].name, incoming["precipitation"], labels['precipitation']),
-                     (labels["seepage"].name, incoming["seepage"], labels['seepage'])]
+    incoming_bars += [(labels["hardened"].name, incoming["hardened"], labels['hardened'], "discharge_hardened"),
+                     (labels["drained"].name, incoming["drained"], labels['drained'], "discharge_drained"),
+                     (labels["flow_off"].name, incoming["flow_off"], labels['flow_off'], "discharge_flow_off"),
+                     (labels["undrained"].name, incoming["undrained"], labels['undrained'], "discharge_drainage"),
+                     (labels["precipitation"].name, incoming["precipitation"], labels['precipitation'], "precipitation"),
+                     (labels["seepage"].name, incoming["seepage"], labels['seepage'], "seepage")]
 
     incoming_bars += [
-        (structure.name, timeserie, structure.label) for structure, timeserie in
+        (structure.name, timeserie, structure.label, "discharge_" + structure.name) for structure, timeserie in
         incoming['defined_input'].items()]
 
     outgoing_bars = []
     outgoing_bars = [
-        (labels["indraft"].name, outgoing["indraft"], labels['indraft']),
-        (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation']),
-        (labels["infiltration"].name, outgoing["infiltration"], labels['infiltration'])
+        (labels["indraft"].name, outgoing["indraft"], labels['indraft'], "indraft"),
+        (labels["evaporation"].name, outgoing["evaporation"], labels['evaporation'], "evaporation"),
+        (labels["infiltration"].name, outgoing["infiltration"], labels['infiltration'], "infiltration")
          ]
 
-    outgoing_bars += [(structure.name, timeserie, structure.label) for structure, timeserie in outgoing['defined_output'].items()]
+    outgoing_bars += [(structure.name, timeserie, structure.label, "discharge_" + structure.name) for structure, timeserie in outgoing['defined_output'].items()]
 
     #sort
     incoming_bars = sorted(incoming_bars, key=lambda bar:-bar[2].order)
@@ -937,6 +938,7 @@ def waterbalance_area_graph(
     top_height_in = TopHeight()
     top_height_out = TopHeight()
 
+    dict_series = {}
     for bars, top_height in [(incoming_bars, top_height_in), \
                              (outgoing_bars, top_height_out)]:
         for bar in bars:
@@ -945,7 +947,7 @@ def waterbalance_area_graph(
                                                    date2datetime(start_date),
                                                    date2datetime(end_date),
                                                    period=period)
-
+            dict_series[bar[3]] = bar[1]
             # add the following keyword argument to give the bar edges the same
             # color as the bar itself: edgecolor='#' + label.color
             color = label.color
@@ -960,6 +962,9 @@ def waterbalance_area_graph(
                                            date2datetime(start_date),
                                            date2datetime(end_date),
                                            period=period)
+
+    dict_series["sluice_error"] = sluice_error
+    write_to_pi_file(location_id = "SAP", filename="waterbalance-graph.xml", timeseries=dict_series)
 
     positive_times = []
     positive_sluice_error = []
