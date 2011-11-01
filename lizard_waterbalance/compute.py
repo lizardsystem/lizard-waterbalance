@@ -470,10 +470,9 @@ class WaterbalanceComputer2(object):
         control.
 
         """
-        open_water = self.configuration.open_water
         find_intake = True
-        return find_pumping_station_level_control(open_water, find_intake), \
-               find_pumping_station_level_control(open_water, not find_intake)
+        return find_pumping_station_level_control(self.area, find_intake), \
+               find_pumping_station_level_control(self.area, not find_intake)
 
     def get_open_water_incoming_flows(self, start_date, end_date):
         """ Return incoming waterflows.
@@ -545,7 +544,7 @@ class WaterbalanceComputer2(object):
                     end_date.strftime('%Y-%m-%d')))
             intakes = {}
             outtakes = {}
-            for pumping_station in self.configuration.open_water.pumping_stations.filter(computed_level_control = True):
+            for pumping_station in self.area.pumping_stations.filter(computed_level_control = True):
                 if pumping_station.into:
                     intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
                 else:

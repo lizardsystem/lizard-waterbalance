@@ -44,5 +44,5 @@ class Area(object):
     def pumping_stations(self):
         """Return the PumpingStation(s) for the current Area."""
         open_water = self.configuration.open_water
-        return PumpingStation.objects.filter(open_water=open_water).all()
+        return PumpingStation.objects.filter(open_water=open_water)
 
