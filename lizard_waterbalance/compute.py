@@ -72,16 +72,17 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
 def find_pumping_station_level_control(area, find_intake):
     """Find and return the PumpingStation to be used for level control.
 
-    Parameter:
-      *open_water*
-        open water to which the intake should belong
+    Parameters:
+      *area*
+        Area-like object to which the searched  PumpingStation should belong
       *find_intake*
         holds if and only if the searched PumpingStation should be an intake
 
     """
-    stations_level_control = \
-        [station for station in area.pumping_stations if station.into==find_intake and station.computed_level_control==True]
-    return next((station for station in stations_level_control), None)
+    stations = (station for station in area.pumping_stations
+                if station.into == find_intake and
+                   station.computed_level_control == True)
+    return next(stations, None)
 
 class Configuration(object):
     """Provides the interface to retrieve the information to compute a waterbalance."""
