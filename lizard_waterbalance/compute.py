@@ -382,7 +382,7 @@ class WaterbalanceComputer2(object):
             # whether a given date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.vertical_timeseries_computer.inside_range = date_range.inside
-            outcome = self.vertical_timeseries_computer.compute(self.configuration.open_water.surface,
+            outcome = self.vertical_timeseries_computer.compute(self.area.surface,
                                                                 crop_evaporation_factor,
                                                                 input['precipitation'],
                                                                 transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
@@ -674,7 +674,7 @@ class WaterbalanceComputer2(object):
             impact = {}
             impact_incremental = {}
 
-            factor = 1000.0 / float(self.configuration.open_water.surface)
+            factor = 1000.0 / float(self.area.surface)
 
             for key, timeserie in load.items():
                 impact_timeseries = multiply_timeseries(timeserie, factor)

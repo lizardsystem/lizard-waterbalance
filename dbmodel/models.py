@@ -29,6 +29,11 @@ class Area(object):
         self.configuration = configuration
 
     @property
+    def surface(self):
+        """Return the surface of the current Area in [m2]."""
+        return self.configuration.open_water.surface
+
+    @property
     def buckets(self):
         """Return the buckets for the current Area."""
         return self.configuration.open_water.buckets.all()
