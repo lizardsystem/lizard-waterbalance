@@ -23,3 +23,5 @@ test-waterbalance-output:
 	diff expected-reference.xml ../reference.xml
 	diff expected-water-level-sluice-error.xml ../water-level-sluice-error.xml
 	diff expected-fractions.xml ../fractions.xml
+	diff expected-impact.xml ../impact.xml
+	diff expected-impact-incremental.xml ../impact-incremental.xml

@@ -26,6 +26,7 @@ from datetime import datetime
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
 
+from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import CachedWaterbalanceComputer
@@ -132,7 +133,19 @@ class Command(BaseCommand):
         write_to_pi_file(location_id = "SAP", parameter_id = "concentration",
                          filename="concentration.xml", timeseries=series)
 
+        impact = {}
         impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)
-        print impact_series
+        for key, series in impact_series.iteritems():
+            if isinstance(key, PumpingStation):
+                impact[key.name] = series
+            else:
+                impact[key] = series
         write_to_pi_file(location_id = "SAP",
-                         filename="concentration.xml", timeseries=series)
+                         filename="impact.xml", timeseries=impact)
+        for key, series in impact_incremental_series.iteritems():
+            if isinstance(key, PumpingStation):
+                impact[key.name] = series
+            else:
+                impact[key] = series
+        write_to_pi_file(location_id = "SAP",
+                         filename="impact-incremental.xml", timeseries=impact)
