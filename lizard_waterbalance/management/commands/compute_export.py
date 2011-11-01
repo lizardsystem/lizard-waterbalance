@@ -26,6 +26,7 @@ from datetime import datetime
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
 
+from dbmodel.models import Area
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.views import CacheKeyName
@@ -75,7 +76,8 @@ class Command(BaseCommand):
             "impact_incremental" ]
         key_names = [cache_key_name.get(name) for name in names]
         cache.delete_many(key_names)
-        return CachedWaterbalanceComputer(cache_key_name, configuration)
+        area = Area(configuration)
+        return CachedWaterbalanceComputer(cache_key_name, configuration, area)
 
     def compute_export(self, computer):
         """Compute and export the waterbalance using the given computer."""

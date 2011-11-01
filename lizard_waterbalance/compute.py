@@ -134,6 +134,7 @@ class WaterbalanceComputer2(object):
     """
 
     def __init__(self, configuration,
+                 area = None,
                  settings_loader=None,
                  bucket_computer=BucketComputer(),
                  buckets_summarizer=BucketsSummarizer(),
@@ -161,6 +162,7 @@ class WaterbalanceComputer2(object):
         """
 
         self.configuration = configuration
+        self.area = area
 
         self.settings_loader=settings_loader,
 
@@ -237,7 +239,7 @@ class WaterbalanceComputer2(object):
 
             input_ts['open_water']['seepage'] = input_ts['seepage']
 
-            for bucket in self.configuration.retrieve_buckets():
+            for bucket in self.area.buckets:
                 input_ts[bucket] = {}
                 input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
 
@@ -290,9 +292,8 @@ class WaterbalanceComputer2(object):
 
             input = self.get_input_timeseries(start_date, end_date)
 
-            buckets = self.configuration.retrieve_buckets()
             buckets_outcome = {}
-            for bucket in buckets:
+            for bucket in self.area.buckets:
                 buckets_outcome[bucket] = self.bucket_computer.compute(
                                                                        bucket,
                                                                        input['precipitation'],
