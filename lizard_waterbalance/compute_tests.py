@@ -924,103 +924,57 @@ class FindIntakeLevelControlSuite(TestCase):
         index used to create unique labels in the database
 
     """
-    # To store PumpingStation in the database, we have to create an OpenWater
-    # and a Label to which it refers. But the OpenWater / Label combination has
-    # to be unique for each PumpingStation. To facilitate the creation of
-    # unique pairs, we assign each Label a different pk value.
-    label_pk = 1
-
-    def create_pumping_station(self):
-        """Create a pumping station and save it to the database."""
-        # Before we can create and save a PumpingStation, we have to set the
-        # required fields.
-
-        # If a required field refers to another model, we do not save that model
-        # to the database, otherwise we would also have to create the required
-        # fields of that model.
-        open_water = OpenWater()
-        open_water.pk = 1
-        # If we do not set the pk field of the model or set it after we have
-        # assigned the model to the PumpingStation, we get an IntegrityError.
-        label = Label()
-        label.pk = self.label_pk
-        self.label_pk += 1
-
-        pumping_station = PumpingStation()
-        pumping_station.open_water = open_water
-        pumping_station.label = label
-        pumping_station.into = True
-        pumping_station.computed_level_control = True
-        pumping_station.percentage = 100
-        pumping_station.save()
-
-        return pumping_station
 
     def setUp(self):
         """Create a pumping station and save it to the database."""
-        self.pumping_station = self.create_pumping_station()
-
-    def tearDown(self):
-        """Remove the PumpingStation that was saved to the database."""
-        self.pumping_station.delete()
+        self.pumping_station = Mock()
+        self.pumping_station.into = True
+        self.pumping_station.computed_level_control = True
+        self.area = Mock()
+        self.area.pumping_stations = [self.pumping_station]
 
     def test_a(self):
-        """Test one intake is available for level control."""
-        open_water = self.pumping_station.open_water
-        intake = find_pumping_station_level_control(open_water, True)
-        self.assertEqual(self.pumping_station, intake)
+        """Test that a single intake for level control is found."""
+        intake = find_pumping_station_level_control(self.area, True)
+        self.assertEqual(id(self.pumping_station), id( intake))
 
     def test_b(self):
-        """Test no intake are available for level control.
+        """Test that a single intake for level control is found.
 
-        There is an intake available for level control but that belongs to
-        another open water.
+        Multiple intakes for level control exist.
         """
-        open_water = OpenWater()
-        open_water.pk = 2
-        intake = find_pumping_station_level_control(open_water, True)
-        self.assertTrue(intake is None)
+        pumping_station = Mock()
+        pumping_station.into = True
+        pumping_station.computed_level_control = True
+        self.area.pumping_stations.append(pumping_station)
+
+        intake = find_pumping_station_level_control(self.area, True)
+        self.assertTrue((id(intake) == id(self.pumping_station)) or
+                        (id(intake) == id(pumping_station)))
 
     def test_c(self):
-        """Test multiple intakes are available for level control."""
-
-        pumping_station = self.create_pumping_station()
-        self.assertEqual(2, PumpingStation.objects.count())
-
-        open_water = pumping_station.open_water
-        intake = find_pumping_station_level_control(open_water, True)
-        self.assertTrue((intake == self.pumping_station) ^
-                        (intake == pumping_station))
-
-        pumping_station.delete()
-
-    def test_d(self):
-        """Test no intakes are available for level control.
+        """Test that no intakes for level control are found.
 
         There is an intake available but that intake cannot be used for level
         control.
         """
         self.pumping_station.computed_level_control = False
-        self.pumping_station.save()
-        open_water = self.pumping_station.open_water
-        intake = find_pumping_station_level_control(open_water, True)
+        intake = find_pumping_station_level_control(self.area, True)
         self.assertTrue(intake is None)
 
-    def test_e(self):
-        """Test no intakes are available for level control.
+    def test_d(self):
+        """Test that no intakes for level control are found.
 
-        There is a pump available for level control.
+        There is a pump available for level control but no intake.
         """
         self.pumping_station.into = False
-        self.pumping_station.save()
-        open_water = self.pumping_station.open_water
-        intake = find_pumping_station_level_control(open_water, True)
+        intake = find_pumping_station_level_control(self.area, True)
         self.assertTrue(intake is None)
 
 
 def test_no_intakes_or_pumps_exist():
     """Test no intakes or pumps exist."""
-    open_water = OpenWater()
-    open_water.pk = 1
-    intake = find_pumping_station_level_control(open_water, True)
+    area = Mock()
+    area.pumping_stations = []
+    intake = find_pumping_station_level_control(area, True)
     assert intake is None

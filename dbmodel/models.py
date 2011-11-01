@@ -22,6 +22,8 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+from lizard_waterbalance.models import PumpingStation
+
 class Area(object):
 
     def __init__(self, configuration):
@@ -35,5 +37,12 @@ class Area(object):
 
     @property
     def buckets(self):
-        """Return the buckets for the current Area."""
+        """Return the Bucket(s) for the current Area."""
         return self.configuration.open_water.buckets.all()
+
+    @property
+    def pumping_stations(self):
+        """Return the PumpingStation(s) for the current Area."""
+        open_water = self.configuration.open_water
+        return PumpingStation.objects.filter(open_water=open_water).all()
+

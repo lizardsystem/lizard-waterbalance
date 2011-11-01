@@ -69,7 +69,7 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-def find_pumping_station_level_control(open_water, find_intake):
+def find_pumping_station_level_control(area, find_intake):
     """Find and return the PumpingStation to be used for level control.
 
     Parameter:
@@ -80,8 +80,7 @@ def find_pumping_station_level_control(open_water, find_intake):
 
     """
     stations_level_control = \
-        PumpingStation.objects.filter(open_water=open_water, into=find_intake,
-                                      computed_level_control=True)
+        [station for station in area.pumping_stations if station.into==find_intake and station.computed_level_control==True]
     return next((station for station in stations_level_control), None)
 
 class Configuration(object):
@@ -873,8 +872,7 @@ class WaterbalanceComputer2(object):
                 intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                        start_date=start_date,
                                                        end_date=end_date)
-            open_water = self.configuration.open_water
-            intake = find_pumping_station_level_control(open_water, True)
+            intake = find_pumping_station_level_control(self.area, True)
             if intake is None:
                 logger.warning("No intake for level control is present for "
                                "configuration %s", self.configuration)
