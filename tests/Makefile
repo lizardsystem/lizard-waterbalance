@@ -15,13 +15,13 @@ test-import-excel-Sierveld-20110916:
 	diff -q import-excel-Sierveld-20110916/expected_lizard_waterbalance.json import-excel-Sierveld-20110916/lizard_waterbalance.json
 
 test-waterbalance-output:
-	cd ..; bin/django compute_export aetsveldse-polder-oost import
-	diff expected-sluice-error.xml ../sluice-error.xml
-	diff expected-open-water-incoming-flows.xml ../open-water-incoming-flows.xml
-	diff expected-open-water-outgoing-flows.xml ../open-water-outgoing-flows.xml
-	diff expected-level-control-timeseries.xml ../level-control-timeseries.xml
-	diff expected-reference.xml ../reference.xml
-	diff expected-water-level-sluice-error.xml ../water-level-sluice-error.xml
-	diff expected-fractions.xml ../fractions.xml
-	diff expected-impact.xml ../impact.xml
-	diff expected-impact-incremental.xml ../impact-incremental.xml
+	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import
+	cd waterbalance-output-Aetsveldse-polder; diff expected-sluice-error.xml sluice-error.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-open-water-incoming-flows.xml open-water-incoming-flows.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-open-water-outgoing-flows.xml open-water-outgoing-flows.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-level-control-timeseries.xml level-control-timeseries.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-reference.xml reference.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-water-level-sluice-error.xml water-level-sluice-error.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-fractions.xml fractions.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-impact.xml impact.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental.xml impact-incremental.xml
