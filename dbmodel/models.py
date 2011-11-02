@@ -54,6 +54,25 @@ class Area(object):
         return self.configuration.open_water.init_water_level
 
     @property
+    def max_intake(self):
+        """Return the max capacity of an intake of the current Area in [mNAP].
+
+        The intake should be an intake for level control.
+
+        """
+        max_discharge = 0.0
+        is_none = True
+        for station in self.pumping_stations.filter(into=True, computed_level_control=True):
+            if station.max_discharge is not None:
+               max_discharge += station.max_discharge
+               is_none = False
+
+        if is_none:
+            return None
+        else:
+            return max_discharge
+
+    @property
     def buckets(self):
         """Return the Bucket(s) for the current Area."""
         return self.configuration.open_water.buckets.all()
@@ -157,4 +176,6 @@ class Area(object):
             return TimeseriesRestrictedStub(timeseries=open_water.maximum_level.get_timeseries(),
                                         start_date=start_date,
                                         end_date=end_date)
+
+
 

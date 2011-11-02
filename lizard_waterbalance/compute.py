@@ -489,7 +489,7 @@ class WaterbalanceComputer2(object):
 
 
             outcome = self.level_control_computer.compute(
-                self.configuration.open_water,
+                self.area,
                 buckets_summary,
                 vertical_open_water_timeseries["precipitation"],
                 vertical_open_water_timeseries["evaporation"],
@@ -499,7 +499,7 @@ class WaterbalanceComputer2(object):
                 input['open_water']['maximum_level'],
                 input['incoming_timeseries'],
                 input['outgoing_timeseries'],
-                self.configuration._retrieve_open_water().get_max_intake(),
+                self.area.max_intake,
                 self.configuration._retrieve_open_water().get_max_outlet())
 
             #cache
@@ -929,7 +929,7 @@ class WaterbalanceComputer2(object):
             else:
                 intakes_timeseries[intake] = control['intake_wl_control']
 
-            fractions = self.fraction_computer.compute(self.configuration.open_water,
+            fractions = self.fraction_computer.compute(self.area,
                                                        buckets_summary,
                                                        vertical_open_water_timeseries["precipitation"],
                                                        vertical_open_water_timeseries["seepage"],

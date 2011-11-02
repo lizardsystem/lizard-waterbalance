@@ -839,19 +839,6 @@ class OpenWater(models.Model):
     def linked_with_configuration(self):
         return str(self.waterbalanceconf)
 
-    def get_max_intake(self):
-        max_discharge = 0.0
-        is_none = True
-        for station in self.pumping_stations.filter(into=True, computed_level_control=True):
-            if station.max_discharge is not None:
-               max_discharge += station.max_discharge
-               is_none = False
-
-        if is_none:
-            return None
-        else:
-            return max_discharge
-
     def get_max_outlet(self):
         max_discharge = 0.0
         is_none = True
