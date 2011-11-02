@@ -1517,19 +1517,6 @@ class WaterbalanceConf(models.Model):
                 {'area_slug': str(self.waterbalance_area.slug),
                  'scenario_slug': str(self.waterbalance_scenario.slug)})
 
-
-    def retrieve_seepage(self, start_date, end_date):
-        open_water = self._retrieve_open_water() #start_date, end_date
-        exception_msg = ""
-        if open_water.seepage is None:
-            exception_msg = "No seepage is defined for the open water of waterbalance area %s" % self.__unicode__()
-            logger.warning(exception_msg)
-            raise IncompleteData(exception_msg)
-        timeseries = self.open_water.seepage.get_timeseries()#start_date, end_date
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
-
     def get_calc_period(self, input_end_date_time=datetime.datetime.now()):
         """Return the start and end date (and time) for the calculation horizon.
 

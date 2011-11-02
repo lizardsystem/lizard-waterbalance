@@ -88,3 +88,15 @@ class Area(object):
                                         start_date=start_date,
                                         end_date=end_date)
 
+    def retrieve_seepage(self, start_date, end_date):
+        """Return the seepage time series for the current Area."""
+        open_water = self.configuration.open_water
+        if open_water.seepage is None:
+            exception_msg = "No seepage is defined for the waterbalance " \
+                            "area %s" %  unicode(open_water)
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = open_water.seepage.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
