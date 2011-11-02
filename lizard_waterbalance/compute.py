@@ -83,49 +83,6 @@ def find_pumping_station_level_control(area, find_intake):
                    station.computed_level_control == True)
     return next(stations, None)
 
-class Configuration(object):
-    """Provides the interface to retrieve the information to compute a waterbalance."""
-
-    def retrieve_buckets(self): pass
-    def retrieve_evaporation(self): pass
-    def retrieve_open_water(self): pass
-    def retrieve_precipitation(self): pass
-    def retrieve_seepage(self): pass
-    def retrieve_sobek_buckets(self): pass
-    def save(self): pass
-    def __unicode__(self): pass
-
-    def calculation_end_date(self): pass
-    def calculation_start_date(self): pass
-    def waterbalance_area(self): pass
-    def waterbalance_scenario(self): pass
-
-    def get_all_config_concentrations(self): pass
-
-class OpenWater(object):
-
-    def nutricalc_incr_exists(self): pass
-    def get_nutricalc_incr_timeseries(self): pass
-    def nutricalc_min_exists(self): pass
-    def get_nutricalc_min_timeseries(self): pass
-    def get_retrieve_incoming_timeseries(self): pass
-    def get_retrieve_maximum_level(self): pass
-    def get_retrieve_minimum_level(self): pass
-    def get_retrieve_outgoing_timeseries(self): pass
-    def get_retrieve_sewer(self): pass
-    def get_surface(self): pass
-    def get_max_intake(self): pass
-    def get_max_outlet(self): pass
-
-    def get_pumping_stations_for_level_control(self): pass
-
-class Bucket(object):
-    pass
-
-# objs = conf.retrieve_buckets()
-# obj = objs[0]
-# self.assertTrue(hasattr(obj, "surface_type")
-
 
 def retrieve_incoming_timeseries(area, only_input=False):
     """Return the dictionary of intake to measured time series.
@@ -806,7 +763,7 @@ class WaterbalanceComputer2(object):
             intake = find_pumping_station_level_control(self.area, True)
             if intake is None:
                 logger.warning("No intake for level control is present for "
-                               "configuration %s", self.configuration)
+                               "area %s", self.area.name)
             else:
                 intakes_timeseries[intake] = control['intake_wl_control']
 
