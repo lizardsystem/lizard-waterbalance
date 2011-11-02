@@ -126,10 +126,13 @@ class Bucket(object):
 # obj = objs[0]
 # self.assertTrue(hasattr(obj, "surface_type")
 
+
 def retrieve_incoming_timeseries(area, only_input=False):
     """Return the dictionary of intake to measured time series.
 
     Parameter:
+      *area*
+        Area to which the intakes belong
       *only_input*
         If only_input holds, this method only returns the measured time series
         of those intakes that are not used for level control, otherwise this
@@ -147,6 +150,32 @@ def retrieve_incoming_timeseries(area, only_input=False):
             timeseries = pumping_station.retrieve_sum_timeseries()
             incoming_timeseries[pumping_station] = timeseries
     return incoming_timeseries
+
+
+def retrieve_outgoing_timeseries(area, only_input=False):
+    """Return the dictionary of pump to measured time series.
+
+    Parameter:
+      *area*
+        Area to which the pumps belong
+      *only_input*
+        If only_input holds, this method only returns the measured time series
+        of those pumps that are not used for level control, otherwise this
+        method returns the measured time series of all pumps.
+
+    Note that the measured time series of a pump is the sum of the measured
+    time series of its pump lines.
+
+    """
+    outgoing_timeseries = {}
+    for pumping_station in area.pumping_stations:
+        if not pumping_station.into:
+            if only_input and pumping_station.computed_level_control:
+                continue
+            timeseries = pumping_station.retrieve_sum_timeseries()
+            outgoing_timeseries[pumping_station] = timeseries
+    return outgoing_timeseries
+
 
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
@@ -274,7 +303,7 @@ class WaterbalanceComputer2(object):
                                                                 end_date=end_date)
 
             input_ts['outgoing_timeseries'] = {}
-            for pump, timeseries in self.configuration.open_water.retrieve_outgoing_timeseries(only_input=False).iteritems():
+            for pump, timeseries in retrieve_outgoing_timeseries(self.area, only_input=False).iteritems():
                 input_ts['outgoing_timeseries'][pump] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                                 start_date=start_date,
                                                                 end_date=end_date)
