@@ -126,6 +126,28 @@ class Bucket(object):
 # obj = objs[0]
 # self.assertTrue(hasattr(obj, "surface_type")
 
+def retrieve_incoming_timeseries(area, only_input=False):
+    """Return the dictionary of intake to measured time series.
+
+    Parameter:
+      *only_input*
+        If only_input holds, this method only returns the measured time series
+        of those intakes that are not used for level control, otherwise this
+        method returns the measured time series of all intakes.
+
+    Note that the measured time series of an intake is the sum of the
+    measured time series of its pump lines.
+
+    """
+    incoming_timeseries = {}
+    for pumping_station in area.pumping_stations:
+        if pumping_station.into:
+            if only_input and pumping_station.computed_level_control:
+                continue
+            timeseries = pumping_station.retrieve_sum_timeseries()
+            incoming_timeseries[pumping_station] = timeseries
+    return incoming_timeseries
+
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
 
@@ -243,7 +265,7 @@ class WaterbalanceComputer2(object):
                 input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
 
             input_ts['incoming_timeseries'] = {}
-            for intake, timeseries in self.configuration.open_water.retrieve_incoming_timeseries(only_input=False).iteritems():
+            for intake, timeseries in retrieve_incoming_timeseries(self.area, only_input=False).iteritems():
                 sparse_timeseries = SparseTimeseriesStub()
                 for event in timeseries.events():
                     sparse_timeseries.add_value(event[0], event[1])

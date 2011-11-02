@@ -839,29 +839,6 @@ class OpenWater(models.Model):
     def linked_with_configuration(self):
         return str(self.waterbalanceconf)
 
-    def retrieve_incoming_timeseries(self, only_input=False):
-        """Return the dictionary of intake to measured time series.
-
-        Parameter:
-          * only_input *
-            If only_input holds, this method only returns the measured time
-            series of those intakes that are not used for level control,
-            otherwise this method returns the measured time series of all
-            intakes.
-
-        Note that the measured time series of an intake is the sum of the
-        measured time series of its pump lines.
-
-        """
-        incoming_timeseries = {}
-        for pumping_station in self.retrieve_pumping_stations():
-            if pumping_station.into:
-                if only_input and pumping_station.computed_level_control:
-                    continue
-                timeseries = pumping_station.retrieve_sum_timeseries()
-                incoming_timeseries[pumping_station] = timeseries
-        return incoming_timeseries
-
     def retrieve_outgoing_timeseries(self, only_input=False):
         """Return the dictionary of pump to measured time series.
 
