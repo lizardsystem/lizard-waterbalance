@@ -676,13 +676,8 @@ class WaterbalanceComputer2(object):
             load = {}
             load_incremental = {}
 
-            if self.configuration.open_water.nutricalc_min is not None:
-                nutricalc_min = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_min.get_timeseries(),
-                                                         start_date=start_date,
-                                                         end_date=end_date)
-            else:
-                nutricalc_min = None
-
+            nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
+                                                             end_date)
             if self.configuration.open_water.nutricalc_incr is not None:
                 nutricalc_incr = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_incr.get_timeseries(),
                                                          start_date=start_date,

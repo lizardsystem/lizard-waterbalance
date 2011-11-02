@@ -197,4 +197,17 @@ class Area(object):
                                         end_date=end_date)
 
 
+    def retrieve_nutricalc_min(self, start_date, end_date):
+        """Return the minimal nutricalc time series for the current Area.
 
+        If no such time series is defined, this method returns None.
+
+        """
+        open_water = self.configuration.open_water
+        if open_water.nutricalc_min is not None:
+            timeseries = open_water.nutricalc_min.get_timeseries()
+            return TimeseriesRestrictedStub(timeseries=timeseries,
+                                            start_date=start_date,
+                                            end_date=end_date)
+        else:
+            return None
