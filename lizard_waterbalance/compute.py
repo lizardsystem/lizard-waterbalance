@@ -33,7 +33,6 @@ from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import DateRange
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_assignment import LevelControlAssignment
-from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
 from timeseries.timeseriesstub import enumerate_events

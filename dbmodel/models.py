@@ -36,6 +36,16 @@ class Area(object):
         return self.configuration.open_water.surface
 
     @property
+    def bottom_height(self):
+        """Return the bottom height of the current Area in [mNAP]."""
+        return self.configuration.open_water.bottom_height
+
+    @property
+    def init_water_level(self):
+        """Return the initial water level of the current Area in [mNAP]."""
+        return self.configuration.open_water.init_water_level
+
+    @property
     def buckets(self):
         """Return the Bucket(s) for the current Area."""
         return self.configuration.open_water.buckets.all()

@@ -70,7 +70,7 @@ class LevelControlComputer:
         """
         self.inside_range = inside_range
 
-    def compute(self, open_water, buckets_summary, precipitation, evaporation, seepage, infiltration,
+    def compute(self, area, buckets_summary, precipitation, evaporation, seepage, infiltration,
                 minimum_level_timeseries, maximum_level_timeseries,
                 intakes_timeseries, pumps_timeseries,
                 max_intake = None, max_outtake = None):
@@ -80,7 +80,7 @@ class LevelControlComputer:
         the intake time series and pump time series for the given open water.
 
         Parameters:
-        * open_water -- OpenWater for which to compute the level control
+        * area -- Area for which to compute the level control
         * buckets_summary -- BucketsSummary with the summed buckets outcome
         * precipitation,
         * evaporation,
@@ -98,8 +98,8 @@ class LevelControlComputer:
         total_incoming = SparseTimeseriesStub()
         total_outgoing = SparseTimeseriesStub()
 
-        surface = 1.0 * open_water.surface
-        water_level = open_water.init_water_level
+        surface = 1.0 * area.surface
+        water_level = area.init_water_level
 
         ts = {}
         ts['bucket_total_incoming'] = buckets_summary.total_incoming
@@ -172,7 +172,7 @@ class LevelControlComputer:
 
             water_level_timeseries.add_value(date, water_level)
 
-            storage_value = (water_level - open_water.bottom_height) * surface
+            storage_value = (water_level - area.bottom_height) * surface
             storage.add_value(date, storage_value)
 
             result.add_value(date, level_control)

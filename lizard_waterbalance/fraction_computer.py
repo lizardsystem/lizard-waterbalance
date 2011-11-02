@@ -25,16 +25,13 @@
 #
 #******************************************************************************
 
-from datetime import timedelta
-
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 
 class FractionComputer:
 
-    def compute(self, open_water, buckets_summary, precipitation_timeseries, seepage_timeseries,
+    def compute(self, area, buckets_summary, precipitation_timeseries, seepage_timeseries,
                 storage_timeseries, total_output_timeseries, intakes_timeseries, start_date, end_date):
         """Compute and return the fraction series.
 
@@ -42,7 +39,7 @@ class FractionComputer:
         the intake time series and pump time series for the given open water.
 
         Parameters:
-        * open_water -- OpenWater for which to compute the fractions
+        * area -- Area for which to compute the level control
         * buckets_summary -- BucketsSummary with the summed buckets outcome
         * precipitation,
         * seepage,
@@ -74,7 +71,7 @@ class FractionComputer:
         for key in intakes_timeseries.keys():
             previous_intakes[key] = 0.0
 
-        previous_storage = self.initial_storage(open_water)
+        previous_storage = self.initial_storage(area)
 
         ts = {}
         ts['hardened'] = buckets_summary.hardened
@@ -98,7 +95,7 @@ class FractionComputer:
 
             if first:
                 first = False
-                previous_storage = (open_water.init_water_level - open_water.bottom_height) * open_water.surface
+                previous_storage = (area.init_water_level - area.bottom_height) * area.surface
 
 
             total_output = -1 * events['total_output'][1]
@@ -223,9 +220,9 @@ class FractionComputer:
         fraction = 100 * new_storage_fraction / current_storage
         return fraction
 
-    def initial_storage(self, open_water):
-        return 1.0 * open_water.surface * \
-               (open_water.init_water_level - open_water.bottom_height)
+    def initial_storage(self, area):
+        return 1.0 * area.surface * \
+               (area.init_water_level - area.bottom_height)
 
     def total_incoming(self, event_values):
         incoming_values = event_values[:]
