@@ -673,29 +673,16 @@ class WaterbalanceComputer2(object):
                 concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
                 concentrations_incremetal[concentr.label.program_name] = concentr.stof_increment
 
-            load = {}
-            load_incremental = {}
-
             nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
                                                              end_date)
-            if self.configuration.open_water.nutricalc_incr is not None:
-                nutricalc_incr = TimeseriesRestrictedStub(timeseries=self.configuration.open_water.nutricalc_incr.get_timeseries(),
-                                                         start_date=start_date,
-                                                         end_date=end_date)
-
-            else:
-                nutricalc_incr = None
-
+            nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
+                                                              end_date)
 
             load = self.load_computer.compute(flows, concentrations, start_date,
                                               end_date, nutricalc_min)
             load_incremental = self.load_computer.compute(flows, concentrations_incremetal, start_date, end_date,
                                                           nutricalc_incr)
 
-            #self.outcome['loads'] = (load, load_incremental)
-            #self.outcome_info['loads'] = {'start_date': start_date,
-            #                       'end_date': end_date}
-            #self.updated = True
 
         return load, load_incremental
 

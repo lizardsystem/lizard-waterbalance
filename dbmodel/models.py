@@ -211,3 +211,20 @@ class Area(object):
                                             end_date=end_date)
         else:
             return None
+
+    def retrieve_nutricalc_incr(self, start_date, end_date):
+        """Return the incremental nutricalc time series for the current Area.
+
+        If no such time series is defined, this method returns None.
+
+        """
+        open_water = self.configuration.open_water
+        if open_water.nutricalc_incr is not None:
+            timeseries = open_water.nutricalc_incr.get_timeseries()
+            return TimeseriesRestrictedStub(timeseries=timeseries,
+                                            start_date=start_date,
+                                            end_date=end_date)
+        else:
+            return None
+
+
