@@ -73,6 +73,25 @@ class Area(object):
             return max_discharge
 
     @property
+    def max_outlet(self):
+        """Return the max capacity of a pump of the current Area in [mNAP].
+
+        The intake should be a pump for level control.
+
+        """
+        max_discharge = 0.0
+        is_none = True
+        for station in self.pumping_stations.filter(into=False, computed_level_control=True):
+            if station.max_discharge is not None:
+               max_discharge += station.max_discharge
+               is_none = False
+
+        if is_none:
+            return None
+        else:
+            return max_discharge
+
+    @property
     def buckets(self):
         """Return the Bucket(s) for the current Area."""
         return self.configuration.open_water.buckets.all()

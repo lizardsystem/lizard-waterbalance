@@ -500,7 +500,7 @@ class WaterbalanceComputer2(object):
                 input['incoming_timeseries'],
                 input['outgoing_timeseries'],
                 self.area.max_intake,
-                self.configuration._retrieve_open_water().get_max_outlet())
+                self.area.max_outlet)
 
             #cache
             self.outcome['level_control'] = outcome
