@@ -996,50 +996,6 @@ def waterbalance_area_graph(
     logger.debug("Grabbing all graph data took %s seconds.", time() - t1)
     return graph
 
-
-def waterbalance_sluice_error(
-    configuration, waterbalance_computer, start_date, end_date, width, height):
-    """Draw sluice error.
-    """
-    # Enforces that data is calculated between start_date and end_date
-    ts = waterbalance_computer.get_sluice_error_timeseries(
-        date2datetime(start_date), date2datetime(end_date),
-        # start_date, end_date,
-        timestep=WaterbalanceTimeserie.TIMESTEP_DAY)
-
-    # Draw this timeseries
-    graph = Graph(start_date, end_date, width, height)
-
-    # Normally we would just fetch times and values
-    # times, values = ts.times_values(start_date, end_date)
-    # We have to display the cumulative value per year
-    times = []
-    values = []
-    current_value = 0
-    previous_dt = None
-    for event in ts.get_timeseries().timeseries_events.filter(
-        time__gte=start_date, time__lte=end_date):
-
-        if previous_dt is None or previous_dt.year != event.time.year:
-            current_value = 0
-
-        current_value += event.value
-        previous_dt = event.time
-        times.append(event.time)
-        values.append(current_value)
-
-    color = '#0000ff'
-    graph.axes.plot(times, values, color=color)
-
-    graph.add_today()
-
-    # Return response
-    canvas = FigureCanvas(graph.figure)
-    response = HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
-
-
 def waterbalance_water_level(configuration,
                              waterbalance_computer,
                              start_date,
