@@ -26,7 +26,9 @@ import logging
 
 from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation
+from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
+from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
 logger = logging.getLogger(__name__)
 
@@ -131,3 +133,28 @@ class Area(object):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
+
+    def retrieve_minimum_level(self, start_date, end_date):
+        """Return the minimum water level for the current Area."""
+        open_water = self.configuration.open_water
+        if open_water.use_min_max_level_relative_to_meas:
+             min_level = TimeseriesWithMemoryStub()
+             min_level.add_value(start_date, open_water.min_level_relative_to_measurement)
+             return add_timeseries(min_level, open_water.waterlevel_measurement.get_timeseries())
+        else:
+            return TimeseriesRestrictedStub(timeseries=open_water.minimum_level.get_timeseries(),
+                                            start_date=start_date,
+                                            end_date=end_date)
+
+    def retrieve_maximum_level(self, start_date, end_date):
+        """Return the maximum water level for the current Area."""
+        open_water = self.configuration.open_water
+        if open_water.use_min_max_level_relative_to_meas:
+             max_level = TimeseriesWithMemoryStub()
+             max_level.add_value(start_date, open_water.max_level_relative_to_measurement)
+             return add_timeseries(max_level, open_water.waterlevel_measurement.get_timeseries())
+        else:
+            return TimeseriesRestrictedStub(timeseries=open_water.maximum_level.get_timeseries(),
+                                        start_date=start_date,
+                                        end_date=end_date)
+

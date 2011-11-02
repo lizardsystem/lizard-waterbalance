@@ -233,8 +233,8 @@ class WaterbalanceComputer2(object):
             input_ts['sewer'] = self.area.retrieve_sewer(start_date, end_date)
 
             input_ts['open_water'] = {}
-            input_ts['open_water']['minimum_level'] = self.configuration.open_water.retrieve_minimum_level(start_date, end_date)
-            input_ts['open_water']['maximum_level'] = self.configuration.open_water.retrieve_maximum_level(start_date, end_date)
+            input_ts['open_water']['minimum_level'] = self.area.retrieve_minimum_level(start_date, end_date)
+            input_ts['open_water']['maximum_level'] = self.area.retrieve_maximum_level(start_date, end_date)
 
             input_ts['open_water']['seepage'] = input_ts['seepage']
 

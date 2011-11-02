@@ -885,26 +885,6 @@ class OpenWater(models.Model):
                 outgoing_timeseries[pumping_station] = timeseries
         return outgoing_timeseries
 
-    def retrieve_minimum_level(self, start_date, end_date):
-        if self.use_min_max_level_relative_to_meas:
-             min_level = TimeseriesWithMemoryStub()
-             min_level.add_value(start_date, self.min_level_relative_to_measurement)
-             return add_timeseries(min_level, self.waterlevel_measurement.get_timeseries())
-        else:
-            return TimeseriesRestrictedStub(timeseries=self.minimum_level.get_timeseries(),
-                                        start_date=start_date,
-                                        end_date=end_date)
-
-    def retrieve_maximum_level(self, start_date, end_date):
-        if self.use_min_max_level_relative_to_meas:
-             max_level = TimeseriesWithMemoryStub()
-             max_level.add_value(start_date, self.max_level_relative_to_measurement)
-             return add_timeseries(max_level, self.waterlevel_measurement.get_timeseries())
-        else:
-            return TimeseriesRestrictedStub(timeseries=self.maximum_level.get_timeseries(),
-                                        start_date=start_date,
-                                        end_date=end_date)
-
     def get_max_intake(self):
         max_discharge = 0.0
         is_none = True
