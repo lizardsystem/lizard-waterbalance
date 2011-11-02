@@ -885,15 +885,6 @@ class OpenWater(models.Model):
                 outgoing_timeseries[pumping_station] = timeseries
         return outgoing_timeseries
 
-    def retrieve_sewer(self, start_date, end_date):
-        if self.sewer is None:
-            return None
-        timeseries = self.sewer.get_timeseries() #start_date, end_date
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
-
-
     def retrieve_minimum_level(self, start_date, end_date):
         if self.use_min_max_level_relative_to_meas:
              min_level = TimeseriesWithMemoryStub()

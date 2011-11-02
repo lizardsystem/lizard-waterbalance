@@ -230,7 +230,7 @@ class WaterbalanceComputer2(object):
             for event in self.area.retrieve_seepage(start_date, end_date).events():
                 input_ts['seepage'].add_value(event[0], event[1])
 
-            input_ts['sewer'] = self.configuration.open_water.retrieve_sewer(start_date, end_date)
+            input_ts['sewer'] = self.area.retrieve_sewer(start_date, end_date)
 
             input_ts['open_water'] = {}
             input_ts['open_water']['minimum_level'] = self.configuration.open_water.retrieve_minimum_level(start_date, end_date)
