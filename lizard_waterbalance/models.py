@@ -1518,16 +1518,6 @@ class WaterbalanceConf(models.Model):
                  'scenario_slug': str(self.waterbalance_scenario.slug)})
 
 
-    def retrieve_evaporation(self, start_date, end_date):
-        if self.open_water.evaporation is None:
-            exception_msg = "No evaporation is defined for the waterbalance area %s" % self.__unicode__()
-            logger.warning(exception_msg)
-            raise IncompleteData(exception_msg)
-        timeseries = self.open_water.evaporation.get_timeseries() #start_date, end_date
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
-
     def retrieve_seepage(self, start_date, end_date):
         open_water = self._retrieve_open_water() #start_date, end_date
         exception_msg = ""

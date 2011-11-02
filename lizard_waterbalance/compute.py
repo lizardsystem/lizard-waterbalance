@@ -224,7 +224,7 @@ class WaterbalanceComputer2(object):
             for event in self.area.retrieve_precipitation(start_date, end_date).events():
                 input_ts['precipitation'].add_value(event[0], event[1])
             input_ts['evaporation'] = SparseTimeseriesStub()
-            for event in self.configuration.retrieve_evaporation(start_date, end_date).events():
+            for event in self.area.retrieve_evaporation(start_date, end_date).events():
                 input_ts['evaporation'].add_value(event[0], event[1])
             input_ts['seepage'] = SparseTimeseriesStub()
             for event in self.configuration.retrieve_seepage(start_date, end_date).events(): #for the time_being, officially part of each bucket + openwater
