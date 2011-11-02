@@ -1517,15 +1517,6 @@ class WaterbalanceConf(models.Model):
                 {'area_slug': str(self.waterbalance_area.slug),
                  'scenario_slug': str(self.waterbalance_scenario.slug)})
 
-    def retrieve_precipitation(self, start_date, end_date):
-        if self.open_water.precipitation is None:
-            exception_msg = "No precipitation is defined for the waterbalance area %s" % self.__unicode__()
-            logger.warning(exception_msg)
-            raise IncompleteData(exception_msg)
-        timeseries = self.open_water.precipitation.get_timeseries() #start_date, end_date
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
 
     def retrieve_evaporation(self, start_date, end_date):
         if self.open_water.evaporation is None:

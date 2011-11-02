@@ -221,7 +221,7 @@ class WaterbalanceComputer2(object):
 
             input_ts = {}
             input_ts['precipitation'] = SparseTimeseriesStub()
-            for event in self.configuration.retrieve_precipitation(start_date, end_date).events():
+            for event in self.area.retrieve_precipitation(start_date, end_date).events():
                 input_ts['precipitation'].add_value(event[0], event[1])
             input_ts['evaporation'] = SparseTimeseriesStub()
             for event in self.configuration.retrieve_evaporation(start_date, end_date).events():

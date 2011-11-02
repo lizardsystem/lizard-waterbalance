@@ -22,7 +22,13 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
+from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation
+from timeseries.timeseriesstub import TimeseriesRestrictedStub
+
+logger = logging.getLogger(__name__)
 
 class Area(object):
 
@@ -55,4 +61,17 @@ class Area(object):
         """Return the PumpingStation(s) for the current Area."""
         open_water = self.configuration.open_water
         return PumpingStation.objects.filter(open_water=open_water)
+
+    def retrieve_precipitation(self, start_date, end_date):
+        """Return the precipitation time series for the current Area."""
+        open_water = self.configuration.open_water
+        if open_water.precipitation is None:
+            exception_msg = "No precipitation is defined for the " \
+                "waterbalance area %s" % unicode(open_water)
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = open_water.precipitation.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
 
