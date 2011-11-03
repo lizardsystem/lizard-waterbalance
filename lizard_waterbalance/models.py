@@ -967,17 +967,6 @@ class Bucket(models.Model):
     def __unicode__(self):
         return '%s - %s'%(self.open_water.name, self.name)
 
-    def retrieve_seepage(self, start_date, end_date):
-        exception_msg = ""
-        if self.seepage is None:
-            exception_msg = "No seepage is defined for bucket of waterbalance area %s" % self.__unicode__()
-            logger.warning(exception_msg)
-            raise IncompleteData(exception_msg)
-        timeseries = self.seepage.get_timeseries()#start_date, end_date
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
-
     def surface_in_ha(self):
         return float(self.surface)/10000
 
@@ -1006,6 +995,7 @@ class Bucket(models.Model):
         info += "initieel peil: %s"%str(self.init_water_level)
 
         return info
+
 
 class SobekBucket(models.Model):
     """Represents a *bakje*.

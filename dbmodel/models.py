@@ -94,7 +94,10 @@ class Area(object):
     @property
     def buckets(self):
         """Return the Bucket(s) for the current Area."""
-        return self.configuration.open_water.buckets.all()
+        config = self.configuration
+        database_buckets = config.open_water.buckets.all()
+        new_buckets = [Bucket(config, b) for b in database_buckets]
+        return map(lambda b:b.store_new_properties(), new_buckets)
 
     @property
     def pumping_stations(self):
@@ -288,10 +291,51 @@ class Area(object):
 
 class Bucket(object):
 
-    @property
-    def label_flow_off(self):
+    def __init__(self, configuration, database_bucket):
+        self.configuration = configuration
+        self.database_bucket = database_bucket
+
+    def __getattr__(self, name):
+        return self.database_bucket.__dict__[name]
+
+    def store_new_properties(self):
+        """Store the properties that do not belong to the database bucket."""
+        # self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
+        # self.label_flow_off = self._get_label_flow_off()
+        return self
+
+    def retrieve_seepage(self, start_date, end_date):
+        """Return the seepage time series for the current Bucket.
+
+        In case no seepage time series is defined, this method throws an
+        IncompleteData exception.
+
+        """
+        if self.database_bucket.seepage is None:
+            exception_msg = "No seepage is defined for bucket %s" % \
+                            unicode(self.database_bucket)
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = self.database_bucket.seepage.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
+
+    def _get_concentr_chloride_flow_off(self):
+        """Return the chloride concentration of the flow off.
+
+        This value is None when no Label exists with a program name equal to
+        the program name of the label of the bucket.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == self.database_bucket.label.program_name:
+                return concentr.cl_concentration
+
+    def _get_label_flow_off(self):
         """Return the label of the bucket."""
-        pass
+        return self.database_bucket.label.program_name
+
 
 
 class PumpingStation(object):

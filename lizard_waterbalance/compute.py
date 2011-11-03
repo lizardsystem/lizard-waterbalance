@@ -850,6 +850,9 @@ class WaterbalanceComputer2(object):
         concentrations["precipitation"] = self.area.concentr_chloride_precipitation
         concentrations["seepage"] = self.area.concentr_chloride_seepage
 
+        # for bucket in self.area.buckets:
+        #     concentrations[bucket.label_flow_off] = bucket.concentr_chloride_flow_off
+
         for concentr in self.configuration.config_concentrations.all().select_related('Label'):
             if not concentr.label.program_name in concentrations.keys():
                 concentrations[concentr.label.program_name] = concentr.cl_concentration
