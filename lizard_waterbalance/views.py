@@ -25,6 +25,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.lines import Line2D
 import mapnik
 
+from dbmodel.models import Area
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
@@ -39,7 +40,6 @@ from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
-from lizard_waterbalance.models import WaterbalanceTimeserie
 from lizard_waterbalance.models import Parameter
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import add_timeseries
@@ -963,8 +963,8 @@ def waterbalance_area_graph(
                                            date2datetime(end_date),
                                            period=period)
 
-    dict_series["sluice_error"] = sluice_error
-    write_to_pi_file(location_id = "SAP", filename="waterbalance-graph.xml", timeseries=dict_series)
+    # dict_series["sluice_error"] = sluice_error
+    # write_to_pi_file(location_id = "SAP", filename="waterbalance-graph.xml", timeseries=dict_series)
 
     positive_times = []
     positive_sluice_error = []
@@ -1455,8 +1455,10 @@ def waterbalance_area_graphs(request,
     configuration = WaterbalanceConf.objects.get(
         waterbalance_area__slug=area_slug,
         waterbalance_scenario__slug=scenario_slug)
+    area = Area(configuration)
     waterbalance_computer = \
-        CachedWaterbalanceComputer(CacheKeyName(configuration), configuration)
+        CachedWaterbalanceComputer(CacheKeyName(configuration), configuration,
+                                   area)
 
     period = request.GET.get('period', 'month')
     reset_period = request.GET.get('reset_period', 'year')
@@ -1569,8 +1571,10 @@ def graph_select(request):
             waterbalance_scenario__slug=scenario_slug)
 
         cache_key_name = CacheKeyName(configuration)
+        area = Area(configuration)
         waterbalance_computer = CachedWaterbalanceComputer(cache_key_name,
-                                                           configuration)
+                                                           configuration,
+                                                           area)
 
         if waterbalance_computer.get_cached_data("sluice_error") is None:
             calc_start_datetime, calc_end_datetime = \
@@ -1626,10 +1630,11 @@ def recalculate_graph_data(request, area_slug=None, scenario_slug=None):
             "impact_incremental" ]
         key_names = [cache_key_name.get(name) for name in names]
         cache.delete_many(key_names)
-
+        area = Area(configuration)
         waterbalance_computer = \
                               CachedWaterbalanceComputer(cache_key_name,
-                                                         configuration)
+                                                         configuration,
+                                                         area)
         calc_start_datetime, calc_end_datetime = configuration.get_calc_period()
         waterbalance_computer.compute(calc_start_datetime, calc_end_datetime)
 

@@ -24,11 +24,13 @@
 from datetime import datetime
 from datetime import timedelta
 from random import randrange
+import logging
 
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
+logger = logging.getLogger(__name__)
 
 class ConcentrationComputer:
 
@@ -72,26 +74,27 @@ class ConcentrationComputer2:
         """Compute and return the concentration time series.
 
         Parameters:
-        * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
-        * concentration_list -- dict of label keys with concentration values in [mg/l]
+          *inflow_dict*
+            dictionary that maps the name of an incoming flow to either a time
+            series or to a dictionary of PumpingStation to time series
+          *inflow_dict*
+            dictionary that maps the name of an outgoin flow to either a time
+            series or to a dictionary of PumpingStation to time series
+          *storage*
+            storage time series
+          *concentration_dict*
+            dictionary that maps the name of an incoming flow to a
+            concentration value
 
         Computation is based on constant concentration of the fractions
         """
 
-        total_outflow = SparseTimeseriesStub()
-        for events in enumerate_dict_events(outflow_dict):
-            date = events['date']
-            del(events['evaporation'])
-            del(events['date'])
-            total= 0.0
-            for key, event in events.items():
-                if key in ['outtakes', 'defined_output']:
-                    for key_outtake, event_outtake in event.items():
-                        total += event_outtake[1]
-                else:
-                     total += event[1]
-            total_outflow.add_value(date, total)
+        print inflow_dict
+        print outflow_dict
+        print storage
+        print concentration_dict
 
+        total_outflow = self._computeOutgoingVolume(outflow_dict)
 
         start_storage = next(storage.events(start_date, end_date))[1]
         storage_chloride = start_storage * concentration_dict['initial']
@@ -129,4 +132,20 @@ class ConcentrationComputer2:
             delta.add_value(date, plus - out)
 
         return timeseries, delta
+
+    def _computeOutgoingVolume(self, outflow_dict):
+        total_outflow = SparseTimeseriesStub()
+        for events in enumerate_dict_events(outflow_dict):
+            date = events['date']
+            del(events['evaporation'])
+            del(events['date'])
+            total= 0.0
+            for key, event in events.items():
+                if key in ['outtakes', 'defined_output']:
+                    for key_outtake, event_outtake in event.items():
+                        total += event_outtake[1]
+                else:
+                     total += event[1]
+            total_outflow.add_value(date, total)
+        return total_outflow
 

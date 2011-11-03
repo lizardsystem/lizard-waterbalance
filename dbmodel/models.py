@@ -25,7 +25,7 @@
 import logging
 
 from lizard_waterbalance.models import IncompleteData
-from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import PumpingStation as DatabasePumpingStation
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
@@ -100,7 +100,7 @@ class Area(object):
     def pumping_stations(self):
         """Return the PumpingStation(s) for the current Area."""
         open_water = self.configuration.open_water
-        return PumpingStation.objects.filter(open_water=open_water)
+        return DatabasePumpingStation.objects.filter(open_water=open_water)
 
     def retrieve_precipitation(self, start_date, end_date):
         """Return the precipitation time series for the current Area.
@@ -228,3 +228,75 @@ class Area(object):
             return None
 
 
+    @property
+    def concentr_chloride_precipitation(self):
+        """Return the chloride concentration of the precipitation.
+
+        This value is None when no Label exists with the program name
+        'precipitation'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "precipitation":
+                return concentr.cl_concentration
+        return None
+
+    @property
+    def concentr_chloride_seepage(self):
+        """Return the chloride concentration of the seepage.
+
+        This value is None when no Label exists with the program name
+        'seepage'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "seepage":
+                return concentr.cl_concentration
+
+    @property
+    def min_concentr_phosphate_precipitation(self):
+        pass
+
+    @property
+    def incr_concentr_phosphate_precipitation(self):
+        pass
+
+    @property
+    def min_concentr_phosphate_seepage(self):
+        pass
+
+    @property
+    def incr_concentr_phosphate_seepage(self):
+        pass
+
+    @property
+    def min_concentr_nitrogyn_precipitation(self):
+        pass
+
+    @property
+    def incr_concentr_nitrogyn_precipitation(self):
+        pass
+
+    @property
+    def min_concentr_nitrogyn_seepage(self):
+        pass
+
+    @property
+    def incr_concentr_nitrogyn_seepage(self):
+        pass
+
+
+class Bucket(object):
+
+    @property
+    def label_flow_off(self):
+        """Return the label of the bucket."""
+        pass
+
+
+class PumpingStation(object):
+
+    @property
+    def label_flow_off(self):
+        """Return the label of the bucket."""
+        pass

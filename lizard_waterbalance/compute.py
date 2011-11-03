@@ -26,7 +26,6 @@
 #
 #******************************************************************************
 
-import datetime
 import logging
 
 from lizard_waterbalance.fraction_computer import FractionComputer
@@ -44,8 +43,6 @@ from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer2
 from lizard_waterbalance.load_computer import LoadComputer
-from lizard_waterbalance.models import Parameter
-from lizard_waterbalance.models import WaterbalanceTimeserie
 
 logger = logging.getLogger(__name__)
 
@@ -218,6 +215,7 @@ class WaterbalanceComputer2(object):
             - open_water minimum_level/maximum_level
             - incoming_timeseries[intake]
         """
+        logger.debug("WaterbalanceComputer2::get_input_timeseries")
         if (self.input.has_key('timeseries') and
             self.input_info['timeseries']['start_date']==start_date and
             self.input_info['timeseries']['end_date']>=end_date):
@@ -288,6 +286,7 @@ class WaterbalanceComputer2(object):
         This method returns a tuple that contains
           1. a dictionary with all calculated bucket timeseries. Key=bucket.
         """
+        logger.debug("WaterbalanceComputer2::get_buckets_timeseries")
         if (self.outcome.has_key('buckets') and
             self.outcome_info['buckets']['start_date']==start_date and
             self.outcome_info['buckets']['end_date']>=end_date):
@@ -330,6 +329,7 @@ class WaterbalanceComputer2(object):
         Has to change in the future
 
         """
+        logger.debug("WaterbalanceComputer2::get_bucketflow_summary")
 
         if (self.outcome.has_key('buckets_summary') and
             self.outcome_info['buckets_summary']['start_date']==start_date and
@@ -369,6 +369,7 @@ class WaterbalanceComputer2(object):
           - evaporation
           - seepage
         """
+        logger.debug("WaterbalanceComputer2::get_vertical_open_water_timeseries")
         if (self.outcome.has_key('vertical_open_water') and
             self.outcome_info['vertical_open_water']['start_date']==start_date and
             self.outcome_info['vertical_open_water']['end_date']>=end_date):
@@ -421,6 +422,7 @@ class WaterbalanceComputer2(object):
           - seepage
             TO DO: enddate startdate storage
         """
+        logger.debug("WaterbalanceComputer2::get_level_control_timeseries")
 
         if (self.outcome.has_key('level_control') and
             self.outcome_info['level_control']['start_date']==start_date and
@@ -477,6 +479,7 @@ class WaterbalanceComputer2(object):
         control.
 
         """
+        logger.debug("WaterbalanceComputer2::get_level_control_pumping_stations")
         find_intake = True
         return find_pumping_station_level_control(self.area, find_intake), \
                find_pumping_station_level_control(self.area, not find_intake)
@@ -491,6 +494,7 @@ class WaterbalanceComputer2(object):
         - hardened
         - defined_input
         - computed_intake        """
+        logger.debug("WaterbalanceComputer2::get_open_water_incoming_flows")
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
         vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
@@ -514,6 +518,7 @@ class WaterbalanceComputer2(object):
         - defined_output
         - computed_pumps
         """
+        logger.debug("WaterbalanceComputer2::get_open_water_outgoing_flows")
 
         input = self.get_input_timeseries(start_date, end_date)
         buckets_summary = self.get_bucketflow_summary(start_date, end_date)
@@ -541,6 +546,7 @@ class WaterbalanceComputer2(object):
           1. a dictionary with reference timeseries
 
         """
+        logger.debug("WaterbalanceComputer2::get_reference_timeseries")
         if (self.references and
             self.reference_info['start_date']==start_date and
             self.reference_info['end_date']>=end_date):
@@ -566,6 +572,7 @@ class WaterbalanceComputer2(object):
 
     def get_waterlevel_with_sluice_error(self, start_date, end_date):
         """ """
+        logger.debug("WaterbalanceComputer2::get_waterlevel_with_sluice_error")
 
         calc_waterlevel = self.get_level_control_timeseries(start_date, end_date)['water_level']
 
@@ -577,6 +584,7 @@ class WaterbalanceComputer2(object):
     def get_concentration_timeseries(self,
             start_date, end_date):
         """ Alleen chloride op dit moment"""
+        logger.debug("WaterbalanceComputer2::get_concentration_timeseries")
         if (self.outcome.has_key('concentration') and
             self.outcome_info['concentration']['start_date']==start_date and
             self.outcome_info['concentration']['end_date']>=end_date):
@@ -588,10 +596,8 @@ class WaterbalanceComputer2(object):
             inflow = self.get_open_water_incoming_flows(start_date, end_date)
             outflow = self.get_open_water_outgoing_flows(start_date, end_date)
             storage = self.get_level_control_timeseries(start_date, end_date)['storage']
-            concentrations = {}
-            for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-                concentrations[concentr.label.program_name] = concentr.cl_concentration
 
+            concentrations = self._create_concentrations()
             concentration = self.concentration_computer.compute(inflow, outflow, storage, concentrations,
                                                    start_date, end_date)
 
@@ -605,6 +611,7 @@ class WaterbalanceComputer2(object):
     def get_load_timeseries(self,
             start_date, end_date):
         """ Alleen fosfaat op dit moment"""
+        logger.debug("WaterbalanceComputer2::get_load_timeseries")
 
         # Concentration is specified in [mg/l] whereas discharge is
         # specified in [m3/day]. The impact is specified in [mg/m2/day] so
@@ -646,6 +653,7 @@ class WaterbalanceComputer2(object):
     def get_impact_timeseries(self,
             start_date, end_date):
         """ Alleen fosfaat op dit moment"""
+        logger.debug("WaterbalanceComputer2::get_impact_timeseries")
 
 
         if (self.outcome.has_key('impact') and
@@ -696,6 +704,7 @@ class WaterbalanceComputer2(object):
         This method returns a tuple that contains
           1. a dictionary with reference timeseries
         TODO:          When given range 1900-2015, it only returns values for 1996-2011        """
+        logger.debug("WaterbalanceComputer2::calc_sluice_error_timeseries")
 
         if (self.outcome.has_key('sluice_error') and
             self.outcome_info['sluice_error']['start_date']==start_date and
@@ -739,6 +748,7 @@ class WaterbalanceComputer2(object):
             - fraction_water
             TO DO: enddate startdate storage
         """
+        logger.debug("WaterbalanceComputer2::get_fraction_timeseries")
         if (self.outcome.has_key('fraction_water') and
             self.outcome_info['fraction_water']['start_date']==start_date and
             self.outcome_info['fraction_water']['end_date']>=end_date):
@@ -801,6 +811,7 @@ class WaterbalanceComputer2(object):
           2. a SparseTimeseriesStub with the daily discharge for the level control,
           3. a computed WaterbalanceOutcome.
         """
+        logger.debug("WaterbalanceComputer2::compute")
 
         #step 1. Get input timeseries
         self.get_input_timeseries(start_date, end_date)
@@ -832,3 +843,17 @@ class WaterbalanceComputer2(object):
         self.get_concentration_timeseries(start_date, end_date)
 
         return
+
+    def _create_concentrations(self):
+        concentrations = {}
+
+        concentrations["precipitation"] = self.area.concentr_chloride_precipitation
+        concentrations["seepage"] = self.area.concentr_chloride_seepage
+
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if not concentr.label.program_name in concentrations.keys():
+                concentrations[concentr.label.program_name] = concentr.cl_concentration
+
+        return concentrations
+
+
