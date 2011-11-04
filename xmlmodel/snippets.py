@@ -1,6 +1,22 @@
 #!/usr/bin/python
 
 
+koppelingen = {'Area': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        'seepage': 'KWEL',
+                        'TODO_wegzijging': 'WEGZ',
+                        'water_level': 'WATHTE',
+                        'sewer': '',
+                        'minimum_level': 'MARG_OND',
+                        'maximum_level': 'MARG_BOV',
+                        'nutricalc_min': '',
+                        'nutricalc_incr': '',
+                        },
+               'Bucket': [],
+               'PumpingStation': [],
+               }
+
+
 def parse_parameters(stream):
     r"""parse the xml stream into set of objects
 
