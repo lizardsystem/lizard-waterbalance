@@ -137,6 +137,10 @@
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_verhard</stringValue>
         </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP</stringValue>
+        </parameter>
         <parameter id="name" name="Naam van het bakje">
             <description>Naam van het bakje</description>
             <stringValue>Verhard</stringValue>
@@ -295,6 +299,10 @@
         <parameter id="code" name="Bakje code">
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_west</stringValue>
+        </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het bakje">
             <description>Naam van het bakje</description>
@@ -455,6 +463,10 @@
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_oost</stringValue>
         </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP_D2</stringValue>
+        </parameter>
         <parameter id="name" name="Naam van het bakje">
             <description>Naam van het bakje</description>
             <stringValue>Oost</stringValue>
@@ -614,6 +626,10 @@
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_sg</stringValue>
         </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP</stringValue>
+        </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
             <stringValue>Inlaat sGravelandseVaart</stringValue>
@@ -665,6 +681,10 @@
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_ip</stringValue>
         </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP</stringValue>
+        </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
             <stringValue>inlaat peilbeheer</stringValue>
@@ -715,6 +735,10 @@
         <parameter id="code" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_up</stringValue>
+        </parameter>
+        <parameter id="location_id" name="locationId">
+            <description>id van locatie</description>
+            <stringValue>SAP_D2</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
