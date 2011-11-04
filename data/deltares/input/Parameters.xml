@@ -465,7 +465,7 @@
         </parameter>
         <parameter id="location_id" name="locationId">
             <description>id van locatie</description>
-            <stringValue>SAP_D2</stringValue>
+            <stringValue>SAP_S2</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het bakje">
             <description>Naam van het bakje</description>
@@ -738,7 +738,7 @@
         </parameter>
         <parameter id="location_id" name="locationId">
             <description>id van locatie</description>
-            <stringValue>SAP_D2</stringValue>
+            <stringValue>SAP_S2</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
