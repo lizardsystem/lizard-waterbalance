@@ -25,3 +25,4 @@ test-waterbalance-output:
 	cd waterbalance-output-Aetsveldse-polder; diff expected-fractions.xml fractions.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact.xml impact.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental.xml impact-incremental.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-concentration.xml concentration.xml
