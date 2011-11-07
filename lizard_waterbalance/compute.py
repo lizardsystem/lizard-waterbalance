@@ -557,11 +557,12 @@ class WaterbalanceComputer2(object):
                     end_date.strftime('%Y-%m-%d')))
             intakes = {}
             outtakes = {}
-            for pumping_station in self.area.pumping_stations.filter(computed_level_control = True):
-                if pumping_station.into:
-                    intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
-                else:
-                    outtakes[pumping_station] =  pumping_station.retrieve_sum_timeseries()
+            for pumping_station in self.area.pumping_stations:
+                if pumping_station.computed_level_control:
+                    if pumping_station.into:
+                        intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
+                    else:
+                        outtakes[pumping_station] =  pumping_station.retrieve_sum_timeseries()
 
             self.references = (intakes, outtakes)
             self.reference_info = {'start_date': start_date,
@@ -673,6 +674,10 @@ class WaterbalanceComputer2(object):
             factor = 1000.0 / float(self.area.surface)
 
             for key, timeserie in load.items():
+                try:
+                    print "load: ", key.name
+                except:
+                    pass
                 impact_timeseries = multiply_timeseries(timeserie, factor)
                 impact[key] = impact_timeseries
 

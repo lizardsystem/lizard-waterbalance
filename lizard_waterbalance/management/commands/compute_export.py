@@ -27,7 +27,7 @@ from django.core.cache import cache
 from django.core.management.base import BaseCommand
 
 from dbmodel.models import Area
-from lizard_waterbalance.models import PumpingStation
+from dbmodel.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.views import CacheKeyName
 from lizard_waterbalance.views import CachedWaterbalanceComputer

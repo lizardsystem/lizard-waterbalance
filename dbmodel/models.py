@@ -27,6 +27,8 @@ import logging
 from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation as DatabasePumpingStation
 from timeseries.timeseriesstub import add_timeseries
+from timeseries.timeseriesstub import map_timeseries
+from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
@@ -62,10 +64,11 @@ class Area(object):
         """
         max_discharge = 0.0
         is_none = True
-        for station in self.pumping_stations.filter(into=True, computed_level_control=True):
-            if station.max_discharge is not None:
-               max_discharge += station.max_discharge
-               is_none = False
+        for station in self.pumping_stations:
+            if station.into and station.computed_level_control:
+                if station.max_discharge is not None:
+                    max_discharge += station.max_discharge
+                    is_none = False
 
         if is_none:
             return None
@@ -81,10 +84,11 @@ class Area(object):
         """
         max_discharge = 0.0
         is_none = True
-        for station in self.pumping_stations.filter(into=False, computed_level_control=True):
-            if station.max_discharge is not None:
-               max_discharge += station.max_discharge
-               is_none = False
+        for station in self.pumping_stations:
+            if (not station.into) and station.computed_level_control:
+                if station.max_discharge is not None:
+                    max_discharge += station.max_discharge
+                    is_none = False
 
         if is_none:
             return None
@@ -103,7 +107,12 @@ class Area(object):
     def pumping_stations(self):
         """Return the PumpingStation(s) for the current Area."""
         open_water = self.configuration.open_water
-        return DatabasePumpingStation.objects.filter(open_water=open_water)
+        stations = []
+        for s in DatabasePumpingStation.objects.filter(open_water=open_water):
+            station = PumpingStation(self.configuration, s)
+            station.copy_properties()
+            stations.append(station)
+        return stations
 
     def retrieve_precipitation(self, start_date, end_date):
         """Return the precipitation time series for the current Area.
@@ -337,10 +346,63 @@ class Bucket(object):
         return self.database_bucket.label.program_name
 
 
-
 class PumpingStation(object):
 
-    @property
-    def label_flow_off(self):
+    def __init__(self, configuration, db_station):
+        self.configuration = configuration
+        self.db_station = db_station
+
+    def copy_properties(self):
+        """Store the properties that do not belong to the database bucket."""
+        self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
+        self.label_flow_off = self._get_label_flow_off()
+        self.into = self.db_station.into
+        self.computed_level_control = self.db_station.computed_level_control
+        self.max_discharge = self.db_station.max_discharge
+        self.label = self.db_station.label
+        self.name = self.db_station.name
+        return self
+
+    def retrieve_sum_timeseries(self):
+        """Return the sum of the time series of each of its PumpLine(s).
+
+        If the current PumpingStation is an intake, this method returns a time
+        series whose values are non-negative and if it is a pump, this method
+        returns a time series whose values are non-positive. This holds even
+        if the stored event values have a different sign.
+
+        """
+        result = SparseTimeseriesStub()
+        factor = (1.0 if self.into else -1.0)
+        map_f = lambda v: factor * abs(v)
+        for pump_line in self.db_station.pump_lines.all():
+            timeseries = map_timeseries(pump_line.retrieve_timeseries(), map_f)
+            result = add_timeseries(result, timeseries)
+        return result
+
+    def _get_concentr_chloride_flow_off(self):
+        """Return the chloride concentration of the flow off.
+
+        This value is None when no Label exists with a program name equal to
+        the program name of the label of the bucket.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == self.db_station.label.program_name:
+                return concentr.cl_concentration
+
+    def _get_label_flow_off(self):
         """Return the label of the bucket."""
-        pass
+        return self.db_station.label.program_name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        """Return True iff self is semantically equal to other."""
+        is_equal = False
+        try:
+            is_equal = self.name == other.name
+        except AttributeError:
+            pass
+        return is_equal

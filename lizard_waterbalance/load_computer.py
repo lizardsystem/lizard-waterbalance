@@ -63,7 +63,6 @@ class LoadComputer:
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
 
-        first_ts = True
         for events in enumerate_dict_events(flow_dict):
             date = events['date']
             if date < start_date:
@@ -92,6 +91,8 @@ class LoadComputer:
                             load = value_intake[1] * \
                                    concentration_dict[key_intake.label.program_name]
                             label = key_intake
+                        loads.setdefault(label, TimeseriesStub()).add_value(date, load)
+                    continue
                 elif key == 'nutricalc':
                     label = key
                     load = value[1]
@@ -99,10 +100,7 @@ class LoadComputer:
                     label = key
                     load = value[1] * concentration_dict[key]
 
-                if first_ts:
-                    loads[label] = TimeseriesStub()
+                loads.setdefault(label, TimeseriesStub()).add_value(date, load)
 
-                loads[label].add_value(date, load)
-            first_ts = False
-
+        print loads.keys()
         return loads
