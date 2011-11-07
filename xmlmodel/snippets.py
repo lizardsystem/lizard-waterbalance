@@ -123,22 +123,6 @@ def parse_parameters(stream):
     return result
 
 
-koppelingen = {'Area': {'precipitation': 'NEERSG',
-                        'evaporation': 'VERDPG',
-                        'seepage': 'KWEL',
-                        'TODO_wegzijging': 'WEGZ',
-                        'water_level': 'WATHTE',
-                        'sewer': '',
-                        'minimum_level': 'MARG_OND',
-                        'maximum_level': 'MARG_BOV',
-                        'nutricalc_min': '',
-                        'nutricalc_incr': '',
-                        },
-               'Bucket': [],
-               'PumpingStation': [],
-               }
-
-
 def attach_timeseries_to_structures(root, tsd, corresponding):
     """couple objects to the corresponding time series.
 
@@ -165,18 +149,18 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     ... <parameter id="location_id"><stringValue>PS1</stringValue></parameter>
     ... </group></parameters>'''))
     >>> tsd = {
-    ... ('L1', 'precipitation'): 1,
-    ... ('L1', 'evaporation'): 2,
-    ... ('L1', 'seepage'): 3,
-    ... ('B1', 'precipitation'): 4,
-    ... ('B1', 'evaporation'): 5,
-    ... ('B1', 'seepage'): 6,
-    ... ('B2', 'precipitation'): 7,
-    ... ('B2', 'evaporation'): 8,
-    ... ('B2', 'seepage'): 9,
-    ... ('PS2', 'precipitation'): 17,
-    ... ('PS2', 'evaporation'): 18,
-    ... ('PS2', 'seepage'): 19,
+    ... ('L1', 'NEERSG'): 1,
+    ... ('L1', 'VERDPG'): 2,
+    ... ('L1', 'KWEL'): 3,
+    ... ('B1', 'NEERSG'): 4,
+    ... ('B1', 'VERDPG'): 5,
+    ... ('B1', 'KWEL'): 6,
+    ... ('B2', 'NEERSG'): 7,
+    ... ('B2', 'VERDPG'): 8,
+    ... ('B2', 'KWEL'): 9,
+    ... ('PS1', 'NEERSG'): 17,
+    ... ('PS1', 'VERDPG'): 18,
+    ... ('PS1', 'KWEL'): 19,
     ... }
     >>> k = {'Area': {'precipitation': 'NEERSG',
     ...  'evaporation': 'VERDPG',
@@ -191,10 +175,27 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     ...  'seepage': 'KWEL',
     ...  },
     ... }
-    >>> attach_timeseries_to_structures(root, tsd, k)
+    >>> type(attach_timeseries_to_structures(root, tsd, k))
+    <class 'xmlmodel.snippets.Area'>
     >>> root.precipitation
+    1
     >>> root.evaporation
+    2
     >>> root.seepage
+    3
+    >>> [i.precipitation for i in root.bucket]
+    [4, 7]
+    >>> [i.precipitation for i in root.pumpingstation]
+    [17]
     """
+
+    for class_name in corresponding:
+        if class_name == root.__class__.__name__:
+            todo = [root]
+        else:
+            todo = getattr(root, class_name.lower())
+        for local, remote in corresponding[class_name].items():
+            for obj in todo:
+                setattr(obj, local, tsd.get((obj.location_id, remote)))
 
     return root
