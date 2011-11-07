@@ -1,22 +1,6 @@
 #!/usr/bin/python
 
 
-koppelingen = {'Area': {'precipitation': 'NEERSG',
-                        'evaporation': 'VERDPG',
-                        'seepage': 'KWEL',
-                        'TODO_wegzijging': 'WEGZ',
-                        'water_level': 'WATHTE',
-                        'sewer': '',
-                        'minimum_level': 'MARG_OND',
-                        'maximum_level': 'MARG_BOV',
-                        'nutricalc_min': '',
-                        'nutricalc_incr': '',
-                        },
-               'Bucket': [],
-               'PumpingStation': [],
-               }
-
-
 def parse_parameters(stream):
     r"""parse the xml stream into set of objects
 
@@ -137,3 +121,80 @@ def parse_parameters(stream):
             getattr(result, class_name.lower()).append(obj)
 
     return result
+
+
+koppelingen = {'Area': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        'seepage': 'KWEL',
+                        'TODO_wegzijging': 'WEGZ',
+                        'water_level': 'WATHTE',
+                        'sewer': '',
+                        'minimum_level': 'MARG_OND',
+                        'maximum_level': 'MARG_BOV',
+                        'nutricalc_min': '',
+                        'nutricalc_incr': '',
+                        },
+               'Bucket': [],
+               'PumpingStation': [],
+               }
+
+
+def attach_timeseries_to_structures(root, tsd, corresponding):
+    """couple objects to the corresponding time series.
+
+    root is an object as returned by parse_parameters.
+
+    tsd is a dictionary as returned by timeseries.TimeSeries.as_dict.
+
+    corresponding is a dictionary associating a class name to a
+    dictionary associating the expected timeseries with the name as in
+    tsd.
+
+    >>> from nens.mock import Stream
+    >>> root = parse_parameters(Stream('''<parameters><group>
+    ... <model>Area</model>
+    ... <parameter id="location_id"><stringValue>L1</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id="location_id"><stringValue>B1</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id="location_id"><stringValue>B2</stringValue></parameter>
+    ... </group><group>
+    ... <model>PumpingStation</model>
+    ... <parameter id="location_id"><stringValue>PS1</stringValue></parameter>
+    ... </group></parameters>'''))
+    >>> tsd = {
+    ... ('L1', 'precipitation'): 1,
+    ... ('L1', 'evaporation'): 2,
+    ... ('L1', 'seepage'): 3,
+    ... ('B1', 'precipitation'): 4,
+    ... ('B1', 'evaporation'): 5,
+    ... ('B1', 'seepage'): 6,
+    ... ('B2', 'precipitation'): 7,
+    ... ('B2', 'evaporation'): 8,
+    ... ('B2', 'seepage'): 9,
+    ... ('PS2', 'precipitation'): 17,
+    ... ('PS2', 'evaporation'): 18,
+    ... ('PS2', 'seepage'): 19,
+    ... }
+    >>> k = {'Area': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... 'Bucket': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... 'PumpingStation': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... }
+    >>> attach_timeseries_to_structures(root, tsd, k)
+    >>> root.precipitation
+    >>> root.evaporation
+    >>> root.seepage
+    """
+
+    return root
