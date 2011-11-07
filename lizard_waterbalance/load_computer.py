@@ -102,4 +102,5 @@ class LoadComputer:
 
                 loads.setdefault(label, TimeseriesStub()).add_value(date, load)
 
+        print loads.keys()
         return loads

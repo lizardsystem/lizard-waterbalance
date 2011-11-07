@@ -1131,23 +1131,6 @@ class PumpingStation(models.Model):
     def __unicode__(self):
         return self.name
 
-    def retrieve_sum_timeseries(self):
-        """Return the sum of the time series of each of its PumpLine(s).
-
-        If the current PumpingStation is an intake, this method returns a time
-        series whose values are non-negative and if it is a pump, this method
-        returns a time series whose values are non-positive. This holds even
-        if the stored event values have a different sign.
-
-        """
-        result = SparseTimeseriesStub()
-        factor = (1.0 if self.into else -1.0)
-        map_f = lambda v: factor * abs(v)
-        for pump_line in self.retrieve_pump_lines():
-            timeseries = map_timeseries(pump_line.retrieve_timeseries(), map_f)
-            result = add_timeseries(result, timeseries)
-        return result
-
     def retrieve_pump_lines(self):
         return self.pump_lines.all()
 

@@ -6,8 +6,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 
+from dbmodel.models import PumpingStation
 from lizard_waterbalance.models import Label
-from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceScenario
@@ -170,7 +170,7 @@ class LegendInfoTestSuite(TestCase):
         label.name = "inlaat 1"
         label.program_name = "inlet1"
         label.save()
-        intake = PumpingStation()
+        intake = PumpingStation(None, None)
         intake.name = "dijklek"
         intake.label = label
         # Note that we do not save the intake to the database. To save a
@@ -193,7 +193,7 @@ class LegendInfoTestSuite(TestCase):
         label.name = "inlaat 1"
         label.program_name = "inlet1"
         label.save()
-        intake = PumpingStation()
+        intake = PumpingStation(None, None)
         intake.name = "dijklek"
         intake.label = label
         # Note that we do not save the intake to the database. To save a

@@ -26,6 +26,7 @@ from matplotlib.lines import Line2D
 import mapnik
 
 from dbmodel.models import Area
+from dbmodel.models import PumpingStation
 from lizard_fewsunblobbed.models import Timeserie
 from lizard_map import coordinates
 from lizard_map.adapter import Graph
@@ -36,7 +37,6 @@ from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
 from lizard_waterbalance.forms import PumpingStationEditForm
 from lizard_waterbalance.forms import create_location_label
-from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import WaterbalanceArea
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import Label
@@ -1389,6 +1389,7 @@ def waterbalance_phosphate_impact(
 
     legend_info = LegendInfo()
     legend_info.retrieve_labels()
+
     for key, impact in impacts.items():
         label_name, label = legend_info.retrieve(key)
         name = extended_legend_name(label_name, " (min)")
