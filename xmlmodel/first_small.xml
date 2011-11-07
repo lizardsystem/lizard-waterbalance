@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TimeSeries xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd" version="1.2">
+    <timeZone>-1.0</timeZone>
+    <series>
+        <header>
+            <type>accumulative</type>
+            <locationId>SAP</locationId>
+            <parameterId>NEERSG</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="1990-12-30" time="23:00:00"/>
+            <endDate date="2009-12-31" time="23:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>Aetsveldsche polder oost</stationName>
+            <units>mm</units>
+        </header>
+        <event date="1990-12-30" time="23:00:00" value="9.0" flag="8"/>
+        <event date="1990-12-31" time="23:00:00" value="9.0" flag="8"/>
+        <event date="1991-01-01" time="23:00:00" value="1" flag="8"/>
+        <event date="1991-01-02" time="23:00:00" value="2" flag="8"/>
+        <event date="1991-01-03" time="23:00:00" value="3" flag="8"/>
+        <event date="1991-01-04" time="23:00:00" value="-999.0" flag="8"/>
+        <event date="1991-01-05" time="23:00:00" value="4" flag="8"/>
+        <event date="1991-01-06" time="23:00:00" value="5" flag="8"/>
+        <event date="1991-01-07" time="23:00:00" value="6" flag="8"/>
+        <event date="1991-01-08" time="23:00:00" value="-999.0" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>accumulative</type>
+            <locationId>SAP</locationId>
+            <parameterId>VERDPG</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="1990-12-30" time="23:00:00"/>
+            <endDate date="2009-12-31" time="23:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>Aetsveldsche polder oost</stationName>
+            <units>mm/d</units>
+        </header>
+        <event date="1990-12-30" time="23:00:00" value="3.0" flag="8"/>
+        <event date="1990-12-31" time="23:00:00" value="8.0" flag="8"/>
+        <event date="1991-01-01" time="23:00:00" value="3.0" flag="8"/>
+        <event date="1991-01-02" time="23:00:00" value="4.0" flag="8"/>
+        <event date="1991-01-03" time="23:00:00" value="7.0" flag="8"/>
+        <event date="1991-01-04" time="23:00:00" value="5.0" flag="8"/>
+    </series>
+</TimeSeries>
