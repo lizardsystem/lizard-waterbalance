@@ -200,7 +200,7 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
             if todo:
                 setattr(todo[0].__class__, 
                         "retrieve_" + local, 
-                        lambda self, start, end: getattr(self, local).events(start, end))
+                        lambda self, start, end: getattr(self, local).get_events(start, end))
             for obj in todo:
                 setattr(obj, local, tsd.get((obj.location_id, remote)))
 
