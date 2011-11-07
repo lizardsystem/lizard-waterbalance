@@ -17,6 +17,7 @@ Project documentation
    admin
    vip
    vocabulary
+   management_commands
 
 Indices and tables
 ==================
