@@ -121,3 +121,87 @@ def parse_parameters(stream):
             getattr(result, class_name.lower()).append(obj)
 
     return result
+
+
+def attach_timeseries_to_structures(root, tsd, corresponding):
+    """couple objects to the corresponding time series.
+
+    root is an object as returned by parse_parameters.
+
+    tsd is a dictionary as returned by timeseries.TimeSeries.as_dict.
+
+    corresponding is a dictionary associating a class name to a
+    dictionary associating the expected timeseries with the name as in
+    tsd.
+
+    >>> from nens.mock import Stream
+    >>> root = parse_parameters(Stream('''<parameters><group>
+    ... <model>Area</model>
+    ... <parameter id="location_id"><stringValue>L1</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id="location_id"><stringValue>B1</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id="location_id"><stringValue>B2</stringValue></parameter>
+    ... </group><group>
+    ... <model>PumpingStation</model>
+    ... <parameter id="location_id"><stringValue>PS1</stringValue></parameter>
+    ... </group></parameters>'''))
+    >>> tsd = {
+    ... ('L1', 'NEERSG'): 1,
+    ... ('L1', 'VERDPG'): 2,
+    ... ('L1', 'KWEL'): 3,
+    ... ('B1', 'NEERSG'): 4,
+    ... ('B1', 'VERDPG'): 5,
+    ... ('B1', 'KWEL'): 6,
+    ... ('B2', 'NEERSG'): 7,
+    ... ('B2', 'VERDPG'): 8,
+    ... ('B2', 'KWEL'): 9,
+    ... ('PS1', 'NEERSG'): 17,
+    ... ('PS1', 'VERDPG'): 18,
+    ... ('PS1', 'KWEL'): 19,
+    ... }
+    >>> k = {'Area': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... 'Bucket': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... 'PumpingStation': {'precipitation': 'NEERSG',
+    ...  'evaporation': 'VERDPG',
+    ...  'seepage': 'KWEL',
+    ...  },
+    ... }
+    >>> attach_timeseries_to_structures(root, tsd, k) # doctest:+ELLIPSIS
+    <xmlmodel.snippets.Area object at ...>
+    >>> (root.precipitation, root.evaporation, root.seepage)
+    (1, 2, 3)
+    >>> [(i.precipitation, i.evaporation, i.seepage) for i in root.bucket]
+    [(4, 5, 6), (7, 8, 9)]
+    >>> [(i.precipitation, i.evaporation, i.seepage) for i in root.pumpingstation]
+    [(17, 18, 19)]
+
+    >>> root.retrieve_precipitation # doctest:+ELLIPSIS
+    <bound method Area.<lambda> of <xmlmodel.snippets.Area object at ...>>
+    >>> [i.retrieve_evaporation for i in root.pumpingstation] # doctest:+ELLIPSIS
+    [<bound method PumpingStation.<lambda> of <xmlmodel.snippets.PumpingStation object at ...>>]
+
+    """
+
+    for class_name in corresponding:
+        if class_name == root.__class__.__name__:
+            todo = [root]
+        else:
+            todo = getattr(root, class_name.lower())
+        for local, remote in corresponding[class_name].items():
+            if todo:
+                setattr(todo[0].__class__, 
+                        "retrieve_" + local, 
+                        lambda self, start, end: getattr(self, local).get_events(start, end))
+            for obj in todo:
+                setattr(obj, local, tsd.get((obj.location_id, remote)))
+
+    return root
