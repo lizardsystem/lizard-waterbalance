@@ -175,18 +175,20 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     ...  'seepage': 'KWEL',
     ...  },
     ... }
-    >>> type(attach_timeseries_to_structures(root, tsd, k))
-    <class 'xmlmodel.snippets.Area'>
-    >>> root.precipitation
-    1
-    >>> root.evaporation
-    2
-    >>> root.seepage
-    3
-    >>> [i.precipitation for i in root.bucket]
-    [4, 7]
-    >>> [i.precipitation for i in root.pumpingstation]
-    [17]
+    >>> attach_timeseries_to_structures(root, tsd, k) # doctest:+ELLIPSIS
+    <xmlmodel.snippets.Area object at ...>
+    >>> (root.precipitation, root.evaporation, root.seepage)
+    (1, 2, 3)
+    >>> [(i.precipitation, i.evaporation, i.seepage) for i in root.bucket]
+    [(4, 5, 6), (7, 8, 9)]
+    >>> [(i.precipitation, i.evaporation, i.seepage) for i in root.pumpingstation]
+    [(17, 18, 19)]
+
+    >>> root.retrieve_precipitation # doctest:+ELLIPSIS
+    <bound method Area.<lambda> of <xmlmodel.snippets.Area object at ...>>
+    >>> [i.retrieve_evaporation for i in root.pumpingstation] # doctest:+ELLIPSIS
+    [<bound method PumpingStation.<lambda> of <xmlmodel.snippets.PumpingStation object at ...>>]
+
     """
 
     for class_name in corresponding:
@@ -195,6 +197,10 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
         else:
             todo = getattr(root, class_name.lower())
         for local, remote in corresponding[class_name].items():
+            if todo:
+                setattr(todo[0].__class__, 
+                        "retrieve_" + local, 
+                        lambda self, start, end: getattr(self, local).events(start, end))
             for obj in todo:
                 setattr(obj, local, tsd.get((obj.location_id, remote)))
 
