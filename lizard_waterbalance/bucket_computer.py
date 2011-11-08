@@ -216,7 +216,7 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
 
     """
     outcome = BucketOutcome()
-    volume = bucket.init_water_level * bucket.surface * bucket.bottom_porosity
+    volume = bucket.bottom_init_water_level * bucket.surface * bucket.bottom_porosity
 
     if not allow_below_minimum_storage and bucket.bottom_min_water_level == None:
         logger.warming("Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name)
@@ -249,7 +249,7 @@ def switch_bucket_upper_values(bucket):
     bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
     bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
     bucket.bottom_min_water_level, bucket.min_water_level = switch_values(bucket.bottom_min_water_level, bucket.min_water_level)
-    bucket.init_water_level, bucket.upper_init_water_level = switch_values(bucket.init_water_level, bucket.upper_init_water_level)
+    bucket.bottom_init_water_level, bucket.init_water_level = switch_values(bucket.bottom_init_water_level, bucket.init_water_level)
     return bucket
 
 def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):

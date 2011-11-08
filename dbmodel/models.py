@@ -317,7 +317,7 @@ class Bucket(object):
         self.bottom_max_water_level = self.database_bucket.max_water_level
         self.bottom_min_water_level = self.database_bucket.min_water_level
         self.bottom_equi_water_level = self.database_bucket.equi_water_level
-        self.init_water_level = self.database_bucket.init_water_level
+        self.bottom_init_water_level = self.database_bucket.init_water_level
         self.external_discharge = self.database_bucket.external_discharge
         self.porosity = self.database_bucket.upper_porosity
         self.drainage_fraction = self.database_bucket.upper_drainage_fraction
@@ -325,7 +325,7 @@ class Bucket(object):
         self.max_water_level = self.database_bucket.upper_max_water_level
         self.min_water_level = self.database_bucket.upper_min_water_level
         self.equi_water_level = self.database_bucket.upper_equi_water_level
-        self.upper_init_water_level = self.database_bucket.upper_init_water_level
+        self.init_water_level = self.database_bucket.upper_init_water_level
         # self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
         # self.label_flow_off = self._get_label_flow_off()
         return self
