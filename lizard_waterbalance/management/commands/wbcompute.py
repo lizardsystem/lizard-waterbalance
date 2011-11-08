@@ -28,8 +28,10 @@
 
 from xml.dom.minidom import parse
 from timeseries.timeseries import TimeSeries
-from snippets import parse_parameters, attach_timeseries_to_structures
+from xmlmodel.reader import parse_parameters, attach_timeseries_to_structures
+from django.core.management.base import BaseCommand
 import logging
+
 
 def getText(node):
     return "".join(t.nodeValue for t in node.childNodes
