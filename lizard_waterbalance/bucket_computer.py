@@ -162,7 +162,7 @@ def compute_net_drainage(bucket, previous_volume):
     if previous_volume > equi_volume:
         net_drainage = -previous_volume * bucket.bottom_drainage_fraction
     elif previous_volume < equi_volume:
-        net_drainage = -previous_volume * bucket.indraft_fraction #klopt het minteken?
+        net_drainage = -previous_volume * bucket.bottom_indraft_fraction #klopt het minteken?
     else:
         net_drainage = 0
     return net_drainage
@@ -246,7 +246,7 @@ def switch_bucket_upper_values(bucket):
 
     bucket.bottom_porosity, bucket.porosity = switch_values(bucket.bottom_porosity, bucket.porosity)
     bucket.bottom_drainage_fraction, bucket.drainage_fraction = switch_values(bucket.bottom_drainage_fraction, bucket.drainage_fraction)
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = switch_values(bucket.indraft_fraction, bucket.upper_indraft_fraction)
+    bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
     bucket.max_water_level, bucket.upper_max_water_level = switch_values(bucket.max_water_level, bucket.upper_max_water_level)
     bucket.min_water_level, bucket.upper_min_water_level = switch_values(bucket.min_water_level, bucket.upper_min_water_level)
     bucket.init_water_level, bucket.upper_init_water_level = switch_values(bucket.init_water_level, bucket.upper_init_water_level)

@@ -74,7 +74,7 @@ class computeTestSuite(TestCase):
         self.bucket.crop_evaporation_factor = float(bucket_spec['bl gewasverdampingsfactor (-)'])
         self.bucket.min_crop_evaporation_factor = float(bucket_spec['bl min. Gewasverdampingsfactor (-)'])
         self.bucket.bottom_drainage_fraction= float(bucket_spec['bl f_uitpoel'])
-        self.bucket.indraft_fraction = float(bucket_spec['bl f_intrek'])
+        self.bucket.bottom_indraft_fraction = float(bucket_spec['bl f_intrek'])
         self.bucket.max_water_level = float(bucket_spec['bl max level'])
         self.bucket.equi_water_level = float(bucket_spec['bl equilibrium level'])
         self.bucket.min_water_level = float(bucket_spec['bl minimum level'])
@@ -147,7 +147,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
+        self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         expected_value = -41302.53
         computed_value = compute_net_drainage(self.bucket, previous_volume)
@@ -158,7 +158,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.init_water_level = 0.65
-        self.bucket.indraft_fraction = 0.04
+        self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         expected_value = -38352.35
         computed_value = compute_net_drainage(self.bucket, previous_volume)
@@ -168,7 +168,7 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct water level.
 
         """
-        self.bucket.indraft_fraction = 0.04
+        self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         evaporation = 20
         precipitation = 5
@@ -184,7 +184,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
+        self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         evaporation = 20
         precipitation = 5
@@ -200,7 +200,7 @@ class computeTestSuite(TestCase):
 
         """
         self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
+        self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         evaporation =  20
         precipitation = 5
