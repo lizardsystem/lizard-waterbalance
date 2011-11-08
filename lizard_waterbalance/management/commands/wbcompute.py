@@ -84,4 +84,4 @@ class Command(BaseCommand):
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
 
-        
+        TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], tsd)
