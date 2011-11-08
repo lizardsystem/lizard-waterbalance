@@ -304,9 +304,6 @@ class Bucket(object):
         self.configuration = configuration
         self.database_bucket = database_bucket
 
-    def __getattr__(self, name):
-        return self.database_bucket.__dict__[name]
-
     def store_new_properties(self):
         """Store the properties that do not belong to the database bucket."""
         self.name = self.database_bucket.name
@@ -318,6 +315,7 @@ class Bucket(object):
         self.drainage_fraction = self.database_bucket.drainage_fraction
         self.indraft_fraction = self.database_bucket.indraft_fraction
         self.max_water_level = self.database_bucket.max_water_level
+        self.min_water_level = self.database_bucket.min_water_level
         self.equi_water_level = self.database_bucket.equi_water_level
         self.init_water_level = self.database_bucket.init_water_level
         self.external_discharge = self.database_bucket.external_discharge
@@ -325,6 +323,7 @@ class Bucket(object):
         self.upper_drainage_fraction = self.database_bucket.upper_drainage_fraction
         self.upper_indraft_fraction = self.database_bucket.upper_indraft_fraction
         self.upper_max_water_level = self.database_bucket.upper_max_water_level
+        self.upper_min_water_level = self.database_bucket.upper_min_water_level
         self.upper_equi_water_level = self.database_bucket.upper_equi_water_level
         self.upper_init_water_level = self.database_bucket.upper_init_water_level
         # self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
