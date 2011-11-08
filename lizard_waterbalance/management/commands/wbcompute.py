@@ -31,11 +31,13 @@ from timeseries.timeseries import TimeSeries
 from xmlmodel.reader import parse_parameters, attach_timeseries_to_structures
 from django.core.management.base import BaseCommand
 import logging
+from datetime import datetime
 
+log = logging.getLogger(__name__)
 
 def getText(node):
-    return "".join(t.nodeValue for t in node.childNodes
-                   if t.nodeType == t.TEXT_NODE)
+    return str("".join(t.nodeValue for t in node.childNodes
+                       if t.nodeType == t.TEXT_NODE))
 
 
 ASSOC = {'Bucket': {'precipitation': 'NEERSG',
@@ -73,6 +75,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         run_file = str(args[0])
         run_dom = parse(run_file)
+        root = run_dom.childNodes[0]
         run_info = dict([(i.tagName, getText(i)) 
                          for i in root.childNodes 
                          if i.nodeType != i.TEXT_NODE 
@@ -82,8 +85,10 @@ class Command(BaseCommand):
 <Diag version="1.2" xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI HTTP://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_diag.xsd"/>
 """)
         diag.close()
+        log.debug(run_info['inputTimeSeriesFile'])
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
 
-        TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], tsd)
+        result = tsd
+        TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], result)
