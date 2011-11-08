@@ -309,7 +309,7 @@ class Bucket(object):
         self.name = self.database_bucket.name
         self.surface_type = self.database_bucket.surface_type
         self.surface = self.database_bucket.surface
-        self.porosity = self.database_bucket.porosity
+        self.bottom_porosity = self.database_bucket.porosity
         self.crop_evaporation_factor = self.database_bucket.crop_evaporation_factor
         self.min_crop_evaporation_factor = self.database_bucket.min_crop_evaporation_factor
         self.drainage_fraction = self.database_bucket.drainage_fraction
@@ -319,7 +319,7 @@ class Bucket(object):
         self.equi_water_level = self.database_bucket.equi_water_level
         self.init_water_level = self.database_bucket.init_water_level
         self.external_discharge = self.database_bucket.external_discharge
-        self.upper_porosity = self.database_bucket.upper_porosity
+        self.porosity = self.database_bucket.upper_porosity
         self.upper_drainage_fraction = self.database_bucket.upper_drainage_fraction
         self.upper_indraft_fraction = self.database_bucket.upper_indraft_fraction
         self.upper_max_water_level = self.database_bucket.upper_max_water_level

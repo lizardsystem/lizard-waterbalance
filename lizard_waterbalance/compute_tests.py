@@ -70,7 +70,7 @@ class computeTestSuite(TestCase):
         self.bucket.name = bucket_spec['name']
         self.bucket.surface = int(float(bucket_spec['surface']))
         # self.bucket.seepage = link to input time serie for *kwel*
-        self.bucket.porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
+        self.bucket.bottom_porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
         self.bucket.crop_evaporation_factor = float(bucket_spec['bl gewasverdampingsfactor (-)'])
         self.bucket.min_crop_evaporation_factor = float(bucket_spec['bl min. Gewasverdampingsfactor (-)'])
         self.bucket.drainage_fraction= float(bucket_spec['bl f_uitpoel'])
@@ -231,7 +231,7 @@ class computeTestSuite(TestCase):
         self.assertTrue(len(calls_to_compute) > 0)
 
         supplied_volume = calls_to_compute[0].getParam(1)
-        expected_volume = self.bucket.init_water_level * self.bucket.surface * self.bucket.porosity
+        expected_volume = self.bucket.init_water_level * self.bucket.surface * self.bucket.bottom_porosity
         self.assertAlmostEqual(supplied_volume, expected_volume)
 
     def test_l(self):
