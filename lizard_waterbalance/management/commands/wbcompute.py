@@ -75,6 +75,11 @@ class Command(BaseCommand):
                          for i in root.childNodes 
                          if i.nodeType != i.TEXT_NODE 
                          and i.tagName != u"properties"])
+        diag = open(run_info['outputDiagnosticFile'], "w")
+        diag.write("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Diag version="1.2" xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI HTTP://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_diag.xsd"/>
+""")
+        diag.close()
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
