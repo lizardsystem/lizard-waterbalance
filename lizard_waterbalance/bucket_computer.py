@@ -188,7 +188,7 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
     seepage = compute_seepage(bucket, seepage)
 
     storage = previous_storage + net_precipitation + net_drainage + seepage
-    max_storage = bucket.max_water_level * bucket.surface * bucket.bottom_porosity
+    max_storage = bucket.bottom_max_water_level * bucket.surface * bucket.bottom_porosity
     if storage > max_storage:
         flow_off = max_storage - storage
         storage = max_storage
@@ -247,7 +247,7 @@ def switch_bucket_upper_values(bucket):
     bucket.bottom_porosity, bucket.porosity = switch_values(bucket.bottom_porosity, bucket.porosity)
     bucket.bottom_drainage_fraction, bucket.drainage_fraction = switch_values(bucket.bottom_drainage_fraction, bucket.drainage_fraction)
     bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
-    bucket.max_water_level, bucket.upper_max_water_level = switch_values(bucket.max_water_level, bucket.upper_max_water_level)
+    bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
     bucket.min_water_level, bucket.upper_min_water_level = switch_values(bucket.min_water_level, bucket.upper_min_water_level)
     bucket.init_water_level, bucket.upper_init_water_level = switch_values(bucket.init_water_level, bucket.upper_init_water_level)
     return bucket

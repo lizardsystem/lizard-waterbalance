@@ -314,7 +314,7 @@ class Bucket(object):
         self.min_crop_evaporation_factor = self.database_bucket.min_crop_evaporation_factor
         self.bottom_drainage_fraction = self.database_bucket.drainage_fraction
         self.bottom_indraft_fraction = self.database_bucket.indraft_fraction
-        self.max_water_level = self.database_bucket.max_water_level
+        self.bottom_max_water_level = self.database_bucket.max_water_level
         self.min_water_level = self.database_bucket.min_water_level
         self.equi_water_level = self.database_bucket.equi_water_level
         self.init_water_level = self.database_bucket.init_water_level
@@ -322,7 +322,7 @@ class Bucket(object):
         self.porosity = self.database_bucket.upper_porosity
         self.drainage_fraction = self.database_bucket.upper_drainage_fraction
         self.indraft_fraction = self.database_bucket.upper_indraft_fraction
-        self.upper_max_water_level = self.database_bucket.upper_max_water_level
+        self.max_water_level = self.database_bucket.upper_max_water_level
         self.upper_min_water_level = self.database_bucket.upper_min_water_level
         self.upper_equi_water_level = self.database_bucket.upper_equi_water_level
         self.upper_init_water_level = self.database_bucket.upper_init_water_level
