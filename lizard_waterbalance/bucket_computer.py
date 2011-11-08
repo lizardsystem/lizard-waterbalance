@@ -249,6 +249,7 @@ def switch_bucket_upper_values(bucket):
     bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
     bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
     bucket.bottom_min_water_level, bucket.min_water_level = switch_values(bucket.bottom_min_water_level, bucket.min_water_level)
+    bucket.bottom_equi_water_level, bucket.equi_water_level = switch_values(bucket.bottom_equi_water_level, bucket.equi_water_level)
     bucket.bottom_init_water_level, bucket.init_water_level = switch_values(bucket.bottom_init_water_level, bucket.init_water_level)
     return bucket
 
