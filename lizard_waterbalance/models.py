@@ -967,9 +967,6 @@ class Bucket(models.Model):
     def __unicode__(self):
         return '%s - %s'%(self.open_water.name, self.name)
 
-    def surface_in_ha(self):
-        return float(self.surface)/10000
-
     def upper_bucket_info(self):
 
         info = ""
