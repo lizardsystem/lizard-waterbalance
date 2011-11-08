@@ -73,7 +73,7 @@ class computeTestSuite(TestCase):
         self.bucket.bottom_porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
         self.bucket.crop_evaporation_factor = float(bucket_spec['bl gewasverdampingsfactor (-)'])
         self.bucket.min_crop_evaporation_factor = float(bucket_spec['bl min. Gewasverdampingsfactor (-)'])
-        self.bucket.drainage_fraction= float(bucket_spec['bl f_uitpoel'])
+        self.bucket.bottom_drainage_fraction= float(bucket_spec['bl f_uitpoel'])
         self.bucket.indraft_fraction = float(bucket_spec['bl f_intrek'])
         self.bucket.max_water_level = float(bucket_spec['bl max level'])
         self.bucket.equi_water_level = float(bucket_spec['bl equilibrium level'])
