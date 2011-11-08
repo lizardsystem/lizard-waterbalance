@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Run xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wldelft.nl/fews/PI" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_run.xsd" version="1.5">
-    <timeZone>0.0</timeZone>
-    <startDateTime date="1990-12-30" time="23:00:00"/>
-    <endDateTime date="2009-12-31" time="23:00:00"/>
-    <time0 date="2009-12-31" time="23:00:00"/>
+    <timeZone>1.0</timeZone>
+    <startDateTime date="2000-01-01" time="00:00:00"/>
+    <endDateTime date="2010-01-01" time="00:00:00"/>
+    <time0 date="2010-01-01" time="00:00:00"/>
     <workDir>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\model</workDir>
     <inputParameterFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\input\Parameters.xml</inputParameterFile>
     <inputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\input\Tijdreeksen.xml</inputTimeSeriesFile>
     <outputDiagnosticFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\Diagnostics\Diagnostics.xml</outputDiagnosticFile>
+    <outputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\output\waterbalance-graph.xml</outputTimeSeriesFile>
     <properties>
         <string key="Regio" value="Waternet"/>
         <string key="Gebied" value="SAP"/>
