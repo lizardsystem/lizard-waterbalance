@@ -134,7 +134,7 @@ def compute_net_precipitation(bucket,
     * evaporation -- evaporation of today in [mm/day]
 
     """
-    equi_volume = bucket.equi_water_level * bucket.surface
+    equi_volume = bucket.bottom_equi_water_level * bucket.surface
     if previous_volume > equi_volume:
         evaporation_factor = bucket.crop_evaporation_factor
     else:
@@ -158,7 +158,7 @@ def compute_net_drainage(bucket, previous_volume):
     * previous_volume -- water volume of the bucket the day before
 
     """
-    equi_volume = bucket.equi_water_level * bucket.surface
+    equi_volume = bucket.bottom_equi_water_level * bucket.surface
     if previous_volume > equi_volume:
         net_drainage = -previous_volume * bucket.bottom_drainage_fraction
     elif previous_volume < equi_volume:
@@ -196,7 +196,7 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
         flow_off = 0
 
     if not allow_below_minimum_storage:
-        storage = max(storage, bucket.min_water_level * bucket.surface)
+        storage = max(storage, bucket.bottom_min_water_level * bucket.surface)
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
@@ -218,7 +218,7 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
     outcome = BucketOutcome()
     volume = bucket.init_water_level * bucket.surface * bucket.bottom_porosity
 
-    if not allow_below_minimum_storage and bucket.min_water_level == None:
+    if not allow_below_minimum_storage and bucket.bottom_min_water_level == None:
         logger.warming("Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name)
         bucket.min_water_level = 0
 
@@ -248,7 +248,7 @@ def switch_bucket_upper_values(bucket):
     bucket.bottom_drainage_fraction, bucket.drainage_fraction = switch_values(bucket.bottom_drainage_fraction, bucket.drainage_fraction)
     bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
     bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
-    bucket.min_water_level, bucket.upper_min_water_level = switch_values(bucket.min_water_level, bucket.upper_min_water_level)
+    bucket.bottom_min_water_level, bucket.min_water_level = switch_values(bucket.bottom_min_water_level, bucket.min_water_level)
     bucket.init_water_level, bucket.upper_init_water_level = switch_values(bucket.init_water_level, bucket.upper_init_water_level)
     return bucket
 

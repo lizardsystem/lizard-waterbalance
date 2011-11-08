@@ -76,8 +76,8 @@ class computeTestSuite(TestCase):
         self.bucket.bottom_drainage_fraction= float(bucket_spec['bl f_uitpoel'])
         self.bucket.bottom_indraft_fraction = float(bucket_spec['bl f_intrek'])
         self.bucket.bottom_max_water_level = float(bucket_spec['bl max level'])
-        self.bucket.equi_water_level = float(bucket_spec['bl equilibrium level'])
-        self.bucket.min_water_level = float(bucket_spec['bl minimum level'])
+        self.bucket.bottom_equi_water_level = float(bucket_spec['bl equilibrium level'])
+        self.bucket.bottom_min_water_level = float(bucket_spec['bl minimum level'])
         self.bucket.init_water_level = float(bucket_spec['bl init level'])
         self.bucket.external_discharge = 0 # not known in bucket_spec
 
@@ -101,7 +101,7 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on zero precipitation and evaporation.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         precipitation = 0
         evaporation = 0
@@ -116,7 +116,7 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on more precipitation than evaporation.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         precipitation = 20
         evaporation = 5
@@ -131,7 +131,7 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on more evaporation than precipitation.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         precipitation = 5
         evaporation = 20
@@ -146,7 +146,7 @@ class computeTestSuite(TestCase):
         """Test compute_net_drainage on less previous day storage than equi storage.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         expected_value = -41302.53
@@ -183,7 +183,7 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct flow off.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         evaporation = 20
@@ -199,7 +199,7 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct net drainage.
 
         """
-        self.bucket.equi_water_level = 0.50
+        self.bucket.bottom_equi_water_level = 0.50
         self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.init_water_level * self.bucket.surface
         evaporation =  20
