@@ -674,10 +674,6 @@ class WaterbalanceComputer2(object):
             factor = 1000.0 / float(self.area.surface)
 
             for key, timeserie in load.items():
-                try:
-                    print "load: ", key.name
-                except:
-                    pass
                 impact_timeseries = multiply_timeseries(timeserie, factor)
                 impact[key] = impact_timeseries
 
