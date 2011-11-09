@@ -133,7 +133,7 @@
     </group>
     <group id="SAP_verhard" name="Verhard">
         <model>Bucket</model>
-        <parameter id="code" name="Bakje code">
+        <parameter id="location_id" name="Bakje code">
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_verhard</stringValue>
         </parameter>
@@ -292,7 +292,7 @@
     </group>
     <group id="SAP_west" name="West">
         <model>Bucket</model>
-        <parameter id="code" name="Bakje code">
+        <parameter id="location_id" name="Bakje code">
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_west</stringValue>
         </parameter>
@@ -451,7 +451,7 @@
     </group>
     <group id="SAP_oost" name="Oost">
         <model>Bucket</model>
-        <parameter id="code" name="Bakje code">
+        <parameter id="location_id" name="Bakje code">
             <description>Code van het bakje, gelijk aan gebied locatie</description>
             <stringValue>SAP_oost</stringValue>
         </parameter>
@@ -610,7 +610,7 @@
     </group>
     <group id="SAP_sg" name="Inlaat sGravelandseVaart">
         <model>PumpingStation</model>
-        <parameter id="code" name="Kunstwerk code">
+        <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_sg</stringValue>
         </parameter>
@@ -652,16 +652,16 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>2.1</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.1</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
     </group>
     <group id="SAP_ip" name="inlaat peilbeheer">
         <model>PumpingStation</model>
-        <parameter id="code" name="Kunstwerk code">
+        <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_ip</stringValue>
         </parameter>
@@ -675,7 +675,7 @@
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <stringValue>X</stringValue>
+            <boolValue>true</boolValue>
         </parameter>
         <parameter id="deb_is_ts" name="Debiet is tijdserie">
             <description>Debiet is bestaande tijdreeks (1) of wordt uit zomer en winterdebiet berekend</description>
@@ -703,16 +703,16 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>2.1</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.1</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
     </group>
     <group id="SAP_up" name="uitlaat peilbeheer">
         <model>PumpingStation</model>
-        <parameter id="code" name="Kunstwerk code">
+        <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
             <stringValue>SAP_up</stringValue>
         </parameter>
@@ -726,11 +726,11 @@
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <stringValue>SAP</stringValue>
+            <boolValue>false</boolValue>
         </parameter>
         <parameter id="deb_is_ts" name="Debiet is tijdserie">
             <description>Debiet is bestaande tijdreeks (1) of wordt uit zomer en winterdebiet berekend</description>
-            <boolValue>true</boolValue>
+            <boolValue>false</boolValue>
         </parameter>
         <parameter id="deb_zomer" name="Debiet zomer">
             <description>Vast zomer debiet  [m3/dag]</description>
