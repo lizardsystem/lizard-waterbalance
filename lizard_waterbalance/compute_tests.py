@@ -70,15 +70,15 @@ class computeTestSuite(TestCase):
         self.bucket.name = bucket_spec['name']
         self.bucket.surface = int(float(bucket_spec['surface']))
         # self.bucket.seepage = link to input time serie for *kwel*
-        self.bucket.porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
+        self.bucket.bottom_porosity = float(bucket_spec['bl porositeit / bergingsruimte'])
         self.bucket.crop_evaporation_factor = float(bucket_spec['bl gewasverdampingsfactor (-)'])
         self.bucket.min_crop_evaporation_factor = float(bucket_spec['bl min. Gewasverdampingsfactor (-)'])
-        self.bucket.drainage_fraction= float(bucket_spec['bl f_uitpoel'])
-        self.bucket.indraft_fraction = float(bucket_spec['bl f_intrek'])
-        self.bucket.max_water_level = float(bucket_spec['bl max level'])
-        self.bucket.equi_water_level = float(bucket_spec['bl equilibrium level'])
-        self.bucket.min_water_level = float(bucket_spec['bl minimum level'])
-        self.bucket.init_water_level = float(bucket_spec['bl init level'])
+        self.bucket.bottom_drainage_fraction= float(bucket_spec['bl f_uitpoel'])
+        self.bucket.bottom_indraft_fraction = float(bucket_spec['bl f_intrek'])
+        self.bucket.bottom_max_water_level = float(bucket_spec['bl max level'])
+        self.bucket.bottom_equi_water_level = float(bucket_spec['bl equilibrium level'])
+        self.bucket.bottom_min_water_level = float(bucket_spec['bl minimum level'])
+        self.bucket.bottom_init_water_level = float(bucket_spec['bl init level'])
         self.bucket.external_discharge = 0 # not known in bucket_spec
 
     def test_a(self):
@@ -101,8 +101,8 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on zero precipitation and evaporation.
 
         """
-        self.bucket.equi_water_level = 0.50
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         precipitation = 0
         evaporation = 0
         expected_value = 0.0
@@ -116,8 +116,8 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on more precipitation than evaporation.
 
         """
-        self.bucket.equi_water_level = 0.50
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         precipitation = 20
         evaporation = 5
         expected_value = 47940.44
@@ -131,8 +131,8 @@ class computeTestSuite(TestCase):
         """Test compute_net_precipitation on more evaporation than precipitation.
 
         """
-        self.bucket.equi_water_level = 0.50
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         precipitation = 5
         evaporation = 20
         expected_value = -29501.81
@@ -146,9 +146,9 @@ class computeTestSuite(TestCase):
         """Test compute_net_drainage on less previous day storage than equi storage.
 
         """
-        self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        self.bucket.bottom_indraft_fraction = 0.04
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         expected_value = -41302.53
         computed_value = compute_net_drainage(self.bucket, previous_volume)
         self.assertAlmostEqual(expected_value, computed_value, 2)
@@ -157,9 +157,9 @@ class computeTestSuite(TestCase):
         """Test compute_net_drainage on more previous day storage than equi storage.
 
         """
-        self.bucket.init_water_level = 0.65
-        self.bucket.indraft_fraction = 0.04
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_init_water_level = 0.65
+        self.bucket.bottom_indraft_fraction = 0.04
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         expected_value = -38352.35
         computed_value = compute_net_drainage(self.bucket, previous_volume)
         self.assertAlmostEqual(expected_value, computed_value, 2)
@@ -168,8 +168,8 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct water level.
 
         """
-        self.bucket.indraft_fraction = 0.04
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_indraft_fraction = 0.04
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         evaporation = 20
         precipitation = 5
         seepage = 10
@@ -183,9 +183,9 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct flow off.
 
         """
-        self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        self.bucket.bottom_indraft_fraction = 0.04
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         evaporation = 20
         precipitation = 5
         seepage = 10
@@ -199,9 +199,9 @@ class computeTestSuite(TestCase):
         """Test compute returns the correct net drainage.
 
         """
-        self.bucket.equi_water_level = 0.50
-        self.bucket.indraft_fraction = 0.04
-        previous_volume = self.bucket.init_water_level * self.bucket.surface
+        self.bucket.bottom_equi_water_level = 0.50
+        self.bucket.bottom_indraft_fraction = 0.04
+        previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
         evaporation =  20
         precipitation = 5
         seepage = 10
@@ -231,7 +231,7 @@ class computeTestSuite(TestCase):
         self.assertTrue(len(calls_to_compute) > 0)
 
         supplied_volume = calls_to_compute[0].getParam(1)
-        expected_volume = self.bucket.init_water_level * self.bucket.surface * self.bucket.porosity
+        expected_volume = self.bucket.bottom_init_water_level * self.bucket.surface * self.bucket.bottom_porosity
         self.assertAlmostEqual(supplied_volume, expected_volume)
 
     def test_l(self):

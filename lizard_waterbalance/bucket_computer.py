@@ -134,7 +134,7 @@ def compute_net_precipitation(bucket,
     * evaporation -- evaporation of today in [mm/day]
 
     """
-    equi_volume = bucket.equi_water_level * bucket.surface
+    equi_volume = bucket.bottom_equi_water_level * bucket.surface
     if previous_volume > equi_volume:
         evaporation_factor = bucket.crop_evaporation_factor
     else:
@@ -158,11 +158,11 @@ def compute_net_drainage(bucket, previous_volume):
     * previous_volume -- water volume of the bucket the day before
 
     """
-    equi_volume = bucket.equi_water_level * bucket.surface
+    equi_volume = bucket.bottom_equi_water_level * bucket.surface
     if previous_volume > equi_volume:
-        net_drainage = -previous_volume * bucket.drainage_fraction
+        net_drainage = -previous_volume * bucket.bottom_drainage_fraction
     elif previous_volume < equi_volume:
-        net_drainage = -previous_volume * bucket.indraft_fraction #klopt het minteken?
+        net_drainage = -previous_volume * bucket.bottom_indraft_fraction #klopt het minteken?
     else:
         net_drainage = 0
     return net_drainage
@@ -188,7 +188,7 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
     seepage = compute_seepage(bucket, seepage)
 
     storage = previous_storage + net_precipitation + net_drainage + seepage
-    max_storage = bucket.max_water_level * bucket.surface * bucket.porosity
+    max_storage = bucket.bottom_max_water_level * bucket.surface * bucket.bottom_porosity
     if storage > max_storage:
         flow_off = max_storage - storage
         storage = max_storage
@@ -196,7 +196,7 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
         flow_off = 0
 
     if not allow_below_minimum_storage:
-        storage = max(storage, bucket.min_water_level * bucket.surface)
+        storage = max(storage, bucket.bottom_min_water_level * bucket.surface)
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
 
@@ -216,9 +216,9 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
 
     """
     outcome = BucketOutcome()
-    volume = bucket.init_water_level * bucket.surface * bucket.porosity
+    volume = bucket.bottom_init_water_level * bucket.surface * bucket.bottom_porosity
 
-    if not allow_below_minimum_storage and bucket.min_water_level == None:
+    if not allow_below_minimum_storage and bucket.bottom_min_water_level == None:
         logger.warming("Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name)
         bucket.min_water_level = 0
 
@@ -244,12 +244,13 @@ def switch_values(one, two):
 
 def switch_bucket_upper_values(bucket):
 
-    bucket.porosity, bucket.upper_porosity = switch_values(bucket.porosity, bucket.upper_porosity)
-    bucket.drainage_fraction, bucket.upper_drainage_fraction = switch_values(bucket.drainage_fraction, bucket.upper_drainage_fraction)
-    bucket.indraft_fraction, bucket.upper_indraft_fraction = switch_values(bucket.indraft_fraction, bucket.upper_indraft_fraction)
-    bucket.max_water_level, bucket.upper_max_water_level = switch_values(bucket.max_water_level, bucket.upper_max_water_level)
-    bucket.min_water_level, bucket.upper_min_water_level = switch_values(bucket.min_water_level, bucket.upper_min_water_level)
-    bucket.init_water_level, bucket.upper_init_water_level = switch_values(bucket.init_water_level, bucket.upper_init_water_level)
+    bucket.bottom_porosity, bucket.porosity = switch_values(bucket.bottom_porosity, bucket.porosity)
+    bucket.bottom_drainage_fraction, bucket.drainage_fraction = switch_values(bucket.bottom_drainage_fraction, bucket.drainage_fraction)
+    bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
+    bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
+    bucket.bottom_min_water_level, bucket.min_water_level = switch_values(bucket.bottom_min_water_level, bucket.min_water_level)
+    bucket.bottom_equi_water_level, bucket.equi_water_level = switch_values(bucket.bottom_equi_water_level, bucket.equi_water_level)
+    bucket.bottom_init_water_level, bucket.init_water_level = switch_values(bucket.bottom_init_water_level, bucket.init_water_level)
     return bucket
 
 def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
@@ -263,7 +264,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
 
 
     bucket = switch_bucket_upper_values(bucket)
-    bucket.porosity, tmp = 1.0, bucket.porosity
+    bucket.bottom_porosity, tmp = 1.0, bucket.bottom_porosity
 
     upper_outcome = compute_timeseries(bucket,
                                        precipitation,
@@ -271,7 +272,7 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
                                        upper_seepage,
                                        compute,
                                        False)
-    bucket.porosity = tmp
+    bucket.bottom_porosity = tmp
     bucket = switch_bucket_upper_values(bucket)
 
     # we then compute the lower bucket:

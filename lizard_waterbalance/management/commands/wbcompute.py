@@ -26,12 +26,14 @@
 #
 #******************************************************************************
 
-from xml.dom.minidom import parse
-from timeseries.timeseries import TimeSeries
-from xmlmodel.reader import parse_parameters, attach_timeseries_to_structures
-from django.core.management.base import BaseCommand
 import logging
-from datetime import datetime
+from xml.dom.minidom import parse
+from xmlmodel.reader import parse_parameters
+from xmlmodel.reader import attach_timeseries_to_structures
+
+from django.core.management.base import BaseCommand
+
+from timeseries.timeseries import TimeSeries
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +45,7 @@ def getText(node):
 ASSOC = {'Bucket': {'precipitation': 'NEERSG',
                     'evaporation': 'VERDPG',
                     'seepage': 'KWEL',
-                    'TODO_wegzijging': 'WEGZ',
+                    'infiltration': 'WEGZ',
                     'water_level': 'WATHTE',
                     'sewer': '',
                     'minimum_level': 'MARG_OND',
@@ -54,7 +56,7 @@ ASSOC = {'Bucket': {'precipitation': 'NEERSG',
          'PumpingStation': {'precipitation': 'NEERSG',
                             'evaporation': 'VERDPG',
                             'seepage': 'KWEL',
-                            'TODO_wegzijging': 'WEGZ',
+                            'infiltration': 'WEGZ',
                             'water_level': 'WATHTE',
                             'sewer': '',
                             'minimum_level': 'MARG_OND',
@@ -76,9 +78,9 @@ class Command(BaseCommand):
         run_file = str(args[0])
         run_dom = parse(run_file)
         root = run_dom.childNodes[0]
-        run_info = dict([(i.tagName, getText(i)) 
-                         for i in root.childNodes 
-                         if i.nodeType != i.TEXT_NODE 
+        run_info = dict([(i.tagName, getText(i))
+                         for i in root.childNodes
+                         if i.nodeType != i.TEXT_NODE
                          and i.tagName != u"properties"])
         diag = open(run_info['outputDiagnosticFile'], "w")
         diag.write("""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
