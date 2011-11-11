@@ -86,12 +86,20 @@ def parse_parameters(stream):
 
     >>> root = parse_parameters(Stream('''<parameters><group>
     ... <model>Area</model>
+    ... <parameter id='obj_id'><stringValue>A1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L1</stringValue></parameter>
     ... </group><group>
     ... <model>Bucket</model>
+    ... <parameter id='obj_id'><stringValue>B1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L88</stringValue></parameter>
     ... </group><group>
     ... <model>Bucket</model>
+    ... <parameter id='obj_id'><stringValue>B2</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L39</stringValue></parameter>
     ... </group><group>
     ... <model>Pump</model>
+    ... <parameter id='obj_id'><stringValue>P1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L130</stringValue></parameter>
     ... </group></parameters>'''))
     >>> len(root.bucket)
     2
@@ -104,6 +112,52 @@ def parse_parameters(stream):
     >>> set([type(i) for i in root.pump])
     set([<class 'xmlmodel.reader.Pump'>])
 
+    what happens if you explicitly convert to string?
+    >>> str(root)
+    'Area:A1/L1'
+
+    the above representation is used to compute an object's hash!
+    >>> hash(root) == hash('Area:A1/L1')
+    True
+
+    what happens when you read again the same data?
+    will it compare equal to the original?
+    >>> root2 = parse_parameters(Stream('''<parameters><group>
+    ... <model>Area</model>
+    ... <parameter id='obj_id'><stringValue>A1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L1</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id='obj_id'><stringValue>B1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L88</stringValue></parameter>
+    ... </group><group>
+    ... <model>Bucket</model>
+    ... <parameter id='obj_id'><stringValue>B2</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L39</stringValue></parameter>
+    ... </group><group>
+    ... <model>Pump</model>
+    ... <parameter id='obj_id'><stringValue>P1</stringValue></parameter>
+    ... <parameter id='location_id'><stringValue>L130</stringValue></parameter>
+    ... </group></parameters>'''))
+    >>> root == root2
+    True
+    >>> root.bucket == root2.bucket
+    True
+    >>> root.pump == root2.pump
+    True
+
+    you may believe that comparison always returns True?
+    >>> root2 == root.bucket[0]
+    False
+    >>> root.bucket[0] == root.bucket[1]
+    False
+
+    this means you can use such objects as dictionary keys:
+    >>> d = {root: 'found it!'}
+    >>> d.get(root2, 'nope')
+    'found it!'
+    >>> d.get(root.bucket[0], 'nope')
+    'nope'
     """
 
     classes = {}
@@ -147,9 +201,16 @@ def parse_parameters(stream):
             getattr(result, class_name.lower()).append(obj)
 
     for class_name, cls in classes.items():
-        cls.location_id = "<unidentified>"
+        cls.obj_id = "<NO_ID>"
+        cls.location_id = "<NO_LOC>"
+        setattr(cls, '__eq__',  # test equality based on hash and bool, str, float attributes.
+                lambda self, other: reduce(lambda x, y: x and y,
+                                           [getattr(self, a, None) == getattr(other, a, None)
+                                            for a in set(dir(self)).union(dir(other))
+                                            if type(getattr(self, a)) in (bool, str, float)],
+                                           hash(self) == hash(other)))
         setattr(cls, '__str__',
-                lambda self: class_name + ":" + self.location_id)
+                lambda self: class_name + ":" + self.obj_id + '/' + self.location_id)
         setattr(cls, '__hash__',
                 lambda self: hash(str(self)))
 
@@ -221,15 +282,6 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     <bound method Area.<lambda> of <xmlmodel.reader.Area object at ...>>
     >>> [i.retrieve_evaporation for i in root.pumpingstation] # doctest:+ELLIPSIS
     [<bound method PumpingStation.<lambda> of <xmlmodel.reader.PumpingStation object at ...>>]
-
-    what happens if you explicitly convert to string?
-    >>> str(root)
-    'Area:L1'
-
-    the above representation is used to compute an object's hash!
-    >>> hash(root) == hash("Area:L1")
-    True
-
     """
 
     for class_name in corresponding:
@@ -239,8 +291,8 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
             todo = getattr(root, class_name.lower())
         for local, remote in corresponding[class_name].items():
             if todo:
-                setattr(todo[0].__class__, 
-                        "retrieve_" + local, 
+                setattr(todo[0].__class__,
+                        "retrieve_" + local,
                         lambda self, start, end: getattr(self, local).get_events(start, end))
             for obj in todo:
                 setattr(obj, local, tsd.get((obj.location_id, remote)))
