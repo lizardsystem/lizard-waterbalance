@@ -43,7 +43,7 @@ def parse_parameters(stream):
     >>> type(parse_parameters(Stream('''<parameters><group>
     ... <model>Area</model></group>
     ... </parameters>''')))
-    <class 'xmlmodel.snippets.Area'>
+    <class 'xmlmodel.reader.Area'>
 
     ====
     each `parameter` in the `group` cause a field in the resulting
@@ -98,11 +98,11 @@ def parse_parameters(stream):
     >>> len(root.pump)
     1
     >>> type(root)
-    <class 'xmlmodel.snippets.Area'>
+    <class 'xmlmodel.reader.Area'>
     >>> set([type(i) for i in root.bucket])
-    set([<class 'xmlmodel.snippets.Bucket'>])
+    set([<class 'xmlmodel.reader.Bucket'>])
     >>> set([type(i) for i in root.pump])
-    set([<class 'xmlmodel.snippets.Pump'>])
+    set([<class 'xmlmodel.reader.Pump'>])
 
     """
 
@@ -145,6 +145,13 @@ def parse_parameters(stream):
             if not hasattr(result, class_name.lower()):
                 setattr(result, class_name.lower(), [])
             getattr(result, class_name.lower()).append(obj)
+
+    for class_name, cls in classes.items():
+        cls.location_id = "<unidentified>"
+        setattr(cls, '__str__',
+                lambda self: class_name + ":" + self.location_id)
+        setattr(cls, '__hash__',
+                lambda self: hash(str(self)))
 
     return result
 
@@ -202,7 +209,7 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     ...  },
     ... }
     >>> attach_timeseries_to_structures(root, tsd, k) # doctest:+ELLIPSIS
-    <xmlmodel.snippets.Area object at ...>
+    <xmlmodel.reader.Area object at ...>
     >>> (root.precipitation, root.evaporation, root.seepage)
     (1, 2, 3)
     >>> [(i.precipitation, i.evaporation, i.seepage) for i in root.bucket]
@@ -211,9 +218,17 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     [(17, 18, 19)]
 
     >>> root.retrieve_precipitation # doctest:+ELLIPSIS
-    <bound method Area.<lambda> of <xmlmodel.snippets.Area object at ...>>
+    <bound method Area.<lambda> of <xmlmodel.reader.Area object at ...>>
     >>> [i.retrieve_evaporation for i in root.pumpingstation] # doctest:+ELLIPSIS
-    [<bound method PumpingStation.<lambda> of <xmlmodel.snippets.PumpingStation object at ...>>]
+    [<bound method PumpingStation.<lambda> of <xmlmodel.reader.PumpingStation object at ...>>]
+
+    what happens if you explicitly convert to string?
+    >>> str(root)
+    'Area:L1'
+
+    the above representation is used to compute an object's hash!
+    >>> hash(root) == hash("Area:L1")
+    True
 
     """
 
