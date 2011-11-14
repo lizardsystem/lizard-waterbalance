@@ -26,6 +26,58 @@
 #
 #******************************************************************************
 
+import uuid
+
+
+class BaseModel(object):
+    def __init__(self):
+        self.obj_id = str(uuid.uuid4())
+        self.location_id = "<NO_LOC>"
+        self.timeseries_names = set()
+
+    def __eq__(self, other):
+        """two objects are equal iff they have the same hash and their
+        atomic attributes are equal
+        """
+
+        return reduce(lambda x, y: x and y,
+                      [getattr(self, a, None) == getattr(other, a, None)
+                       for a in set(dir(self)).union(dir(other))
+                       if type(getattr(self, a)) in (bool, str, float)],
+                      hash(self) == hash(other))
+
+    def __str__(self):
+        return "%s:%s/%s" % (self.__class__.__name__, self.obj_id, self.location_id)
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __getattr__(self, attr):
+        if attr.startswith("retrieve_"):
+            name = attr[len("retrieve_"):]
+            if name in self.timeseries_names:
+                timeseries = getattr(self, name)
+                return lambda start, end: timeseries.get_events(start, end)
+        return object.__getattr__(self, attr)
+
+
+class Area(BaseModel):
+    pass
+
+
+class Bucket(BaseModel):
+    pass
+
+
+class PumpingStation(BaseModel):
+    pass
+
+
+classes = {'Area': Area,
+           'Bucket': Bucket,
+           'PumpingStation': PumpingStation,
+           }
+
 
 def parse_parameters(stream):
     r"""parse the xml stream into set of objects
@@ -97,20 +149,20 @@ def parse_parameters(stream):
     ... <parameter id='obj_id'><stringValue>B2</stringValue></parameter>
     ... <parameter id='location_id'><stringValue>L39</stringValue></parameter>
     ... </group><group>
-    ... <model>Pump</model>
+    ... <model>PumpingStation</model>
     ... <parameter id='obj_id'><stringValue>P1</stringValue></parameter>
     ... <parameter id='location_id'><stringValue>L130</stringValue></parameter>
     ... </group></parameters>'''))
     >>> len(root.bucket)
     2
-    >>> len(root.pump)
+    >>> len(root.pumpingstation)
     1
     >>> type(root)
     <class 'xmlmodel.reader.Area'>
     >>> set([type(i) for i in root.bucket])
     set([<class 'xmlmodel.reader.Bucket'>])
-    >>> set([type(i) for i in root.pump])
-    set([<class 'xmlmodel.reader.Pump'>])
+    >>> set([type(i) for i in root.pumpingstation])
+    set([<class 'xmlmodel.reader.PumpingStation'>])
 
     what happens if you explicitly convert to string?
     >>> str(root)
@@ -122,6 +174,8 @@ def parse_parameters(stream):
 
     what happens when you read again the same data?
     will it compare equal to the original?
+
+    if objects have an explicit obj_id, yes:
     >>> root2 = parse_parameters(Stream('''<parameters><group>
     ... <model>Area</model>
     ... <parameter id='obj_id'><stringValue>A1</stringValue></parameter>
@@ -135,7 +189,7 @@ def parse_parameters(stream):
     ... <parameter id='obj_id'><stringValue>B2</stringValue></parameter>
     ... <parameter id='location_id'><stringValue>L39</stringValue></parameter>
     ... </group><group>
-    ... <model>Pump</model>
+    ... <model>PumpingStation</model>
     ... <parameter id='obj_id'><stringValue>P1</stringValue></parameter>
     ... <parameter id='location_id'><stringValue>L130</stringValue></parameter>
     ... </group></parameters>'''))
@@ -143,7 +197,7 @@ def parse_parameters(stream):
     True
     >>> root.bucket == root2.bucket
     True
-    >>> root.pump == root2.pump
+    >>> root.pumpingstation == root2.pumpingstation
     True
 
     you may believe that comparison always returns True?
@@ -152,6 +206,25 @@ def parse_parameters(stream):
     >>> root.bucket[0] == root.bucket[1]
     False
 
+    if the input file does not explicitly contain obj_id fields, then
+    equality is not to be expected.
+    >>> root_anon1 = parse_parameters(Stream('''<parameters><group>
+    ... <model>Area</model>
+    ... <parameter id='location_id'><stringValue>L1</stringValue></parameter>
+    ... </group></parameters>'''))
+    >>> root_anon2 = parse_parameters(Stream('''<parameters><group>
+    ... <model>Area</model>
+    ... <parameter id='location_id'><stringValue>L1</stringValue></parameter>
+    ... </group></parameters>'''))
+    >>> root_anon1 == root_anon2
+    False
+
+    if you serialize and unserialize an object, equality is retained.
+    for example using pickle...
+    >>> import pickle
+    >>> root_anon1 == pickle.loads(pickle.dumps(root_anon1))
+    True
+
     this means you can use such objects as dictionary keys:
     >>> d = {root: 'found it!'}
     >>> d.get(root2, 'nope')
@@ -159,8 +232,6 @@ def parse_parameters(stream):
     >>> d.get(root.bucket[0], 'nope')
     'nope'
     """
-
-    classes = {}
 
     from xml.dom.minidom import parse
     d = parse(stream)
@@ -174,9 +245,10 @@ def parse_parameters(stream):
         assert(len(models) == 1)
         for model in models:
             class_name = str(model.childNodes[0].nodeValue)
-            this_class = classes.setdefault(class_name, type(class_name, (object, ), {}))
+            this_class = classes[class_name]
 
         obj = this_class()
+        obj.obj_id = str(uuid.uuid4())
         if result is None:
             result = obj
         for parameter in group.getElementsByTagName("parameter"):
@@ -199,20 +271,6 @@ def parse_parameters(stream):
             if not hasattr(result, class_name.lower()):
                 setattr(result, class_name.lower(), [])
             getattr(result, class_name.lower()).append(obj)
-
-    for class_name, cls in classes.items():
-        cls.obj_id = "<NO_ID>"
-        cls.location_id = "<NO_LOC>"
-        setattr(cls, '__eq__',  # test equality based on hash and bool, str, float attributes.
-                lambda self, other: reduce(lambda x, y: x and y,
-                                           [getattr(self, a, None) == getattr(other, a, None)
-                                            for a in set(dir(self)).union(dir(other))
-                                            if type(getattr(self, a)) in (bool, str, float)],
-                                           hash(self) == hash(other)))
-        setattr(cls, '__str__',
-                lambda self: class_name + ":" + self.obj_id + '/' + self.location_id)
-        setattr(cls, '__hash__',
-                lambda self: hash(str(self)))
 
     return result
 
@@ -279,9 +337,9 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     [(17, 18, 19)]
 
     >>> root.retrieve_precipitation # doctest:+ELLIPSIS
-    <bound method Area.<lambda> of <xmlmodel.reader.Area object at ...>>
+    <function <lambda> at ...>
     >>> [i.retrieve_evaporation for i in root.pumpingstation] # doctest:+ELLIPSIS
-    [<bound method PumpingStation.<lambda> of <xmlmodel.reader.PumpingStation object at ...>>]
+    [<function <lambda> at ...>]
     """
 
     for class_name in corresponding:
@@ -290,11 +348,8 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
         else:
             todo = getattr(root, class_name.lower())
         for local, remote in corresponding[class_name].items():
-            if todo:
-                setattr(todo[0].__class__,
-                        "retrieve_" + local,
-                        lambda self, start, end: getattr(self, local).get_events(start, end))
             for obj in todo:
                 setattr(obj, local, tsd.get((obj.location_id, remote)))
+                obj.timeseries_names.add(local)
 
     return root
