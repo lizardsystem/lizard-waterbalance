@@ -31,9 +31,9 @@ from unittest import TestCase
 
 from mock import Mock
 
-from lizard_waterbalance.bucket_summarizer import BucketsSummary
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpingStation
+from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.level_control_computer import DateRange
 from lizard_wbcomputation.level_control_computer import LevelControlComputer
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
