@@ -9,7 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import TestCase
 
-from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
+from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from timeseries.timeseriesstub import TimeseriesStub
 
 logger = logging.getLogger(__name__) # pylint: disable=C0103, C0301
