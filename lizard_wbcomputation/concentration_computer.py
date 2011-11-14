@@ -21,13 +21,9 @@
 #
 #******************************************************************************
 
-from datetime import datetime
-from datetime import timedelta
-from random import randrange
 import logging
 
 from timeseries.timeseriesstub import enumerate_dict_events
-from timeseries.timeseriesstub import split_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 logger = logging.getLogger(__name__)
