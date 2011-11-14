@@ -32,8 +32,10 @@ from lizard_wbcomputation.fraction_computer import FractionComputer
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
 from lizard_wbcomputation.level_control_computer import LevelControlComputer
+from lizard_wbcomputation.load_computer import LoadComputer
 from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
+
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
@@ -42,7 +44,6 @@ from timeseries.timeseriesstub import multiply_timeseries
 from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
 from lizard_waterbalance.concentration_computer import ConcentrationComputer2
-from lizard_waterbalance.load_computer import LoadComputer
 
 logger = logging.getLogger(__name__)
 
