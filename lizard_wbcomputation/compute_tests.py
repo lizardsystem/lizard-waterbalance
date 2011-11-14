@@ -30,16 +30,13 @@ from datetime import datetime
 from unittest import TestCase
 
 from lizard_waterbalance.models import Bucket
-from lizard_waterbalance.models import Label
-from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.bucket_computer import compute
 from lizard_waterbalance.bucket_computer import compute_net_drainage
 from lizard_waterbalance.bucket_computer import compute_net_precipitation
 from lizard_waterbalance.bucket_computer import compute_seepage
 from lizard_waterbalance.bucket_computer import compute_timeseries
-from lizard_waterbalance.compute import find_pumping_station_level_control
 from lizard_waterbalance.localmock import Mock
+from lizard_wbcomputation.compute import find_pumping_station_level_control
 from timeseries.timeseriesstub import TimeseriesStub
 
 
