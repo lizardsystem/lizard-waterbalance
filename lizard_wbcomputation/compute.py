@@ -28,10 +28,10 @@
 
 import logging
 
-from lizard_waterbalance.level_control_computer import DateRange
-from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_wbcomputation.fraction_computer import FractionComputer
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
+from lizard_wbcomputation.level_control_computer import DateRange
+from lizard_wbcomputation.level_control_computer import LevelControlComputer
 from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
 from timeseries.timeseriesstub import enumerate_events
