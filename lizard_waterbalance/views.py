@@ -32,7 +32,7 @@ from lizard_map import coordinates
 from lizard_map.adapter import Graph
 from lizard_map.daterange import current_start_end_dates
 from lizard_map.models import Workspace
-from lizard_waterbalance.compute import WaterbalanceComputer2
+from lizard_wbcomputation.compute import WaterbalanceComputer2
 from lizard_waterbalance.forms import WaterbalanceConfEditForm
 from lizard_waterbalance.forms import OpenWaterEditForm
 from lizard_waterbalance.forms import PumpingStationEditForm
