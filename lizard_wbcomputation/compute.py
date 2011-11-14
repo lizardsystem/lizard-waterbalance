@@ -28,12 +28,12 @@
 
 import logging
 
-from lizard_waterbalance.fraction_computer import FractionComputer
 from lizard_waterbalance.level_control_computer import DateRange
 from lizard_waterbalance.level_control_computer import LevelControlComputer
 from lizard_waterbalance.level_control_assignment import LevelControlAssignment
 from lizard_waterbalance.sluice_error_computer import SluiceErrorComputer
 from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
+from lizard_wbcomputation.fraction_computer import FractionComputer
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
