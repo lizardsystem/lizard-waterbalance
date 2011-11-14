@@ -29,9 +29,9 @@
 from datetime import datetime
 from unittest import TestCase
 
-from lizard_waterbalance.level_control_assignment import LevelControlAssignment
 from lizard_waterbalance.models import PumpingStation
 from lizard_waterbalance.models import Timeseries
+from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from timeseries.timeseriesstub import TimeseriesStub
 
 def create_pumping_station(into=None, computed_level_control=None, percentage=None):
