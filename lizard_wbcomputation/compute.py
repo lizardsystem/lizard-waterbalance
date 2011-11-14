@@ -28,6 +28,7 @@
 
 import logging
 
+from lizard_wbcomputation.concentration_computer import ConcentrationComputer2
 from lizard_wbcomputation.fraction_computer import FractionComputer
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
@@ -43,7 +44,6 @@ from timeseries.timeseriesstub import multiply_timeseries
 
 from lizard_waterbalance.bucket_computer import BucketComputer
 from lizard_waterbalance.bucket_summarizer import BucketsSummarizer
-from lizard_waterbalance.concentration_computer import ConcentrationComputer2
 
 logger = logging.getLogger(__name__)
 
