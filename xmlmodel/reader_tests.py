@@ -28,17 +28,18 @@
 #* initial date       :  2011-11-07
 #**********************************************************************
 
-from snippets import parse_parameters
-from snippets import attach_timeseries_to_structures
+from reader import parse_parameters
+from reader import attach_timeseries_to_structures
 from timeseries.timeseries import TimeSeries
 
 import unittest
 
 from datetime import datetime
 
-class ObjectCreateTest(unittest.TestCase):
-    def test0Pass(self):
-        root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
+
+class CoupleParametersWithTimeseriesTest(unittest.TestCase):
+    def setUp(self):
+        self.root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
         tsd = TimeSeries.as_dict("xmlmodel/first_small.xml")
         k = {'Bucket': {'precipitation': 'NEERSG',
                         'evaporation': 'VERDPG',
@@ -49,11 +50,41 @@ class ObjectCreateTest(unittest.TestCase):
                                 'seepage': 'KWEL',
                                 },
              }
-        attach_timeseries_to_structures(root, tsd, k)
+        attach_timeseries_to_structures(self.root, tsd, k)
+
+    def test_select_timeseries_precipitation(self):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)
-        current = root.bucket[0].retrieve_precipitation(start, end)
+        self.assertEquals(1, self.root.bucket[0].precipitation[start])
+        self.assertEquals(3, self.root.bucket[0].precipitation[end])
+
+    def test_retrieve_from_timeseries_precipitation(self):
+        start = datetime(1991, 01, 02)
+        end = datetime(1991, 01, 04)
+        current = self.root.bucket[0].retrieve_precipitation(start, end)
+        self.assertEquals(3, len(current))
+        print(None, current)
+        print(self.root.bucket[0].timeseries_names)
+        print(self.root.bucket[1].timeseries_names)
+        print(self.root.bucket[2].timeseries_names)
+        current = dict(current)
+        self.assertEquals(1, current[start])
+        self.assertEquals(3, current[end])
+
+    def test_select_timeseries_evaporation(self):
+        start = datetime(1991, 01, 02)
+        end = datetime(1991, 01, 04)
+        self.assertEquals(3, self.root.bucket[0].evaporation[start])
+        self.assertEquals(7, self.root.bucket[0].evaporation[end])
+
+    def test_retrieve_from_timeseries_evaporation(self):
+        start = datetime(1991, 01, 02)
+        end = datetime(1991, 01, 04)
+        current = self.root.bucket[0].retrieve_evaporation(start, end)
         self.assertEquals(3, len(current))
         current = dict(current)
         self.assertEquals(3, current[start])
         self.assertEquals(7, current[end])
+
+    def test_retrieve_not_existing_gives_exception(self):
+        self.assertRaises(AttributeError, getattr, self.root.bucket[0], 'retrieve_something_else')
