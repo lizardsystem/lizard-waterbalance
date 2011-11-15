@@ -27,12 +27,12 @@
 #******************************************************************************
 
 import logging
+import sys
+
 from nens import fews
 from xml.dom.minidom import parse
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
-
-from django.core.management.base import BaseCommand
 
 from timeseries.timeseries import TimeSeries
 
@@ -69,26 +69,26 @@ ASSOC = {'Bucket': {'precipitation': 'NEERSG',
 
 
 
+def main(args):
+    """Compute the waterbalance for the information specified in the given file.
 
+    This function accepts a single parameter, viz. the file path to the Run.xml
+    file that specifies all the other required files.
 
-class Command(BaseCommand):
-    args = "<run file>"
-    help = "to be used as a general adapter"
+    """
+    run_file, = args
+    run_dom = parse(run_file)
+    root = run_dom.childNodes[0]
+    run_info = dict([(i.tagName, getText(i))
+                     for i in root.childNodes
+                     if i.nodeType != i.TEXT_NODE
+                     and i.tagName != u"properties"])
+    diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
+    logging.getLogger().addHandler(diag)
+    log.debug(run_info['inputTimeSeriesFile'])
+    tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
+    area = parse_parameters(run_info['inputParameterFile'])
+    attach_timeseries_to_structures(area, tsd, ASSOC)
 
-    def handle(self, *args, **options):
-        run_file = str(args[0])
-        run_dom = parse(run_file)
-        root = run_dom.childNodes[0]
-        run_info = dict([(i.tagName, getText(i))
-                         for i in root.childNodes
-                         if i.nodeType != i.TEXT_NODE
-                         and i.tagName != u"properties"])
-        diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
-        logging.getLogger().addHandler(diag)
-        log.debug(run_info['inputTimeSeriesFile'])
-        tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
-        area = parse_parameters(run_info['inputParameterFile'])
-        attach_timeseries_to_structures(area, tsd, ASSOC)
-
-        result = tsd
-        TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], result)
+    result = tsd
+    TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], result)
