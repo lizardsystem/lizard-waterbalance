@@ -28,7 +28,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from lizard_waterbalance.vertical_timeseries_computer import VerticalTimeseriesComputer
+from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
 from timeseries.timeseriesstub import TimeseriesStub
 
 
@@ -143,5 +143,5 @@ class VerticalTimeseriesComputerTests(TestCase):
         self.assertEqual(list(expected_timeseries["evaporation"].events()), list(timeseries["evaporation"].events()))
         self.assertEqual(list(expected_timeseries["seepage"].events()), list(timeseries["seepage"].events()))
         self.assertEqual(list(expected_timeseries["infiltration"].events()), list(timeseries["infiltration"].events()))
-        
+
 

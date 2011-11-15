@@ -2,12 +2,10 @@ import datetime
 import logging
 
 from django.core.management.base import BaseCommand
-from lizard_waterbalance.compute import WaterbalanceComputer2
 from lizard_waterbalance.models import IncompleteData
-from lizard_waterbalance.models import OpenWater
-from lizard_waterbalance.models import Parameter
 from lizard_waterbalance.models import WaterbalanceConf
 from lizard_waterbalance.models import WaterbalanceTimeserie
+from lizard_wbcomputation.compute import WaterbalanceComputer2
 
 
 logger = logging.getLogger(__name__)
