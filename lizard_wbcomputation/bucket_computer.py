@@ -29,7 +29,7 @@
 import logging
 from datetime import datetime
 
-from lizard_waterbalance.models import Bucket
+from lizard_wbcomputation.bucket_types import BucketTypes
 
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import create_empty_timeseries
@@ -368,10 +368,10 @@ class BucketComputer:
     def __init__(self, bucket_computers=None):
         if bucket_computers is None:
             self.bucket_computers = {}
-            self.bucket_computers[Bucket.UNDRAINED_SURFACE] = compute_timeseries
-            self.bucket_computers[Bucket.STEDELIJK_SURFACE] = compute_timeseries
-            self.bucket_computers[Bucket.HARDENED_SURFACE] = compute_timeseries_on_hardened_surface
-            self.bucket_computers[Bucket.DRAINED_SURFACE] = compute_timeseries_on_drained_surface
+            self.bucket_computers[BucketTypes.UNDRAINED_SURFACE] = compute_timeseries
+            self.bucket_computers[BucketTypes.STEDELIJK_SURFACE] = compute_timeseries
+            self.bucket_computers[BucketTypes.HARDENED_SURFACE] = compute_timeseries_on_hardened_surface
+            self.bucket_computers[BucketTypes.DRAINED_SURFACE] = compute_timeseries_on_drained_surface
         else:
             self.bucket_computers = bucket_computers
 
@@ -390,11 +390,11 @@ class BucketComputer:
         result = {}
 
         if bucket.surface > 0:
-            surface_type_name = Bucket.SURFACE_TYPES[bucket.surface_type]
+            surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
             logger.debug("calculate bucket %s of type %s", bucket.name,
                          surface_type_name)
             bucket_computer = self.bucket_computers[bucket.surface_type]
-            if bucket.surface_type == Bucket.STEDELIJK_SURFACE:
+            if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                 outcome = compute_timeseries_from_sewer(bucket, sewer)
             else:
                 outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)

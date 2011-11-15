@@ -26,7 +26,8 @@
 #
 #******************************************************************************
 
-from lizard_waterbalance.models import Bucket
+from lizard_wbcomputation.bucket_types import BucketTypes
+
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import enumerate_events
 
@@ -140,14 +141,14 @@ class BucketSummarizer:
     def compute_sum_hardened(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.HARDENED_SURFACE:
+            if bucket.surface_type == BucketTypes.HARDENED_SURFACE:
                 sum += outcome[0]
         return sum
 
     def compute_sum_drained(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.DRAINED_SURFACE:
+            if bucket.surface_type == BucketTypes.DRAINED_SURFACE:
                 sum += outcome[0]
                 net_drainage = outcome[1]
                 if net_drainage < 0:
@@ -157,7 +158,7 @@ class BucketSummarizer:
     def compute_sum_sewer(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.STEDELIJK_SURFACE:
+            if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                 net_drainage = outcome[1]
                 if net_drainage < 0:
                     sum += net_drainage
@@ -166,8 +167,8 @@ class BucketSummarizer:
     def compute_sum_undrained_net_drainage(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.HARDENED_SURFACE or \
-               bucket.surface_type == Bucket.UNDRAINED_SURFACE:
+            if bucket.surface_type == BucketTypes.HARDENED_SURFACE or \
+               bucket.surface_type == BucketTypes.UNDRAINED_SURFACE:
                 net_drainage = outcome[1]
                 if net_drainage < 0:
                     sum += net_drainage
@@ -176,16 +177,16 @@ class BucketSummarizer:
     def compute_sum_undrained_flow_off(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.UNDRAINED_SURFACE:
+            if bucket.surface_type == BucketTypes.UNDRAINED_SURFACE:
                 sum += outcome[0]
         return sum
 
     def compute_sum_indraft(self):
         sum = 0.0
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
-            if bucket.surface_type == Bucket.UNDRAINED_SURFACE or \
-               bucket.surface_type == Bucket.HARDENED_SURFACE or \
-               bucket.surface_type == Bucket.DRAINED_SURFACE:
+            if bucket.surface_type == BucketTypes.UNDRAINED_SURFACE or \
+               bucket.surface_type == BucketTypes.HARDENED_SURFACE or \
+               bucket.surface_type == BucketTypes.DRAINED_SURFACE:
                 net_drainage = outcome[1]
                 if net_drainage > 0:
                     sum += net_drainage
