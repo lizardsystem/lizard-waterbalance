@@ -30,6 +30,7 @@ import sys
 from lizard_waterbalance.models import Bucket
 from lizard_waterbalance.models import OpenWater
 from lizard_waterbalance.models import PumpingStation
+from lizard_wbcomputation.bucket_types import BucketTypes
 
 def retrieve_definitions(filename):
     """Return the list of records stored in the file with the given name.
@@ -118,19 +119,19 @@ def import_buckets(filename):
 
         bucket.name = bucket_definition['name']
         if bucket.name == "verhard":
-            bucket.type = Bucket.HARDENED_SURFACE
+            bucket.type = BucketTypes.HARDENED_SURFACE
         elif bucket.name[0:len("gedraineerd")] == "gedraineerd":
-            bucket.type = Bucket.DRAINED_SURFACE
+            bucket.type = BucketTypes.DRAINED_SURFACE
         else:
-            bucket.type = Bucket.UNDRAINED_SURFACE
+            bucket.type = BucketTypes.UNDRAINED_SURFACE
         bucket.slug = "Aetseveldsepolder oost - %s" % bucket.name
 
-        if bucket.type != Bucket.DRAINED_SURFACE:
+        if bucket.type != BucketTypes.DRAINED_SURFACE:
             bucket.upper_porosity = 1.0
         else:
             bucket.upper_porosity = float(bucket_definition['ol porositeit / bergingsruimte'])
 
-        if bucket.type != Bucket.UNDRAINED_SURFACE:
+        if bucket.type != BucketTypes.UNDRAINED_SURFACE:
             bucket.upper_crop_evaporation_factor = float(bucket_definition['ol gewasverdampingsfactor (-)'])
             bucket.upper_min_crop_evaporation_factor = float(bucket_definition['ol min. Gewasverdampingsfactor (-)'])
         else:

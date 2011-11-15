@@ -43,13 +43,11 @@ from lizard_fewsunblobbed.models import Location as FewsLocation
 from lizard_fewsunblobbed.models import Parameter as FewsParameter
 from lizard_fewsunblobbed.models import Timeserie as FewsTimeserie
 from lizard_map.models import ColorField
-from timeseries.timeseriesstub import add_timeseries
-from timeseries.timeseriesstub import map_timeseries
+from lizard_wbcomputation.bucket_types import BucketTypes
 from timeseries.timeseriesstub import daily_events
 from timeseries.timeseriesstub import daily_sticky_events
 from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
-from timeseries.timeseriesstub import SparseTimeseriesStub
 
 # The following constant is defined because the length of the name of an
 # OpenWater is used in two places, viz. in the definition of the name field and
@@ -860,17 +858,6 @@ class Bucket(models.Model):
         verbose_name = _("Bakje")
         verbose_name_plural = _("Bakjes")
 
-    UNDRAINED_SURFACE = 0
-    HARDENED_SURFACE = 1
-    DRAINED_SURFACE = 2
-    STEDELIJK_SURFACE = 3
-    SURFACE_TYPES = (
-        (UNDRAINED_SURFACE, _("ongedraineerd")),
-        (HARDENED_SURFACE, _("verhard")),
-        (DRAINED_SURFACE, _("gedraineerd")),
-        (STEDELIJK_SURFACE, _("stedelijk"))
-    )
-
     name = models.CharField(verbose_name=_("naam"),
                             max_length=MAXLENGTH_OPENWATER_NAME)
 
@@ -882,8 +869,8 @@ class Bucket(models.Model):
 
     surface_type =  models.IntegerField(
         verbose_name=_("oppervlakte type"),
-        choices=SURFACE_TYPES,
-        default=UNDRAINED_SURFACE)
+        choices=BucketTypes.SURFACE_TYPES,
+        default=BucketTypes.UNDRAINED_SURFACE)
     surface = models.IntegerField(
         verbose_name=_("oppervlakte"),
         help_text=_("oppervlakte in vierkante meters"))
@@ -1024,8 +1011,8 @@ class SobekBucket(models.Model):
 
     surface_type =  models.IntegerField(
         verbose_name=_("oppervlakte type"),
-        choices=Bucket.SURFACE_TYPES,
-        default=Bucket.UNDRAINED_SURFACE)
+        choices=BucketTypes.SURFACE_TYPES,
+        default=BucketTypes.UNDRAINED_SURFACE)
 
     flow_off = models.ForeignKey(
         WaterbalanceTimeserie,

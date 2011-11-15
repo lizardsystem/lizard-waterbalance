@@ -33,8 +33,21 @@ import xlrd
 
 from django.core.management.base import BaseCommand
 
-from lizard_waterbalance.models import WaterbalanceArea, WaterbalanceScenario, WaterbalanceConf, Parameter, WaterbalanceTimeserie, Timeseries, OpenWater, \
-                                        Bucket, PumpingStation, PumpLine, Label, Concentration
+from lizard_waterbalance.models import Bucket
+from lizard_waterbalance.models import Concentration
+from lizard_waterbalance.models import Label
+from lizard_waterbalance.models import OpenWater
+from lizard_waterbalance.models import Parameter
+from lizard_waterbalance.models import PumpLine
+from lizard_waterbalance.models import PumpingStation
+from lizard_waterbalance.models import Timeseries
+from lizard_waterbalance.models import WaterbalanceArea
+from lizard_waterbalance.models import WaterbalanceConf
+from lizard_waterbalance.models import WaterbalanceScenario
+from lizard_waterbalance.models import WaterbalanceTimeserie
+
+from lizard_wbcomputation.bucket_types import BucketTypes
+
 from timeseries.timeseriesstub import TimeseriesStub
 
 NAME_INTAKE_LEVEL_CONTROL = "inlaat peilhandhaving"
@@ -456,12 +469,12 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                 name = sheet.cell(35, col_upper).value
 
                 if name.find('verhard') >= 0:
-                    surface_type = Bucket.HARDENED_SURFACE
+                    surface_type = BucketTypes.HARDENED_SURFACE
                 elif name.find('gedraineerd') >= 0:
-                    surface_type = Bucket.DRAINED_SURFACE
+                    surface_type = BucketTypes.DRAINED_SURFACE
                 else:
                     print 'WARNING: bucket type "%s"unknown, take drained'%name
-                    surface_type = Bucket.DRAINED_SURFACE
+                    surface_type = BucketTypes.DRAINED_SURFACE
 
             else:
                 #single bucket
@@ -472,16 +485,16 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
                 name = sheet.cell(35, col_upper).value
 
                 if name.find('stedelijk') >= 0:
-                    bucket.surface_type = Bucket.STEDELIJK_SURFACE
+                    bucket.surface_type = BucketTypes.STEDELIJK_SURFACE
                 elif name.find('ongedraineerd') >= 0:
-                    bucket.surface_type = Bucket.UNDRAINED_SURFACE
+                    bucket.surface_type = BucketTypes.UNDRAINED_SURFACE
                 elif name.lower().find('verhard') >= 0:
-                    bucket.surface_type = Bucket.HARDENED_SURFACE
+                    bucket.surface_type = BucketTypes.HARDENED_SURFACE
                 elif name.lower().find('landelijk') >= 0:
-                    bucket.surface_type = Bucket.UNDRAINED_SURFACE
+                    bucket.surface_type = BucketTypes.UNDRAINED_SURFACE
                 else:
                     print 'WARNING: bucket type "%s" unknown, take undrained'%name
-                    bucket.surface_type = Bucket.UNDRAINED_SURFACE
+                    bucket.surface_type = BucketTypes.UNDRAINED_SURFACE
 
             if Bucket.objects.filter(open_water=open_water, name=name, surface_type=surface_type).count()>0:
                 bucket = Bucket.objects.filter(open_water=open_water, name=name, surface_type=surface_type)[0]
@@ -501,7 +514,7 @@ def upload_settings_from_excelfile(xls_file_name, load_excel_reference_results=F
             bucket.open_water = open_water
 
             #upper
-            if bucket.surface_type == Bucket.HARDENED_SURFACE:
+            if bucket.surface_type == BucketTypes.HARDENED_SURFACE:
                 bucket.crop_evaporation_factor = 1
                 bucket.min_crop_evaporation_factor = 1
             else:
