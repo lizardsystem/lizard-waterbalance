@@ -31,7 +31,8 @@
 from reader import parse_parameters
 from reader import attach_timeseries_to_structures
 from timeseries.timeseries import TimeSeries
-
+import logging
+from nens import mock
 import unittest
 
 from datetime import datetime
@@ -87,4 +88,35 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         self.assertEquals(7, current[end])
 
     def test_retrieve_not_existing_gives_exception(self):
-        self.assertRaises(AttributeError, getattr, self.root.bucket[0], 'retrieve_something_else')
+        with self.assertRaises(AttributeError) as cm:
+            self.root.bucket[0].retrieve_something_else()
+
+        the_exception = cm.exception
+        self.assertTrue(the_exception.message.endswith(
+                "has no attribute 'retrieve_something_else'"))
+
+
+class CouplingLogsMismatchesTest(unittest.TestCase):
+    def setUp(self):
+        self.handler = mock.Handler()
+        getLogger().addHandler(self.handler)
+        self.root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
+        self.tsd = TimeSeries.as_dict("xmlmodel/first_small.xml")
+
+    def tearDown(self):
+        getLogger().removeHandler(self.handler)
+    
+    def test_unused_series_logged_at_info(self):
+        k = {'Bucket': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        'seepage': 'KWEL',
+                        },
+             'PumpingStation': {'precipitation': 'NEERSG',
+                                'evaporation': 'VERDPG',
+                                'seepage': 'KWEL',
+                                },
+             }
+        
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        ## self.assertEquals([], handler.content)
+        ## TODO - work in progress - issue #24
