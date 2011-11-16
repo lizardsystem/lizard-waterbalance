@@ -55,27 +55,23 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
     def test_select_timeseries_precipitation(self):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)
-        self.assertEquals(1, self.root.bucket[0].precipitation[start])
-        self.assertEquals(3, self.root.bucket[0].precipitation[end])
+        self.assertEquals(1, self.root.bucket[0].precipitation[start][0])
+        self.assertEquals(3, self.root.bucket[0].precipitation[end][0])
 
     def test_retrieve_from_timeseries_precipitation(self):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)
         current = self.root.bucket[0].retrieve_precipitation(start, end)
         self.assertEquals(3, len(current))
-        print(None, current)
-        print(self.root.bucket[0].timeseries_names)
-        print(self.root.bucket[1].timeseries_names)
-        print(self.root.bucket[2].timeseries_names)
         current = dict(current)
-        self.assertEquals(1, current[start])
-        self.assertEquals(3, current[end])
+        self.assertEquals(1, current[start][0])
+        self.assertEquals(3, current[end][0])
 
     def test_select_timeseries_evaporation(self):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)
-        self.assertEquals(3, self.root.bucket[0].evaporation[start])
-        self.assertEquals(7, self.root.bucket[0].evaporation[end])
+        self.assertEquals(3, self.root.bucket[0].evaporation[start][0])
+        self.assertEquals(7, self.root.bucket[0].evaporation[end][0])
 
     def test_retrieve_from_timeseries_evaporation(self):
         start = datetime(1991, 01, 02)
@@ -83,8 +79,9 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         current = self.root.bucket[0].retrieve_evaporation(start, end)
         self.assertEquals(3, len(current))
         current = dict(current)
-        self.assertEquals(3, current[start])
-        self.assertEquals(7, current[end])
+        print current
+        self.assertEquals(3, current[start][0])
+        self.assertEquals(7, current[end][0])
 
     def test_retrieve_not_existing_gives_exception(self):
         self.assertRaises(AttributeError, getattr, self.root.bucket[0], 'retrieve_something_else')
