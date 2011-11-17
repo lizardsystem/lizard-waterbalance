@@ -2,7 +2,7 @@
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wldelft.nl/fews/PI" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_modelparameters.xsd" version="1.5">
     <group id="SAP" name="Aetsveldsche polder oost">
         <model>Area</model>
-        <parameter id="code" name="Gebied code">
+        <parameter id="location_id" name="Gebied code">
             <description>Code van het gebied, gelijk aan gebied locatie</description>
             <stringValue>SAP</stringValue>
         </parameter>
@@ -141,9 +141,9 @@
             <description>Naam van het bakje</description>
             <stringValue>Verhard</stringValue>
         </parameter>
-        <parameter id="type" name="Type bakje">
+        <parameter id="surface_type" name="Type bakje">
             <description>verhard, ongedraineerd, etc</description>
-            <stringValue>verhard</stringValue>
+            <intValue>1</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
             <description>Code van het gebied waar het aan gekoppeld is</description>
@@ -300,9 +300,9 @@
             <description>Naam van het bakje</description>
             <stringValue>west</stringValue>
         </parameter>
-        <parameter id="type" name="Type bakje">
+        <parameter id="surface_type" name="Type bakje">
             <description>verhard, ongedraineerd, etc</description>
-            <stringValue>ongedraineerd</stringValue>
+            <intValue>0</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
             <description>Code van het gebied waar het aan gekoppeld is</description>
@@ -459,9 +459,9 @@
             <description>Naam van het bakje</description>
             <stringValue>Oost</stringValue>
         </parameter>
-        <parameter id="type" name="Type bakje">
+        <parameter id="surface_type" name="Type bakje">
             <description>verhard, ongedraineerd, etc</description>
-            <stringValue>ongedraineerd</stringValue>
+            <intValue>0</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
             <description>Code van het gebied waar het aan gekoppeld is</description>
