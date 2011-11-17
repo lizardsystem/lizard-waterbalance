@@ -65,8 +65,8 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         current = self.root.bucket[0].retrieve_precipitation(start, end)
         self.assertEquals(3, len(current))
         current = dict(current)
-        self.assertEquals(1, current[start][0])
-        self.assertEquals(3, current[end][0])
+        self.assertEquals(1, current[start])
+        self.assertEquals(3, current[end])
 
     def test_select_timeseries_evaporation(self):
         start = datetime(1991, 01, 02)
@@ -81,8 +81,8 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         self.assertEquals(3, len(current))
         current = dict(current)
         print current
-        self.assertEquals(3, current[start][0])
-        self.assertEquals(7, current[end][0])
+        self.assertEquals(3, current[start])
+        self.assertEquals(7, current[end])
 
     def test_retrieve_not_existing_gives_exception(self):
         with self.assertRaises(AttributeError) as cm:

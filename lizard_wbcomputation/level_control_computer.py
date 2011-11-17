@@ -99,7 +99,7 @@ class LevelControlComputer:
         total_outgoing = SparseTimeseriesStub()
 
         surface = 1.0 * area.surface
-        water_level = 0 #area.init_water_level
+        water_level = area.init_water_level
 
         ts = {}
         ts['bucket_total_incoming'] = buckets_summary.total_incoming

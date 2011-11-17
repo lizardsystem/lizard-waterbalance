@@ -28,6 +28,7 @@
 
 import uuid
 
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 class BaseModel(object):
     def __init__(self):
@@ -53,16 +54,41 @@ class BaseModel(object):
         return hash(str(self))
 
     def __getattr__(self, attr):
+
+        def create_timeseries(timeseries, start, end):
+            sparse_timeseries = SparseTimeseriesStub()
+            if timeseries is not None:
+                for event in timeseries.events(start, end):
+                    sparse_timeseries.add_value(event[0], event[1])
+            return sparse_timeseries
+
         if attr.startswith("retrieve_"):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
-                return lambda start, end: timeseries.get_events(start, end)
-        return getattr(super(BaseModel, self), attr)
+# <<<<<<< Updated upstream
+#                 return lambda start, end: timeseries.get_events(start, end)
+#         return getattr(super(BaseModel, self), attr)
+# =======
+                return lambda start, end: create_timeseries(timeseries, start, end)
+
+        return object.__getattr__(self, attr)
+# >>>>>>> Stashed changes
 
 
 class Area(BaseModel):
-    pass
+
+    @property
+    def init_water_level(self):
+        return 0
+
+    @property
+    def buckets(self):
+        return self.bucket
+
+    @property
+    def pumping_stations(self):
+        return self.pumpingstation
 
 
 class Bucket(BaseModel):
@@ -264,7 +290,11 @@ def parse_parameters(stream):
                         value_node = parameter.getElementsByTagName("boolValue")[0]
                         value = (value_node.childNodes[0].nodeValue).lower().strip() == "true"
                     except IndexError:
-                        value = None
+                        try:
+                            value_node = parameter.getElementsByTagName("intValue")[0]
+                            value = int(value_node.childNodes[0].nodeValue)
+                        except IndexError:
+                            value = None
             setattr(obj, parameter.getAttribute('id'), value)
 
         if obj != result:

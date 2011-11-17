@@ -88,16 +88,35 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'startDateTime', run_info)
     insert_datetime(run_dom, 'endDateTime', run_info)
 
-
 def store_graphs_timeseries(run_info, area):
 
     cm = WaterbalanceComputer2(None, area)
 
     # print run_info
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
-    # incoming = cm.get_open_water_incoming_flows(start_date, end_date)
-    # outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
-    # sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
+    incoming = cm.get_open_water_incoming_flows(start_date, end_date)
+    outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
+    sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
+
+    parameter2timeseries = {}
+
+    label2parameter = {
+        'hardened': 'discharge_hardened',
+        'drained': 'discharge_drained',
+        'flow_off': 'discharge_flow_off',
+        'undrained': 'discharge_drainage',
+        'precipitation': 'precipitation',
+        'seepage': 'seepage',
+        'indraft': 'indraft',
+        'evaporation': 'evaporation',
+        'infiltration': ' infiltration',
+        }
+
+    insert_timeseries(area, incoming, label2parameter, parameter2timeseries)
+    insert_timeseries(area, outgoing, label2parameter, parameter2timeseries)
+    parameter2timeseries['sluice_error'] = sluice_error
+
+    write_to_pi_file(filename="waterbalance-graph.xml", timeseries=parameter2timeseries)
 
 
 def main(args):
@@ -121,6 +140,10 @@ def main(args):
     tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
     area = parse_parameters(run_info['inputParameterFile'])
     attach_timeseries_to_structures(area, tsd, ASSOC)
+
+    print area.buckets
+
     store_graphs_timeseries(run_info, area)
+
     result = tsd
     TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], result)
