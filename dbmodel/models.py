@@ -380,7 +380,7 @@ class PumpingStation(object):
         self.name = self.db_station.name
         return self
 
-    def retrieve_sum_timeseries(self):
+    def retrieve_sum_timeseries(*args):
         """Return the sum of the time series of each of its PumpLine(s).
 
         If the current PumpingStation is an intake, this method returns a time
@@ -389,6 +389,7 @@ class PumpingStation(object):
         if the stored event values have a different sign.
 
         """
+        self = args[0]
         result = SparseTimeseriesStub()
         factor = (1.0 if self.into else -1.0)
         map_f = lambda v: factor * abs(v)

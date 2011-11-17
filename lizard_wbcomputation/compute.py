@@ -102,7 +102,7 @@ def retrieve_incoming_timeseries(area, only_input=False):
         if pumping_station.into:
             if only_input and pumping_station.is_computed:
                 continue
-            timeseries = pumping_station.retrieve_sum_timeseries()
+            timeseries = pumping_station.retrieve_sum_timeseries(None, None)
             incoming_timeseries[pumping_station] = timeseries
     return incoming_timeseries
 
@@ -127,7 +127,7 @@ def retrieve_outgoing_timeseries(area, only_input=False):
         if not pumping_station.into:
             if only_input and pumping_station.is_computed:
                 continue
-            timeseries = pumping_station.retrieve_sum_timeseries()
+            timeseries = pumping_station.retrieve_sum_timeseries(None, None)
             outgoing_timeseries[pumping_station] = timeseries
     return outgoing_timeseries
 
@@ -561,9 +561,9 @@ class WaterbalanceComputer2(object):
             for pumping_station in self.area.pumping_stations:
                 if pumping_station.is_computed:
                     if pumping_station.into:
-                        intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
+                        intakes[pumping_station] = pumping_station.retrieve_sum_timeseries(None, None)
                     else:
-                        outtakes[pumping_station] =  pumping_station.retrieve_sum_timeseries()
+                        outtakes[pumping_station] =  pumping_station.retrieve_sum_timeseries(None, None)
 
             self.references = (intakes, outtakes)
             self.reference_info = {'start_date': start_date,
