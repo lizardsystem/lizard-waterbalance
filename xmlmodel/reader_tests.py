@@ -96,12 +96,18 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
 class CouplingLogsMismatchesTest(unittest.TestCase):
     def setUp(self):
         self.handler = mock.Handler()
-        getLogger().addHandler(self.handler)
+        logging.getLogger().addHandler(self.handler)
         self.root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
         self.tsd = TimeSeries.as_dict("xmlmodel/first_small.xml")
 
     def tearDown(self):
-        getLogger().removeHandler(self.handler)
+        logging.getLogger().removeHandler(self.handler)
+
+    def test_validate_reports_missing_properties(self):
+        self.handler.flush()
+        self.assertEquals(False, self.root.validate())
+        self.assertEquals([], self.handler.content)
+        
     
     def test_unused_series_logged_at_info(self):
         k = {'Bucket': {'precipitation': 'NEERSG',
