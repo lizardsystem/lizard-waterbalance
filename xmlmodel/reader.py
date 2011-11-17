@@ -27,10 +27,14 @@
 #******************************************************************************
 
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
 
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 class BaseModel(object):
+    expected = ['obj_id', 'location_id']
     def __init__(self):
         self.obj_id = str(uuid.uuid4())
         self.location_id = "<NO_LOC>"
@@ -75,8 +79,43 @@ class BaseModel(object):
         return object.__getattr__(self, attr)
 # >>>>>>> Stashed changes
 
+    def validate(self):
+        """check whether self contains all expected fields
+
+        when your are done adding attributes to object, invoke this
+        function.  it will return True if things went ok, otherwise
+        something else.
+
+        for all missing but expected attributes a WARNING logging
+        record will be passed to the module logger.
+        """
+
+        valid = True
+        for field in self.expected:
+            if not hasattr(self, field):
+                logger.warn("%s has no %s field" % (self, field))
+                valid = False
+        return valid
+
 
 class Area(BaseModel):
+    expected = ['obj_id', 'location_id',
+                'surface',
+                'bottom_height',
+                'init_water_level',
+                'max_intake',
+                'max_outtake',
+                'concentr_chloride_precipitation',
+                'concentr_chloride_seepage',
+                'min_concentr_phosphate_precipitation',
+                'incr_concentr_phosphate_precipitation',
+                'min_concentr_phosphate_seepage',
+                'incr_concentr_phosphate_seepage',
+                'min_concentr_nitrogyn_precipitation',
+                'incr_concentr_nitrogyn_precipitation',
+                'min_concentr_nitrogyn_seepage',
+                'incr_concentr_nitrogyn_seepage',
+                ]
 
     @property
     def init_water_level(self):
@@ -92,10 +131,41 @@ class Area(BaseModel):
 
 
 class Bucket(BaseModel):
+    expected = ['obj_id', 'location_id',
+                'name',
+                'surface_type',
+                'surface',
+                'bottom_porosity',
+                'crop_evaporation_factor',
+                'min_crop_evaporation_factor',
+                'bottom_drainage_fraction',
+                'bottom_indraft_fraction',
+                'bottom_max_water_level',
+                'bottom_min_water_level',
+                'bottom_equi_water_level',
+                'bottom_init_water_level',
+                'external_discharge',
+                'porosity',
+                'drainage_fraction',
+                'indraft_fraction',
+                'max_water_level',
+                'min_water_level',
+                'equi_water_level',
+                'init_water_level',
+                ]
     pass
 
 
 class PumpingStation(BaseModel):
+    expected = ['obj_id', 'location_id',
+                'name',
+                'label',
+                'concentr_chloride_flow_off',
+                'label_flow_off',
+                'into',
+                'computed_level_control',
+                'max_discharge',
+                ]
     pass
 
 
@@ -257,6 +327,12 @@ def parse_parameters(stream):
     'found it!'
     >>> d.get(root.bucket[0], 'nope')
     'nope'
+
+    this is just an example and we miss most expected properties, the
+    logger will receive lots of warnings.
+    >>> root.validate()
+    False
+    >>>
     """
 
     from xml.dom.minidom import parse
@@ -297,6 +373,8 @@ def parse_parameters(stream):
                             value = None
             setattr(obj, parameter.getAttribute('id'), value)
 
+        obj.validate()
+
         if obj != result:
             if not hasattr(result, class_name.lower()):
                 setattr(result, class_name.lower(), [])
@@ -315,6 +393,9 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     corresponding is a dictionary associating a class name to a
     dictionary associating the expected timeseries with the name as in
     tsd.
+
+    logs names of unused timeseries at info level.
+    each unused timeseries causes one log record.
 
     >>> from nens.mock import Stream
     >>> root = parse_parameters(Stream('''<parameters><group>

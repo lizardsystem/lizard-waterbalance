@@ -101,7 +101,7 @@ class Area(object):
         config = self.configuration
         database_buckets = config.open_water.buckets.all()
         new_buckets = [Bucket(config, b) for b in database_buckets]
-        return map(lambda b:b.store_new_properties(), new_buckets)
+        return map(lambda b:b.copy_properties(), new_buckets)
 
     @property
     def pumping_stations(self):
@@ -304,7 +304,7 @@ class Bucket(object):
         self.configuration = configuration
         self.database_bucket = database_bucket
 
-    def store_new_properties(self):
+    def copy_properties(self):
         """Store the properties that do not belong to the database bucket."""
         self.name = self.database_bucket.name
         self.surface_type = self.database_bucket.surface_type
@@ -371,13 +371,13 @@ class PumpingStation(object):
 
     def copy_properties(self):
         """Store the properties that do not belong to the database bucket."""
+        self.name = self.db_station.name
+        self.label = self.db_station.label
         self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
         self.label_flow_off = self._get_label_flow_off()
         self.into = self.db_station.into
         self.is_computed = self.db_station.computed_level_control
         self.max_discharge = self.db_station.max_discharge
-        self.label = self.db_station.label
-        self.name = self.db_station.name
         return self
 
     def retrieve_sum_timeseries(*args):
