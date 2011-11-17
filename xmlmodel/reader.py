@@ -70,14 +70,12 @@ class BaseModel(object):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
-# <<<<<<< Updated upstream
-#                 return lambda start, end: timeseries.get_events(start, end)
-#         return getattr(super(BaseModel, self), attr)
-# =======
-                return lambda start, end: create_timeseries(timeseries, start, end)
-
+                if not timeseries is None:
+                    return (lambda start=None, end=None:
+                            timeseries.filter(timestamp_gte=start, timestamp_lte=end))
+                else:
+                    return lambda start, end: create_timeseries(timeseries, start, end)
         return object.__getattr__(self, attr)
-# >>>>>>> Stashed changes
 
     def validate(self):
         """check whether self contains all expected fields
@@ -453,6 +451,8 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     [<function <lambda> at ...>]
     """
 
+    available = set(tsd.keys())
+
     for class_name in corresponding:
         if class_name == root.__class__.__name__:
             todo = [root]
@@ -460,7 +460,14 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
             todo = getattr(root, class_name.lower())
         for local, remote in corresponding[class_name].items():
             for obj in todo:
-                setattr(obj, local, tsd.get((obj.location_id, remote)))
+                series = tsd.get((obj.location_id, remote))
+                if series is None:
+                    logger.warn("no series found at loc/par: %s/%s, using None" %
+                                (obj.location_id, remote))
+                available.discard((obj.location_id, remote))
+                setattr(obj, local, series)
                 obj.timeseries_names.add(local)
 
+    for locpar in sorted(available):
+        logger.info("unused series loc/par:  %s/%s" % locpar)
     return root
