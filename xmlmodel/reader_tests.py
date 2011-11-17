@@ -62,6 +62,18 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         self.assertEquals(1, self.root.bucket[0].precipitation[start][0])
         self.assertEquals(3, self.root.bucket[0].precipitation[end][0])
 
+    def test_retrieve_functions_return_timeseries(self):
+        start = datetime(1991, 01, 02)
+        end = datetime(1991, 01, 04)
+        current = self.root.bucket[0].retrieve_precipitation(start, end)
+        self.assertEquals(TimeSeries, current.__class__)
+        current = self.root.bucket[0].retrieve_precipitation(end=end)
+        self.assertEquals(TimeSeries, current.__class__)
+        current = self.root.bucket[0].retrieve_precipitation(start)
+        self.assertEquals(TimeSeries, current.__class__)
+        current = self.root.bucket[0].retrieve_precipitation()
+        self.assertEquals(TimeSeries, current.__class__)
+
     def test_retrieve_from_timeseries_precipitation(self):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)

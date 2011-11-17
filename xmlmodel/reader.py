@@ -61,7 +61,8 @@ class BaseModel(object):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
-                return lambda start, end: timeseries.get_events(start, end)
+                return (lambda start=None, end=None: 
+                        timeseries.filter(timestamp_gte=start, timestamp_lte=end))
         return getattr(super(BaseModel, self), attr)
 
     def validate(self):
