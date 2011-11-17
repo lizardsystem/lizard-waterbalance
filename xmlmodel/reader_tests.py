@@ -34,14 +34,17 @@ from timeseries.timeseries import TimeSeries
 import logging
 from nens import mock
 import unittest
+import pkg_resources
 
 from datetime import datetime
 
 
 class CoupleParametersWithTimeseriesTest(unittest.TestCase):
     def setUp(self):
-        self.root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
-        tsd = TimeSeries.as_dict("xmlmodel/first_small.xml")
+        self.testdata = pkg_resources.resource_filename(
+            "xmlmodel", "testdata/")
+        self.root = parse_parameters(self.testdata + "gebiedsbeschrijving.xml")
+        tsd = TimeSeries.as_dict(self.testdata + "first_small.xml")
         k = {'Bucket': {'precipitation': 'NEERSG',
                         'evaporation': 'VERDPG',
                         'seepage': 'KWEL',
@@ -97,8 +100,10 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
     def setUp(self):
         self.handler = mock.Handler()
         logging.getLogger().addHandler(self.handler)
-        self.root = parse_parameters("xmlmodel/gebiedsbeschrijving.xml")
-        self.tsd = TimeSeries.as_dict("xmlmodel/first_small.xml")
+        self.testdata = pkg_resources.resource_filename(
+            "xmlmodel", "testdata/")
+        self.root = parse_parameters(self.testdata + "gebiedsbeschrijving.xml")
+        self.tsd = TimeSeries.as_dict(self.testdata + "first_small.xml")
 
     def tearDown(self):
         logging.getLogger().removeHandler(self.handler)
@@ -106,7 +111,13 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
     def test_validate_reports_missing_properties(self):
         self.handler.flush()
         self.assertEquals(False, self.root.validate())
-        self.assertEquals([], self.handler.content)
+        self.assertEquals(2, len(self.handler.content))
+
+        self.handler.flush()
+        self.root.init_water_level = 0
+        self.root.min_concentr_phosphate_seepage = 0
+        self.assertEquals(True, self.root.validate())
+        self.assertEquals(0, len(self.handler.content))
         
     
     def test_unused_series_logged_at_info(self):
