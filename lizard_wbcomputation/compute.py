@@ -78,7 +78,7 @@ def find_pumping_station_level_control(area, find_intake):
     """
     stations = (station for station in area.pumping_stations
                 if station.into == find_intake and
-                   station.computed_level_control == True)
+                   station.is_computed == True)
     return next(stations, None)
 
 
@@ -100,7 +100,7 @@ def retrieve_incoming_timeseries(area, only_input=False):
     incoming_timeseries = {}
     for pumping_station in area.pumping_stations:
         if pumping_station.into:
-            if only_input and pumping_station.computed_level_control:
+            if only_input and pumping_station.is_computed:
                 continue
             timeseries = pumping_station.retrieve_sum_timeseries()
             incoming_timeseries[pumping_station] = timeseries
@@ -125,7 +125,7 @@ def retrieve_outgoing_timeseries(area, only_input=False):
     outgoing_timeseries = {}
     for pumping_station in area.pumping_stations:
         if not pumping_station.into:
-            if only_input and pumping_station.computed_level_control:
+            if only_input and pumping_station.is_computed:
                 continue
             timeseries = pumping_station.retrieve_sum_timeseries()
             outgoing_timeseries[pumping_station] = timeseries
@@ -559,7 +559,7 @@ class WaterbalanceComputer2(object):
             intakes = {}
             outtakes = {}
             for pumping_station in self.area.pumping_stations:
-                if pumping_station.computed_level_control:
+                if pumping_station.is_computed:
                     if pumping_station.into:
                         intakes[pumping_station] = pumping_station.retrieve_sum_timeseries()
                     else:

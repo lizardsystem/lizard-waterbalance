@@ -65,7 +65,7 @@ class Area(object):
         max_discharge = 0.0
         is_none = True
         for station in self.pumping_stations:
-            if station.into and station.computed_level_control:
+            if station.into and station.is_computed:
                 if station.max_discharge is not None:
                     max_discharge += station.max_discharge
                     is_none = False
@@ -85,7 +85,7 @@ class Area(object):
         max_discharge = 0.0
         is_none = True
         for station in self.pumping_stations:
-            if (not station.into) and station.computed_level_control:
+            if (not station.into) and station.is_computed:
                 if station.max_discharge is not None:
                     max_discharge += station.max_discharge
                     is_none = False
@@ -374,7 +374,7 @@ class PumpingStation(object):
         self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
         self.label_flow_off = self._get_label_flow_off()
         self.into = self.db_station.into
-        self.computed_level_control = self.db_station.computed_level_control
+        self.is_computed = self.db_station.computed_level_control
         self.max_discharge = self.db_station.max_discharge
         self.label = self.db_station.label
         self.name = self.db_station.name
