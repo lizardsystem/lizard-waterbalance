@@ -99,7 +99,7 @@ class LevelControlComputer:
         total_outgoing = SparseTimeseriesStub()
 
         surface = 1.0 * area.surface
-        water_level = area.init_water_level
+        water_level = 0 #area.init_water_level
 
         ts = {}
         ts['bucket_total_incoming'] = buckets_summary.total_incoming
@@ -113,12 +113,12 @@ class LevelControlComputer:
 
         ts['intakes'] = {}
         for intake, timeseries in intakes_timeseries.iteritems():
-            if not intake.computed_level_control:
+            if not intake.is_computed:
                 ts['intakes'][intake] = timeseries
 
         ts['pumps'] = {}
         for pump, timeseries in pumps_timeseries.iteritems():
-            if not pump.computed_level_control:
+            if not pump.is_computed:
                 ts['pumps'][pump] = timeseries
 
         for events in enumerate_dict_events(ts):

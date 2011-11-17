@@ -183,7 +183,7 @@ class LevelControlComputerTests(TestCase):
         level_control = LevelControlComputer()
         buckets_summary = BucketsSummary()
         intake = PumpingStation()
-        intake.computed_level_control = False
+        intake.is_computed = False
         intakes_timeseries = {intake: TimeseriesStub((self.today, 10))}
         pumps_timeseries = {}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
@@ -212,7 +212,7 @@ class LevelControlComputerTests(TestCase):
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
         pump = PumpingStation()
-        pump.computed_level_control = False
+        pump.is_computed = False
         pumps_timeseries = {pump:TimeseriesStub((self.today, -10))}
         vertical_timeseries = [TimeseriesStub((self.today, 8.0)),
                                TimeseriesStub((self.today, -4.0)),
@@ -240,9 +240,9 @@ class LevelControlComputerTests(TestCase):
         buckets_summary = BucketsSummary()
         intakes_timeseries = {}
         pumps = [Mock(), Mock()]
-        pumps[0].computed_level_control = False
+        pumps[0].is_computed = False
         pumps[0].__hash__ = Mock(return_value=0)
-        pumps[1].computed_level_control = False
+        pumps[1].is_computed = False
         pumps[1].__hash__ = Mock(return_value=1)
         pumps_timeseries = {pumps[0]: TimeseriesStub((self.today, -10)),
                             pumps[1]: TimeseriesStub((self.today, -10))}

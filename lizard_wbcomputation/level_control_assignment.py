@@ -54,7 +54,7 @@ class LevelControlAssignment:
             timeseries = None
 
             fraction = pumping_station.percentage / 100.0
-            if pumping_station.computed_level_control:
+            if pumping_station.is_computed:
                 if pumping_station.into:
                     timeseries = multiply_timeseries(incoming_timeseries, fraction)
                 else:

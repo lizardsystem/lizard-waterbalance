@@ -926,7 +926,7 @@ class FindIntakeLevelControlSuite(TestCase):
         """Create a pumping station and save it to the database."""
         self.pumping_station = Mock()
         self.pumping_station.into = True
-        self.pumping_station.computed_level_control = True
+        self.pumping_station.is_computed = True
         self.area = Mock()
         self.area.pumping_stations = [self.pumping_station]
 
@@ -942,7 +942,7 @@ class FindIntakeLevelControlSuite(TestCase):
         """
         pumping_station = Mock()
         pumping_station.into = True
-        pumping_station.computed_level_control = True
+        pumping_station.is_computed = True
         self.area.pumping_stations.append(pumping_station)
 
         intake = find_pumping_station_level_control(self.area, True)
@@ -955,7 +955,7 @@ class FindIntakeLevelControlSuite(TestCase):
         There is an intake available but that intake cannot be used for level
         control.
         """
-        self.pumping_station.computed_level_control = False
+        self.pumping_station.is_computed = False
         intake = find_pumping_station_level_control(self.area, True)
         self.assertTrue(intake is None)
 
