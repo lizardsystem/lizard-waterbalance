@@ -25,7 +25,13 @@ from datetime import datetime
 from unittest import TestCase
 from xml.dom.minidom import parseString
 
+from nens import mock
+from timeseries.timeseriesstub import TimeseriesStub
+from timeseries.timeseriesstub import SparseTimeseriesStub
+from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
+from xmlmodel.wbcompute import WriteableTimeseriesCreator
+
 
 class Tests(TestCase):
 
@@ -57,3 +63,51 @@ class Tests(TestCase):
         insert_calculation_range(self.run_dom, run_info)
         self.assertEqual(datetime(2004, 12, 23), run_info['startDateTime'])
         self.assertEqual(datetime(2011, 11, 16), run_info['endDateTime'])
+
+    def test_b(self):
+        """Test the requirements for a TimeseriesStub to be writeable."""
+        stream = mock.Stream()
+        timeseries = TimeseriesStub((datetime(2011, 11, 17), 10.0))
+        timeseries.type = 'instantaneous'
+        timeseries.location_id = 'SAP'
+        timeseries.parameter_id = 'Q'
+        timeseries.miss_val = '-999.0'
+        timeseries.station_name = 'Huh?'
+        timeseries.units = 'dag'
+        TimeseriesStub.write_to_pi_file(stream, [timeseries])
+
+    def test_c(self):
+        """Test the requirements for a SparseTimeseriesStub to be writeable."""
+        stream = mock.Stream()
+        timeseries = SparseTimeseriesStub(datetime(2011, 11, 17), [10.0])
+        timeseries.type = 'instantaneous'
+        timeseries.location_id = 'SAP'
+        timeseries.parameter_id = 'Q'
+        timeseries.miss_val = '-999.0'
+        timeseries.station_name = 'Huh?'
+        timeseries.units = 'dag'
+        SparseTimeseriesStub.write_to_pi_file(stream, [timeseries])
+
+
+class MoreTests(TestCase):
+
+    def setUp(self):
+        area = Area()
+        area.location_id = 20111117
+        self.timeseries = TimeseriesStub()
+        self.label2timeseries = {'hardened': self.timeseries}
+        label2parameter = {'hardened': 'discharge_hardened'}
+
+        self.timeseries_list = WriteableTimeseriesCreator(area, label2parameter)
+
+    def test_a(self):
+        timeseries_list = []
+        self.timeseries_list.insert(self.label2timeseries, timeseries_list)
+        self.assertEqual(1, len(timeseries_list))
+        self.assertEqual(self.timeseries, timeseries_list[0])
+
+    def test_b(self):
+        timeseries_list = []
+        self.timeseries_list.insert(self.label2timeseries, timeseries_list)
+        self.assertEqual(20111117, timeseries_list[0].location_id)
+
