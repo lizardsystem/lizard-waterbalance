@@ -46,29 +46,27 @@ def getText(node):
                        if t.nodeType == t.TEXT_NODE))
 
 
-ASSOC = {'Bucket': {'precipitation': 'NEERSG',
-                    'evaporation': 'VERDPG',
-                    'seepage': 'KWEL',
-                    'infiltration': 'WEGZ',
-                    'water_level': 'WATHTE',
-                    'sewer': '',
-                    'minimum_level': 'MARG_OND',
-                    'maximum_level': 'MARG_BOV',
-                    'nutricalc_min': '',
-                    'nutricalc_incr': '',
-                    },
-         'PumpingStation': {'precipitation': 'NEERSG',
-                            'evaporation': 'VERDPG',
-                            'seepage': 'KWEL',
-                            'infiltration': 'WEGZ',
-                            'water_level': 'WATHTE',
-                            'sewer': '',
-                            'minimum_level': 'MARG_OND',
-                            'maximum_level': 'MARG_BOV',
-                            'nutricalc_min': '',
-                            'nutricalc_incr': '',
-                            },
-         }
+ASSOC = {
+    'Area': {
+        'evaporation': 'VERDPG',
+        'infiltration': 'WEGZ',
+        'maximum_level': 'MARG_BOV',
+        'minimum_level': 'MARG_OND',
+        'nutricalc_incr': '',
+        'nutricalc_min': '',
+        'precipitation': 'NEERSG',
+        'seepage': 'KWEL',
+        'sewer': '',
+        'water_level': 'WATHTE',
+        },
+    'Bucket': {
+        # note that this is net seepage, so seepage minus infiltration
+        'seepage': 'KWEL',
+        },
+    'PumpingStation': {
+        'sum_timeseries': 'Q',
+        },
+    }
 
 
 def insert_calculation_range(run_dom, run_info):

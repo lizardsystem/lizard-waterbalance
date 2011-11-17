@@ -58,7 +58,7 @@ class BaseModel(object):
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
                 return lambda start, end: timeseries.get_events(start, end)
-        return object.__getattr__(self, attr)
+        return getattr(super(BaseModel, self), attr)
 
 
 class Area(BaseModel):
