@@ -309,8 +309,8 @@ class WaterbalanceComputer2(object):
                                                                        input['sewer'])
 
 
-            for bucket in self.configuration.retrieve_sobek_buckets():
-                buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
+            # for bucket in self.configuration.retrieve_sobek_buckets():
+            #     buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
 
         return buckets_outcome
 
