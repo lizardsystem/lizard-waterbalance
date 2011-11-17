@@ -423,6 +423,8 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
     [<function <lambda> at ...>]
     """
 
+    available = set(tsd.keys())
+
     for class_name in corresponding:
         if class_name == root.__class__.__name__:
             todo = [root]
@@ -434,7 +436,10 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
                 if series is None:
                     logger.warn("no series found at loc/par: %s/%s, using None" %
                                 (obj.location_id, remote))
+                available.discard((obj.location_id, remote))
                 setattr(obj, local, series)
                 obj.timeseries_names.add(local)
 
+    for locpar in sorted(available):
+        logger.info("unused series loc/par:  %s/%s" % locpar)
     return root

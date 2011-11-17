@@ -164,3 +164,46 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
         self.tsd['SAP_S2', 'VERDPG'] = self.tsd['SAP', 'VERDPG']
         attach_timeseries_to_structures(self.root, self.tsd, k)
         self.assertEquals(0, len(self.handler.content))
+
+    def test_unused_series_logged_at_info01(self):
+        k = {'Bucket': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        },
+             'PumpingStation': {'precipitation': 'NEERSG',
+                                'evaporation': 'VERDPG',
+                                },
+             }
+
+        self.handler.flush()
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        self.handler.content = [i for i in self.handler.content 
+                                if i.startswith("xmlmodel.reader|INFO|")]
+        self.assertEquals(0, len(self.handler.content))
+
+    def test_unused_series_logged_at_info02(self):
+        k = {'Bucket': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        'seepage': 'KWEL',  # NOT IN DATA
+                        },
+             'PumpingStation': {'precipitation': 'NEERSG',
+                                'evaporation': 'VERDPG',
+                                'seepage': 'KWEL',  # NOT IN DATA
+                                },
+             }
+
+        self.handler.flush()
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        self.handler.content = [i for i in self.handler.content 
+                                if i.startswith("xmlmodel.reader|INFO|")]
+        self.assertEquals(0, len(self.handler.content))
+
+    def test_unused_series_all(self):
+        k = {'Bucket': {},
+             'PumpingStation': {},
+             }
+
+        self.handler.flush()
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        self.handler.content = [i for i in self.handler.content 
+                                if i.startswith("xmlmodel.reader|INFO|")]
+        self.assertEquals(2, len(self.handler.content))
