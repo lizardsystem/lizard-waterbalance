@@ -118,19 +118,49 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
         self.root.min_concentr_phosphate_seepage = 0
         self.assertEquals(True, self.root.validate())
         self.assertEquals(0, len(self.handler.content))
-        
-    
-    def test_unused_series_logged_at_info(self):
+
+    def test_not_found_series_logged_at_warning_01(self):
         k = {'Bucket': {'precipitation': 'NEERSG',
                         'evaporation': 'VERDPG',
-                        'seepage': 'KWEL',
+                        'seepage': 'KWEL',  # NOT IN DATA
                         },
              'PumpingStation': {'precipitation': 'NEERSG',
                                 'evaporation': 'VERDPG',
-                                'seepage': 'KWEL',
+                                'seepage': 'KWEL',  # NOT IN DATA
                                 },
              }
-        
+
+        self.handler.setLevel(logging.WARNING)
+        self.handler.flush()
         attach_timeseries_to_structures(self.root, self.tsd, k)
-        ## self.assertEquals([], handler.content)
-        ## TODO - work in progress - issue #24
+        self.assertEquals(10, len(self.handler.content))
+
+    def test_not_found_series_logged_at_warning_02(self):
+        k = {'Bucket': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        },
+             'PumpingStation': {'precipitation': 'NEERSG',
+                                'evaporation': 'VERDPG',
+                                },
+             }
+
+        self.handler.setLevel(logging.WARNING)
+        self.handler.flush()
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        self.assertEquals(4, len(self.handler.content))
+
+    def test_not_found_series_logged_at_warning_03(self):
+        k = {'Bucket': {'precipitation': 'NEERSG',
+                        'evaporation': 'VERDPG',
+                        },
+             'PumpingStation': {'precipitation': 'NEERSG',
+                                'evaporation': 'VERDPG',
+                                },
+             }
+
+        self.handler.setLevel(logging.WARNING)
+        self.handler.flush()
+        self.tsd['SAP_S2', 'NEERSG'] = self.tsd['SAP', 'NEERSG']
+        self.tsd['SAP_S2', 'VERDPG'] = self.tsd['SAP', 'VERDPG']
+        attach_timeseries_to_structures(self.root, self.tsd, k)
+        self.assertEquals(0, len(self.handler.content))

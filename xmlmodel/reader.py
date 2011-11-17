@@ -430,7 +430,11 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
             todo = getattr(root, class_name.lower())
         for local, remote in corresponding[class_name].items():
             for obj in todo:
-                setattr(obj, local, tsd.get((obj.location_id, remote)))
+                series = tsd.get((obj.location_id, remote))
+                if series is None:
+                    logger.warn("no series found at loc/par: %s/%s, using None" %
+                                (obj.location_id, remote))
+                setattr(obj, local, series)
                 obj.timeseries_names.add(local)
 
     return root
