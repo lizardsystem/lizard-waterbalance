@@ -1,4 +1,4 @@
-all: test-import-excel test-import-excel-Sierveld-20110916
+all: test-import-excel test-import-excel-Sierveld-20110916 test-waterbalance-output
 
 test-import-excel:
 	../bin/django sqlreset lizard_waterbalance | grep -o "DROP TABLE.*;" | sed "s/\(.*\);/\1;/" | ../bin/django dbshell

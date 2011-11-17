@@ -76,7 +76,7 @@ class Area(object):
             return max_discharge
 
     @property
-    def max_outlet(self):
+    def max_outtake(self):
         """Return the max capacity of a pump of the current Area in [mNAP].
 
         The intake should be a pump for level control.
