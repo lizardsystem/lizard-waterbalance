@@ -460,7 +460,7 @@ class WaterbalanceComputer2(object):
                 input['incoming_timeseries'],
                 input['outgoing_timeseries'],
                 self.area.max_intake,
-                self.area.max_outlet)
+                self.area.max_outtake)
 
             #cache
             self.outcome['level_control'] = outcome
