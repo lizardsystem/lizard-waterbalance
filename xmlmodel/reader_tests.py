@@ -100,12 +100,12 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         self.assertEquals(7, current[end][0])
 
     def test_retrieve_not_existing_gives_exception(self):
-        with self.assertRaises(AttributeError) as cm:
+        try:
             self.root.bucket[0].retrieve_something_else()
-
-        the_exception = cm.exception
-        self.assertTrue(the_exception.message.endswith(
-                "has no attribute 'retrieve_something_else'"))
+            self.fail("did not generate 'AttributeError' exception")
+        except AttributeError as e:
+            self.assertTrue(str(e).endswith(
+                    "has no attribute 'retrieve_something_else'"))
 
 
 class CouplingLogsMismatchesTest(unittest.TestCase):
