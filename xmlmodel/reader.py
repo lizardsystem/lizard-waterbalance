@@ -31,6 +31,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from timeseries.timeseriesstub import SparseTimeseriesStub
 
 class BaseModel(object):
     expected = ['obj_id', 'location_id']
@@ -57,13 +58,24 @@ class BaseModel(object):
         return hash(str(self))
 
     def __getattr__(self, attr):
+
+        def create_timeseries(timeseries, start, end):
+            sparse_timeseries = SparseTimeseriesStub()
+            if timeseries is not None:
+                for event in timeseries.events(start, end):
+                    sparse_timeseries.add_value(event[0], event[1])
+            return sparse_timeseries
+
         if attr.startswith("retrieve_"):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
-                return (lambda start=None, end=None: 
-                        timeseries.filter(timestamp_gte=start, timestamp_lte=end))
-        return getattr(super(BaseModel, self), attr)
+                if not timeseries is None:
+                    return (lambda start=None, end=None:
+                            timeseries.filter(timestamp_gte=start, timestamp_lte=end))
+                else:
+                    return lambda start, end: create_timeseries(timeseries, start, end)
+        return object.__getattr__(self, attr)
 
     def validate(self):
         """check whether self contains all expected fields
@@ -102,7 +114,18 @@ class Area(BaseModel):
                 'min_concentr_nitrogyn_seepage',
                 'incr_concentr_nitrogyn_seepage',
                 ]
-    pass
+
+    @property
+    def init_water_level(self):
+        return 0
+
+    @property
+    def buckets(self):
+        return self.bucket
+
+    @property
+    def pumping_stations(self):
+        return self.pumpingstation
 
 
 class Bucket(BaseModel):
@@ -305,9 +328,9 @@ def parse_parameters(stream):
 
     this is just an example and we miss most expected properties, the
     logger will receive lots of warnings.
-    >>> root.validate() 
+    >>> root.validate()
     False
-    >>> 
+    >>>
     """
 
     from xml.dom.minidom import parse
@@ -341,7 +364,11 @@ def parse_parameters(stream):
                         value_node = parameter.getElementsByTagName("boolValue")[0]
                         value = (value_node.childNodes[0].nodeValue).lower().strip() == "true"
                     except IndexError:
-                        value = None
+                        try:
+                            value_node = parameter.getElementsByTagName("intValue")[0]
+                            value = int(value_node.childNodes[0].nodeValue)
+                        except IndexError:
+                            value = None
             setattr(obj, parameter.getAttribute('id'), value)
 
         obj.validate()

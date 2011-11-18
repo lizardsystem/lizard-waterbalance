@@ -93,7 +93,7 @@ class CoupleParametersWithTimeseriesTest(unittest.TestCase):
         start = datetime(1991, 01, 02)
         end = datetime(1991, 01, 04)
         current = self.root.bucket[0].retrieve_evaporation(start, end)
-        self.assertEquals(3, len(current))
+        self.assertEquals(3, len(list(current.events())))
         current = dict(current)
         print current
         self.assertEquals(3, current[start][0])
@@ -185,10 +185,9 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
                                 'evaporation': 'VERDPG',
                                 },
              }
-
         self.handler.flush()
         attach_timeseries_to_structures(self.root, self.tsd, k)
-        self.handler.content = [i for i in self.handler.content 
+        self.handler.content = [i for i in self.handler.content
                                 if i.startswith("xmlmodel.reader|INFO|")]
         self.assertEquals(0, len(self.handler.content))
 
@@ -205,7 +204,7 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
 
         self.handler.flush()
         attach_timeseries_to_structures(self.root, self.tsd, k)
-        self.handler.content = [i for i in self.handler.content 
+        self.handler.content = [i for i in self.handler.content
                                 if i.startswith("xmlmodel.reader|INFO|")]
         self.assertEquals(0, len(self.handler.content))
 
@@ -216,6 +215,6 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
 
         self.handler.flush()
         attach_timeseries_to_structures(self.root, self.tsd, k)
-        self.handler.content = [i for i in self.handler.content 
+        self.handler.content = [i for i in self.handler.content
                                 if i.startswith("xmlmodel.reader|INFO|")]
         self.assertEquals(2, len(self.handler.content))

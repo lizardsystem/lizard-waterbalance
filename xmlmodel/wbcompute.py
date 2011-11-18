@@ -32,7 +32,9 @@ from datetime import datetime
 from xml.dom.minidom import parse
 
 from nens import fews
+
 from timeseries.timeseries import TimeSeries
+from timeseries.timeseriesstub import write_to_pi_file
 
 from lizard_wbcomputation.compute import WaterbalanceComputer2
 from xmlmodel.reader import parse_parameters
@@ -68,6 +70,19 @@ ASSOC = {
         },
     }
 
+LABEL2PARAMETER = {
+    'drained': 'discharge_drained',
+    'evaporation': 'evaporation',
+    'flow_off': 'discharge_flow_off',
+    'hardened': 'discharge_hardened',
+    'indraft': 'indraft',
+    'infiltration': ' infiltration',
+    'precipitation': 'precipitation',
+    'seepage': 'seepage',
+    'sluice_error': 'sluice_error',
+    'undrained': 'discharge_drainage',
+    }
+
 
 def insert_calculation_range(run_dom, run_info):
     """Insert the calculation start and end datetime into the given dict.
@@ -89,15 +104,40 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'endDateTime', run_info)
 
 
-def store_graphs_timeseries(run_info, area):
+class WriteableTimeseriesCreator(object):
+
+    def __init__(self, area, label2parameter):
+        self.area = area
+        self.label2parameter = label2parameter
+
+    def insert(self, label2timeseries, timeseries_list):
+
+        for label, timeseries in label2timeseries.iteritems():
+            if label in self.label2parameter.iterkeys():
+                timeseries.type = 'instantaneous'
+                timeseries.location_id = self.area.location_id
+                timeseries.parameter_id = self.label2parameter[label]
+                timeseries.miss_val = '-999.0'
+                timeseries.station_name = 'Huh?'
+                timeseries.units = 'dag'
+                timeseries_list.append(timeseries)
+
+
+def store_graphs_timeseries(run_info, area, graphs_timeseries):
 
     cm = WaterbalanceComputer2(None, area)
 
     # print run_info
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
-    # incoming = cm.get_open_water_incoming_flows(start_date, end_date)
+    incoming = cm.get_open_water_incoming_flows(start_date, end_date)
     # outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
     # sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
+
+    timeseries_writer = WriteableTimeseriesCreator(area, LABEL2PARAMETER)
+
+    timeseries_writer.insert(incoming, graphs_timeseries)
+    # timeseries_dict.insert(outgoing, parameter2timeseries)
+    # timeseries_dict.insert({'sluice_error':sluice_error}, parameter2timeseries)
 
 
 def main(args):
@@ -121,6 +161,7 @@ def main(args):
     tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
     area = parse_parameters(run_info['inputParameterFile'])
     attach_timeseries_to_structures(area, tsd, ASSOC)
-    store_graphs_timeseries(run_info, area)
-    result = tsd
-    TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'], result)
+    graphs_timeseries = []
+    store_graphs_timeseries(run_info, area, graphs_timeseries)
+    TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
+                                graphs_timeseries)

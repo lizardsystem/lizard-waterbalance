@@ -101,7 +101,7 @@ class Area(object):
         config = self.configuration
         database_buckets = config.open_water.buckets.all()
         new_buckets = [Bucket(config, b) for b in database_buckets]
-        return map(lambda b:b.store_new_properties(), new_buckets)
+        return map(lambda b:b.copy_properties(), new_buckets)
 
     @property
     def pumping_stations(self):
