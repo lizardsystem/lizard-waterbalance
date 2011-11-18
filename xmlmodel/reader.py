@@ -48,7 +48,7 @@ class BaseModel(object):
         return reduce(lambda x, y: x and y,
                       [getattr(self, a, None) == getattr(other, a, None)
                        for a in set(dir(self)).union(dir(other))
-                       if type(getattr(self, a)) in (bool, str, float)],
+                       if type(getattr(self, a, None)) in (bool, str, float)],
                       hash(self) == hash(other))
 
     def __str__(self):
@@ -75,7 +75,7 @@ class BaseModel(object):
                             timeseries.filter(timestamp_gte=start, timestamp_lte=end))
                 else:
                     return lambda start, end: create_timeseries(timeseries, start, end)
-        return object.__getattr__(self, attr)
+        return getattr(super(BaseModel, self), attr)
 
     def validate(self):
         """check whether self contains all expected fields

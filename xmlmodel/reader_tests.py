@@ -123,10 +123,11 @@ class CouplingLogsMismatchesTest(unittest.TestCase):
     def test_validate_reports_missing_properties(self):
         self.handler.flush()
         self.assertEquals(False, self.root.validate())
-        self.assertEquals(2, len(self.handler.content))
+        self.assertEquals(1, len(self.handler.content))
+        self.assertTrue(self.handler.content[-1].endswith(
+                'has no min_concentr_phosphate_seepage field'))
 
         self.handler.flush()
-        self.root.init_water_level = 0
         self.root.min_concentr_phosphate_seepage = 0
         self.assertEquals(True, self.root.validate())
         self.assertEquals(0, len(self.handler.content))
