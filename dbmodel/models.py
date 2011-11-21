@@ -318,7 +318,6 @@ class Bucket(object):
         self.bottom_min_water_level = self.database_bucket.min_water_level
         self.bottom_equi_water_level = self.database_bucket.equi_water_level
         self.bottom_init_water_level = self.database_bucket.init_water_level
-        self.external_discharge = self.database_bucket.external_discharge
         self.porosity = self.database_bucket.upper_porosity
         self.drainage_fraction = self.database_bucket.upper_drainage_fraction
         self.indraft_fraction = self.database_bucket.upper_indraft_fraction
