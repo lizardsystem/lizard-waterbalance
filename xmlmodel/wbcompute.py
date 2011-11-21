@@ -34,7 +34,6 @@ from xml.dom.minidom import parse
 from nens import fews
 
 from timeseries.timeseries import TimeSeries
-from timeseries.timeseriesstub import write_to_pi_file
 
 from lizard_wbcomputation.compute import WaterbalanceComputer2
 from xmlmodel.reader import parse_parameters
