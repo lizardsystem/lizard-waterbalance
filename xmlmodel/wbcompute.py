@@ -103,7 +103,8 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'startDateTime', run_info)
     insert_datetime(run_dom, 'endDateTime', run_info)
 
-class TimeseriesFactory(object):
+
+class TimeseriesForSomething(object):
 
     @classmethod
     def create(self, area, label2parameter, label2timeseries):
@@ -119,8 +120,6 @@ class TimeseriesFactory(object):
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
                                                                        station.location_id))
         return multiple_timeseries
-
-class TimeseriesForSomething(object):
 
     def set_standard_fields(self):
         self.timeseries.type = 'instantaneous'
@@ -161,7 +160,7 @@ class WriteableTimeseries(object):
 
     def insert(self, label2timeseries):
 
-        multiple_timeseries = TimeseriesFactory.create(self.area, self.label2parameter, label2timeseries)
+        multiple_timeseries = TimeseriesForSomething.create(self.area, self.label2parameter, label2timeseries)
         for timeseries in multiple_timeseries:
             timeseries.set_standard_fields()
             timeseries.set_specific_fields()
