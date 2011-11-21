@@ -142,7 +142,7 @@
             <stringValue>Verhard</stringValue>
         </parameter>
         <parameter id="surface_type" name="Type bakje">
-            <description>verhard, ongedraineerd, etc</description>
+            <description>0: ongedraineerd, 1: verhard, 2: gedraineerd, 3: stedelijk</description>
             <intValue>1</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
@@ -301,7 +301,7 @@
             <stringValue>west</stringValue>
         </parameter>
         <parameter id="surface_type" name="Type bakje">
-            <description>verhard, ongedraineerd, etc</description>
+            <description>0: ongedraineerd, 1: verhard, 2: gedraineerd, 3: stedelijk</description>
             <intValue>0</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
@@ -460,7 +460,7 @@
             <stringValue>Oost</stringValue>
         </parameter>
         <parameter id="surface_type" name="Type bakje">
-            <description>verhard, ongedraineerd, etc</description>
+            <description>0: ongedraineerd, 1: verhard, 2: gedraineerd, 3: stedelijk</description>
             <intValue>0</intValue>
         </parameter>
         <parameter id="geb_code" name="Gebieds code">
