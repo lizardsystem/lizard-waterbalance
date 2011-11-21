@@ -102,7 +102,7 @@
             <description>Concentratie P neerslag minimaal [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
-        <parameter id="min_concentr_phopshate_seepage" name="Concentratie P kwel minimaal">
+        <parameter id="min_concentr_phosphate_seepage" name="Concentratie P kwel minimaal">
             <description>Concentratie P kwel minimaal [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
