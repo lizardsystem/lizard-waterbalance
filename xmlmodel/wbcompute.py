@@ -167,22 +167,22 @@ class WriteableTimeseries(object):
             self.timeseries_list.append(timeseries.timeseries)
 
 
-def store_graphs_timeseries(run_info, area, graphs_timeseries):
+def store_graphs_timeseries(run_info, area):
 
     cm = WaterbalanceComputer2(None, area)
 
-    # print run_info
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
     incoming = cm.get_open_water_incoming_flows(start_date, end_date)
-    # outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
-    # sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
+    outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
+    sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
-    timeseries_writer = WriteableTimeseriesCreator(area, LABEL2PARAMETER)
+    writeable_timeseries = WriteableTimeseries(area, LABEL2PARAMETER)
 
-    timeseries_writer.insert(incoming)
-    # timeseries_dict.insert(outgoing, parameter2timeseries)
-    # timeseries_dict.insert({'sluice_error':sluice_error}, parameter2timeseries)
+    writeable_timeseries.insert(incoming)
+    writeable_timeseries.insert(outgoing)
+    writeable_timeseries.insert({'sluice_error':sluice_error})
 
+    return writeable_timeseries.timeseries_list
 
 def main(args):
     """Compute the waterbalance for the information specified in the given file.
@@ -205,7 +205,6 @@ def main(args):
     tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
     area = parse_parameters(run_info['inputParameterFile'])
     attach_timeseries_to_structures(area, tsd, ASSOC)
-    graphs_timeseries = []
-    store_graphs_timeseries(run_info, area, graphs_timeseries)
+    graphs_timeseries = store_graphs_timeseries(run_info, area)
     TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
                                 graphs_timeseries)
