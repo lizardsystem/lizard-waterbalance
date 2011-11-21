@@ -170,13 +170,6 @@ class WriteableTimeseries(object):
             timeseries.set_fields()
             self.timeseries_list.append(timeseries.timeseries)
 
-    def insert2(self, station2timeseries):
-
-        multiple_timeseries = TimeseriesFactory.create(self.area, self.label2parameter, station2timeseries)
-        for timeseries in multiple_timeseries:
-            timeseries.set_fields()
-            self.timeseries_list.append(timeseries.timeseries)
-
 
 def store_graphs_timeseries(run_info, area, graphs_timeseries):
 

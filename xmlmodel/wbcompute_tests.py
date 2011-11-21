@@ -151,7 +151,7 @@ class MoreTests(TestCase):
         writeable_timeseries = WriteableTimeseries(self.area,
                                                    self.label2parameter)
 
-        writeable_timeseries.insert2({})
+        writeable_timeseries.insert({})
 
         self.assertEqual(0, len(writeable_timeseries.timeseries_list))
 
@@ -167,7 +167,7 @@ class MoreTests(TestCase):
 
         station = self.create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert2({station: timeseries})
+        writeable_timeseries.insert({station: timeseries})
 
         self.assertEqual(1, len(writeable_timeseries.timeseries_list))
         single_timeseries = writeable_timeseries.timeseries_list[0]
@@ -185,7 +185,7 @@ class MoreTests(TestCase):
 
         station = self.create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert2({station: timeseries})
+        writeable_timeseries.insert({station: timeseries})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual(20111121, single_timeseries.location_id)
@@ -201,7 +201,7 @@ class MoreTests(TestCase):
 
         station = self.create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert2({station: timeseries})
+        writeable_timeseries.insert({station: timeseries})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual('Q', single_timeseries.parameter_id)
