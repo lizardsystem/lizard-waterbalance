@@ -142,7 +142,6 @@ class Bucket(BaseModel):
                 'bottom_min_water_level',
                 'bottom_equi_water_level',
                 'bottom_init_water_level',
-                'external_discharge',
                 'porosity',
                 'drainage_fraction',
                 'indraft_fraction',
@@ -150,6 +149,18 @@ class Bucket(BaseModel):
                 'min_water_level',
                 'equi_water_level',
                 'init_water_level',
+                'concentr_chloride_flow_off',
+                'concentr_chloride_drainage_indraft',
+                'min_concentr_phosphate_flow_off',
+                'min_concentr_phosphate_drainage_indraft',
+                'incr_concentr_phosphate_flow_off',
+                'incr_concentr_phosphate_drainage_indraft',
+                'min_concentr_nitrogen_flow_off',
+                'min_concentr_nitrogen_drainage_indraft',
+                'incr_concentr_nitrogen_flow_off',
+                'incr_concentr_nitrogen_drainage_indraft',
+                'label_flow_off',
+                'label_drainage_indraft',
                 ]
     pass
 
