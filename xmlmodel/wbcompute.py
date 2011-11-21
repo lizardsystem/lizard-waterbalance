@@ -133,6 +133,24 @@ class TimeseriesForLabel(object):
         self.timeseries.station_name = 'Huh?'
         self.timeseries.units = 'dag'
 
+class TimeseriesForPumpingStation(object):
+
+    def __init__(self, timeseries, location_id):
+        self.timeseries = timeseries
+        self.location_id = location_id
+
+    def set_fields(self):
+        self.timeseries.location_id = self.location_id
+        self.timeseries.parameter_id = 'Q'
+        self.set_timeseries_fields()
+
+    def set_timeseries_fields(self):
+        self.timeseries.type = 'instantaneous'
+        self.timeseries.miss_val = '-999.0'
+        self.timeseries.station_name = 'Huh?'
+        self.timeseries.units = 'dag'
+
+
 class WriteableTimeseries(object):
 
     def __init__(self, area, label2parameter):
@@ -144,15 +162,14 @@ class WriteableTimeseries(object):
 
         multiple_timeseries = TimeseriesFactory.create(self.area, self.label2parameter, label2timeseries)
         for timeseries in multiple_timeseries:
-                timeseries.set_fields()
-                self.timeseries_list.append(timeseries.timeseries)
+            timeseries.set_fields()
+            self.timeseries_list.append(timeseries.timeseries)
 
     def insert2(self, station2timeseries):
 
         for station, timeseries in station2timeseries.iteritems():
-            timeseries.location_id = station.location_id
-            timeseries.parameter_id = 'Q'
-            self.set_timeseries_fields(timeseries)
+            timeseries_for_station = TimeseriesForPumpingStation(timeseries, station.location_id)
+            timeseries_for_station.set_fields()
             self.timeseries_list.append(timeseries)
 
     def set_timeseries_fields(self, timeseries):
