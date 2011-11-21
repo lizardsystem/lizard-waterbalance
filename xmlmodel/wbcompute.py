@@ -120,7 +120,16 @@ class TimeseriesFactory(object):
                                                                        station.location_id))
         return multiple_timeseries
 
-class TimeseriesForLabel(object):
+class TimeseriesForSomething(object):
+
+    def set_standard_fields(self):
+        self.timeseries.type = 'instantaneous'
+        self.timeseries.miss_val = '-999.0'
+        self.timeseries.station_name = 'Huh?'
+        self.timeseries.units = 'dag'
+
+
+class TimeseriesForLabel(TimeseriesForSomething):
 
     def __init__(self, timeseries, location_id, parameter_id):
         self.timeseries = timeseries
@@ -131,13 +140,8 @@ class TimeseriesForLabel(object):
         self.timeseries.location_id = self.location_id
         self.timeseries.parameter_id = self.parameter_id
 
-    def set_standard_fields(self):
-        self.timeseries.type = 'instantaneous'
-        self.timeseries.miss_val = '-999.0'
-        self.timeseries.station_name = 'Huh?'
-        self.timeseries.units = 'dag'
 
-class TimeseriesForPumpingStation(object):
+class TimeseriesForPumpingStation(TimeseriesForSomething):
 
     def __init__(self, timeseries, location_id):
         self.timeseries = timeseries
@@ -146,12 +150,6 @@ class TimeseriesForPumpingStation(object):
     def set_specific_fields(self):
         self.timeseries.location_id = self.location_id
         self.timeseries.parameter_id = 'Q'
-
-    def set_standard_fields(self):
-        self.timeseries.type = 'instantaneous'
-        self.timeseries.miss_val = '-999.0'
-        self.timeseries.station_name = 'Huh?'
-        self.timeseries.units = 'dag'
 
 
 class WriteableTimeseries(object):
