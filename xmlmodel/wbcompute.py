@@ -177,11 +177,6 @@ class WriteableTimeseries(object):
             timeseries.set_fields()
             self.timeseries_list.append(timeseries.timeseries)
 
-    def set_timeseries_fields(self, timeseries):
-        timeseries.type = 'instantaneous'
-        timeseries.miss_val = '-999.0'
-        timeseries.station_name = 'Huh?'
-        timeseries.units = 'dag'
 
 def store_graphs_timeseries(run_info, area, graphs_timeseries):
 
