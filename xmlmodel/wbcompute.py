@@ -103,6 +103,17 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'startDateTime', run_info)
     insert_datetime(run_dom, 'endDateTime', run_info)
 
+class TimeseriesFactory(object):
+
+    @classmethod
+    def create(self, area, label2parameter, label2timeseries):
+        multiple_timeseries = []
+        for label, timeseries in label2timeseries.iteritems():
+            if label in label2parameter.iterkeys():
+                multiple_timeseries.append(TimeseriesForLabel(timeseries,
+                                                              area.location_id,
+                                                              label2parameter[label]))
+        return multiple_timeseries
 
 class TimeseriesForLabel(object):
 
@@ -131,13 +142,10 @@ class WriteableTimeseries(object):
 
     def insert(self, label2timeseries):
 
-        for label, timeseries in label2timeseries.iteritems():
-            if label in self.label2parameter.iterkeys():
-                timeseries_for_label =  TimeseriesForLabel(timeseries,
-                                                           self.area.location_id,
-                                                           self.label2parameter[label])
-                timeseries_for_label.set_fields()
-                self.timeseries_list.append(timeseries_for_label.timeseries)
+        multiple_timeseries = TimeseriesFactory.create(self.area, self.label2parameter, label2timeseries)
+        for timeseries in multiple_timeseries:
+                timeseries.set_fields()
+                self.timeseries_list.append(timeseries.timeseries)
 
     def insert2(self, station2timeseries):
 
