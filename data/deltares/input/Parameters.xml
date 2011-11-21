@@ -285,7 +285,7 @@
             <description>Label oppervlakte afstroom</description>
             <stringValue>verhard</stringValue>
         </parameter>
-        <parameter id="label_drainaige_indraft" name="Label uitstroom">
+        <parameter id="label_drainage_indraft" name="Label uitstroom">
             <description>Label uitstroom</description>
             <stringValue>uitspoeling</stringValue>
         </parameter>
@@ -444,7 +444,7 @@
             <description>Label oppervlakte afstroom</description>
             <stringValue>afstroming</stringValue>
         </parameter>
-        <parameter id="label_drainaige_indraft" name="Label uitstroom">
+        <parameter id="label_drainage_indraft" name="Label uitstroom">
             <description>Label uitstroom</description>
             <stringValue>uitspoeling</stringValue>
         </parameter>
@@ -603,7 +603,7 @@
             <description>Label oppervlakte afstroom</description>
             <stringValue>afstroming</stringValue>
         </parameter>
-        <parameter id="label_drainaige_indraft" name="Label uitstroom">
+        <parameter id="label_drainage_indraft" name="Label uitstroom">
             <description>Label uitstroom</description>
             <stringValue>uitspoeling</stringValue>
         </parameter>
