@@ -104,6 +104,24 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'endDateTime', run_info)
 
 
+class TimeseriesForLabel(object):
+
+    def __init__(self, timeseries, location_id, parameter_id):
+        self.timeseries = timeseries
+        self.location_id = location_id
+        self.parameter_id = parameter_id
+
+    def set_fields(self):
+        self.timeseries.location_id = self.location_id
+        self.timeseries.parameter_id = self.parameter_id
+        self.set_timeseries_fields()
+
+    def set_timeseries_fields(self):
+        self.timeseries.type = 'instantaneous'
+        self.timeseries.miss_val = '-999.0'
+        self.timeseries.station_name = 'Huh?'
+        self.timeseries.units = 'dag'
+
 class WriteableTimeseries(object):
 
     def __init__(self, area, label2parameter):
@@ -115,10 +133,11 @@ class WriteableTimeseries(object):
 
         for label, timeseries in label2timeseries.iteritems():
             if label in self.label2parameter.iterkeys():
-                timeseries.location_id = self.area.location_id
-                timeseries.parameter_id = self.label2parameter[label]
-                self.set_timeseries_fields(timeseries)
-                self.timeseries_list.append(timeseries)
+                timeseries_for_label =  TimeseriesForLabel(timeseries,
+                                                           self.area.location_id,
+                                                           self.label2parameter[label])
+                timeseries_for_label.set_fields()
+                self.timeseries_list.append(timeseries_for_label.timeseries)
 
     def insert2(self, station2timeseries):
 
