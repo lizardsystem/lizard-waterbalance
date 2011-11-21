@@ -168,12 +168,13 @@ class Bucket(BaseModel):
 class PumpingStation(BaseModel):
     expected = ['obj_id', 'location_id',
                 'name',
-                'label',
-                'concentr_chloride_flow_off',
-                'label_flow_off',
+                'is_computed',
                 'into',
-                'computed_level_control',
-                'max_discharge',
+                'concentr_chloride',
+                'min_concentr_phosphate',
+                'incr_concentr_phosphate',
+                'min_concentr_nitrogen',
+                'incr_concentr_nitrogen',
                 ]
     pass
 
