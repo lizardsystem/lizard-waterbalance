@@ -115,14 +115,24 @@ class WriteableTimeseries(object):
 
         for label, timeseries in label2timeseries.iteritems():
             if label in self.label2parameter.iterkeys():
-                timeseries.type = 'instantaneous'
                 timeseries.location_id = self.area.location_id
                 timeseries.parameter_id = self.label2parameter[label]
-                timeseries.miss_val = '-999.0'
-                timeseries.station_name = 'Huh?'
-                timeseries.units = 'dag'
+                self.set_timeseries_fields(timeseries)
                 self.timeseries_list.append(timeseries)
 
+    def insert2(self, station2timeseries):
+
+        for station, timeseries in station2timeseries.iteritems():
+            timeseries.location_id = station.location_id
+            timeseries.parameter_id = 'Q'
+            self.set_timeseries_fields(timeseries)
+            self.timeseries_list.append(timeseries)
+
+    def set_timeseries_fields(self, timeseries):
+        timeseries.type = 'instantaneous'
+        timeseries.miss_val = '-999.0'
+        timeseries.station_name = 'Huh?'
+        timeseries.units = 'dag'
 
 def store_graphs_timeseries(run_info, area, graphs_timeseries):
 

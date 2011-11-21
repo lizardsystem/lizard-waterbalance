@@ -25,7 +25,9 @@ from datetime import datetime
 from unittest import TestCase
 from xml.dom.minidom import parseString
 
-from nens import mock
+from mock import Mock
+
+from nens import mock as nens_mock
 from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
@@ -66,7 +68,7 @@ class Tests(TestCase):
 
     def test_b(self):
         """Test the requirements for a TimeseriesStub to be writeable."""
-        stream = mock.Stream()
+        stream = nens_mock.Stream()
         timeseries = TimeseriesStub((datetime(2011, 11, 17), 10.0))
         timeseries.type = 'instantaneous'
         timeseries.location_id = 'SAP'
@@ -78,7 +80,7 @@ class Tests(TestCase):
 
     def test_c(self):
         """Test the requirements for a SparseTimeseriesStub to be writeable."""
-        stream = mock.Stream()
+        stream = nens_mock.Stream()
         timeseries = SparseTimeseriesStub(datetime(2011, 11, 17), [10.0])
         timeseries.type = 'instantaneous'
         timeseries.location_id = 'SAP'
@@ -117,4 +119,64 @@ class MoreTests(TestCase):
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual(20111117, single_timeseries.location_id)
+
+    def test_c(self):
+        """Test an empty dict of PumpingStation to TimeseriesStub."""
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        writeable_timeseries.insert2({})
+
+        self.assertEqual(0, len(writeable_timeseries.timeseries_list))
+
+    def create_station(self):
+        station = Mock()
+        station.location_id = 20111121
+        return station
+
+    def test_d(self):
+        """Test a dict of PumpingStation to TimeseriesStub of size 1."""
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        station = self.create_station()
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert2({station: timeseries})
+
+        self.assertEqual(1, len(writeable_timeseries.timeseries_list))
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual(timeseries, single_timeseries)
+
+    def test_e(self):
+        """Test the right location id is assigned.
+
+        The writeable time series should have a location id equal to
+        the location id of the pumping station.
+
+        """
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        station = self.create_station()
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert2({station: timeseries})
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual(20111121, single_timeseries.location_id)
+
+    def test_f(self):
+        """Test the right parameter id is assigned.
+
+        The writeable time series should have parameter id 'Q'.
+
+        """
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        station = self.create_station()
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert2({station: timeseries})
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual('Q', single_timeseries.parameter_id)
 
