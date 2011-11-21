@@ -107,16 +107,17 @@ def insert_calculation_range(run_dom, run_info):
 class TimeseriesForSomething(object):
 
     @classmethod
-    def create(self, area, label2parameter, label2timeseries):
+    def create(self, area, label2parameter, mapping2timeseries):
         multiple_timeseries = []
-        for label, timeseries in label2timeseries.iteritems():
-            if type(label) == str:
+        for key, timeseries in mapping2timeseries.iteritems():
+            if type(key) == str:
+                label = key
                 if label in label2parameter.iterkeys():
                     multiple_timeseries.append(TimeseriesForLabel(timeseries,
                                                                   area.location_id,
                                                                   label2parameter[label]))
             else:
-                station = label
+                station = key
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
                                                                        station.location_id))
         return multiple_timeseries
@@ -158,9 +159,9 @@ class WriteableTimeseries(object):
         self.label2parameter = label2parameter
         self.timeseries_list = []
 
-    def insert(self, label2timeseries):
-
-        multiple_timeseries = TimeseriesForSomething.create(self.area, self.label2parameter, label2timeseries)
+    def insert(self, mapping2timeseries):
+        multiple_timeseries = TimeseriesForSomething.create(self.area,
+            self.label2parameter, mapping2timeseries)
         for timeseries in multiple_timeseries:
             timeseries.set_standard_fields()
             timeseries.set_specific_fields()
