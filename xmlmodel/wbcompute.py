@@ -109,10 +109,15 @@ class TimeseriesFactory(object):
     def create(self, area, label2parameter, label2timeseries):
         multiple_timeseries = []
         for label, timeseries in label2timeseries.iteritems():
-            if label in label2parameter.iterkeys():
-                multiple_timeseries.append(TimeseriesForLabel(timeseries,
-                                                              area.location_id,
-                                                              label2parameter[label]))
+            if type(label) == str:
+                if label in label2parameter.iterkeys():
+                    multiple_timeseries.append(TimeseriesForLabel(timeseries,
+                                                                  area.location_id,
+                                                                  label2parameter[label]))
+            else:
+                station = label
+                multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
+                                                                       station.location_id))
         return multiple_timeseries
 
 class TimeseriesForLabel(object):
@@ -167,10 +172,10 @@ class WriteableTimeseries(object):
 
     def insert2(self, station2timeseries):
 
-        for station, timeseries in station2timeseries.iteritems():
-            timeseries_for_station = TimeseriesForPumpingStation(timeseries, station.location_id)
-            timeseries_for_station.set_fields()
-            self.timeseries_list.append(timeseries)
+        multiple_timeseries = TimeseriesFactory.create(self.area, self.label2parameter, station2timeseries)
+        for timeseries in multiple_timeseries:
+            timeseries.set_fields()
+            self.timeseries_list.append(timeseries.timeseries)
 
     def set_timeseries_fields(self, timeseries):
         timeseries.type = 'instantaneous'
