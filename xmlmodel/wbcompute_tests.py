@@ -30,7 +30,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
-from xmlmodel.wbcompute import WriteableTimeseriesCreator
+from xmlmodel.wbcompute import WriteableTimeseries
 
 
 class Tests(TestCase):
@@ -92,22 +92,29 @@ class Tests(TestCase):
 class MoreTests(TestCase):
 
     def setUp(self):
-        area = Area()
-        area.location_id = 20111117
-        self.timeseries = TimeseriesStub()
-        self.label2timeseries = {'hardened': self.timeseries}
-        label2parameter = {'hardened': 'discharge_hardened'}
-
-        self.timeseries_list = WriteableTimeseriesCreator(area, label2parameter)
+        self.area = Area()
+        self.area.location_id = 20111117
+        self.label2parameter = {'hardened': 'discharge_hardened'}
 
     def test_a(self):
-        timeseries_list = []
-        self.timeseries_list.insert(self.label2timeseries, timeseries_list)
-        self.assertEqual(1, len(timeseries_list))
-        self.assertEqual(self.timeseries, timeseries_list[0])
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert({'hardened': timeseries})
+
+        self.assertEqual(1, len(writeable_timeseries.timeseries_list))
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual(timeseries, single_timeseries)
 
     def test_b(self):
-        timeseries_list = []
-        self.timeseries_list.insert(self.label2timeseries, timeseries_list)
-        self.assertEqual(20111117, timeseries_list[0].location_id)
+        writeable_timeseries = WriteableTimeseries(self.area,
+                                                   self.label2parameter)
+
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert({'hardened': timeseries})
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual(20111117, single_timeseries.location_id)
 

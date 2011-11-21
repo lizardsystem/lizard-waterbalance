@@ -104,13 +104,14 @@ def insert_calculation_range(run_dom, run_info):
     insert_datetime(run_dom, 'endDateTime', run_info)
 
 
-class WriteableTimeseriesCreator(object):
+class WriteableTimeseries(object):
 
     def __init__(self, area, label2parameter):
         self.area = area
         self.label2parameter = label2parameter
+        self.timeseries_list = []
 
-    def insert(self, label2timeseries, timeseries_list):
+    def insert(self, label2timeseries):
 
         for label, timeseries in label2timeseries.iteritems():
             if label in self.label2parameter.iterkeys():
@@ -120,7 +121,7 @@ class WriteableTimeseriesCreator(object):
                 timeseries.miss_val = '-999.0'
                 timeseries.station_name = 'Huh?'
                 timeseries.units = 'dag'
-                timeseries_list.append(timeseries)
+                self.timeseries_list.append(timeseries)
 
 
 def store_graphs_timeseries(run_info, area, graphs_timeseries):
@@ -135,7 +136,7 @@ def store_graphs_timeseries(run_info, area, graphs_timeseries):
 
     timeseries_writer = WriteableTimeseriesCreator(area, LABEL2PARAMETER)
 
-    timeseries_writer.insert(incoming, graphs_timeseries)
+    timeseries_writer.insert(incoming)
     # timeseries_dict.insert(outgoing, parameter2timeseries)
     # timeseries_dict.insert({'sluice_error':sluice_error}, parameter2timeseries)
 
