@@ -106,7 +106,7 @@ def insert_calculation_range(run_dom, run_info):
 class TimeseriesForSomething(object):
 
     @classmethod
-    def create(self, area, label2parameter, mapping2timeseries):
+    def create(cls, area, label2parameter, mapping2timeseries):
         multiple_timeseries = []
         for key, timeseries in mapping2timeseries.iteritems():
             if type(key) == str:
@@ -151,7 +151,7 @@ class TimeseriesForPumpingStation(TimeseriesForSomething):
         self.timeseries.parameter_id = 'Q'
 
 
-class WriteableTimeseries(object):
+class WriteableTimeseriesList(object):
 
     def __init__(self, area, label2parameter):
         self.area = area
@@ -176,7 +176,7 @@ def store_graphs_timeseries(run_info, area):
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
     sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
-    writeable_timeseries = WriteableTimeseries(area, LABEL2PARAMETER)
+    writeable_timeseries = WriteableTimeseriesList(area, LABEL2PARAMETER)
 
     writeable_timeseries.insert(incoming)
     writeable_timeseries.insert(outgoing)

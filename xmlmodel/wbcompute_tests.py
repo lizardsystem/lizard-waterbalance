@@ -32,7 +32,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
-from xmlmodel.wbcompute import WriteableTimeseries
+from xmlmodel.wbcompute import WriteableTimeseriesList
 
 
 class Tests(TestCase):
@@ -99,7 +99,7 @@ class MoreTests(TestCase):
         self.label2parameter = {'hardened': 'discharge_hardened'}
 
     def test_a(self):
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         timeseries = TimeseriesStub()
@@ -112,7 +112,7 @@ class MoreTests(TestCase):
 
     def test_ba(self):
         """Test the right location is assigned."""
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         timeseries = TimeseriesStub()
@@ -123,7 +123,7 @@ class MoreTests(TestCase):
 
     def test_bb(self):
         """Test the right parameter is assigned."""
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         timeseries = TimeseriesStub()
@@ -134,7 +134,7 @@ class MoreTests(TestCase):
 
     def test_bc(self):
         """Test the default right parameters are assigned."""
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         timeseries = TimeseriesStub()
@@ -148,7 +148,7 @@ class MoreTests(TestCase):
 
     def test_c(self):
         """Test an empty dict of PumpingStation to TimeseriesStub."""
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         writeable_timeseries.insert({})
@@ -162,7 +162,7 @@ class MoreTests(TestCase):
 
     def test_d(self):
         """Test a dict of PumpingStation to TimeseriesStub of size 1."""
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         station = self.create_station()
@@ -180,7 +180,7 @@ class MoreTests(TestCase):
         the location id of the pumping station.
 
         """
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         station = self.create_station()
@@ -196,7 +196,7 @@ class MoreTests(TestCase):
         The writeable time series should have parameter id 'Q'.
 
         """
-        writeable_timeseries = WriteableTimeseries(self.area,
+        writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
 
         station = self.create_station()
