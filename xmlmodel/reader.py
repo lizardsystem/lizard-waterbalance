@@ -86,6 +86,13 @@ class BaseModel(object):
                 valid = False
         return valid
 
+    @classmethod
+    def corresponding_parameter_id(cls, local_name):
+        """return the default parameter id for named timeseries.
+        """
+
+        return None
+
 
 class Area(BaseModel):
     expected = ['obj_id', 'location_id',
@@ -105,6 +112,13 @@ class Area(BaseModel):
                 'min_concentr_nitrogyn_seepage',
                 'incr_concentr_nitrogyn_seepage',
                 ]
+
+    @classmethod
+    def corresponding_parameter_id(cls, local_name):
+        """return the default parameter id for named timeseries.
+        """
+
+        return None
 
     @property
     def init_water_level(self):
@@ -153,6 +167,14 @@ class Bucket(BaseModel):
                 'label_flow_off',
                 'label_drainage_indraft',
                 ]
+
+    @classmethod
+    def corresponding_parameter_id(cls, local_name):
+        """return the default parameter id for named timeseries.
+        """
+
+        return None
+
     pass
 
 
@@ -167,6 +189,14 @@ class PumpingStation(BaseModel):
                 'min_concentr_nitrogen',
                 'incr_concentr_nitrogen',
                 ]
+
+    @classmethod
+    def corresponding_parameter_id(cls, local_name):
+        """return the default parameter id for named timeseries.
+        """
+
+        return 'Q'
+
     pass
 
 
@@ -467,7 +497,8 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
                 if series is None:
                     logger.warn("no series found at loc/par: %s/%s, using empty TimeSeries" %
                                 (obj.location_id, remote))
-                    series = TimeSeries(location_id=obj.location_id)
+                    series = TimeSeries(location_id=obj.location_id,
+                                        parameter_id=obj.corresponding_parameter_id(local))
                 available.discard((obj.location_id, remote))
                 setattr(obj, local, series)
                 obj.timeseries_names.add(local)
