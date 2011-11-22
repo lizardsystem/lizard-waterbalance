@@ -51,10 +51,10 @@ ASSOC = {
     'Area': {
         'evaporation': 'VERDPG',
         'infiltration': 'WEGZ',
-        'maximum_level': 'MARG_BOV',
-        'minimum_level': 'MARG_OND',
-        'nutricalc_incr': '',
-        'nutricalc_min': '',
+        'maximum_level': 'WATHTE.boven',
+        'minimum_level': 'WATHTE.onder',
+        'nutricalc_incr': 'NUTRIC_INC',
+        'nutricalc_min': 'NUTRIC_MIN',
         'precipitation': 'NEERSG',
         'seepage': 'KWEL',
         'sewer': '',
@@ -201,6 +201,7 @@ def main(args):
     insert_calculation_range(run_dom, run_info)
     diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
     logging.getLogger().addHandler(diag)
+    logging.getLogger().setLevel(logging.DEBUG)
     log.debug(run_info['inputTimeSeriesFile'])
     tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
     area = parse_parameters(run_info['inputParameterFile'])
