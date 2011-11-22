@@ -31,6 +31,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from timeseries.timeseries import TimeSeries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 class BaseModel(object):
@@ -59,13 +60,6 @@ class BaseModel(object):
 
     def __getattr__(self, attr):
 
-        def create_timeseries(timeseries, start, end):
-            sparse_timeseries = SparseTimeseriesStub()
-            if timeseries is not None:
-                for event in timeseries.events(start, end):
-                    sparse_timeseries.add_value(event[0], event[1])
-            return sparse_timeseries
-
         if attr.startswith("retrieve_"):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
@@ -74,7 +68,7 @@ class BaseModel(object):
                     return (lambda start=None, end=None:
                             timeseries.filter(timestamp_gte=start, timestamp_lte=end))
                 else:
-                    return lambda start, end: create_timeseries(timeseries, start, end)
+                    return lambda start, end: TimeSeries()
         return getattr(super(BaseModel, self), attr)
 
     def validate(self):
