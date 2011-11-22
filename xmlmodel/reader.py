@@ -64,11 +64,8 @@ class BaseModel(object):
             name = attr[len("retrieve_"):]
             if name in self.timeseries_names:
                 timeseries = getattr(self, name)
-                if not timeseries is None:
-                    return (lambda start=None, end=None:
+                return (lambda start=None, end=None:
                             timeseries.filter(timestamp_gte=start, timestamp_lte=end))
-                else:
-                    return lambda start, end: TimeSeries()
         return getattr(super(BaseModel, self), attr)
 
     def validate(self):
@@ -468,8 +465,9 @@ def attach_timeseries_to_structures(root, tsd, corresponding):
             for obj in todo:
                 series = tsd.get((obj.location_id, remote))
                 if series is None:
-                    logger.warn("no series found at loc/par: %s/%s, using None" %
+                    logger.warn("no series found at loc/par: %s/%s, using empty TimeSeries" %
                                 (obj.location_id, remote))
+                    series = TimeSeries(location_id=obj.location_id)
                 available.discard((obj.location_id, remote))
                 setattr(obj, local, series)
                 obj.timeseries_names.add(local)
