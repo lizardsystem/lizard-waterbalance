@@ -2,10 +2,12 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.2 (unreleased)
+0.19.1.2 (2011-11-24)
 ---------------------
 
-- Nothing changed yet.
+- Pins several libraries:
+  - nens to 1.10
+  - timeseries to 0.11
 
 
 0.19.1.1 (2011-11-24)
