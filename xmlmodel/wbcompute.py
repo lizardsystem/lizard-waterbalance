@@ -27,6 +27,7 @@
 #******************************************************************************
 
 import logging
+import sys
 
 from datetime import datetime
 from xml.dom.minidom import parse
@@ -209,3 +210,7 @@ def main(args):
     graphs_timeseries = store_graphs_timeseries(run_info, area)
     TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
                                 graphs_timeseries)
+ 
+if __name__ == '__main__':
+    
+    main(sys.argv[1:])
