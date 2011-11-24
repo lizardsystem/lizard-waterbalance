@@ -5,7 +5,10 @@ Changelog of lizard-waterbalance
 0.20 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Isolates the functionality to compute a waterbalance, that is the
+  computational core, from the Django models.
+
+- Supports the configuration of a waterbalance through XML files.
 
 
 0.19 (2011-09-05)
