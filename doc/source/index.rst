@@ -9,15 +9,21 @@ Lizard waterbalance documentation
 Project documentation
 ---------------------
 
+lizard-waterbalance is a Django application to store configurations of
+waterbalance models and to compute and visualize the waterbalance of a specific
+configuration. This document describes multiple implementation details about a
+specific branch of lizard-waterbalance, namely the vss branch.
+
 .. toctree::
    :maxdepth: 2
 
    project
-   datamodel
+   deployment
+   scripts
    admin
    vip
    vocabulary
-   management_commands
+
 
 Indices and tables
 ==================

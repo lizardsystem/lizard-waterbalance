@@ -1,4 +1,7 @@
 Credits
-=======
+~~~~~~~
 
-- TODO started this library
+This library has been developed by various people at Nelen & Schuurmans, but
+primarily by Mario Frasca, Bastiaan Roos and Pieter Swinkels (in alphabetical
+order). Please note that their work builds upon work done by many of their
+colleagues at Nelen & Schuurmans.

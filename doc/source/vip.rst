@@ -7,11 +7,11 @@ Computation
 The class WaterbalanceComputer is the main interface to the functionality of
 the lizard_waterbalance application and especially its method 'compute':
 
-.. automethod:: lizard_waterbalance.compute.WaterbalanceComputer2.compute
+.. automethod:: lizard_wbcomputation.compute.WaterbalanceComputer2.compute
 
 A BucketOutcome contains all the timeseries that are computed for a single Bucket:
 
-.. autoclass:: lizard_waterbalance.bucket_computer.BucketOutcome
+.. autoclass:: lizard_wbcomputation.bucket_computer.BucketOutcome
 
 Caching
 -------

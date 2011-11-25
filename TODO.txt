@@ -1,4 +1,4 @@
 TODO
 ====
 
-- Probably a whole lot of things.
+TODO items should be maintained as issues at GitHub.
