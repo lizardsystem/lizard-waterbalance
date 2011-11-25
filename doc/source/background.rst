@@ -22,7 +22,7 @@ indraft
   surround the water body
 
 drainage
-  incoming flow that trickles through the ground and goues to the areas that
+  incoming flow that trickles through the ground and goes to the areas that
   surround the water body
 
 .. rubric:: Footnotes
