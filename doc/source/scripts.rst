@@ -7,8 +7,8 @@ commands that are provided by lizard-waterbalance.
 wbcompute
 ~~~~~~~~~
 
-Management command ``wbcompute`` computes a waterbalance for a configuration
-that is specified by three distinct XML files, viz.
+Script ``wbcompute`` computes a waterbalance for a configuration that is
+specified by three distinct XML files, viz.
 
   - a "parameters" file, which specifies the entities of the waterbalance
     model. Examples of such entities are buckets and pumping stations.
@@ -40,7 +40,7 @@ An example run file looks like this::
       </properties>
   </Run>
 
-The management command uses the following settings from this file:
+The script uses the following settings from this file:
 
   - ``startDateTime`` and ``endDateTime`` for the first and last date for which to
     compute the waterbalance;
@@ -54,12 +54,16 @@ The management command uses the following settings from this file:
 In the example above the log file is specified as an XML file. Note that at the
 moment, the log file does not have to be an XML file.
 
-The management command will ignore all the other information in the run file.
+The script will ignore all the other information in the run file.
 
-The user can invoke the management command like this::
+The user can invoke the script from the lizard-waterbalance root directory like
+this [#fn1]_::
 
-  $> bin/django wbcompute <path-to-the-run-xml-file>
+  $> bin/wbcompute <path-to-the-run-xml-file>
 
 The command will compute the waterbalance for the configuration specified in
 the given run file.
 
+.. rubric:: Footnotes
+
+.. [#fn1] the command-line interface of wbcompute.exe is the same
