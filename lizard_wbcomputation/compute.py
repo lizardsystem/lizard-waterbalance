@@ -634,10 +634,10 @@ class WaterbalanceComputer2(object):
             # series, where each intake is an intake that is not used for level
             # control
             concentrations = {}
-            concentrations_incremetal = {}
+            concentrations_incremental = {}
             for concentr in self.configuration.config_concentrations.all().select_related('Label'):
                 concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
-                concentrations_incremetal[concentr.label.program_name] = concentr.stof_increment
+                concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
 
             nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
                                                              end_date)
@@ -646,7 +646,7 @@ class WaterbalanceComputer2(object):
 
             load = self.load_computer.compute(flows, concentrations, start_date,
                                               end_date, nutricalc_min)
-            load_incremental = self.load_computer.compute(flows, concentrations_incremetal, start_date, end_date,
+            load_incremental = self.load_computer.compute(flows, concentrations_incremental, start_date, end_date,
                                                           nutricalc_incr)
 
 
