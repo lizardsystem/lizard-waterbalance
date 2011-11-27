@@ -48,7 +48,7 @@ class Command(BaseCommand):
     waterbalance.
 
     """
-    args = "area-slug scenario-slug 'export-impact-all'"
+    args = "area-slug scenario-slug ['export-impact-all']"
     help = "Computes the waterbalance of the given configuration and exports " \
            "the resulting time series to PI XML files in the current " \
            "directory."
