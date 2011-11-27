@@ -118,19 +118,19 @@
             <description>Concentratie P kwel incrementeel [g/m3]</description>
             <dblValue>0.2</dblValue>
         </parameter>
-        <parameter id="min_concentr_nitrogyn_precipitation" name="Concentratie N neerslag minimaal">
+        <parameter id="min_concentr_nitrogen_precipitation" name="Concentratie N neerslag minimaal">
             <description>Concentratie N neerslag minimaal [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
-        <parameter id="min_concentr_nitrogyn_seepage" name="Concentratie N kwel minimaal">
+        <parameter id="min_concentr_nitrogen_seepage" name="Concentratie N kwel minimaal">
             <description>Concentratie N kwel minimaal [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
-        <parameter id="incr_concentr_nitrogyn_precipitation" name="Concentratie N neerslag incerementeel">
+        <parameter id="incr_concentr_nitrogen_precipitation" name="Concentratie N neerslag incerementeel">
             <description>Concentratie N neerslag incrementeel [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
-        <parameter id="incr_concentr_nitrogyn_seepage" name="Concentratie N kwel incrementeel">
+        <parameter id="incr_concentr_nitrogen_seepage" name="Concentratie N kwel incrementeel">
             <description>Concentratie N kwel incrementeel [g/m3]</description>
             <dblValue>0.8</dblValue>
         </parameter>
