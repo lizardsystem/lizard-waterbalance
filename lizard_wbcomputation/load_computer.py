@@ -102,16 +102,10 @@ class LoadComputer:
                     load = value[1]
                 else:
                     label = key
-                    if key == 'precipitation':
-                        if concentration_string == 'min':
-                            load = value[1] * area.min_concentr_phosphate_precipitation
-                        else:
-                            load = value[1] * area.incr_concentr_phosphate_precipitation
-                    elif key == 'seepage':
-                        if concentration_string == 'min':
-                            load = value[1] * area.min_concentr_phosphate_seepage
-                        else:
-                            load = value[1] * area.incr_concentr_phosphate_seepage
+                    if key in ['precipitation', 'seepage']:
+                        attr_string = '%s_concentr_phosphate_%s' % \
+                            (concentration_string, key)
+                        load = value[1] * getattr(area, attr_string)
                     else:
                         load = value[1] * concentration_dict[key]
 
