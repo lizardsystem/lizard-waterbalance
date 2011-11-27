@@ -48,7 +48,7 @@ class Command(BaseCommand):
     waterbalance.
 
     """
-    args = "area-slug scenario-slug"
+    args = "area-slug scenario-slug 'export-impact-all'"
     help = "Computes the waterbalance of the given configuration and exports " \
            "the resulting time series to PI XML files in the current " \
            "directory."
@@ -59,12 +59,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Parse the parameters and delegate the work specified by them."""
-        if len(args) == 2:
-            area_slug, scenario_slug = tuple(args)
+        if len(args) == 3:
+            area_slug, scenario_slug, export_impact = tuple(args)
             configurations = WaterbalanceConf.objects
             configuration = configurations.get(waterbalance_area__slug=area_slug,
                                                waterbalance_scenario__slug=scenario_slug)
-            self.compute_export(self.create_computer(configuration))
+            computer = self.create_computer(configuration)
+            self.compute_export(computer)
+            if export_impact == 'export-impact-all':
+                self.export_impact(computer)
         else:
             self.print_help("compute_export")
 
@@ -134,6 +137,10 @@ class Command(BaseCommand):
         series, delta = computer.get_concentration_timeseries(start, end)
         write_to_pi_file(location_id = "SAP", parameter_id = "concentration",
                          filename="concentration.xml", timeseries=series)
+
+    def export_impact(self, computer):
+        start, end = datetime(2000, 1, 1), datetime(2000,12, 31)
+        computer.compute(start, end)
 
         impact = {}
         impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)

@@ -15,7 +15,7 @@ test-import-excel-Sierveld-20110916:
 	diff -q import-excel-Sierveld-20110916/expected_lizard_waterbalance.json import-excel-Sierveld-20110916/lizard_waterbalance.json
 
 test-waterbalance-output:
-	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import
+	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-all
 	cd waterbalance-output-Aetsveldse-polder; diff expected-sluice-error.xml sluice-error.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-open-water-incoming-flows.xml open-water-incoming-flows.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-open-water-outgoing-flows.xml open-water-outgoing-flows.xml
