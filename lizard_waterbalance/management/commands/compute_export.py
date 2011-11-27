@@ -59,15 +59,22 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Parse the parameters and delegate the work specified by them."""
-        if len(args) == 3:
-            area_slug, scenario_slug, export_impact = tuple(args)
+        if len(args) >= 2:
+            area_slug, scenario_slug = tuple(args[0:2])
+            if len(args) == 3:
+                export_impact = args[2]
+            else:
+                export_impact = None
             configurations = WaterbalanceConf.objects
             configuration = configurations.get(waterbalance_area__slug=area_slug,
                                                waterbalance_scenario__slug=scenario_slug)
             computer = self.create_computer(configuration)
-            self.compute_export(computer)
-            if export_impact == 'export-impact-all':
+            if export_impact is None:
+                self.compute_export(computer)
+            elif export_impact == 'export-impact-all':
                 self.export_impact(computer)
+            else:
+                self.print_help("compute_export")
         else:
             self.print_help("compute_export")
 

@@ -23,6 +23,9 @@ test-waterbalance-output:
 	cd waterbalance-output-Aetsveldse-polder; diff expected-reference.xml reference.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-water-level-sluice-error.xml water-level-sluice-error.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-fractions.xml fractions.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-concentration.xml concentration.xml
+
+test-waterbalance-output-impact-all:
+	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-all
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact.xml impact.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental.xml impact-incremental.xml
-	cd waterbalance-output-Aetsveldse-polder; diff expected-concentration.xml concentration.xml
