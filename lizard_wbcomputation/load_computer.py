@@ -113,8 +113,8 @@ class LoadComputer:
 
                 label = key
                 if key in ['precipitation', 'seepage']:
-                    attr_string = '%s_concentr_phosphate_%s' % \
-                        (concentration_string, key)
+                    attr_string = '%s_concentr_%s_%s' % \
+                        (concentration_string, substance_string, key)
                     load = value[1] * getattr(area, attr_string)
                 else:
                     continue
