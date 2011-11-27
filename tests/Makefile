@@ -29,3 +29,8 @@ test-waterbalance-output-impact-all:
 	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-all
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact.xml impact.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental.xml impact-incremental.xml
+
+test-waterbalance-output-impact-open-water:
+	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-open-water
+	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-open-water.xml impact-open-water.xml
+	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental-open-water.xml impact-incremental-open-water.xml
