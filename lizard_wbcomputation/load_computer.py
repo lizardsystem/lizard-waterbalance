@@ -81,41 +81,41 @@ class LoadComputer:
                 del(events['undrained'])
 
             for key, value in events.items():
-                # # key never seems to be equal to 'intakes'
-                # if key in ['intakes', 'defined_input']:
-                #     for key_intake, value_intake in value.items():
-                #         if key_intake == 'intake_wl_control':
-                #             # if key is indeed never equal to 'intakes',
-                #             # key_intake will never be equal to
-                #             # 'intake_wl_control'
-                #             load = value_intake[1] * \
-                #                    concentration_dict[key_intake]
-                #             label = 'intake_wl_control'
-                #         else:
-                #             load = value_intake[1] * \
-                #                    concentration_dict[key_intake.label.program_name]
-                #             label = key_intake
-                #         loads.setdefault(label, TimeseriesStub()).add_value(date, load)
-                #     continue
-                # elif key == 'nutricalc':
-                #     label = key
-                #     load = value[1]
-                # else:
-                #     label = key
-                #     if key in ['precipitation', 'seepage']:
-                #         attr_string = '%s_concentr_phosphate_%s' % \
-                #             (concentration_string, key)
-                #         load = value[1] * getattr(area, attr_string)
-                #     else:
-                #         load = value[1] * concentration_dict[key]
-
-                label = key
-                if key in ['precipitation', 'seepage']:
-                    attr_string = '%s_concentr_phosphate_%s' % \
-                        (concentration_string, key)
-                    load = value[1] * getattr(area, attr_string)
-                else:
+                # key never seems to be equal to 'intakes'
+                if key in ['intakes', 'defined_input']:
+                    for key_intake, value_intake in value.items():
+                        if key_intake == 'intake_wl_control':
+                            # if key is indeed never equal to 'intakes',
+                            # key_intake will never be equal to
+                            # 'intake_wl_control'
+                            load = value_intake[1] * \
+                                   concentration_dict[key_intake]
+                            label = 'intake_wl_control'
+                        else:
+                            load = value_intake[1] * \
+                                   concentration_dict[key_intake.label.program_name]
+                            label = key_intake
+                        loads.setdefault(label, TimeseriesStub()).add_value(date, load)
                     continue
+                elif key == 'nutricalc':
+                    label = key
+                    load = value[1]
+                else:
+                    label = key
+                    if key in ['precipitation', 'seepage']:
+                        attr_string = '%s_concentr_phosphate_%s' % \
+                            (concentration_string, key)
+                        load = value[1] * getattr(area, attr_string)
+                    else:
+                        load = value[1] * concentration_dict[key]
+
+                # label = key
+                # if key in ['precipitation', 'seepage']:
+                #     attr_string = '%s_concentr_phosphate_%s' % \
+                #         (concentration_string, key)
+                #     load = value[1] * getattr(area, attr_string)
+                # else:
+                #     continue
 
                 loads.setdefault(label, TimeseriesStub()).add_value(date, load)
 
