@@ -85,6 +85,10 @@ LABEL2PARAMETER = {
     'min_impact_phosphate_seepage': 'min_impact_phosphate_seepage',
     'incr_impact_phosphate_precipitation': 'incr_impact_phosphate_precipitation',
     'incr_impact_phosphate_seepage': 'incr_impact_phosphate_seepage',
+    'min_impact_nitrogen_precipitation': 'min_impact_nitrogen_precipitation',
+    'min_impact_nitrogen_seepage': 'min_impact_nitrogen_seepage',
+    'incr_impact_nitrogen_precipitation': 'incr_impact_nitrogen_precipitation',
+    'incr_impact_nitrogen_seepage': 'incr_impact_nitrogen_seepage',
     }
 
 
@@ -181,20 +185,20 @@ def store_graphs_timeseries(run_info, area):
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
     sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
-    impact_series, impact_incremental_series = \
-         cm.get_impact_timeseries(start_date, end_date)
-
     writeable_timeseries = WriteableTimeseriesList(area, LABEL2PARAMETER)
 
     writeable_timeseries.insert(incoming)
     writeable_timeseries.insert(outgoing)
     writeable_timeseries.insert({'sluice_error':sluice_error})
 
-    for flow in ['precipitation', 'seepage']:
-        key = '%s_impact_phosphate_%s' % ('min', flow)
-        writeable_timeseries.insert({key: impact_series[flow]})
-        key = '%s_impact_phosphate_%s' % ('incr', flow)
-        writeable_timeseries.insert({key: impact_incremental_series[flow]})
+    for substance in ['phosphate', 'nitrogen']:
+        impact_series, impact_incremental_series = \
+            cm.get_impact_timeseries(start_date, end_date, substance)
+        for flow in ['precipitation', 'seepage']:
+            key = '%s_impact_%s_%s' % ('min', substance, flow)
+            writeable_timeseries.insert({key: impact_series[flow]})
+            key = '%s_impact_%s_%s' % ('incr', substance, flow)
+            writeable_timeseries.insert({key: impact_incremental_series[flow]})
 
     return writeable_timeseries.timeseries_list
 
