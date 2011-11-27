@@ -267,19 +267,55 @@ class Area(object):
 
     @property
     def min_concentr_phosphate_precipitation(self):
-        pass
+        """Return the minimum phosphate concentration of the precipitation.
+
+        This value is None when no Label exists with the program name
+        'precipitation'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "precipitation":
+                return concentr.stof_lower_concentration
+        return None
 
     @property
     def incr_concentr_phosphate_precipitation(self):
-        pass
+        """Return the increment phophate concentration of the precipitation.
+
+        This value is None when no Label exists with the program name
+        'precipitation'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "precipitation":
+                return concentr.stof_increment
+        return None
 
     @property
     def min_concentr_phosphate_seepage(self):
-        pass
+        """Return the minimum phosphate concentration of the seepage.
+
+        This value is None when no Label exists with the program name
+        'seepage'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "seepage":
+                return concentr.stof_lower_concentration
+        return None
 
     @property
     def incr_concentr_phosphate_seepage(self):
-        pass
+        """Return the increment phophate concentration of the seepage.
+
+        This value is None when no Label exists with the program name
+        'seepage'.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == "seepage":
+                return concentr.stof_increment
+        return None
 
     @property
     def min_concentr_nitrogyn_precipitation(self):

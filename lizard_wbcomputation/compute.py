@@ -636,6 +636,8 @@ class WaterbalanceComputer2(object):
             concentrations = {}
             concentrations_incremental = {}
             for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+                if concentr.label.program_name in ['precipitation', 'seepage']:
+                    continue
                 concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
                 concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
 
@@ -644,9 +646,9 @@ class WaterbalanceComputer2(object):
             nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
                                                               end_date)
 
-            load = self.load_computer.compute(flows, concentrations, start_date,
+            load = self.load_computer.compute(self.area, 'min', flows, concentrations, start_date,
                                               end_date, nutricalc_min)
-            load_incremental = self.load_computer.compute(flows, concentrations_incremental, start_date, end_date,
+            load_incremental = self.load_computer.compute(self.area, 'incr', flows, concentrations_incremental, start_date, end_date,
                                                           nutricalc_incr)
 
 
