@@ -319,18 +319,22 @@ class Area(object):
 
     @property
     def min_concentr_nitrogyn_precipitation(self):
+        """Not implemented as the Django database does not define nitrogen."""
         pass
 
     @property
     def incr_concentr_nitrogyn_precipitation(self):
+        """Not implemented as the Django database does not define nitrogen."""
         pass
 
     @property
     def min_concentr_nitrogyn_seepage(self):
+        """Not implemented as the Django database does not define nitrogen."""
         pass
 
     @property
     def incr_concentr_nitrogyn_seepage(self):
+        """Not implemented as the Django database does not define nitrogen."""
         pass
 
 
