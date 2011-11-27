@@ -646,10 +646,11 @@ class WaterbalanceComputer2(object):
             nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
                                                               end_date)
 
-            load = self.load_computer.compute(self.area, 'min', flows, concentrations, start_date,
-                                              end_date, nutricalc_min)
-            load_incremental = self.load_computer.compute(self.area, 'incr', flows, concentrations_incremental, start_date, end_date,
-                                                          nutricalc_incr)
+            load = self.load_computer.compute(self.area, 'min', 'phosphate',
+                flows, concentrations, start_date, end_date, nutricalc_min)
+            load_incremental = self.load_computer.compute(self.area, 'incr',
+                'phosphate', flows, concentrations_incremental, start_date,
+                end_date, nutricalc_incr)
 
 
         return load, load_incremental

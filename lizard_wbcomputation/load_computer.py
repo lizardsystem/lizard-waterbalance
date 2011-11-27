@@ -31,7 +31,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 
 class LoadComputer:
 
-    def compute(self, area, concentration_string,
+    def compute(self, area, concentration_string, substance_string,
                 flow_dict, concentration_dict,
                 start_date, end_date, nutricalc_timeseries=None):
         """Compute and return the concentration time series.
@@ -41,6 +41,8 @@ class LoadComputer:
             area for which to compute the load
           *concentration_string*
             either 'min' or 'incr'
+          *substance_string*
+            either 'phosphate' or 'nitrogen'
           *flow_list*
             dictionary of incoming waterflows
           *concentration_list*
@@ -103,8 +105,8 @@ class LoadComputer:
                 else:
                     label = key
                     if key in ['precipitation', 'seepage']:
-                        attr_string = '%s_concentr_phosphate_%s' % \
-                            (concentration_string, key)
+                        attr_string = '%s_concentr_%s_%s' % \
+                            (concentration_string, substance_string, key)
                         load = value[1] * getattr(area, attr_string)
                     else:
                         load = value[1] * concentration_dict[key]
