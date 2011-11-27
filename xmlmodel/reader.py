@@ -107,10 +107,10 @@ class Area(BaseModel):
                 'incr_concentr_phosphate_precipitation',
                 'min_concentr_phosphate_seepage',
                 'incr_concentr_phosphate_seepage',
-                'min_concentr_nitrogyn_precipitation',
-                'incr_concentr_nitrogyn_precipitation',
-                'min_concentr_nitrogyn_seepage',
-                'incr_concentr_nitrogyn_seepage',
+                'min_concentr_nitrogen_precipitation',
+                'incr_concentr_nitrogen_precipitation',
+                'min_concentr_nitrogen_seepage',
+                'incr_concentr_nitrogen_seepage',
                 ]
 
     @classmethod
