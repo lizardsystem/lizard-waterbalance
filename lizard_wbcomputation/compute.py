@@ -611,8 +611,8 @@ class WaterbalanceComputer2(object):
         return concentration
 
     def get_load_timeseries(self,
-            start_date, end_date):
-        """ Alleen fosfaat op dit moment"""
+            start_date, end_date, substance_string='phosphate'):
+
         logger.debug("WaterbalanceComputer2::get_load_timeseries")
 
         # Concentration is specified in [mg/l] whereas discharge is
@@ -646,18 +646,17 @@ class WaterbalanceComputer2(object):
             nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
                                                               end_date)
 
-            load = self.load_computer.compute(self.area, 'min', 'phosphate',
+            load = self.load_computer.compute(self.area, 'min', substance_string,
                 flows, concentrations, start_date, end_date, nutricalc_min)
             load_incremental = self.load_computer.compute(self.area, 'incr',
-                'phosphate', flows, concentrations_incremental, start_date,
+                substance_string, flows, concentrations_incremental, start_date,
                 end_date, nutricalc_incr)
 
 
         return load, load_incremental
 
     def get_impact_timeseries(self,
-            start_date, end_date):
-        """ Alleen fosfaat op dit moment"""
+            start_date, end_date, substance_string='phosphate'):
         logger.debug("WaterbalanceComputer2::get_impact_timeseries")
 
 
@@ -670,7 +669,8 @@ class WaterbalanceComputer2(object):
                     start_date.strftime('%Y-%m-%d'),
                     end_date.strftime('%Y-%m-%d')))
 
-            load, load_incremental = self.get_load_timeseries(start_date, end_date)
+            load, load_incremental = self.get_load_timeseries(start_date, \
+                end_date, substance_string)
 
             impact = {}
             impact_incremental = {}
