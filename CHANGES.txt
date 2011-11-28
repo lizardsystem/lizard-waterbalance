@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.4 (unreleased)
+0.19.1.4 (2011-11-28)
 ---------------------
 
 - Disables some code of the computational core so the wbcompute script can be
