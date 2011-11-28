@@ -64,6 +64,59 @@ this [#fn1]_::
 The command will compute the waterbalance for the configuration specified in
 the given run file.
 
+PI XML output
+^^^^^^^^^^^^^
+
+The wbcompute script writes a subset of the set of time series that it computes
+to a single XML file in the Delft-Fews Published interface (PI) format. These
+exported are identified by their location and their parameter as follows:
+
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| description                                                         | dutch term         | location id                    | parameter id                          | units |
++=====================================================================+====================+================================+=======================================+=======+
+| precipitation                                                       | neerslag           | location id of area            | 'NEERSG'                              |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| evaporation                                                         | verdamping         | location id of area            | 'VERDPG'                              |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| infiltration                                                        | wegzijging         | location id of area            | 'WEGZ'                                |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| seepage                                                             | kwel               | location id of area            | 'KWEL'                                |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| measured discharge of pumping station                               | gemeten debiet     | location id of pumping station | 'Q'                                   |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| computed discharge of pumping station used for level control        | berekend debiet    | location id of pumping_station | 'Q_COMP'                              |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total flow off from buckets of type 'verhard'                       | verhard            | location id of area            | 'discharge_hardened'                  |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total flow off and drainage from buckets of type 'gedraineerd'      | gedraineerd        | location id of area            | 'discharge_drained'                   |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total flow off and drainage from buckets of type 'stedelijk'        | gemengd gerioleerd | location id of area            | 'discharge_sewer'                     |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total flow off from buckets of type 'ongedraineerd'                 | afstroming         | location id of area            | 'discharge_flow_off'                  |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total drainage from buckets of type 'verhard' of 'ongedraineerd'    | uitspoeling        | location id of area            | 'discharge_drainage'                  |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| total indraft from buckets                                          | intrek             | location id of area            | 'indraft'                             |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| sluice error                                                        | sluitfout          | location id of area            | 'sluice_error'                        |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| minimum impact of phosphate coming in through the precipitation     |                    | location id of area            | 'min_impact_phosphate_precipitation'  |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| minimum impact of phosphate coming in through the seepage           |                    | location id of area            | 'min_impact_phosphate_seepage'        |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| incremental impact of phosphate coming in through the precipitation |                    | location id of area            | 'incr_impact_phosphate_precipitation' |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| incremental impact of phosphate coming in through the seepage       |                    | location id of area            | 'incr_impact_phosphate_seepage'       |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| minimum impact of nitrogen coming in through the precipitation      |                    | location id of area            | 'min_impact_nitrogen_precipitation'   |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| minimum impact of nitrogen coming in through the seepage            |                    | location id of area            | 'min_impact_nitrogen_seepage'         |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| incremental impact of nitrogen coming in through the precipitation  |                    | location id of area            | 'incr_impact_nitrogen_precipitation'  |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+| incremental impact of nitrogen coming in through the seepage        |                    | location id of area            | 'incr_impact_nitrogen_seepage'        |       |
++---------------------------------------------------------------------+--------------------+--------------------------------+---------------------------------------+-------+
+
 .. rubric:: Footnotes
 
 .. [#fn1] the command-line interface of wbcompute.exe is the same
