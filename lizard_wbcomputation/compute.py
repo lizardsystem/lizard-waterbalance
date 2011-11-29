@@ -615,11 +615,6 @@ class WaterbalanceComputer2(object):
 
         logger.debug("WaterbalanceComputer2::get_load_timeseries")
 
-        # Concentration is specified in [mg/l] whereas discharge is
-        # specified in [m3/day]. The impact is specified in [mg/m2/day] so
-        # we first multiply the concentration by 1000 to specify it in
-        # [mg/m3] and then divide the result by the surface of the open
-        # water to specify it in [mg/m2/m3].
         if (self.outcome.has_key('loads') and
             self.outcome_info['loads']['start_date']==start_date and
             self.outcome_info['loads']['end_date']>=end_date):
@@ -663,6 +658,16 @@ class WaterbalanceComputer2(object):
             start_date.strftime('%Y-%m-%d'),
             end_date.strftime('%Y-%m-%d')))
 
+        # Concentration is specified in [mg/l] whereas discharge is specified
+        # in [m3/day]. The impact is specified in [mg/m2/day]. To compute the
+        # impact we follow the following procedure:
+        #
+        #   First we multiply the concentration by 1000 to specify the
+        #   concentration in [mg/m3]. Then we multiply that value by the
+        #   discharge to get to a value specified in [mg/day]. Finally we
+        #   divide that value by the surface of the open water to get to a
+        #   value specified in [mg/day/m2] or [mg/m2/day], otherwise known as
+        #   the impact.
         load, load_incremental = self.get_load_timeseries(start_date, \
             end_date, substance_string)
 
