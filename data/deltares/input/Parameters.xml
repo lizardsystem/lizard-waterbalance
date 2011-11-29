@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wldelft.nl/fews/PI" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_modelparameters.xsd" version="1.5">
-    <group id="SAP" name="Aetsveldsche polder oost">
+    <group id="3201" name="Aetsveldsche polder oost">
         <model>Area</model>
         <parameter id="location_id" name="Gebied code">
             <description>Code van het gebied, gelijk aan gebied locatie</description>
-            <stringValue>SAP</stringValue>
+            <stringValue>3201</stringValue>
         </parameter>
         <parameter id="name" name="Gebied naam">
             <description>Naam van het gebied</description>

@@ -7,6 +7,6 @@
     <workDir>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\model</workDir>
     <inputParameterFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\input\Parameters.xml</inputParameterFile>
     <inputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\input\Tijdreeksen.xml</inputTimeSeriesFile>
-    <outputDiagnosticFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\Diagnostics\Diagnostics.xml</outputDiagnosticFile>
+    <outputDiagnosticFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\logs\Diagnostics.xml</outputDiagnosticFile>
     <outputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\output\waterbalance-graph.xml</outputTimeSeriesFile>
 </Run>
