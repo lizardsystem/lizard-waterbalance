@@ -123,7 +123,8 @@ class TimeseriesForSomething(object):
                 if label in label2parameter.keys():
                     multiple_timeseries.append(TimeseriesForLabel(timeseries,
                                                                   area.location_id,
-                                                                  label2parameter[label]))
+                                                                  label2parameter[label],
+                                                                  'm3/dag'))
             else:
                 station = key
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
@@ -134,19 +135,20 @@ class TimeseriesForSomething(object):
         self.timeseries.type = 'instantaneous'
         self.timeseries.miss_val = '-999.0'
         self.timeseries.station_name = 'Huh?'
-        self.timeseries.units = 'dag'
 
 
 class TimeseriesForLabel(TimeseriesForSomething):
 
-    def __init__(self, timeseries, location_id, parameter_id):
+    def __init__(self, timeseries, location_id, parameter_id, units):
         self.timeseries = timeseries
         self.location_id = location_id
         self.parameter_id = parameter_id
+        self.units = units
 
     def set_specific_fields(self):
         self.timeseries.location_id = self.location_id
         self.timeseries.parameter_id = self.parameter_id
+        self.timeseries.units = self.units
 
 
 class TimeseriesForPumpingStation(TimeseriesForSomething):

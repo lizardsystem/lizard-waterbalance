@@ -133,6 +133,17 @@ class MoreTests(TestCase):
         self.assertEqual('discharge_hardened', single_timeseries.parameter_id)
 
     def test_bc(self):
+        """Test the right unit is assigned."""
+        writeable_timeseries = WriteableTimeseriesList(self.area,
+                                                   self.label2parameter)
+
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert({'hardened': timeseries})
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual('m3/dag', single_timeseries.units)
+
+    def test_bd(self):
         """Test the default right parameters are assigned."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2parameter)
@@ -144,7 +155,6 @@ class MoreTests(TestCase):
         self.assertEqual('instantaneous', single_timeseries.type)
         self.assertEqual('-999.0', single_timeseries.miss_val)
         self.assertEqual('Huh?', single_timeseries.station_name)
-        self.assertEqual('dag', single_timeseries.units)
 
     def test_c(self):
         """Test an empty dict of PumpingStation to TimeseriesStub."""
