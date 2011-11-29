@@ -76,7 +76,7 @@ LABEL2PARAMETER = {
     'flow_off': 'discharge_flow_off',
     'hardened': 'discharge_hardened',
     'indraft': 'indraft',
-    'infiltration': ' infiltration',
+    'infiltration': 'infiltration',
     'precipitation': 'precipitation',
     'seepage': 'seepage',
     'sluice_error': 'sluice_error',
