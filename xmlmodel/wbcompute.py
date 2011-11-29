@@ -70,25 +70,39 @@ ASSOC = {
         },
     }
 
+
+class TimeSeriesSpec(object):
+    """Specifies TimeSeries attributes.
+
+    A TimeSeries has several attributes that have to be set for a TimeSeries to
+    be valid. A TimeSeriesSpec specifies specific values for these attributes.
+
+    """
+
+    def __init__(self, parameter_id, units):
+        self.parameter_id = parameter_id
+        self.units = units
+
+
 LABEL2PARAMETER = {
-    'drained': ('discharge_drained', 'm3/dag'),
-    'evaporation': ('evaporation', 'm3/dag'),
-    'flow_off': ('discharge_flow_off', 'm3/dag'),
-    'hardened': ('discharge_hardened', 'm3/dag'),
-    'indraft': ('indraft', 'm3/dag'),
-    'infiltration': ('infiltration', 'm3/dag'),
-    'precipitation': ('precipitation', 'm3/dag'),
-    'seepage': ('seepage', 'm3/dag'),
-    'sluice_error': ('sluice_error', 'm3/dag'),
-    'undrained': ('discharge_drainage', 'm3/dag'),
-    'min_impact_phosphate_precipitation': ('min_impact_phosphate_precipitation', 'm3/dag'),
-    'min_impact_phosphate_seepage': ('min_impact_phosphate_seepage', 'm3/dag'),
-    'incr_impact_phosphate_precipitation': ('incr_impact_phosphate_precipitation', 'm3/dag'),
-    'incr_impact_phosphate_seepage': ('incr_impact_phosphate_seepage', 'm3/dag'),
-    'min_impact_nitrogen_precipitation': ('min_impact_nitrogen_precipitation', 'm3/dag'),
-    'min_impact_nitrogen_seepage': ('min_impact_nitrogen_seepage', 'm3/dag'),
-    'incr_impact_nitrogen_precipitation': ('incr_impact_nitrogen_precipitation', 'm3/dag'),
-    'incr_impact_nitrogen_seepage': ('incr_impact_nitrogen_seepage', 'm3/dag'),
+    'drained': TimeSeriesSpec('discharge_drained', 'm3/dag'),
+    'evaporation': TimeSeriesSpec('evaporation', 'm3/dag'),
+    'flow_off': TimeSeriesSpec('discharge_flow_off', 'm3/dag'),
+    'hardened': TimeSeriesSpec('discharge_hardened', 'm3/dag'),
+    'indraft': TimeSeriesSpec('indraft', 'm3/dag'),
+    'infiltration': TimeSeriesSpec('infiltration', 'm3/dag'),
+    'precipitation': TimeSeriesSpec('precipitation', 'm3/dag'),
+    'seepage': TimeSeriesSpec('seepage', 'm3/dag'),
+    'sluice_error': TimeSeriesSpec('sluice_error', 'm3/dag'),
+    'undrained': TimeSeriesSpec('discharge_drainage', 'm3/dag'),
+    'min_impact_phosphate_precipitation': TimeSeriesSpec('min_impact_phosphate_precipitation', 'm3/dag'),
+    'min_impact_phosphate_seepage': TimeSeriesSpec('min_impact_phosphate_seepage', 'm3/dag'),
+    'incr_impact_phosphate_precipitation': TimeSeriesSpec('incr_impact_phosphate_precipitation', 'm3/dag'),
+    'incr_impact_phosphate_seepage': TimeSeriesSpec('incr_impact_phosphate_seepage', 'm3/dag'),
+    'min_impact_nitrogen_precipitation': TimeSeriesSpec('min_impact_nitrogen_precipitation', 'm3/dag'),
+    'min_impact_nitrogen_seepage': TimeSeriesSpec('min_impact_nitrogen_seepage', 'm3/dag'),
+    'incr_impact_nitrogen_precipitation': TimeSeriesSpec('incr_impact_nitrogen_precipitation', 'm3/dag'),
+    'incr_impact_nitrogen_seepage': TimeSeriesSpec('incr_impact_nitrogen_seepage', 'm3/dag'),
     }
 
 
@@ -121,10 +135,11 @@ class TimeseriesForSomething(object):
             if type(key) == str:
                 label = key
                 if label in label2parameter.keys():
+                    spec = label2parameter[label]
                     multiple_timeseries.append(TimeseriesForLabel(timeseries,
                                                                   area.location_id,
-                                                                  label2parameter[label][0],
-                                                                  label2parameter[label][1]))
+                                                                  spec.parameter_id,
+                                                                  spec.units))
             else:
                 station = key
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,

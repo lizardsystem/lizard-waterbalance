@@ -32,6 +32,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
+from xmlmodel.wbcompute import TimeSeriesSpec
 from xmlmodel.wbcompute import WriteableTimeseriesList
 
 
@@ -96,7 +97,7 @@ class MoreTests(TestCase):
     def setUp(self):
         self.area = Area()
         self.area.location_id = 20111117
-        self.label2parameter = {'hardened': ('discharge_hardened', 'm3/dag')}
+        self.label2parameter = {'hardened': TimeSeriesSpec('discharge_hardened', 'm3/dag')}
 
     def test_a(self):
         writeable_timeseries = WriteableTimeseriesList(self.area,
