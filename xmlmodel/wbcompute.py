@@ -120,7 +120,7 @@ class TimeseriesForSomething(object):
         for key, timeseries in mapping2timeseries.iteritems():
             if type(key) == str:
                 label = key
-                if label in label2parameter.iterkeys():
+                if label in label2parameter.keys():
                     multiple_timeseries.append(TimeseriesForLabel(timeseries,
                                                                   area.location_id,
                                                                   label2parameter[label]))
