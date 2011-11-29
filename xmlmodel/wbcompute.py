@@ -71,11 +71,22 @@ ASSOC = {
     }
 
 
+class Units(object):
+    """Specifies the different units for each flow type.
+
+    These units are implemented as class variables to mimic global definitions.
+
+    """
+    flow = 'm3/dag'
+    impact = 'mg/m2/dag'
+
+
 class TimeSeriesSpec(object):
     """Specifies TimeSeries attributes.
 
     A TimeSeries has several attributes that have to be set for a TimeSeries to
-    be valid. A TimeSeriesSpec specifies specific values for these attributes.
+    be valid. A TimeSeriesSpec specifies for one TimeSeries values for these
+    attributes.
 
     """
 
@@ -84,25 +95,43 @@ class TimeSeriesSpec(object):
         self.units = units
 
 
-LABEL2PARAMETER = {
-    'drained': TimeSeriesSpec('discharge_drained', 'm3/dag'),
-    'evaporation': TimeSeriesSpec('evaporation', 'm3/dag'),
-    'flow_off': TimeSeriesSpec('discharge_flow_off', 'm3/dag'),
-    'hardened': TimeSeriesSpec('discharge_hardened', 'm3/dag'),
-    'indraft': TimeSeriesSpec('indraft', 'm3/dag'),
-    'infiltration': TimeSeriesSpec('infiltration', 'm3/dag'),
-    'precipitation': TimeSeriesSpec('precipitation', 'm3/dag'),
-    'seepage': TimeSeriesSpec('seepage', 'm3/dag'),
-    'sluice_error': TimeSeriesSpec('sluice_error', 'm3/dag'),
-    'undrained': TimeSeriesSpec('discharge_drainage', 'm3/dag'),
-    'min_impact_phosphate_precipitation': TimeSeriesSpec('min_impact_phosphate_precipitation', 'm3/dag'),
-    'min_impact_phosphate_seepage': TimeSeriesSpec('min_impact_phosphate_seepage', 'm3/dag'),
-    'incr_impact_phosphate_precipitation': TimeSeriesSpec('incr_impact_phosphate_precipitation', 'm3/dag'),
-    'incr_impact_phosphate_seepage': TimeSeriesSpec('incr_impact_phosphate_seepage', 'm3/dag'),
-    'min_impact_nitrogen_precipitation': TimeSeriesSpec('min_impact_nitrogen_precipitation', 'm3/dag'),
-    'min_impact_nitrogen_seepage': TimeSeriesSpec('min_impact_nitrogen_seepage', 'm3/dag'),
-    'incr_impact_nitrogen_precipitation': TimeSeriesSpec('incr_impact_nitrogen_precipitation', 'm3/dag'),
-    'incr_impact_nitrogen_seepage': TimeSeriesSpec('incr_impact_nitrogen_seepage', 'm3/dag'),
+LABEL2TIMESERIESSPEC = {
+    'drained': \
+        TimeSeriesSpec('discharge_drained', Units.flow),
+    'evaporation': \
+        TimeSeriesSpec('evaporation', Units.flow),
+    'flow_off': \
+        TimeSeriesSpec('discharge_flow_off', Units.flow),
+    'hardened': \
+        TimeSeriesSpec('discharge_hardened', Units.flow),
+    'indraft': \
+        TimeSeriesSpec('indraft', Units.flow),
+    'infiltration': \
+        TimeSeriesSpec('infiltration', Units.flow),
+    'precipitation': \
+        TimeSeriesSpec('precipitation', Units.flow),
+    'seepage': \
+        TimeSeriesSpec('seepage', Units.flow),
+    'sluice_error': \
+        TimeSeriesSpec('sluice_error', Units.flow),
+    'undrained': \
+        TimeSeriesSpec('discharge_drainage', Units.flow),
+    'min_impact_phosphate_precipitation': \
+        TimeSeriesSpec('min_impact_phosphate_precipitation', Units.impact),
+    'min_impact_phosphate_seepage': \
+        TimeSeriesSpec('min_impact_phosphate_seepage', Units.impact),
+    'incr_impact_phosphate_precipitation': \
+        TimeSeriesSpec('incr_impact_phosphate_precipitation', Units.impact),
+    'incr_impact_phosphate_seepage': \
+        TimeSeriesSpec('incr_impact_phosphate_seepage', Units.impact),
+    'min_impact_nitrogen_precipitation': \
+        TimeSeriesSpec('min_impact_nitrogen_precipitation', Units.impact),
+    'min_impact_nitrogen_seepage': \
+        TimeSeriesSpec('min_impact_nitrogen_seepage', Units.impact),
+    'incr_impact_nitrogen_precipitation': \
+        TimeSeriesSpec('incr_impact_nitrogen_precipitation', Units.impact),
+    'incr_impact_nitrogen_seepage': \
+        TimeSeriesSpec('incr_impact_nitrogen_seepage', Units.impact),
     }
 
 
@@ -175,7 +204,7 @@ class TimeseriesForPumpingStation(TimeseriesForSomething):
     def set_specific_fields(self):
         self.timeseries.location_id = self.location_id
         self.timeseries.parameter_id = 'Q'
-        self.timeseries.units = 'm3/dag'
+        self.timeseries.units = Units.flow
 
 
 class WriteableTimeseriesList(object):
@@ -203,7 +232,7 @@ def store_graphs_timeseries(run_info, area):
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
     sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
-    writeable_timeseries = WriteableTimeseriesList(area, LABEL2PARAMETER)
+    writeable_timeseries = WriteableTimeseriesList(area, LABEL2TIMESERIESSPEC)
 
     writeable_timeseries.insert(incoming)
     writeable_timeseries.insert(outgoing)

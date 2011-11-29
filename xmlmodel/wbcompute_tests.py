@@ -33,6 +33,7 @@ from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
 from xmlmodel.wbcompute import TimeSeriesSpec
+from xmlmodel.wbcompute import Units
 from xmlmodel.wbcompute import WriteableTimeseriesList
 
 
@@ -97,11 +98,11 @@ class MoreTests(TestCase):
     def setUp(self):
         self.area = Area()
         self.area.location_id = 20111117
-        self.label2parameter = {'hardened': TimeSeriesSpec('discharge_hardened', 'm3/dag')}
+        self.label2spec = {'hardened': TimeSeriesSpec('discharge_hardened', Units.flow)}
 
     def test_a(self):
-        writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+        writeable_timeseries = \
+            WriteableTimeseriesList(self.area, self.label2spec)
 
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({'hardened': timeseries})
@@ -114,7 +115,7 @@ class MoreTests(TestCase):
     def test_ba(self):
         """Test the right location is assigned."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({'hardened': timeseries})
@@ -125,7 +126,7 @@ class MoreTests(TestCase):
     def test_bb(self):
         """Test the right parameter is assigned."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({'hardened': timeseries})
@@ -136,18 +137,18 @@ class MoreTests(TestCase):
     def test_bc(self):
         """Test the right unit is assigned."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({'hardened': timeseries})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
-        self.assertEqual('m3/dag', single_timeseries.units)
+        self.assertEqual(Units.flow, single_timeseries.units)
 
     def test_bd(self):
         """Test the default right parameters are assigned."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({'hardened': timeseries})
@@ -160,7 +161,7 @@ class MoreTests(TestCase):
     def test_c(self):
         """Test an empty dict of PumpingStation to TimeseriesStub."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         writeable_timeseries.insert({})
 
@@ -174,7 +175,7 @@ class MoreTests(TestCase):
     def test_d(self):
         """Test a dict of PumpingStation to TimeseriesStub of size 1."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         station = self.create_station()
         timeseries = TimeseriesStub()
@@ -192,7 +193,7 @@ class MoreTests(TestCase):
 
         """
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         station = self.create_station()
         timeseries = TimeseriesStub()
@@ -208,7 +209,7 @@ class MoreTests(TestCase):
 
         """
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         station = self.create_station()
         timeseries = TimeseriesStub()
@@ -220,16 +221,16 @@ class MoreTests(TestCase):
     def test_g(self):
         """Test the right units are assigned.
 
-        The writeable time series should have units 'm3/dag'.
+        The writeable time series should have units Units.flow.
 
         """
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2parameter)
+                                                   self.label2spec)
 
         station = self.create_station()
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({station: timeseries})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
-        self.assertEqual('m3/dag', single_timeseries.units)
+        self.assertEqual(Units.flow, single_timeseries.units)
 
