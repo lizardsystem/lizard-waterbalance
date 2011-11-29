@@ -71,24 +71,24 @@ ASSOC = {
     }
 
 LABEL2PARAMETER = {
-    'drained': 'discharge_drained',
-    'evaporation': 'evaporation',
-    'flow_off': 'discharge_flow_off',
-    'hardened': 'discharge_hardened',
-    'indraft': 'indraft',
-    'infiltration': 'infiltration',
-    'precipitation': 'precipitation',
-    'seepage': 'seepage',
-    'sluice_error': 'sluice_error',
-    'undrained': 'discharge_drainage',
-    'min_impact_phosphate_precipitation': 'min_impact_phosphate_precipitation',
-    'min_impact_phosphate_seepage': 'min_impact_phosphate_seepage',
-    'incr_impact_phosphate_precipitation': 'incr_impact_phosphate_precipitation',
-    'incr_impact_phosphate_seepage': 'incr_impact_phosphate_seepage',
-    'min_impact_nitrogen_precipitation': 'min_impact_nitrogen_precipitation',
-    'min_impact_nitrogen_seepage': 'min_impact_nitrogen_seepage',
-    'incr_impact_nitrogen_precipitation': 'incr_impact_nitrogen_precipitation',
-    'incr_impact_nitrogen_seepage': 'incr_impact_nitrogen_seepage',
+    'drained': ('discharge_drained', 'm3/dag'),
+    'evaporation': ('evaporation', 'm3/dag'),
+    'flow_off': ('discharge_flow_off', 'm3/dag'),
+    'hardened': ('discharge_hardened', 'm3/dag'),
+    'indraft': ('indraft', 'm3/dag'),
+    'infiltration': ('infiltration', 'm3/dag'),
+    'precipitation': ('precipitation', 'm3/dag'),
+    'seepage': ('seepage', 'm3/dag'),
+    'sluice_error': ('sluice_error', 'm3/dag'),
+    'undrained': ('discharge_drainage', 'm3/dag'),
+    'min_impact_phosphate_precipitation': ('min_impact_phosphate_precipitation', 'm3/dag'),
+    'min_impact_phosphate_seepage': ('min_impact_phosphate_seepage', 'm3/dag'),
+    'incr_impact_phosphate_precipitation': ('incr_impact_phosphate_precipitation', 'm3/dag'),
+    'incr_impact_phosphate_seepage': ('incr_impact_phosphate_seepage', 'm3/dag'),
+    'min_impact_nitrogen_precipitation': ('min_impact_nitrogen_precipitation', 'm3/dag'),
+    'min_impact_nitrogen_seepage': ('min_impact_nitrogen_seepage', 'm3/dag'),
+    'incr_impact_nitrogen_precipitation': ('incr_impact_nitrogen_precipitation', 'm3/dag'),
+    'incr_impact_nitrogen_seepage': ('incr_impact_nitrogen_seepage', 'm3/dag'),
     }
 
 
@@ -123,8 +123,8 @@ class TimeseriesForSomething(object):
                 if label in label2parameter.keys():
                     multiple_timeseries.append(TimeseriesForLabel(timeseries,
                                                                   area.location_id,
-                                                                  label2parameter[label],
-                                                                  'm3/dag'))
+                                                                  label2parameter[label][0],
+                                                                  label2parameter[label][1]))
             else:
                 station = key
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
@@ -160,6 +160,7 @@ class TimeseriesForPumpingStation(TimeseriesForSomething):
     def set_specific_fields(self):
         self.timeseries.location_id = self.location_id
         self.timeseries.parameter_id = 'Q'
+        self.timeseries.units = 'm3/dag'
 
 
 class WriteableTimeseriesList(object):

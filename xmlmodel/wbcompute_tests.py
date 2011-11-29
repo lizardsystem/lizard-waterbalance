@@ -96,7 +96,7 @@ class MoreTests(TestCase):
     def setUp(self):
         self.area = Area()
         self.area.location_id = 20111117
-        self.label2parameter = {'hardened': 'discharge_hardened'}
+        self.label2parameter = {'hardened': ('discharge_hardened', 'm3/dag')}
 
     def test_a(self):
         writeable_timeseries = WriteableTimeseriesList(self.area,
@@ -215,4 +215,20 @@ class MoreTests(TestCase):
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual('Q', single_timeseries.parameter_id)
+
+    def test_g(self):
+        """Test the right units are assigned.
+
+        The writeable time series should have units 'm3/dag'.
+
+        """
+        writeable_timeseries = WriteableTimeseriesList(self.area,
+                                                   self.label2parameter)
+
+        station = self.create_station()
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert({station: timeseries})
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+        self.assertEqual('m3/dag', single_timeseries.units)
 
