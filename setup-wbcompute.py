@@ -13,7 +13,7 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'nens == 1.10',
-    'timeseries == 0.11',
+    'timeseries == 0.12',
     ],
 
 tests_require = [
