@@ -615,38 +615,32 @@ class WaterbalanceComputer2(object):
 
         logger.debug("WaterbalanceComputer2::get_load_timeseries")
 
-        if (self.outcome.has_key('loads') and
-            self.outcome_info['loads']['start_date']==start_date and
-            self.outcome_info['loads']['end_date']>=end_date):
-            return self.outcome['loads']
-        else:
-            logger.debug("Calculating load (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
+        logger.debug("Calculating load (%s - %s)..." % (
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')))
 
-            flows = self.get_open_water_incoming_flows(start_date, end_date)
-            # flows['defined_input'] is a dictionary from intake to time
-            # series, where each intake is an intake that is not used for level
-            # control
-            concentrations = {}
-            concentrations_incremental = {}
-            # for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-            #     if concentr.label.program_name in ['precipitation', 'seepage']:
-            #         continue
-            #     concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
-            #     concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
+        flows = self.get_open_water_incoming_flows(start_date, end_date)
+        # flows['defined_input'] is a dictionary from intake to time
+        # series, where each intake is an intake that is not used for level
+        # control
+        concentrations = {}
+        concentrations_incremental = {}
+        # for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+        #     if concentr.label.program_name in ['precipitation', 'seepage']:
+        #         continue
+        #     concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
+        #     concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
 
-            nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
-                                                             end_date)
-            nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
-                                                              end_date)
+        nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
+                                                         end_date)
+        nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
+                                                          end_date)
 
-            load = self.load_computer.compute(self.area, 'min', substance_string,
-                flows, concentrations, start_date, end_date, nutricalc_min)
-            load_incremental = self.load_computer.compute(self.area, 'incr',
-                substance_string, flows, concentrations_incremental, start_date,
-                end_date, nutricalc_incr)
-
+        load = self.load_computer.compute(self.area, 'min', substance_string,
+            flows, concentrations, start_date, end_date, nutricalc_min)
+        load_incremental = self.load_computer.compute(self.area, 'incr',
+            substance_string, flows, concentrations_incremental, start_date,
+            end_date, nutricalc_incr)
 
         return load, load_incremental
 
