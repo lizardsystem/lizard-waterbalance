@@ -47,6 +47,13 @@ your buildout environment in Windows:
   creates a ``dist\wbcompute.exe`` that contains the Python interpreter and all
   other dependencies.
 
+py2exe byte-compiles the files of the libraries that wbcompute depends on and
+packages these byte-compiled files. On one occassion I noticed that it skipped
+the byte-compilation of a file whose library had been updated. Consequently,
+the executable used an older version of that file. I worked around this problem
+by deleting the directory that setuptools uses to store its intermediate
+results, viz. subdirectory ``build``.
+
 .. rubric:: Footnotes
 
 .. [#fn1] wbcompute is implemented by ``xmlmodel/wbcompute.py``
