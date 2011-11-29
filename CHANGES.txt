@@ -5,7 +5,9 @@ Changelog of lizard-waterbalance
 0.19.1.5 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Updated library timeseries to 0.12:
+  - Fixes the problem that under Windows, a PI XML file contains the empty
+    string for each time tag (nens\timeseries, issue #12).
 
 
 0.19.1.4 (2011-11-28)
