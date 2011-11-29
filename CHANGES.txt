@@ -5,6 +5,10 @@ Changelog of lizard-waterbalance
 0.19.1.5 (unreleased)
 ---------------------
 
+- wbcompute:
+  - Removes a superfluous space in the naming of the infiltration time series.
+  - Removes duplicate time series in the output PI XML file and ads the missing
+    ones.
 - Updated library timeseries to 0.12:
   - Fixes the problem that under Windows, a PI XML file contains the empty
     string for each time tag (nens\timeseries, issue #12).
