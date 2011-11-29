@@ -659,39 +659,25 @@ class WaterbalanceComputer2(object):
             start_date, end_date, substance_string='phosphate'):
         logger.debug("WaterbalanceComputer2::get_impact_timeseries")
 
+        logger.debug("Calculating impact (%s - %s)..." % (
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')))
 
-        if (self.outcome.has_key('impact') and
-            self.outcome_info['impact']['start_date']==start_date and
-            self.outcome_info['impact']['end_date']>=end_date):
-            return self.outcome['impact']
-        else:
-            logger.debug("Calculating impact (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
+        load, load_incremental = self.get_load_timeseries(start_date, \
+            end_date, substance_string)
 
-            load, load_incremental = self.get_load_timeseries(start_date, \
-                end_date, substance_string)
+        impact = {}
+        impact_incremental = {}
 
-            impact = {}
-            impact_incremental = {}
+        factor = 1000.0 / float(self.area.surface)
 
-            factor = 1000.0 / float(self.area.surface)
+        for key, timeserie in load.items():
+            impact_timeseries = multiply_timeseries(timeserie, factor)
+            impact[key] = impact_timeseries
 
-            for key, timeserie in load.items():
-                impact_timeseries = multiply_timeseries(timeserie, factor)
-                impact[key] = impact_timeseries
-
-            for key, timeserie in load_incremental.items():
-                impact_timeseries = multiply_timeseries(timeserie, factor)
-                impact_incremental[key] = impact_timeseries
-
-            #store for later use (some kind of cache)
-            self.outcome['impact'] = (impact, impact_incremental)
-            self.outcome_info['impact'] = {}
-            self.outcome_info['impact']['start_date'] = start_date
-            self.outcome_info['impact']['end_date'] = end_date
-
-            self.updated = True
+        for key, timeserie in load_incremental.items():
+            impact_timeseries = multiply_timeseries(timeserie, factor)
+            impact_incremental[key] = impact_timeseries
 
         return impact, impact_incremental
 
