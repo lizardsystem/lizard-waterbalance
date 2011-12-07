@@ -1,5 +1,103 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Diag xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_diag.xsd" version="1.2" xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<line level="3" description="Start Waterbalans module"/>
-	<line level="3" description="Einde Waterbalans module"/>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:34,006 :: D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\input\Tijdreeksen.xml"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_sg/Q, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_ip/Q, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_up/Q, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_verhard/KWEL, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_west/KWEL, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,096 :: no series found at loc/par: SAP_oost/KWEL, using empty TimeSeries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: no series found at loc/par: 3201/, using empty TimeSeries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201/CL"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_PS1/Q"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_PS2/Q"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_PS3/Q"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw1/KWEL"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw1/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw1/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw1/flow_off"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw2/KWEL"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw2/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw2/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw2/flow_off"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw3/KWEL"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw3/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw3/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: unused series loc/par:  3201_gw3/flow_off"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: WaterbalanceComputer2::get_open_water_incoming_flows"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: get input timeseries (2009-01-01 - 2010-01-01)..."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Calculating bucket_summary (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: WaterbalanceComputer2::get_buckets_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Calculating buckets (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,111 :: calculate bucket Verhard of type (1, 'verhard')"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,111 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,128 :: calculate bucket west of type (0, 'ongedraineerd')"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,128 :: calculate bucket Oost of type (0, 'ongedraineerd')"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,128 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,174 :: WaterbalanceComputer2::get_vertical_open_water_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,174 :: Calculating vertical open water flows (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,174 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: precipitation size: 365"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: seepage size: 365"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: WaterbalanceComputer2::get_level_control_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Calculating level control (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,190 :: WaterbalanceComputer2::get_vertical_open_water_timeseries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,190 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_open_water_outgoing_flows"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_vertical_open_water_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_level_control_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::calc_sluice_error_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: Calculating sluice error (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_level_control_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: WaterbalanceComputer2::get_reference_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,206 :: get structure reference timeseries (2009-01-01 - 2010-01-01)..."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,206 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_impact_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: Calculating impact (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_load_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: Calculating load (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_open_water_incoming_flows"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_vertical_open_water_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,220 :: WaterbalanceComputer2::get_level_control_timeseries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,220 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,220 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,236 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,236 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_impact_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: Calculating impact (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_load_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: Calculating load (2009-01-01 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_open_water_incoming_flows"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_vertical_open_water_timeseries"/>
+<line level="3" description="LizardScripter :: 2011-12-03 22:20:35,253 :: WaterbalanceComputer2::get_level_control_timeseries"/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,253 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,253 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,267 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2011-12-03 22:20:35,267 :: Call to deprecated function events."/>
 </Diag>
