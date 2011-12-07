@@ -168,6 +168,24 @@ class Area(object):
                                         start_date=start_date,
                                         end_date=end_date)
 
+    def retrieve_infiltration(self, start_date, end_date):
+        """Return the infiltration time series for the current Area.
+
+        In case no infiltration time series is defined, this method throws an
+        IncompleteData exception.
+
+        """
+        open_water = self.configuration.open_water
+        if open_water.infiltration is None:
+            exception_msg = "No infiltration is defined for the waterbalance " \
+                            "area %s" %  unicode(open_water)
+            logger.warning(exception_msg)
+            raise IncompleteData(exception_msg)
+        timeseries = open_water.infiltration.get_timeseries()
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=start_date,
+                                        end_date=end_date)
+
     def retrieve_sewer(self, start_date, end_date):
         """Return the sewer time series for the current Area.
 

@@ -52,12 +52,14 @@ class VerticalTimeseriesComputerTests(TestCase):
         precipitation = TimeseriesStub((self.today, 4.0))
         evaporation = TimeseriesStub((self.today, 2.0))
         seepage = TimeseriesStub((self.today, 1.0))
+        infiltration = TimeseriesStub((self.today, 0.0))
         vertical_timeseries = VerticalTimeseriesComputer()
         timeseries = vertical_timeseries.compute(self.surface,
                                                  self.crop_evaporation_factor,
                                                  precipitation,
                                                  evaporation,
-                                                seepage)
+                                                 seepage,
+                                                 infiltration)
         expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4)),
                                "evaporation":TimeseriesStub((self.today, -.2)),
                                "seepage":TimeseriesStub((self.today, .1)),
@@ -76,12 +78,14 @@ class VerticalTimeseriesComputerTests(TestCase):
         precipitation = TimeseriesStub((self.today, 4.0))
         evaporation = TimeseriesStub((self.today, 2.0))
         seepage = TimeseriesStub((self.today, 1.0))
+        infiltration = TimeseriesStub((self.today, 0.0))
         vertical_timeseries = VerticalTimeseriesComputer()
         timeseries = vertical_timeseries.compute(self.surface,
                                                  0.5,
                                                  precipitation,
                                                  evaporation,
-                                                seepage)
+                                                 seepage,
+                                                 infiltration)
         expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4)),
                                "evaporation":TimeseriesStub((self.today, -.1)),
                                "seepage":TimeseriesStub((self.today, .1)),
@@ -99,12 +103,14 @@ class VerticalTimeseriesComputerTests(TestCase):
                                      (self.tomorrow, 4.0))
         seepage = TimeseriesStub((self.today, 1.0),
                                  (self.tomorrow, 3.0))
+        infiltration = TimeseriesStub((self.today, 0.0))
         vertical_timeseries = VerticalTimeseriesComputer()
         timeseries = vertical_timeseries.compute(self.surface,
                                                  self.crop_evaporation_factor,
                                                  precipitation,
                                                  evaporation,
-                                                 seepage)
+                                                 seepage,
+                                                 infiltration)
         expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4),
                                               (self.tomorrow, .6)),
                                "evaporation":TimeseriesStub((self.today, -.2),
@@ -124,13 +130,16 @@ class VerticalTimeseriesComputerTests(TestCase):
         evaporation = TimeseriesStub((self.today, 2.0),
                                      (self.tomorrow, 4.0))
         seepage = TimeseriesStub((self.today, 1.0),
-                                 (self.tomorrow, -1.0))
+                                 (self.tomorrow, 0.0))
+        infiltration = TimeseriesStub((self.today, 0.0),
+                                      (self.tomorrow, -1.0))
         vertical_timeseries = VerticalTimeseriesComputer()
         timeseries = vertical_timeseries.compute(self.surface,
                                                  self.crop_evaporation_factor,
                                                  precipitation,
                                                  evaporation,
-                                                 seepage)
+                                                 seepage,
+                                                 infiltration)
         expected_timeseries = {"precipitation":TimeseriesStub((self.today, .4),
                                               (self.tomorrow, .6)),
                                "evaporation":TimeseriesStub((self.today, -.2),

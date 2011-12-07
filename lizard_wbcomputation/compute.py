@@ -236,6 +236,9 @@ class WaterbalanceComputer2(object):
             input_ts['seepage'] = SparseTimeseriesStub()
             for event in self.area.retrieve_seepage(start_date, end_date).events():
                 input_ts['seepage'].add_value(event[0], event[1])
+            input_ts['infiltration'] = SparseTimeseriesStub()
+            for event in self.area.retrieve_infiltration(start_date, end_date).events():
+                input_ts['infiltration'].add_value(event[0], event[1])
 
             input_ts['sewer'] = self.area.retrieve_sewer(start_date, end_date)
 
@@ -395,7 +398,8 @@ class WaterbalanceComputer2(object):
                                                                 crop_evaporation_factor,
                                                                 input['precipitation'],
                                                                 transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
-                                                                input['seepage'])
+                                                                input['seepage'],
+                                                                input['infiltration'])
 
             #store for later use (some kind of cache)
             self.outcome['vertical_open_water'] = outcome

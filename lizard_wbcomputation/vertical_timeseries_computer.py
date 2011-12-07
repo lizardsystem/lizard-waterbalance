@@ -62,7 +62,7 @@ class VerticalTimeseriesComputer:
         self.inside_range = inside_range
 
     def compute(self, surface, crop_evaporation_factor, precipitation,
-                evaporation, seepage):
+                evaporation, seepage, infiltration):
         """Compute and return the vertical time series for the given surface as dictionary.
 
         The incoming time series precipitation and evaporation always contain
@@ -76,7 +76,7 @@ class VerticalTimeseriesComputer:
 
         The returned timeseries for precipitation and seepage only contain
         non-negative event values as they add volume to the open water. The
-        returned timeseries for evaporation and infiltation only contain
+        returned timeseries for evaporation and infiltration only contain
         non-positive event values as they remove volume.
 
         Parameters:
@@ -85,13 +85,14 @@ class VerticalTimeseriesComputer:
         * precipitation -- precipitation time series in [mm/day]
         * evaporation -- evaporation time series in [mm/day]
         * seepage -- seepage time series in [mm/day]
+        * infiltration -- seepage time series in [mm/day]
 
         """
         vertical_timeseries_list = [SparseTimeseriesStub(),
                                     SparseTimeseriesStub(),
                                     SparseTimeseriesStub(),
                                     SparseTimeseriesStub()]
-        timeseries_list = [precipitation, evaporation, seepage]
+        timeseries_list = [precipitation, evaporation, seepage, infiltration]
         index_evaporation = 1
         for event_tuple in enumerate_events(*timeseries_list):
             date = event_tuple[0][0]
@@ -107,13 +108,9 @@ class VerticalTimeseriesComputer:
                     if value > 0:
                         value = -value
                 vertical_timeseries_list[index].add_value(date, value)
-        vertical_timeseries_list[3], vertical_timeseries_list[2] = \
-                                     split_timeseries(vertical_timeseries_list[2])
-        logger.debug("precipitation size: %d", len(list(vertical_timeseries_list[0].events())))
-        logger.debug("seepage size: %d", len(list(vertical_timeseries_list[2].events())))
 
         return {"precipitation":vertical_timeseries_list[0],
-                      "evaporation":vertical_timeseries_list[1],
-                      "seepage":vertical_timeseries_list[2],
-                      "infiltration":vertical_timeseries_list[3]}
+                "evaporation":vertical_timeseries_list[1],
+                "seepage":vertical_timeseries_list[2],
+                "infiltration":vertical_timeseries_list[3]}
 
