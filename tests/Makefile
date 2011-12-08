@@ -17,14 +17,14 @@ test-import-excel-Sierveld-20110916:
 	diff -q import-excel-Sierveld-20110916/expected_lizard_waterbalance.json import-excel-Sierveld-20110916/lizard_waterbalance.json
 
 test-waterbalance-output:
-	cd waterbalance-output-Aetsveldse-polder; rm sluice-error.xml
-	cd waterbalance-output-Aetsveldse-polder; rm open-water-incoming-flows.xml
-	cd waterbalance-output-Aetsveldse-polder; rm open-water-outgoing-flows.xml
-	cd waterbalance-output-Aetsveldse-polder; rm level-control-timeseries.xml
-	cd waterbalance-output-Aetsveldse-polder; rm reference.xml
-	cd waterbalance-output-Aetsveldse-polder; rm water-level-sluice-error.xml
-	cd waterbalance-output-Aetsveldse-polder; rm fractions.xml
-	cd waterbalance-output-Aetsveldse-polder; rm concentration.xml
+	- rm waterbalance-output-Aetsveldse-polder/sluice-error.xml
+	- rm waterbalance-output-Aetsveldse-polder/open-water-incoming-flows.xml
+	- rm waterbalance-output-Aetsveldse-polder/open-water-outgoing-flows.xml
+	- rm waterbalance-output-Aetsveldse-polder/level-control-timeseries.xml
+	- rm waterbalance-output-Aetsveldse-polder/reference.xml
+	- rm waterbalance-output-Aetsveldse-polder/water-level-sluice-error.xml
+	- rm waterbalance-output-Aetsveldse-polder/fractions.xml
+	- rm waterbalance-output-Aetsveldse-polder/concentration.xml
 	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import
 	cd waterbalance-output-Aetsveldse-polder; diff expected-sluice-error.xml sluice-error.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-open-water-incoming-flows.xml open-water-incoming-flows.xml
@@ -36,15 +36,15 @@ test-waterbalance-output:
 	cd waterbalance-output-Aetsveldse-polder; diff expected-concentration.xml concentration.xml
 
 test-waterbalance-output-impact-all:
-	cd waterbalance-output-Aetsveldse-polder; rm impact.xml
-	cd waterbalance-output-Aetsveldse-polder; rm impact-incremental.xml
+	- rm waterbalance-output-Aetsveldse-polder/impact.xml
+	- rm waterbalance-output-Aetsveldse-polder/impact-incremental.xml
 	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-all
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact.xml impact.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental.xml impact-incremental.xml
 
 test-waterbalance-output-impact-open-water:
-	cd waterbalance-output-Aetsveldse-polder; rm impact-open-water.xml
-	cd waterbalance-output-Aetsveldse-polder; rm impact-incremental-open-water.xml
+	- rm waterbalance-output-Aetsveldse-polder/impact-open-water.xml
+	- rm waterbalance-output-Aetsveldse-polder/impact-incremental-open-water.xml
 	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-open-water
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-open-water.xml impact-open-water.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental-open-water.xml impact-incremental-open-water.xml
