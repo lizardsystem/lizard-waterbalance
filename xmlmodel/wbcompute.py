@@ -132,6 +132,14 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('incr_impact_nitrogen_precipitation', Units.impact),
     'incr_impact_nitrogen_seepage': \
         TimeSeriesSpec('incr_impact_nitrogen_seepage', Units.impact),
+    'min_impact_phosphate_discharge': \
+        TimeSeriesSpec('min_impact_phosphate_discharge', Units.impact),
+    'incr_impact_phosphate_discharge': \
+        TimeSeriesSpec('incr_impact_phosphate_discharge', Units.impact),
+    'min_impact_nitrogen_discharge': \
+        TimeSeriesSpec('min_impact_nitrogen_discharge', Units.impact),
+    'incr_impact_nitrogen_discharge': \
+        TimeSeriesSpec('incr_impact_nitrogen_discharge', Units.impact),
     }
 
 
@@ -161,7 +169,7 @@ class TimeseriesForSomething(object):
     def create(cls, area, label2time_series_spec, mapping2timeseries):
         multiple_timeseries = []
         for key, timeseries in mapping2timeseries.iteritems():
-            if type(key) == str:
+            if type(key) == str and key != 'intakes':
                 label = key
                 if label in label2time_series_spec.keys():
                     spec = label2time_series_spec[label]
@@ -169,6 +177,15 @@ class TimeseriesForSomething(object):
                                                                   area.location_id,
                                                                   spec.parameter_id,
                                                                   spec.units))
+            elif type(key) == str and key == 'intakes':
+                label, intake2timeseries = timeseries
+                if label in label2time_series_spec.keys():
+                    spec = label2time_series_spec[label]
+                    for intake, ts in intake2timeseries.iteritems():
+                        multiple_timeseries.append(TimeseriesForLabel(ts,
+                                                                      intake.location_id,
+                                                                      spec.parameter_id,
+                                                                      spec.units))
             else:
                 station = key
                 multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
@@ -246,6 +263,14 @@ def store_graphs_timeseries(run_info, area):
             writeable_timeseries.insert({key: impact_series[flow]})
             key = '%s_impact_%s_%s' % ('incr', substance, flow)
             writeable_timeseries.insert({key: impact_incremental_series[flow]})
+
+        for intake, timeseries in impact_series['intakes']:
+            label = '%s_impact_%s_discharge' % ('min', substance)
+            writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
+
+        for intake, timeseries in impact_incremental_series['intakes']:
+            label = '%s_impact_%s_discharge' % ('incr', substance)
+            writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
 
     return writeable_timeseries.timeseries_list
 

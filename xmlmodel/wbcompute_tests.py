@@ -37,6 +37,12 @@ from xmlmodel.wbcompute import Units
 from xmlmodel.wbcompute import WriteableTimeseriesList
 
 
+def create_station():
+    station = Mock()
+    station.location_id = 20111121
+    return station
+
+
 class Tests(TestCase):
 
     def setUp(self):
@@ -167,17 +173,12 @@ class MoreTests(TestCase):
 
         self.assertEqual(0, len(writeable_timeseries.timeseries_list))
 
-    def create_station(self):
-        station = Mock()
-        station.location_id = 20111121
-        return station
-
     def test_d(self):
         """Test a dict of PumpingStation to TimeseriesStub of size 1."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2spec)
 
-        station = self.create_station()
+        station = create_station()
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({station: timeseries})
 
@@ -195,7 +196,7 @@ class MoreTests(TestCase):
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2spec)
 
-        station = self.create_station()
+        station = create_station()
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({station: timeseries})
 
@@ -211,7 +212,7 @@ class MoreTests(TestCase):
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2spec)
 
-        station = self.create_station()
+        station = create_station()
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({station: timeseries})
 
@@ -227,10 +228,46 @@ class MoreTests(TestCase):
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2spec)
 
-        station = self.create_station()
+        station = create_station()
         timeseries = TimeseriesStub()
         writeable_timeseries.insert({station: timeseries})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual(Units.flow, single_timeseries.units)
+
+class WriteableTimeseriesListTests(TestCase):
+
+    def setUp(self):
+        self.area = Area()
+        self.area.location_id = 20111208
+        self.label2spec = {'min_impact_phosphate_discharge': TimeSeriesSpec('min_impact_phosphate_discharge', Units.impact)}
+
+    def test_a(self):
+        """Test the insert of an empty mapping."""
+        writeable_timeseries = WriteableTimeseriesList(self.area, self.label2spec)
+        writeable_timeseries.insert({})
+        self.assertEqual([], writeable_timeseries.timeseries_list)
+
+    def test_b(self):
+        """Test the insert of an empty mapping of 'intakes' time series."""
+        writeable_timeseries = WriteableTimeseriesList(self.area, self.label2spec)
+        writeable_timeseries.insert({'intakes': ("min_impact_phosphate_discharge" ,{})})
+        self.assertEqual([], writeable_timeseries.timeseries_list)
+
+    def test_c(self):
+        """Test the insert of a mapping of a single 'intakes' time series."""
+        writeable_timeseries = WriteableTimeseriesList(self.area, self.label2spec)
+
+        intake = create_station()
+        timeseries = TimeseriesStub()
+        writeable_timeseries.insert({'intakes': ("min_impact_phosphate_discharge", {intake: timeseries})})
+
+        self.assertEqual(1, len(writeable_timeseries.timeseries_list))
+
+        single_timeseries = writeable_timeseries.timeseries_list[0]
+
+        self.assertEqual(intake.location_id, single_timeseries.location_id)
+        self.assertEqual("min_impact_phosphate_discharge", single_timeseries.parameter_id)
+        self.assertEqual(Units.impact, single_timeseries.units)
+
 
