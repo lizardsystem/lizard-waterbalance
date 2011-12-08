@@ -85,8 +85,8 @@ class TimeSeriesSpec(object):
     """Specifies TimeSeries attributes.
 
     A TimeSeries has several attributes that have to be set for a TimeSeries to
-    be valid. A TimeSeriesSpec specifies for one TimeSeries values for these
-    attributes.
+    be valid. A TimeSeriesSpec specifies these attributes for a single
+    TimeSeries.
 
     """
 
