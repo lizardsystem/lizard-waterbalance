@@ -5,7 +5,10 @@ Changelog of lizard-waterbalance
 0.19.1.6 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- wbcompute:
+  - Computes and exports the phospate and nitrogen impact on intakes (#38, #39).
+- Fixes the problem that the waterbalance calculation did not take the
+  infiltration into account (#1).
 
 
 0.19.1.5 (2011-11-30)
