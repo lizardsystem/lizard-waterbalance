@@ -111,11 +111,17 @@ class LoadComputer:
                 #     else:
                 #         load = value[1] * concentration_dict[key]
 
-                label = key
                 if key in ['precipitation', 'seepage']:
+                    label = key
                     attr_string = '%s_concentr_%s_%s' % \
-                        (concentration_string, substance_string, key)
+                                  (concentration_string, substance_string, key)
                     load = value[1] * getattr(area, attr_string)
+                elif key == 'defined_input':
+                    for key_intake, value_intake in value.items():
+                        label = key_intake
+                        attr_string = '%s_concentr_%s' % \
+                                      (concentration_string, substance_string)
+                        load = value_intake[1] * getattr(key_intake, attr_string)
                 else:
                     continue
 

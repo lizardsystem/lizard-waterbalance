@@ -264,13 +264,19 @@ def store_graphs_timeseries(run_info, area):
             key = '%s_impact_%s_%s' % ('incr', substance, flow)
             writeable_timeseries.insert({key: impact_incremental_series[flow]})
 
-        for intake, timeseries in impact_series['intakes']:
-            label = '%s_impact_%s_discharge' % ('min', substance)
-            writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
+        for key in impact_series.keys():
+            if type(key) != str:
+                label = '%s_impact_%s_discharge' % ('min', substance)
+                intake = key
+                timeseries = impact_series[intake]
+                writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
 
-        for intake, timeseries in impact_incremental_series['intakes']:
-            label = '%s_impact_%s_discharge' % ('incr', substance)
-            writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
+        for key in impact_incremental_series.keys():
+            if type(key) != str:
+                label = '%s_impact_%s_discharge' % ('incr', substance)
+                intake = key
+                timeseries = impact_incremental_series[intake]
+                writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
 
     return writeable_timeseries.timeseries_list
 
