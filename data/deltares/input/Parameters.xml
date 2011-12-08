@@ -612,7 +612,7 @@
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>SAP_sg</stringValue>
+            <stringValue>3201_PS1</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
@@ -663,7 +663,7 @@
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>SAP_ip</stringValue>
+            <stringValue>3201_PS2</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
@@ -714,7 +714,7 @@
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>SAP_up</stringValue>
+            <stringValue>3201_PS3</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
