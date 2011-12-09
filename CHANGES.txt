@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.7 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- wbcompute:
+  - Exports zero valued phospate and nitrogen impact on buckets (#38, #39).
 
 
 0.19.1.6 (2011-12-08)
