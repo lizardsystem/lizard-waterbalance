@@ -1,0 +1,2107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TimeSeries xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd" version="1.2">
+    <timeZone>1.0</timeZone>
+    <series>
+        <header>
+            <type>accumulative</type>
+            <locationId>3201</locationId>
+            <parameterId>NEERSG</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mm</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>accumulative</type>
+            <locationId>3201</locationId>
+            <parameterId>VERDPG</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mm</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>WATHTE</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>m</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-1.386" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-1.391" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-1.394" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-1.398" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-1.4" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-1.402" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-1.395" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-1.387" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-1.386" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-1.379" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-1.379" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-1.364" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-1.357" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-1.358" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-1.361" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-1.364" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-1.366" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-1.364" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-1.359" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-1.352" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-1.356" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-1.366" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-1.372" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-1.373" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>WATHTE.onder</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>m</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-1.396" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-1.401" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-1.404" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-1.408" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-1.41" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-1.412" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-1.405" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-1.397" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-1.396" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-1.389" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-1.389" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-1.374" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-1.367" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-1.368" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-1.371" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-1.374" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-1.376" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-1.374" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-1.369" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-1.362" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-1.366" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-1.376" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-1.382" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-1.383" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>WATHTE.boven</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>m</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-1.376" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-1.381" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-1.384" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-1.388" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-1.39" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-1.392" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-1.385" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-1.377" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-1.376" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-1.369" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-1.369" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-1.354" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-1.347" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-1.348" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-1.351" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-1.354" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-1.356" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-1.354" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-1.349" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-1.342" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-1.346" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-1.356" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-1.362" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-1.363" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>KWEL</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mm/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>WEGZ</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mm/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="-4.3" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="-4.3" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>CL</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-12-12" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mg/l</units>
+        </header>
+        <event date="2011-12-12" time="00:00:00" value="0.120000005" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.120000005" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>NUTRIC_MIN</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mg/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201</locationId>
+            <parameterId>NUTRIC_INC</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Stichtsch Ankeveensche Polder</stationName>
+            <units>mg/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw1</locationId>
+            <parameterId>KWEL</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP verhard</stationName>
+            <units>mm/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="-3.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="-3.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw2</locationId>
+            <parameterId>KWEL</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP West</stationName>
+            <units>mm/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="-2.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="-2.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw3</locationId>
+            <parameterId>KWEL</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP Oost</stationName>
+            <units>mm/dag</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="2.8" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="2.8" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw1</locationId>
+            <parameterId>Qoverstort</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP verhard</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw2</locationId>
+            <parameterId>Qoverstort</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP West</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw3</locationId>
+            <parameterId>Qoverstort</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP Oost</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw1</locationId>
+            <parameterId>drainage_indraft</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP verhard</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw2</locationId>
+            <parameterId>drainage_indraft</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP West</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw3</locationId>
+            <parameterId>drainage_indraft</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP Oost</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw1</locationId>
+            <parameterId>flow_off</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP verhard</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw2</locationId>
+            <parameterId>flow_off</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP West</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_gw3</locationId>
+            <parameterId>flow_off</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>SAP Oost</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="0.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_PS1</locationId>
+            <parameterId>Q</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>Inlaat sGravelandseVaart</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="3000.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="3000.0" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_PS2</locationId>
+            <parameterId>Q</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>inlaat peilbeheer</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-02" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-06" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="0.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-10-31" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-13" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-14" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-15" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-16" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-17" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-18" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-19" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-20" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-21" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-22" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-23" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-24" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-25" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-26" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-27" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-28" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-29" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-11-30" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-01" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-02" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-03" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-04" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-05" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-06" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-07" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-08" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-09" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-10" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-11" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-12" time="00:00:00" value="NaN" flag="8"/>
+        <event date="2011-12-13" time="00:00:00" value="NaN" flag="8"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>3201_PS3</locationId>
+            <parameterId>Q</parameterId>
+            <timeStep unit="second" multiplier="86400"/>
+            <startDate date="2011-10-01" time="00:00:00"/>
+            <endDate date="2011-12-13" time="00:00:00"/>
+            <missVal>NaN</missVal>
+            <stationName>uitlaat peilbeheer</stationName>
+            <units>m3/d</units>
+        </header>
+        <event date="2011-10-01" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-02" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-03" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-04" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-05" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-06" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-07" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-08" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-09" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-10" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-11" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-12" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-13" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-14" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-15" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-16" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-17" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-18" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-19" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-20" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-21" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-22" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-23" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-24" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-25" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-26" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-27" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-28" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-29" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-30" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-10-31" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-01" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-02" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-03" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-04" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-05" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-06" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-07" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-08" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-09" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-10" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-11" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-12" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-13" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-14" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-15" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-16" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-17" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-18" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-19" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-20" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-21" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-22" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-23" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-24" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-25" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-26" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-27" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-28" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-29" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-11-30" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-01" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-02" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-03" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-04" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-05" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-06" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-07" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-08" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-09" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-10" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-11" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-12" time="00:00:00" value="1500.0" flag="0"/>
+        <event date="2011-12-13" time="00:00:00" value="1500.0" flag="0"/>
+    </series>
+</TimeSeries>
