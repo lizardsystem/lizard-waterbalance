@@ -41,3 +41,12 @@ class PumpingStationTests(unittest.TestCase):
         station._find_concentration = lambda : self.concentration
         station.set_concentrations({"min_concentr_phosphate": "stof_lower_concentration"})
         self.assertEqual(0.2, station.min_concentr_phosphate)
+
+    def test_b(self):
+        """Test that multiple concentrations are set correctly."""
+        station = PumpingStation(None, None)
+        station._find_concentration = lambda : self.concentration
+        station.set_concentrations({"min_concentr_phosphate": "stof_lower_concentration",
+                                   "incr_concentr_phosphate": "stof_increment"})
+        self.assertEqual(0.2, station.min_concentr_phosphate)
+        self.assertEqual(0.4, station.incr_concentr_phosphate)
