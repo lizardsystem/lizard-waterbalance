@@ -470,9 +470,15 @@ class PumpingStation(object):
             if concentr.label.program_name == self.db_station.label.program_name:
                 return concentr.cl_concentration
 
-    def set_concentrations(self, mapping):
-        """Set the concentrations of the current PumpingStation"""
-        for new_attr_name, prev_attr_name in mapping.iteritems():
+    def set_concentrations(self, new_attr_names):
+        """Set the concentrations of the current PumpingStation
+
+        Parameter:
+            *new_attr_names*
+                dictionary of new attribute names to database attribute names
+
+        """
+        for new_attr_name, prev_attr_name in new_attr_names.iteritems():
             concentration = self._find_concentration()
             attr_value = getattr(concentration, prev_attr_name)
             setattr(self, new_attr_name, attr_value)
