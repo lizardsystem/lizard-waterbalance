@@ -435,6 +435,10 @@ class PumpingStation(object):
         self.into = self.db_station.into
         self.is_computed = self.db_station.computed_level_control
         self.max_discharge = self.db_station.max_discharge
+
+        if self.into:
+            self.set_concentrations({"min_concentr_phosphate": "stof_lower_concentration"})
+
         return self
 
     def retrieve_sum_timeseries(*args):
@@ -465,6 +469,36 @@ class PumpingStation(object):
         for concentr in self.configuration.config_concentrations.all().select_related('Label'):
             if concentr.label.program_name == self.db_station.label.program_name:
                 return concentr.cl_concentration
+
+    def _get_min_concentr_phosphate(self):
+        """Return the minimum phosphate concentration.
+
+        This value is None when no Label exists with a program name equal to
+        the program name of the label of the bucket.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == self.db_station.label.program_name:
+                return concentr.p_lower_concentration
+
+    def set_concentrations(self, mapping):
+        """Set the concentrations of the current PumpingStation"""
+        for new_attr_name, prev_attr_name in mapping.iteritems():
+            concentration = self._find_concentration()
+            attr_value = getattr(concentration, prev_attr_name)
+            setattr(self, new_attr_name, attr_value)
+
+    def _find_concentration(self):
+        """Return the concentration of the current PumpingStation.
+
+        This value is None when no Label exists with a program name equal to
+        the program name of the label of the PumpingStation.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == self.db_station.label.program_name:
+                return concentr
+        return None
 
     def _get_label_flow_off(self):
         """Return the label of the bucket."""
