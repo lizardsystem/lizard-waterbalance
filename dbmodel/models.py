@@ -470,17 +470,6 @@ class PumpingStation(object):
             if concentr.label.program_name == self.db_station.label.program_name:
                 return concentr.cl_concentration
 
-    def _get_min_concentr_phosphate(self):
-        """Return the minimum phosphate concentration.
-
-        This value is None when no Label exists with a program name equal to
-        the program name of the label of the bucket.
-
-        """
-        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-            if concentr.label.program_name == self.db_station.label.program_name:
-                return concentr.p_lower_concentration
-
     def set_concentrations(self, mapping):
         """Set the concentrations of the current PumpingStation"""
         for new_attr_name, prev_attr_name in mapping.iteritems():
