@@ -83,7 +83,7 @@ class LoadComputer:
                 del(events['undrained'])
 
             for key, value in events.items():
-                # # key never seems to be equal to 'intakes'
+                # key never seems to be equal to 'intakes'
                 # if key in ['intakes', 'defined_input']:
                 #     for key_intake, value_intake in value.items():
                 #         if key_intake == 'intake_wl_control':
@@ -122,8 +122,11 @@ class LoadComputer:
                         attr_string = '%s_concentr_%s' % \
                                       (concentration_string, substance_string)
                         load = value_intake[1] * getattr(key_intake, attr_string)
-                else:
+                        loads.setdefault(label, TimeseriesStub()).add_value(date, load)
                     continue
+                else:
+                    label = key
+                    load = value[1] * concentration_dict[key]
 
                 loads.setdefault(label, TimeseriesStub()).add_value(date, load)
 
