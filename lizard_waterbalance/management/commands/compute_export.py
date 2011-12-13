@@ -152,39 +152,29 @@ class Command(BaseCommand):
         computer.compute(start, end)
 
         impact = {}
-        impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)
-        for key, series in impact_series.iteritems():
-            if isinstance(key, PumpingStation):
-                impact[key.name] = series
-            else:
-                impact[key] = series
+        loads, loads_incremental = computer.get_impact_timeseries(start, end)
+        for load in loads:
+            impact[load.name] = load.timeseries
         write_to_pi_file(location_id = "SAP",
                          filename="impact.xml", timeseries=impact)
-        for key, series in impact_incremental_series.iteritems():
-            if isinstance(key, PumpingStation):
-                impact[key.name] = series
-            else:
-                impact[key] = series
+        for load in loads_incremental:
+            impact[load.name] = load.timeseries
         write_to_pi_file(location_id = "SAP",
                          filename="impact-incremental.xml", timeseries=impact)
-
-    def is_open_water_flow(self, key):
-        open_water_flows = ['precipitation', 'seepage']
-        return (not isinstance(key, PumpingStation)) and key in open_water_flows
 
     def export_impact_open_water(self, computer):
         start, end = datetime(2000, 1, 1), datetime(2000,12, 31)
         computer.compute(start, end)
 
         impact = {}
-        impact_series, impact_incremental_series = computer.get_impact_timeseries(start, end)
-        for key, series in impact_series.iteritems():
-            if self.is_open_water_flow(key):
-                impact[key] = series
+        loads, loads_incremental = computer.get_impact_timeseries(start, end)
+        for load in loads:
+            if load.on_open_water_flow():
+                impact[load.name] = load.timeseries
         write_to_pi_file(location_id = "SAP",
                          filename="impact-open-water.xml", timeseries=impact)
-        for key, series in impact_incremental_series.iteritems():
-            if self.is_open_water_flow(key):
-                impact[key] = series
+        for load in loads_incremental:
+            if load.on_open_water_flow():
+                impact[load.name] = load.timeseries
         write_to_pi_file(location_id = "SAP",
                          filename="impact-incremental-open-water.xml", timeseries=impact)

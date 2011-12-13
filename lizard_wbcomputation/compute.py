@@ -666,23 +666,18 @@ class WaterbalanceComputer2(object):
         #   divide that value by the surface of the open water to get to a
         #   value specified in [mg/day/m2] or [mg/m2/day], otherwise known as
         #   the impact.
-        load, load_incremental = self.get_load_timeseries(start_date, \
+        loads, loads_incremental = self.get_load_timeseries(start_date, \
             end_date, substance_string)
-
-        impact = {}
-        impact_incremental = {}
 
         factor = 1000.0 / float(self.area.surface)
 
-        for key, timeserie in load.items():
-            impact_timeseries = multiply_timeseries(timeserie, factor)
-            impact[key] = impact_timeseries
+        for load in loads:
+            load.multiply_timeseries(factor)
 
-        for key, timeserie in load_incremental.items():
-            impact_timeseries = multiply_timeseries(timeserie, factor)
-            impact_incremental[key] = impact_timeseries
+        for load in loads_incremental:
+            load.multiply_timeseries(factor)
 
-        return impact, impact_incremental
+        return loads, loads_incremental
 
     def calc_sluice_error_timeseries(
         self, start_date, end_date):

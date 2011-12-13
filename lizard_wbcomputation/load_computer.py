@@ -26,7 +26,44 @@
 #******************************************************************************
 
 from timeseries.timeseriesstub import enumerate_dict_events
+from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
+
+
+class Load(object):
+
+    def __init__(self, label):
+        self.label = label
+        self.timeseries = TimeseriesStub()
+
+    def multiply_timeseries(self, factor):
+        self.timeseries = multiply_timeseries(self.timeseries, factor)
+
+    def on_open_water_flow(self):
+        return False
+
+
+class LoadForOpenWaterFlow(Load):
+
+    def __init__(self, label):
+        super(LoadForOpenWaterFlow, self).__init__(label)
+        self.name = self.label
+
+    def on_open_water_flow(self):
+        return True
+
+
+class LoadForLabel(Load):
+
+    def __init__(self, label):
+        super(LoadForLabel, self).__init__(label)
+        self.name = self.label
+
+class LoadForIntake(Load):
+
+    def __init__(self, intake):
+        super(LoadForIntake, self).__init__(intake)
+        self.name = intake.name
 
 
 class LoadComputer:
@@ -64,7 +101,7 @@ class LoadComputer:
 
         """
 
-        loads = {}
+        self.loads = []
 
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
@@ -116,18 +153,29 @@ class LoadComputer:
                     attr_string = '%s_concentr_%s_%s' % \
                                   (concentration_string, substance_string, key)
                     load = value[1] * getattr(area, attr_string)
+                    self._set_load(label, date, load)
                 elif key == 'defined_input':
                     for key_intake, value_intake in value.items():
                         label = key_intake
                         attr_string = '%s_concentr_%s' % \
                                       (concentration_string, substance_string)
                         load = value_intake[1] * getattr(key_intake, attr_string)
-                        loads.setdefault(label, TimeseriesStub()).add_value(date, load)
-                    continue
+                        self._set_load(label, date, load)
                 else:
                     label = key
                     load = value[1] * concentration_dict[key]
+                    self._set_load(label, date, load)
 
-                loads.setdefault(label, TimeseriesStub()).add_value(date, load)
+        return self.loads
 
-        return loads
+    def _set_load(self, label, date, value):
+        load = next((load for load in self.loads if label == load.label), None)
+        if load is None:
+            if type(label) == str and label in ['precipitation', 'seepage']:
+                load = LoadForOpenWaterFlow(label)
+            elif type(label) == str:
+                load = LoadForLabel(label)
+            else:
+                load = LoadForIntake(label)
+            self.loads.append(load)
+        load.timeseries.add_value(date, value)
