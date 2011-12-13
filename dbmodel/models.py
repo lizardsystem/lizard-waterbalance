@@ -34,6 +34,11 @@ from timeseries.timeseriesstub import TimeseriesWithMemoryStub
 
 logger = logging.getLogger(__name__)
 
+NEW_ATTR_NAMES = {
+    "min_concentr_phosphate": "stof_lower_concentration",
+    "incr_concentr_phosphate": "stof_increment",
+    }
+
 class Area(object):
 
     def __init__(self, configuration):
@@ -437,7 +442,7 @@ class PumpingStation(object):
         self.max_discharge = self.db_station.max_discharge
 
         if self.into:
-            self.set_concentrations({"min_concentr_phosphate": "stof_lower_concentration"})
+            self.set_concentrations(NEW_ATTR_NAMES)
 
         return self
 
