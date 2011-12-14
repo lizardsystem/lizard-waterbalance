@@ -5,8 +5,8 @@
     <endDateTime date="2010-01-01" time="00:00:00"/>
     <time0 date="2010-01-01" time="00:00:00"/>
     <workDir>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans</workDir>
-    <inputParameterFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\Input\Parameters.xml</inputParameterFile>
-    <inputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\Input\Tijdreeksen.xml</inputTimeSeriesFile>
-    <outputDiagnosticFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\logs\Diagnostics.xml</outputDiagnosticFile>
-    <outputTimeSeriesFile>D:\FEWS_Systemen\KRW_VSS\KRW_VSS\Modules\Waterbalans\Waterbalans\output\waterbalance-graph.xml</outputTimeSeriesFile>
+    <inputParameterFile>tests/increment-2/nan-2/input/Parameters.xml</inputParameterFile>
+    <inputTimeSeriesFile>tests/increment-2/nan-2/input/Tijdreeksen.xml</inputTimeSeriesFile>
+    <outputDiagnosticFile>tests/increment-2/nan-2/logs/Diagnostics.xml</outputDiagnosticFile>
+    <outputTimeSeriesFile>tests/increment-2/nan-2/output/waterbalance-graph.xml</outputTimeSeriesFile>
 </Run>
