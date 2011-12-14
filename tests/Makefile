@@ -1,6 +1,6 @@
 all: test-import-excel test-import-excel-Sierveld-20110916		\
 	test-waterbalance-output test-waterbalance-output-impact-all	\
-	test-waterbalance-output-impact-open-water
+	test-waterbalance-output-impact-open-water test-increment-2
 
 test-import-excel:
 	../bin/django sqlreset lizard_waterbalance | grep -o "DROP TABLE.*;" | sed "s/\(.*\);/\1;/" | ../bin/django dbshell
@@ -48,3 +48,11 @@ test-waterbalance-output-impact-open-water:
 	cd waterbalance-output-Aetsveldse-polder; ../../bin/django compute_export aetsveldse-polder-oost import export-impact-open-water
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-open-water.xml impact-open-water.xml
 	cd waterbalance-output-Aetsveldse-polder; diff expected-impact-incremental-open-water.xml impact-incremental-open-water.xml
+
+test-increment-2:
+	- rm increment-2/nan/output/waterbalance-graph.xml
+	../bin/wbcompute increment-2/nan/input/Run.xml
+	python verify_presence.py increment-2/nan/output/waterbalance-graph.xml 'value="nan"'
+	- rm increment-2/nan-2/output/waterbalance-graph.xml
+	../bin/wbcompute increment-2/nan-2/input/Run.xml
+	python verify_presence.py increment-2/nan-2/output/waterbalance-graph.xml 'value="nan"'

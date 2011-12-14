@@ -5,8 +5,8 @@
     <endDateTime date="2011-12-13" time="00:00:00"/>
     <time0 date="2011-12-12" time="10:00:00"/>
     <workDir>H:\fews\fss\kvwnmc00\FSS00\FewsShell\FewsKVWN\Modules\Waterbalans</workDir>
-    <inputParameterFile>tests/increment-2/nan/input/Parameters.xml</inputParameterFile>
-    <inputTimeSeriesFile>tests/increment-2/nan/input/Tijdreeksen.xml</inputTimeSeriesFile>
-    <outputDiagnosticFile>tests/increment-2/nan/logs/Diagnostics.xml</outputDiagnosticFile>
-    <outputTimeSeriesFile>tests/increment-2/nan/output/waterbalance-graph.xml</outputTimeSeriesFile>
+    <inputParameterFile>increment-2/nan/input/Parameters.xml</inputParameterFile>
+    <inputTimeSeriesFile>increment-2/nan/input/Tijdreeksen.xml</inputTimeSeriesFile>
+    <outputDiagnosticFile>increment-2/nan/logs/Diagnostics.xml</outputDiagnosticFile>
+    <outputTimeSeriesFile>increment-2/nan/output/waterbalance-graph.xml</outputTimeSeriesFile>
 </Run>
