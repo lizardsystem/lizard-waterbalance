@@ -292,27 +292,21 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert({'sluice_error':sluice_error})
 
     for substance in ['phosphate', 'nitrogen']:
-        impact_series, impact_incremental_series = \
+        impacts, impacts_incremental = \
             cm.get_impact_timeseries(start_date, end_date, substance)
-        for flow in ['precipitation', 'seepage']:
-            key = '%s_impact_%s_%s' % ('min', substance, flow)
-            writeable_timeseries.insert({key: impact_series[flow]})
-            key = '%s_impact_%s_%s' % ('incr', substance, flow)
-            writeable_timeseries.insert({key: impact_incremental_series[flow]})
 
-        for key in impact_series.keys():
-            if type(key) != str:
-                label = '%s_impact_%s_discharge' % ('min', substance)
-                intake = key
-                timeseries = impact_series[intake]
-                writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
-
-        for key in impact_incremental_series.keys():
-            if type(key) != str:
-                label = '%s_impact_%s_discharge' % ('incr', substance)
-                intake = key
-                timeseries = impact_incremental_series[intake]
-                writeable_timeseries.insert({'intakes': (label, {intake: timeseries})})
+        for (impact, impact_incremental) in zip(impacts, impacts_incremental):
+             assert impact.label == impact_incremental.label
+             if impact.label in ['precipitation', 'seepage']:
+                 key = '%s_impact_%s_%s' % ('min', substance, impact.label)
+                 writeable_timeseries.insert({key: impact.timeseries})
+                 key = '%s_impact_%s_%s' % ('incr', substance, impact.label)
+                 writeable_timeseries.insert({key: impact_incremental.timeseries})
+             else:
+                 label = '%s_impact_%s_discharge' % ('min', substance)
+                 writeable_timeseries.insert({'intakes': (label, {impact.label: impact.timeseries})})
+                 label = '%s_impact_%s_discharge' % ('incr', substance)
+                 writeable_timeseries.insert({'intakes': (label, {impact_incremental.label: impact_incremental.timeseries})})
 
         # the next block are quick and dirty hacks to support the export
         # of zero event impact time series on buckets
