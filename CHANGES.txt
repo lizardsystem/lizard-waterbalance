@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.8 (unreleased)
 ---------------------
 
-- Fixes a bug that causes some impact on intakes not to be stored and exported.
+- Fixes a bug that caused some impacts on intakes not to be stored and
+  exported.
 
 
 0.19.1.7 (2011-12-09)
