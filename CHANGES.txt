@@ -5,8 +5,14 @@ Changelog of lizard-waterbalance
 0.19.1.8 (unreleased)
 ---------------------
 
+
+- Fixes the problem that wbcompute could store time series with value "nan"
+  which is not the defined missing value (#41)
 - Fixes a bug that caused some impacts on intakes not to be stored and
   exported.
+- Upgrades package timeseries to 0.14 (from 0.12):
+  - Fixes the problem that a timeseries read from an XML file still contains
+    the values that are specified as missing values (#13).
 
 
 0.19.1.7 (2011-12-09)
