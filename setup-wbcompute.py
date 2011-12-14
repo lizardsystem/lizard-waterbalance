@@ -2,7 +2,7 @@ from setuptools import setup
 
 import py2exe
 
-version = '0.19.1.8dev'
+version = '0.19.1.9'
 
 long_description = '\n\n'.join([
     open('README.rst').read(),
@@ -13,7 +13,7 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'nens == 1.10',
-    'timeseries == 0.12',
+    'timeseries == 0.14',
     ],
 
 tests_require = [
