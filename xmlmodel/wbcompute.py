@@ -284,9 +284,7 @@ def store_graphs_timeseries(run_info, area):
 
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
     incoming = cm.get_open_water_incoming_flows(start_date, end_date)
-    print 'incoming', incoming
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
-    print 'outgoing', outgoing
     sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
     writeable_timeseries = WriteableTimeseriesList(area, LABEL2TIMESERIESSPEC)
