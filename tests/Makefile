@@ -1,6 +1,6 @@
 all: test-import-excel test-import-excel-Sierveld-20110916		\
 	test-waterbalance-output test-waterbalance-output-impact-all	\
-	test-waterbalance-output-impact-open-water test-increment-2
+	test-waterbalance-output-impact-open-water
 
 test-import-excel:
 	../bin/django sqlreset lizard_waterbalance | grep -o "DROP TABLE.*;" | sed "s/\(.*\);/\1;/" | ../bin/django dbshell
