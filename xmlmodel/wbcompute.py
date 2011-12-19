@@ -261,7 +261,7 @@ def get_impact_buckets(area, start_date, end_date, substance):
     for timeseries in min_impact_timeseries:
         date = start_date
         while date < end_date:
-            timeseries.add_value(date, 0.0)
+            timeseries.add_value(date + timedelta(hours=23), 0.0)
             date = date + timedelta(1)
     incr_impact_timeseries = []
     incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_hardened' % substance))
@@ -272,7 +272,7 @@ def get_impact_buckets(area, start_date, end_date, substance):
     for timeseries in incr_impact_timeseries:
         date = start_date
         while date < end_date:
-            timeseries.add_value(date, 0.0)
+            timeseries.add_value(date + timedelta(hours=23), 0.0)
             date = date + timedelta(1)
     return min_impact_timeseries, incr_impact_timeseries
 
