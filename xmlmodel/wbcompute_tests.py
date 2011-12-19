@@ -167,9 +167,9 @@ class MoreTests(TestCase):
     def test_c(self):
         """Test an empty dict of PumpingStation to TimeseriesStub."""
         writeable_timeseries = WriteableTimeseriesList(self.area,
-                                                   self.label2spec)
+                                                       self.label2spec)
 
-        writeable_timeseries.insert({})
+        writeable_timeseries.insert({'defined_input': {}})
 
         self.assertEqual(0, len(writeable_timeseries.timeseries_list))
 
@@ -180,7 +180,7 @@ class MoreTests(TestCase):
 
         station = create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert({station: timeseries})
+        writeable_timeseries.insert({'defined_input': {station: timeseries}})
 
         self.assertEqual(1, len(writeable_timeseries.timeseries_list))
         single_timeseries = writeable_timeseries.timeseries_list[0]
@@ -198,7 +198,7 @@ class MoreTests(TestCase):
 
         station = create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert({station: timeseries})
+        writeable_timeseries.insert({'defined_input': {station: timeseries}})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual(20111121, single_timeseries.location_id)
@@ -214,7 +214,7 @@ class MoreTests(TestCase):
 
         station = create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert({station: timeseries})
+        writeable_timeseries.insert({'defined_input': {station: timeseries}})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual('Q', single_timeseries.parameter_id)
@@ -230,7 +230,7 @@ class MoreTests(TestCase):
 
         station = create_station()
         timeseries = TimeseriesStub()
-        writeable_timeseries.insert({station: timeseries})
+        writeable_timeseries.insert({'defined_input': {station: timeseries}})
 
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual(Units.flow, single_timeseries.units)

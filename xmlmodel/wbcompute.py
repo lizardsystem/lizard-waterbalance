@@ -171,15 +171,8 @@ class TimeseriesForSomething(object):
     def create(cls, area, label2time_series_spec, mapping2timeseries):
         multiple_timeseries = []
         for key, timeseries in mapping2timeseries.iteritems():
-            if type(key) == str and key != 'intakes':
-                label = key
-                if label in label2time_series_spec.keys():
-                    spec = label2time_series_spec[label]
-                    multiple_timeseries.append(TimeseriesForLabel(timeseries,
-                                                                  area.location_id,
-                                                                  spec.parameter_id,
-                                                                  spec.units))
-            elif type(key) == str and key == 'intakes':
+            assert type(key) == str
+            if key == 'intakes':
                 label, intake2timeseries = timeseries
                 if label in label2time_series_spec.keys():
                     spec = label2time_series_spec[label]
@@ -188,10 +181,19 @@ class TimeseriesForSomething(object):
                                                                       intake.location_id,
                                                                       spec.parameter_id,
                                                                       spec.units))
+            elif key in ['defined_input', 'defined_output']:
+                for station, station_timeseries in timeseries.items():
+                    multiple_timeseries.append(TimeseriesForPumpingStation(station_timeseries,
+                                                                           station.location_id))
             else:
-                station = key
-                multiple_timeseries.append(TimeseriesForPumpingStation(timeseries,
-                                                                       station.location_id))
+                label = key
+                if label in label2time_series_spec.keys():
+                    spec = label2time_series_spec[label]
+                    multiple_timeseries.append(TimeseriesForLabel(timeseries,
+                                                                  area.location_id,
+                                                                  spec.parameter_id,
+                                                                  spec.units))
+
         return multiple_timeseries
 
     def set_standard_fields(self):
@@ -282,7 +284,9 @@ def store_graphs_timeseries(run_info, area):
 
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
     incoming = cm.get_open_water_incoming_flows(start_date, end_date)
+    print 'incoming', incoming
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
+    print 'outgoing', outgoing
     sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
 
     writeable_timeseries = WriteableTimeseriesList(area, LABEL2TIMESERIESSPEC)
