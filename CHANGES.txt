@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.10 (unreleased)
+0.19.1.10 (2011-12-19)
 ----------------------
 
 - Hardcodes a different time for the bucket substance time series.
