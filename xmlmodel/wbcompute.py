@@ -187,6 +187,11 @@ class TimeseriesForSomething(object):
                 for station, station_timeseries in timeseries.items():
                     multiple_timeseries.append(TimeseriesForPumpingStation(station_timeseries,
                                                                            station.location_id))
+            elif key in ['intake_wl_control', 'outtake_wl_control']:
+                multiple_timeseries.append(TimeseriesForLabel(timeseries,
+                                                              '0',
+                                                              'Q_COMP',
+                                                              Units.flow))
             else:
                 label = key
                 if label in label2time_series_spec.keys():
