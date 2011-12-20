@@ -170,7 +170,9 @@ class TimeseriesForSomething(object):
     @classmethod
     def create(cls, area, label2time_series_spec, mapping2timeseries):
         multiple_timeseries = []
-        for key, timeseries in mapping2timeseries.iteritems():
+        sorted_elements = mapping2timeseries.items()
+        sorted_elements.sort(key=lambda e:e[0])
+        for key, timeseries in sorted_elements:
             assert type(key) == str
             if key == 'intakes':
                 label, intake2timeseries = timeseries
