@@ -618,9 +618,9 @@
             <description>Naam van het bakje</description>
             <stringValue>Inlaat sGravelandseVaart</stringValue>
         </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>true</boolValue>
+        <parameter id="is_computed" name="gebruikt voor berekende peilhandhaving">
+            <description>0=niet gebruikt voor berekende peilhandhaving, 1=wel gebruikt voor berekende peilhandhaving</description>
+            <boolValue>false</boolValue>
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>
@@ -669,9 +669,9 @@
             <description>Naam van het bakje</description>
             <stringValue>inlaat peilbeheer</stringValue>
         </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
+        <parameter id="is_computed" name="gebruikt voor berekende peilhandhaving">
+            <description>0=niet gebruikt voor berekende peilhandhaving, 1=wel gebruikt voor berekende peilhandhaving</description>
+            <boolValue>true</boolValue>
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>
@@ -720,9 +720,9 @@
             <description>Naam van het bakje</description>
             <stringValue>uitlaat peilbeheer</stringValue>
         </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
+        <parameter id="is_computed" name="gebruikt voor berekende peilhandhaving">
+            <description>0=niet gebruikt voor berekende peilhandhaving, 1=wel gebruikt voor berekende peilhandhaving</description>
+            <boolValue>true</boolValue>
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>

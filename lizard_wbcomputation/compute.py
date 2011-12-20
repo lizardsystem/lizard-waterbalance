@@ -512,7 +512,8 @@ class WaterbalanceComputer2(object):
         incoming["undrained"] = buckets_summary.undrained
         incoming["hardened"] = buckets_summary.hardened
         incoming["defined_input"]= input['incoming_timeseries']
-        incoming["intake_wl_control"] = control['intake_wl_control']
+        intake, outtake = self.get_level_control_pumping_stations()
+        incoming["intake_wl_control"] = {intake: control['intake_wl_control']}
         return incoming
 
     def get_open_water_outgoing_flows(self, start_date, end_date):
@@ -534,8 +535,8 @@ class WaterbalanceComputer2(object):
         outgoing["infiltration"] = vertical_open_water_timeseries["infiltration"]
         outgoing["indraft"] = buckets_summary.indraft
         outgoing["defined_output"]= input['outgoing_timeseries']
-        outgoing["outtake_wl_control"] = control["outtake_wl_control"]
-
+        intake, outtake = self.get_level_control_pumping_stations()
+        outgoing["outtake_wl_control"] = {outtake: control['outtake_wl_control']}
         return outgoing
 
     def get_reference_timeseries(self, start_date, end_date):
