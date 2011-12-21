@@ -5,6 +5,7 @@ Changelog of lizard-waterbalance
 0.19.1.11 (unreleased)
 ----------------------
 
+- Fixes the computation of load and concentration on intakes (#44).
 - Exports the level control time series (#43).
 - Fixes the export of the discharges of the intakes and outtakes (#42).
 
