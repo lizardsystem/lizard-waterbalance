@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
@@ -32,4 +33,15 @@ class DeltaStorage:
         self.waterbalance_computer = waterbalance_computer
 
     def compute(self, start_date, end_date):
-        return SparseTimeseriesStub()
+        delta_storage_timeseries = SparseTimeseriesStub()
+        storage = 0
+        storage_timeseries = self._get_storage_timeseries(start_date, end_date)
+        for event in storage_timeseries.events(start_date, end_date):
+            delta_storage_timeseries.add_value(event[0], event[1] - storage)
+            storage = event[1]
+        return delta_storage_timeseries
+
+    def _get_storage_timeseries(self, start_date, end_date)
+        timeseries_dict =
+            self.waterbalance_computer.get_level_control_timeseries(start_date, end_date)
+        return timeseries_dict['storage']
