@@ -101,6 +101,8 @@ class Command(BaseCommand):
                          filename="sluice-error.xml", timeseries=series)
 
         incoming = computer.get_open_water_incoming_flows(start, end)
+        if len(incoming['intake_wl_control'].values()) > 0:
+            incoming['intake_wl_control'] = incoming['intake_wl_control'].values()[0]
         incoming_pumping_stations = incoming['defined_input']
         del incoming['defined_input']
         for pumping_station, series in incoming_pumping_stations.iteritems():
@@ -109,6 +111,8 @@ class Command(BaseCommand):
                          filename="open-water-incoming-flows.xml", timeseries=incoming)
 
         outgoing = computer.get_open_water_outgoing_flows(start, end)
+        if len(outgoing['outtake_wl_control'].values()) > 0:
+            outgoing['outtake_wl_control'] = outgoing['outtake_wl_control'].values()[0]
         outgoing_pumping_stations = outgoing['defined_output']
         del outgoing['defined_output']
         for pumping_station, series in outgoing_pumping_stations.iteritems():

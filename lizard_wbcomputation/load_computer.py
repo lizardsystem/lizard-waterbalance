@@ -154,17 +154,17 @@ class LoadComputer:
                                   (concentration_string, substance_string, key)
                     load = value[1] * getattr(area, attr_string)
                     self._set_load(label, date, load)
-                elif key == 'defined_input':
+                elif key in ['defined_input', 'intake_wl_control']:
                     for key_intake, value_intake in value.items():
                         label = key_intake
                         attr_string = '%s_concentr_%s' % \
                                       (concentration_string, substance_string)
                         load = value_intake[1] * getattr(key_intake, attr_string)
                         self._set_load(label, date, load)
-                # else:
-                #     label = key
-                #     load = value[1] * concentration_dict[key]
-                #     self._set_load(label, date, load)
+                else:
+                    label = key
+                    load = value[1] * concentration_dict[key]
+                    self._set_load(label, date, load)
 
         return self.loads
 

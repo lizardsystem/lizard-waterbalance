@@ -41,8 +41,6 @@ class ConcentrationComputer:
 
         Computation is based on constant concentration of the fractions
         """
-
-
         timeseries = SparseTimeseriesStub()
         for events in enumerate_dict_events(fractions_dict):
             date = events['date']
@@ -84,12 +82,6 @@ class ConcentrationComputer2:
 
         Computation is based on constant concentration of the fractions
         """
-
-        print inflow_dict
-        print outflow_dict
-        print storage
-        print concentration_dict
-
         total_outflow = self._computeOutgoingVolume(outflow_dict)
 
         start_storage = next(storage.events(start_date, end_date))[1]
@@ -115,12 +107,9 @@ class ConcentrationComputer2:
 
             plus = 0.0
             for key, value in events.items():
-                if key in ['intakes', 'defined_input']:
+                if key in ['intakes', 'defined_input', 'intake_wl_control']:
                     for key_intake, value_intake in value.items():
-                        if key_intake == 'intake_wl_control':
-                            plus += value_intake[1] * concentration_dict[key_intake]
-                        else:
-                            plus += value_intake[1] * concentration_dict[key_intake.label.program_name]
+                        plus += value_intake[1] * concentration_dict[key_intake.label.program_name]
                 else:
                     plus += value[1] * concentration_dict[key]
             storage_chloride = storage_chloride + plus - out
@@ -137,7 +126,7 @@ class ConcentrationComputer2:
             del(events['date'])
             total= 0.0
             for key, event in events.items():
-                if key in ['outtakes', 'defined_output']:
+                if key in ['outtakes', 'defined_output', 'outtake_wl_control']:
                     for key_outtake, event_outtake in event.items():
                         total += event_outtake[1]
                 else:

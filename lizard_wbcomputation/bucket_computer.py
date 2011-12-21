@@ -356,9 +356,6 @@ def compute_timeseries_from_sewer(bucket, sewer):
     bucket = switch_bucket_upper_values(bucket)
     first_date = next(sewer.events())[0]
     outcome = empty_outcome(first_date)
-    print '-------'
-    print bucket.surface
-
 
     outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
     return outcome

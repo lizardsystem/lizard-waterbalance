@@ -601,10 +601,16 @@ class WaterbalanceComputer2(object):
                     start_date.strftime('%Y-%m-%d'),
                     end_date.strftime('%Y-%m-%d')))
             inflow = self.get_open_water_incoming_flows(start_date, end_date)
-            outflow = self.get_open_water_outgoing_flows(start_date, end_date)
             storage = self.get_level_control_timeseries(start_date, end_date)['storage']
 
             concentrations = self._create_concentrations()
+            for intake in inflow['defined_input'].keys():
+                if intake.is_computed:
+                    inflow['defined_input'].pop(intake)
+            outflow = self.get_open_water_outgoing_flows(start_date, end_date)
+            for intake in outflow['defined_output'].keys():
+                if intake.is_computed:
+                    outflow['defined_output'].pop(intake)
             concentration = self.concentration_computer.compute(inflow, outflow, storage, concentrations,
                                                    start_date, end_date)
 
@@ -625,16 +631,19 @@ class WaterbalanceComputer2(object):
             end_date.strftime('%Y-%m-%d')))
 
         flows = self.get_open_water_incoming_flows(start_date, end_date)
+        for intake in flows['defined_input'].keys():
+            if intake.is_computed:
+                flows['defined_input'].pop(intake)
         # flows['defined_input'] is a dictionary from intake to time
         # series, where each intake is an intake that is not used for level
         # control
         concentrations = {}
         concentrations_incremental = {}
-        # for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-        #     if concentr.label.program_name in ['precipitation', 'seepage']:
-        #         continue
-        #     concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
-        #     concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name in ['precipitation', 'seepage']:
+                continue
+            concentrations[concentr.label.program_name] = concentr.stof_lower_concentration
+            concentrations_incremental[concentr.label.program_name] = concentr.stof_increment
 
         nutricalc_min = self.area.retrieve_nutricalc_min(start_date,
                                                          end_date)
