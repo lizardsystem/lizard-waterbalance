@@ -38,6 +38,7 @@ from nens import fews
 from timeseries.timeseries import TimeSeries
 from timeseries.timeseriesstub import TimeseriesStub
 
+from lizard_wbcomputation.delta_storage import DeltaStorage
 from lizard_wbcomputation.compute import WaterbalanceComputer2
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
@@ -81,6 +82,7 @@ class Units(object):
     """
     flow = 'm3/dag'
     impact = 'mg/m2/dag'
+    storage = 'm3'
 
 
 class TimeSeriesSpec(object):
@@ -142,6 +144,8 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_discharge', Units.impact),
     'incr_impact_nitrogen_discharge': \
         TimeSeriesSpec('incr_impact_nitrogen_discharge', Units.impact),
+    'delta_storage': \
+        TimeSeriesSpec('delta_storage', Units.storage),
     }
 
 
@@ -325,6 +329,9 @@ def store_graphs_timeseries(run_info, area):
             writeable_timeseries.timeseries_list.append(timeseries)
         for timeseries in incr_impact_buckets:
             writeable_timeseries.timeseries_list.append(timeseries)
+
+    timeseries = DeltaStorage(cm).compute(start_date, end_date)
+    writeable_timeseries.insert({'delta_storage': timeseries})
 
     return writeable_timeseries.timeseries_list
 
