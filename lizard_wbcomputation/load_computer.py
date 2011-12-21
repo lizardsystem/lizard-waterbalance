@@ -161,10 +161,10 @@ class LoadComputer:
                                       (concentration_string, substance_string)
                         load = value_intake[1] * getattr(key_intake, attr_string)
                         self._set_load(label, date, load)
-                else:
-                    label = key
-                    load = value[1] * concentration_dict[key]
-                    self._set_load(label, date, load)
+                # else:
+                #     label = key
+                #     load = value[1] * concentration_dict[key]
+                #     self._set_load(label, date, load)
 
         return self.loads
 
