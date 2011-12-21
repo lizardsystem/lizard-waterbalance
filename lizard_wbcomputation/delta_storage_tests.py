@@ -23,10 +23,7 @@
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from datetime import timedelta
 from unittest import TestCase
-
-from mock import Mock
 
 from lizard_wbcomputation.delta_storage import DeltaStorage
 from timeseries.timeseriesstub import SparseTimeseriesStub
@@ -34,15 +31,11 @@ from timeseries.timeseriesstub import SparseTimeseriesStub
 class DeltaStorageTests(TestCase):
 
     def test_a(self):
-        """Test the construction of a DeltaStorage."""
-        storage_timeseries = \
-            SparseTimeseriesStub(datetime(2011, 12, 21), [1.0, 3.0, 6.0])
-        waterbalance_computer = Mock()
-        waterbalance_computer.get_level_control_timeseries = \
-            lambda s,e: {'storage': storage_timeseries}
+        """Test the computation of a DeltaStorage."""
         start = datetime(2011, 12, 21)
-        end = start + timedelta(len(list(storage_timeseries.events())))
-        delta_storage_timeseries = DeltaStorage(waterbalance_computer).compute(start, end)
-        expected_delta_storage_timeseries = SparseTimeseriesStub(datetime(2011, 12, 21), [1.0, 2.0, 3.0])
-        self.assertEqual(list(expected_delta_storage_timeseries.events()),
-                         list(delta_storage_timeseries.events()))
+        values = [1.0, 3.0, 6.0]
+        get_storage_timeseries = lambda s,e: SparseTimeseriesStub(start, values)
+        ds = DeltaStorage(get_storage_timeseries)
+        ds_timeseries = ds.compute(start, datetime(2011, 12, 24))
+        self.assertEqual(SparseTimeseriesStub(start, [1.0, 2.0, 3.0]),
+                         ds_timeseries)
