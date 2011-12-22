@@ -32,9 +32,9 @@ class DeltaStorage:
 
     def compute(self, start_date, end_date):
         delta_storage_timeseries = SparseTimeseriesStub()
-        storage = 0
-        storage_timeseries = self.get_storage_timeseries(start_date, end_date)
-        for event in storage_timeseries.events(start_date, end_date):
+        storage, storage_timeseries = \
+            self.get_storage_timeseries(start_date, end_date)
+        for event in storage_timeseries.events():
             delta_storage_timeseries.add_value(event[0], event[1] - storage)
             storage = event[1]
         return delta_storage_timeseries

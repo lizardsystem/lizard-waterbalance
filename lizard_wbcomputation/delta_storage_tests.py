@@ -31,11 +31,29 @@ from timeseries.timeseriesstub import SparseTimeseriesStub
 class DeltaStorageTests(TestCase):
 
     def test_a(self):
-        """Test the computation of a DeltaStorage."""
+        """Test the computation of a DeltaStorage.
+
+        The storage on the day before the first day is 0.0.
+        """
         start = datetime(2011, 12, 21)
         values = [1.0, 3.0, 6.0]
-        get_storage_timeseries = lambda s,e: SparseTimeseriesStub(start, values)
+        timeseries = SparseTimeseriesStub(start, values)
+        get_storage_timeseries = lambda s,e: (0.0, timeseries)
         ds = DeltaStorage(get_storage_timeseries)
         ds_timeseries = ds.compute(start, datetime(2011, 12, 24))
         self.assertEqual(SparseTimeseriesStub(start, [1.0, 2.0, 3.0]),
+                         ds_timeseries)
+
+    def test_b(self):
+        """Test the computation of a DeltaStorage.
+
+        The storage on the day before the first day is 1.0.
+        """
+        start = datetime(2011, 12, 21)
+        values = [1.0, 3.0, 6.0]
+        timeseries = SparseTimeseriesStub(start, values)
+        get_storage_timeseries = lambda s,e: (1.0, timeseries)
+        ds = DeltaStorage(get_storage_timeseries)
+        ds_timeseries = ds.compute(datetime(2011, 12, 21), datetime(2011, 12, 24))
+        self.assertEqual(SparseTimeseriesStub(start, [0.0, 2.0, 3.0]),
                          ds_timeseries)
