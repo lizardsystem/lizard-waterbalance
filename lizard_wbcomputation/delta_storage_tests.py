@@ -37,5 +37,5 @@ class DeltaStorageTests(TestCase):
         get_storage_timeseries = lambda s,e: SparseTimeseriesStub(start, values)
         ds = DeltaStorage(get_storage_timeseries)
         ds_timeseries = ds.compute(start, datetime(2011, 12, 24))
-        self.assertEqual(SparseTimeseriesStub(start, [1.0, 2.0, 3.0]),
+        self.assertEqual(SparseTimeseriesStub(start, [0.0, 2.0, 3.0]),
                          ds_timeseries)
