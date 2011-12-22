@@ -330,10 +330,21 @@ def store_graphs_timeseries(run_info, area):
         for timeseries in incr_impact_buckets:
             writeable_timeseries.timeseries_list.append(timeseries)
 
-    timeseries = DeltaStorage(cm).compute(start_date, end_date)
+    get_storage_timeseries = StorageTimeseries(cm).get
+    timeseries = DeltaStorage(get_storage_timeseries).compute(start_date, end_date)
     writeable_timeseries.insert({'delta_storage': timeseries})
 
     return writeable_timeseries.timeseries_list
+
+class StorageTimeseries(object):
+
+    def __init__(self, wb_computer):
+        self.wb_computer = wb_computer
+
+    def get(self, start_date, end_date):
+        timeseries_dict = \
+            self.wb_computer.get_level_control_timeseries(start_date, end_date)
+        return timeseries_dict['storage']
 
 def main(args):
     """Compute the waterbalance for the information specified in the given file.
