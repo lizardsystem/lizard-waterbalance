@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.11 (unreleased)
+0.19.1.11 (2011-12-22)
 ----------------------
 
 - Computes and exports the delta storage time series (#45).
