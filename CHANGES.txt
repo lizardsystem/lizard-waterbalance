@@ -9,6 +9,10 @@ Changelog of lizard-waterbalance
 - Exports the level control time series (#43).
 - Fixes the computation of load and concentration on intakes (#44).
 - Fixes the export of the discharges of the intakes and outtakes (#42).
+- Updated library timeseries to 0.15 (from 0.14):
+  - Updates TimeseriesRestrictedStub so its methods get_start_date and
+    get_end_date return the right value (#15).
+  - Fixes the equality operator for SparseTimeseriesStub
 
 
 0.19.1.10 (2011-12-19)
