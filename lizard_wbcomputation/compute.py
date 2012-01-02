@@ -26,6 +26,7 @@
 #
 #******************************************************************************
 
+from datetime import timedelta
 import logging
 
 from lizard_wbcomputation.bucket_computer import BucketComputer
@@ -42,6 +43,7 @@ from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseries
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
+from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import multiply_timeseries
 
 
@@ -688,6 +690,50 @@ class WaterbalanceComputer2(object):
             load.multiply_timeseries(factor)
 
         return loads, loads_incremental
+
+    def get_impact_timeseries_from_buckets(self,
+            start_date, end_date, substance_string='phosphate'):
+
+        def create_timeseries(area, label):
+            timeseries = TimeseriesStub()
+            timeseries.location_id = area.location_id
+            timeseries.parameter_id = label
+            timeseries.units = 'mg/m2/dag'
+            timeseries.type = 'instantaneous'
+            timeseries.miss_val = '-999.0'
+            timeseries.station_name = 'Huh?'
+            return timeseries
+
+        logger.debug("WaterbalanceComputer2::get_impact_timeseries_from_buckets")
+
+        logger.debug("Calculating impact from buckets(%s - %s)..." % (
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')))
+
+        min_impact_timeseries = []
+        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_hardened' % substance_string))
+        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_drained' % substance_string))
+        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_flow_off' % substance_string))
+        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_drainage' % substance_string))
+        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_sewer' % substance_string))
+        for timeseries in min_impact_timeseries:
+            date = start_date
+            while date < end_date:
+                timeseries.add_value(date + timedelta(hours=23), 0.0)
+                date = date + timedelta(1)
+        incr_impact_timeseries = []
+        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_hardened' % substance_string))
+        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_drained' % substance_string))
+        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_flow_off' % substance_string))
+        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_drainage' % substance_string))
+        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_sewer' % substance_string))
+        for timeseries in incr_impact_timeseries:
+            date = start_date
+            while date < end_date:
+                timeseries.add_value(date + timedelta(hours=23), 0.0)
+                date = date + timedelta(1)
+        return min_impact_timeseries, incr_impact_timeseries
+
 
     def calc_sluice_error_timeseries(
         self, start_date, end_date):

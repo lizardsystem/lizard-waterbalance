@@ -30,13 +30,11 @@ import logging
 import sys
 
 from datetime import datetime
-from datetime import timedelta
 from xml.dom.minidom import parse
 
 from nens import fews
 
 from timeseries.timeseries import TimeSeries
-from timeseries.timeseriesstub import TimeseriesStub
 
 from lizard_wbcomputation.delta_storage import DeltaStorage
 from lizard_wbcomputation.compute import WaterbalanceComputer2
@@ -255,40 +253,6 @@ class WriteableTimeseriesList(object):
             timeseries.set_specific_fields()
             self.timeseries_list.append(timeseries.timeseries)
 
-def create_timeseries(area, label):
-    timeseries = TimeseriesStub()
-    timeseries.location_id = area.location_id
-    timeseries.parameter_id = label
-    timeseries.units = Units.impact
-    timeseries.type = 'instantaneous'
-    timeseries.miss_val = '-999.0'
-    timeseries.station_name = 'Huh?'
-    return timeseries
-
-def get_impact_buckets(area, start_date, end_date, substance):
-    min_impact_timeseries = []
-    min_impact_timeseries.append(create_timeseries(area, 'min_impact_%s_hardened' % substance))
-    min_impact_timeseries.append(create_timeseries(area, 'min_impact_%s_drained' % substance))
-    min_impact_timeseries.append(create_timeseries(area, 'min_impact_%s_flow_off' % substance))
-    min_impact_timeseries.append(create_timeseries(area, 'min_impact_%s_drainage' % substance))
-    min_impact_timeseries.append(create_timeseries(area, 'min_impact_%s_sewer' % substance))
-    for timeseries in min_impact_timeseries:
-        date = start_date
-        while date < end_date:
-            timeseries.add_value(date + timedelta(hours=23), 0.0)
-            date = date + timedelta(1)
-    incr_impact_timeseries = []
-    incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_hardened' % substance))
-    incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_drained' % substance))
-    incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_flow_off' % substance))
-    incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_drainage' % substance))
-    incr_impact_timeseries.append(create_timeseries(area, 'incr_impact_%s_sewer' % substance))
-    for timeseries in incr_impact_timeseries:
-        date = start_date
-        while date < end_date:
-            timeseries.add_value(date + timedelta(hours=23), 0.0)
-            date = date + timedelta(1)
-    return min_impact_timeseries, incr_impact_timeseries
 
 def store_graphs_timeseries(run_info, area):
 
@@ -324,7 +288,7 @@ def store_graphs_timeseries(run_info, area):
 
         # the next block are quick and dirty hacks to support the export
         # of zero event impact time series on buckets
-        min_impact_buckets, incr_impact_buckets = get_impact_buckets(area, start_date, end_date, substance)
+        min_impact_buckets, incr_impact_buckets = cm.get_impact_timeseries_from_buckets(start_date, end_date, substance)
         for timeseries in min_impact_buckets:
             writeable_timeseries.timeseries_list.append(timeseries)
         for timeseries in incr_impact_buckets:
