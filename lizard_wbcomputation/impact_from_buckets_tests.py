@@ -26,7 +26,8 @@ from unittest import TestCase
 
 from mock import Mock
 
-from impact_from_buckets import ImpactFromBuckets
+from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
+from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
 
 class ImpactFromBucketsTestSuite(TestCase):
 
@@ -36,6 +37,9 @@ class ImpactFromBucketsTestSuite(TestCase):
         area.location_id = 20120102
 
         impact = ImpactFromBuckets(area)
+
+        impact.compute_buckets_timeseries = lambda start, end: {}
+        impact.compute_buckets_summary = BucketsSummarizer().compute
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 3)
         substance = 'nitrogen'

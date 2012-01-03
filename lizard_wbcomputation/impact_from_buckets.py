@@ -24,10 +24,6 @@
 from datetime import timedelta
 import logging
 
-from lizard_wbcomputation.bucket_summarizer import BucketsSummary
-
-from timeseries.timeseriesstub import TimeseriesStub
-
 logger = logging.getLogger(__name__)
 
 class ImpactFromBuckets(object):
@@ -68,17 +64,13 @@ class ImpactFromBuckets(object):
             timeseries.station_name = 'Huh?'
             return timeseries
 
-        buckets_summary = BucketsSummary()
+        bucket2daily_outcome = self.compute_buckets_timeseries(start_date, end_date)
+        buckets_summary = self.compute_buckets_summary(bucket2daily_outcome, start_date, end_date)
+
         impact_timeseries = []
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'hardened'), self.area, '%s_impact_%s_hardened' % (type, substance_string)))
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'drained'), self.area, '%s_impact_%s_drained' % (type, substance_string)))
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'flow_off'), self.area, '%s_impact_%s_flow_off' % (type, substance_string)))
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'undrained'), self.area, '%s_impact_%s_drainage' % (type, substance_string)))
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'sewer'), self.area, '%s_impact_%s_sewer' % (type, substance_string)))
-        for timeseries in impact_timeseries:
-            date = start_date
-            while date < end_date:
-                print date + timedelta(hours=23)
-                timeseries.add_value(date + timedelta(hours=23), 0.0)
-                date = date + timedelta(1)
         return impact_timeseries
