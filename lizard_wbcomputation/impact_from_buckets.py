@@ -21,13 +21,25 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import timedelta
 import logging
 
 logger = logging.getLogger(__name__)
 
 class ImpactFromBuckets(object):
+    """Implements the calculation of the substance impact time series'.
 
+    The flow off and net drainage of a bucket causes the flow of substances
+    into the open water. This class implements the calculation of these
+    multiple substance time series.
+
+    Instance variables:
+      *area*
+        area for which to compute the substance impact
+      *compute_buckets_timeseries*
+        function to compute the impact from the timeseries of a BucketOutcome
+      *compute_buckets_summary*
+        function to compute summary of the BucketOutcome of each bucket
+    """
     def __init__(self, area):
         self.area = area
 
