@@ -41,7 +41,7 @@ class ImpactFromBucketsTestSuite(TestCase):
         impact.compute_buckets_timeseries = lambda start, end: {}
         impact.compute_buckets_summary = BucketsSummarizer().compute
 
-        start, end = datetime(2012, 1, 2), datetime(2012, 1, 3)
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
         substance = 'nitrogen'
         min_timeseries, incr_timeseries = impact.compute(start, end, substance)
 
@@ -51,6 +51,8 @@ class ImpactFromBucketsTestSuite(TestCase):
         self.assertEqual('min_impact_nitrogen_flow_off', min_timeseries[2].parameter_id)
         self.assertEqual('min_impact_nitrogen_drainage', min_timeseries[3].parameter_id)
         self.assertEqual('min_impact_nitrogen_sewer', min_timeseries[4].parameter_id)
+
+        self.assertEqual([], list(min_timeseries[0].events()))
 
         self.assertEqual(5, len(incr_timeseries))
         self.assertEqual('incr_impact_nitrogen_hardened', incr_timeseries[0].parameter_id)
