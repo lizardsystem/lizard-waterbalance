@@ -25,7 +25,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class ImpactFromBuckets(object):
+class SummedImpactFromBuckets(object):
     """Implements the calculation of the substance impact time series'.
 
     The flow off and net drainage of a bucket causes the flow of substances

@@ -27,16 +27,16 @@ from unittest import TestCase
 from mock import Mock
 
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
-from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
+from lizard_wbcomputation.impact_from_buckets import SummedImpactFromBuckets
 
-class ImpactFromBucketsTestSuite(TestCase):
+class SummedImpactFromBucketsTestSuite(TestCase):
 
     def test_a(self):
         """Test the time series are returned that match the computed BucketsSummary."""
         area = Mock()
         area.location_id = 20120102
 
-        impact = ImpactFromBuckets(area)
+        impact = SummedImpactFromBuckets(area)
 
         impact.compute_buckets_timeseries = lambda start, end: {}
         impact.compute_buckets_summary = BucketsSummarizer().compute
