@@ -76,8 +76,8 @@ class ImpactFromBuckets(object):
             timeseries.station_name = 'Huh?'
             return timeseries
 
-        bucket2daily_outcome = self.compute_buckets_timeseries(start_date, end_date)
-        buckets_summary = self.compute_buckets_summary(bucket2daily_outcome, start_date, end_date)
+        buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date)
+        buckets_summary = self.compute_buckets_summary(buckets_timeseries, start_date, end_date)
 
         impact_timeseries = []
         impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'hardened'), self.area, '%s_impact_%s_hardened' % (type, substance_string)))
