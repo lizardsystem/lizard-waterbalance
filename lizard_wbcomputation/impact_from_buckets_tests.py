@@ -31,9 +31,10 @@ from impact_from_buckets import ImpactFromBuckets
 class ImpactFromBucketsTestSuite(TestCase):
 
     def test_a(self):
-        """Test the correct impact time series are returned even when there are no buckets."""
+        """Test the time series are returned that match the computed BucketsSummary."""
         area = Mock()
         area.location_id = 20120102
+
         impact = ImpactFromBuckets(area)
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 3)

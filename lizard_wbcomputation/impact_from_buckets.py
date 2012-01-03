@@ -24,6 +24,8 @@
 from datetime import timedelta
 import logging
 
+from lizard_wbcomputation.bucket_summarizer import BucketsSummary
+
 from timeseries.timeseriesstub import TimeseriesStub
 
 logger = logging.getLogger(__name__)
@@ -35,8 +37,7 @@ class ImpactFromBuckets(object):
 
     def compute(self, start_date, end_date, substance_string='phosphate'):
 
-        def create_timeseries(area, label):
-            timeseries = TimeseriesStub()
+        def update_timeseries(timeseries, area, label):
             timeseries.location_id = area.location_id
             timeseries.parameter_id = label
             timeseries.units = 'mg/m2/dag'
@@ -51,26 +52,31 @@ class ImpactFromBuckets(object):
             start_date.strftime('%Y-%m-%d'),
             end_date.strftime('%Y-%m-%d')))
 
+        buckets_summary = BucketsSummary()
         min_impact_timeseries = []
-        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_hardened' % substance_string))
-        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_drained' % substance_string))
-        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_flow_off' % substance_string))
-        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_drainage' % substance_string))
-        min_impact_timeseries.append(create_timeseries(self.area, 'min_impact_%s_sewer' % substance_string))
+        min_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'hardened'), self.area, 'min_impact_%s_hardened' % substance_string))
+        min_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'drained'), self.area, 'min_impact_%s_drained' % substance_string))
+        min_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'flow_off'), self.area, 'min_impact_%s_flow_off' % substance_string))
+        min_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'undrained'), self.area, 'min_impact_%s_drainage' % substance_string))
+        min_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'sewer'), self.area, 'min_impact_%s_sewer' % substance_string))
         for timeseries in min_impact_timeseries:
             date = start_date
             while date < end_date:
+                print date + timedelta(hours=23)
                 timeseries.add_value(date + timedelta(hours=23), 0.0)
                 date = date + timedelta(1)
+
+        buckets_summary = BucketsSummary()
         incr_impact_timeseries = []
-        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_hardened' % substance_string))
-        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_drained' % substance_string))
-        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_flow_off' % substance_string))
-        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_drainage' % substance_string))
-        incr_impact_timeseries.append(create_timeseries(self.area, 'incr_impact_%s_sewer' % substance_string))
+        incr_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'hardened'), self.area, 'incr_impact_%s_hardened' % substance_string))
+        incr_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'drained'), self.area, 'incr_impact_%s_drained' % substance_string))
+        incr_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'flow_off'), self.area, 'incr_impact_%s_flow_off' % substance_string))
+        incr_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'undrained'), self.area, 'incr_impact_%s_drainage' % substance_string))
+        incr_impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'sewer'), self.area, 'incr_impact_%s_sewer' % substance_string))
         for timeseries in incr_impact_timeseries:
             date = start_date
             while date < end_date:
+                print date + timedelta(hours=23)
                 timeseries.add_value(date + timedelta(hours=23), 0.0)
                 date = date + timedelta(1)
         return min_impact_timeseries, incr_impact_timeseries
