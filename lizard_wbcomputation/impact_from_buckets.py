@@ -39,17 +39,17 @@ class ImpactFromBuckets(object):
     def __init__(self, bucket2outcome):
         self.bucket2outcome = bucket2outcome
 
-    def compute(self, start_date, end_date, substance):
+    def compute(self, start_date, end_date, type, substance):
         bucket2impact = {}
         for bucket, outcome in self.bucket2outcome.items():
             bucket2impact[bucket] = BucketOutcome()
             for event in outcome.flow_off.events(start_date, end_date):
-                concentration = event[1] * self.get_concentration(bucket, substance)
+                concentration = event[1] * self.get_concentration(type, bucket, substance)
                 bucket2impact[bucket].flow_off.add_value(event[0], concentration)
         return bucket2impact
 
-    def get_concentration(self, bucket, substance):
-        return getattr(bucket, 'min_concentr_%s_flow_off' % substance)
+    def get_concentration(self, type, bucket, substance):
+        return getattr(bucket, '%s_concentr_%s_flow_off' % (type, substance))
 
 
 class SummedImpactFromBuckets(object):

@@ -40,8 +40,9 @@ class ImpactFromBucketsTestSuite(TestCase):
         impact = ImpactFromBuckets(bucket2outcome)
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+        type = 'min'
         substance = 'nitrogen'
-        buckets2daily_outcome = impact.compute(start, end, substance)
+        buckets2daily_outcome = impact.compute(start, end, type, substance)
         self.assertEqual({}, buckets2daily_outcome)
 
     def test_b(self):
@@ -57,8 +58,9 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         impact = ImpactFromBuckets({bucket: daily_outcome})
 
+        type = 'min'
         substance = 'nitrogen'
-        bucket2impact = impact.compute(start, end, substance)
+        bucket2impact = impact.compute(start, end, type, substance)
 
         self.assertEqual([bucket], bucket2impact.keys())
 
