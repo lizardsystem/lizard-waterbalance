@@ -71,7 +71,7 @@ class ImpactFromBucketsTestSuite(TestCase):
         self.assertEqual([(start, 20.0)], events)
 
     def test_c(self):
-        """Test the correct dict is returned when a two events are present.
+        """Test the correct dict is returned when two events are present.
 
         There exists a single bucket."""
 
@@ -87,6 +87,31 @@ class ImpactFromBucketsTestSuite(TestCase):
         impact = ImpactFromBuckets({bucket: daily_outcome})
 
         type = 'min'
+        substance = 'nitrogen'
+        bucket2impact = impact.compute(start, end, type, substance)
+
+        self.assertEqual([bucket], bucket2impact.keys())
+
+        events = list(bucket2impact[bucket].flow_off.events())
+        self.assertEqual([(start, 20.0), (start + timedelta(1), 40.0)], events)
+
+    def test_d(self):
+        """Test the correct dict is returned when two events are present.
+
+        There exists a single bucket."""
+
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+
+        bucket = Mock()
+        bucket.incr_concentr_nitrogen_flow_off = 2.0
+
+        daily_outcome = BucketOutcome()
+        daily_outcome.flow_off.add_value(start, 10.0)
+        daily_outcome.flow_off.add_value(start + timedelta(1), 20.0)
+
+        impact = ImpactFromBuckets({bucket: daily_outcome})
+
+        type = 'incr'
         substance = 'nitrogen'
         bucket2impact = impact.compute(start, end, type, substance)
 
