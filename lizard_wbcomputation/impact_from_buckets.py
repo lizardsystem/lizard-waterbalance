@@ -44,11 +44,11 @@ class ImpactFromBuckets(object):
         for bucket, outcome in self.bucket2outcome.items():
             bucket2impact[bucket] = BucketOutcome()
             for event in outcome.flow_off.events(start_date, end_date):
-                concentration = event[1] * self.get_concentration(type, bucket, substance)
+                concentration = event[1] * self.get_concentration(bucket, type, substance)
                 bucket2impact[bucket].flow_off.add_value(event[0], concentration)
         return bucket2impact
 
-    def get_concentration(self, type, bucket, substance):
+    def get_concentration(self, bucket, type, substance):
         return getattr(bucket, '%s_concentr_%s_flow_off' % (type, substance))
 
 
@@ -103,7 +103,7 @@ class SummedImpactFromBuckets(object):
             timeseries.station_name = 'Huh?'
             return timeseries
 
-        buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date)
+        buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date, type, substance_string)
         buckets_summary = self.compute_buckets_summary(buckets_timeseries, start_date, end_date)
 
         impact_timeseries = []

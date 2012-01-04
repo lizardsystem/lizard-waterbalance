@@ -22,6 +22,7 @@
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+from datetime import timedelta
 from unittest import TestCase
 
 from mock import Mock
@@ -46,7 +47,9 @@ class ImpactFromBucketsTestSuite(TestCase):
         self.assertEqual({}, buckets2daily_outcome)
 
     def test_b(self):
-        """Test the correct dict is returned when a single bucket is present."""
+        """Test the correct dict is returned when a single event is present.
+
+        There exists a single bucket."""
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 3)
 
@@ -64,9 +67,33 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         self.assertEqual([bucket], bucket2impact.keys())
 
-        flow_off_events = list(bucket2impact[bucket].flow_off.events())
-        self.assertEqual(1, len(flow_off_events))
-        self.assertEqual((start, 20.0), flow_off_events[0])
+        events = list(bucket2impact[bucket].flow_off.events())
+        self.assertEqual([(start, 20.0)], events)
+
+    def test_c(self):
+        """Test the correct dict is returned when a two events are present.
+
+        There exists a single bucket."""
+
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+
+        bucket = Mock()
+        bucket.min_concentr_nitrogen_flow_off = 2.0
+
+        daily_outcome = BucketOutcome()
+        daily_outcome.flow_off.add_value(start, 10.0)
+        daily_outcome.flow_off.add_value(start + timedelta(1), 20.0)
+
+        impact = ImpactFromBuckets({bucket: daily_outcome})
+
+        type = 'min'
+        substance = 'nitrogen'
+        bucket2impact = impact.compute(start, end, type, substance)
+
+        self.assertEqual([bucket], bucket2impact.keys())
+
+        events = list(bucket2impact[bucket].flow_off.events())
+        self.assertEqual([(start, 20.0), (start + timedelta(1), 40.0)], events)
 
 
 class SummedImpactFromBucketsTestSuite(TestCase):
@@ -78,7 +105,7 @@ class SummedImpactFromBucketsTestSuite(TestCase):
 
         impact = SummedImpactFromBuckets(area)
 
-        impact.compute_buckets_timeseries = lambda start, end: {}
+        impact.compute_buckets_timeseries = lambda start, end, type, substance: {}
         impact.compute_buckets_summary = BucketsSummarizer().compute
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
