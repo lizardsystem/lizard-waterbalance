@@ -47,6 +47,9 @@ class ImpactFromBuckets(object):
             for event in outcome.flow_off.events(start_date, end_date):
                 concentration = event[1] * self.get_concentration(bucket, type, substance)
                 bucket2impact[bucket].flow_off.add_value(event[0], concentration)
+            for event in outcome.net_drainage.events(start_date, end_date):
+                concentration = event[1] * self.get_concentration(bucket, type, substance)
+                bucket2impact[bucket].net_drainage.add_value(event[0], concentration)
         return bucket2impact
 
     def get_concentration(self, bucket, type, substance):
@@ -70,6 +73,7 @@ class SummedImpactFromBuckets(object):
     """
     def __init__(self, start_date, end_date):
         self.start_date, self.end_date = start_date, end_date
+        self.interesting_attributes = ['flow_off', 'hardened']
 
     def compute(self, substance='phosphate'):
 
@@ -85,8 +89,10 @@ class SummedImpactFromBuckets(object):
         buckets_summary = self.compute_buckets_summary(bucket2load_timeseries,
             self.start_date, self.end_date)
 
-        load = Load('flow_off')
-        load.timeseries = getattr(buckets_summary, 'flow_off')
-        loads = [load]
+        loads = []
+        for attribute in self.interesting_attributes:
+            load = Load(attribute)
+            load.timeseries = getattr(buckets_summary, attribute)
+            loads.append(load)
 
         return loads

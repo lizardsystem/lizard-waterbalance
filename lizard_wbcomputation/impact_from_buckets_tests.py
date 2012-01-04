@@ -29,6 +29,7 @@ from mock import Mock
 
 from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
+from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
 from lizard_wbcomputation.impact_from_buckets import SummedImpactFromBuckets
 
@@ -58,6 +59,7 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         daily_outcome = BucketOutcome()
         daily_outcome.flow_off.add_value(start, 10.0)
+        daily_outcome.net_drainage.add_value(start, 20.0)
 
         impact = ImpactFromBuckets({bucket: daily_outcome})
 
@@ -69,6 +71,8 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         events = list(bucket2impact[bucket].flow_off.events())
         self.assertEqual([(start, 20.0)], events)
+        events = list(bucket2impact[bucket].net_drainage.events())
+        self.assertEqual([(start, 40.0)], events)
 
     def test_c(self):
         """Test the correct dict is returned when two events are present.
@@ -83,6 +87,8 @@ class ImpactFromBucketsTestSuite(TestCase):
         daily_outcome = BucketOutcome()
         daily_outcome.flow_off.add_value(start, 10.0)
         daily_outcome.flow_off.add_value(start + timedelta(1), 20.0)
+        daily_outcome.net_drainage.add_value(start, 30.0)
+        daily_outcome.net_drainage.add_value(start + timedelta(1), 40.0)
 
         impact = ImpactFromBuckets({bucket: daily_outcome})
 
@@ -94,6 +100,8 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         events = list(bucket2impact[bucket].flow_off.events())
         self.assertEqual([(start, 20.0), (start + timedelta(1), 40.0)], events)
+        events = list(bucket2impact[bucket].net_drainage.events())
+        self.assertEqual([(start, 60.0), (start + timedelta(1), 80.0)], events)
 
     def test_d(self):
         """Test the correct dict is returned when two events are present.
@@ -108,6 +116,8 @@ class ImpactFromBucketsTestSuite(TestCase):
         daily_outcome = BucketOutcome()
         daily_outcome.flow_off.add_value(start, 10.0)
         daily_outcome.flow_off.add_value(start + timedelta(1), 20.0)
+        daily_outcome.net_drainage.add_value(start, 30.0)
+        daily_outcome.net_drainage.add_value(start + timedelta(1), 40.0)
 
         impact = ImpactFromBuckets({bucket: daily_outcome})
 
@@ -119,6 +129,8 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         events = list(bucket2impact[bucket].flow_off.events())
         self.assertEqual([(start, 20.0), (start + timedelta(1), 40.0)], events)
+        events = list(bucket2impact[bucket].net_drainage.events())
+        self.assertEqual([(start, 60.0), (start + timedelta(1), 80.0)], events)
 
 
 class SummedImpactFromBucketsTestSuite(TestCase):
@@ -128,6 +140,7 @@ class SummedImpactFromBucketsTestSuite(TestCase):
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
         impact = SummedImpactFromBuckets(start, end)
 
+        impact.interesting_attributes = ['flow_off']
         impact.compute_bucket2load_timeseries = lambda start, end, substance, type: {}
         impact.compute_buckets_summary = BucketsSummarizer().compute
 
@@ -147,15 +160,23 @@ class SummedImpactFromBucketsTestSuite(TestCase):
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
         impact = SummedImpactFromBuckets(start, end)
 
-        daily_outcome = BucketOutcome()
-        daily_outcome.flow_off.add_value(start, 20.0)
-        daily_outcome.flow_off.add_value(start + timedelta(1), 40.0)
+        buckets_summary = BucketsSummary()
+        buckets_summary.flow_off.add_value(start, 20.0)
+        buckets_summary.flow_off.add_value(start + timedelta(1), 40.0)
+        buckets_summary.hardened.add_value(start, 60.0)
+        buckets_summary.hardened.add_value(start + timedelta(1), 80.0)
 
         impact.compute_bucket2load_timeseries = lambda start, end, substance, type: {}
-        impact.compute_buckets_summary = lambda bucket2outcome, start, end: daily_outcome
+        impact.compute_buckets_summary = lambda bucket2outcome, start, end: buckets_summary
 
         substance = 'nitrogen'
         min_loads, incr_loads = impact.compute(substance)
 
-        self.assertEqual(daily_outcome.flow_off, min_loads[0].timeseries)
-        self.assertEqual(daily_outcome.flow_off, incr_loads[0].timeseries)
+        expected_timeseries = [buckets_summary.flow_off, buckets_summary.hardened]
+
+        min_timeseries = [l.timeseries for l in min_loads]
+        self.assertEqual(expected_timeseries, min_timeseries)
+
+        incr_timeseries = [l.timeseries for l in incr_loads]
+        self.assertEqual(expected_timeseries, incr_timeseries)
+
