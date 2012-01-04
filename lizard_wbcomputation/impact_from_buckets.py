@@ -72,12 +72,6 @@ class SummedImpactFromBuckets(object):
 
     def compute(self, start_date, end_date, substance_string='phosphate'):
 
-        logger.debug("WaterbalanceComputer2::get_impact_timeseries_from_buckets")
-
-        logger.debug("Calculating impact from buckets(%s - %s)..." % (
-            start_date.strftime('%Y-%m-%d'),
-            end_date.strftime('%Y-%m-%d')))
-
         min_impact_timeseries = self.compute_impact_timeseries('min', start_date, end_date, substance_string)
         incr_impact_timeseries = self.compute_impact_timeseries('incr', start_date, end_date, substance_string)
 
