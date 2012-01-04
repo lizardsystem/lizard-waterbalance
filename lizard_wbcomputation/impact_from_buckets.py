@@ -72,15 +72,6 @@ class SummedImpactFromBuckets(object):
 
     def compute(self, start_date, end_date, substance_string='phosphate'):
 
-        def update_timeseries(timeseries, area, label):
-            timeseries.location_id = area.location_id
-            timeseries.parameter_id = label
-            timeseries.units = 'mg/m2/dag'
-            timeseries.type = 'instantaneous'
-            timeseries.miss_val = '-999.0'
-            timeseries.station_name = 'Huh?'
-            return timeseries
-
         logger.debug("WaterbalanceComputer2::get_impact_timeseries_from_buckets")
 
         logger.debug("Calculating impact from buckets(%s - %s)..." % (
