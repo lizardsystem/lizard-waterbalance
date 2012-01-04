@@ -23,7 +23,34 @@
 
 import logging
 
+from lizard_wbcomputation.bucket_computer import BucketOutcome
+
 logger = logging.getLogger(__name__)
+
+
+class ImpactFromBuckets(object):
+    """Implements the calculation of the substance impact time series'.
+
+    The flow off and net drainage of a bucket causes the flow of substances
+    into the open water. This class implements the calculation of these
+    multiple substance time series.
+
+    """
+    def __init__(self, bucket2outcome):
+        self.bucket2outcome = bucket2outcome
+
+    def compute(self, start_date, end_date, substance):
+        bucket2impact = {}
+        for bucket, outcome in self.bucket2outcome.items():
+            bucket2impact[bucket] = BucketOutcome()
+            for event in outcome.flow_off.events(start_date, end_date):
+                concentration = event[1] * self.get_concentration(bucket, substance)
+                bucket2impact[bucket].flow_off.add_value(event[0], concentration)
+        return bucket2impact
+
+    def get_concentration(self, bucket, substance):
+        return getattr(bucket, 'min_concentr_%s_flow_off' % substance)
+
 
 class SummedImpactFromBuckets(object):
     """Implements the calculation of the substance impact time series'.

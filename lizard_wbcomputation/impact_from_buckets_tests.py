@@ -26,8 +26,46 @@ from unittest import TestCase
 
 from mock import Mock
 
+from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
+from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
 from lizard_wbcomputation.impact_from_buckets import SummedImpactFromBuckets
+
+
+class ImpactFromBucketsTestSuite(TestCase):
+
+    def test_a(self):
+        """Test the empty dict is returned when no buckets are present."""
+        bucket2outcome = {}
+        impact = ImpactFromBuckets(bucket2outcome)
+
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+        substance = 'nitrogen'
+        buckets2daily_outcome = impact.compute(start, end, substance)
+        self.assertEqual({}, buckets2daily_outcome)
+
+    def test_b(self):
+        """Test the correct dict is returned when a single bucket is present."""
+
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 3)
+
+        bucket = Mock()
+        bucket.min_concentr_nitrogen_flow_off = 2.0
+
+        daily_outcome = BucketOutcome()
+        daily_outcome.flow_off.add_value(start, 10.0)
+
+        impact = ImpactFromBuckets({bucket: daily_outcome})
+
+        substance = 'nitrogen'
+        bucket2impact = impact.compute(start, end, substance)
+
+        self.assertEqual([bucket], bucket2impact.keys())
+
+        flow_off_events = list(bucket2impact[bucket].flow_off.events())
+        self.assertEqual(1, len(flow_off_events))
+        self.assertEqual((start, 20.0), flow_off_events[0])
+
 
 class SummedImpactFromBucketsTestSuite(TestCase):
 
