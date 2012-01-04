@@ -33,6 +33,7 @@ from lizard_wbcomputation.bucket_computer import BucketComputer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer2
 from lizard_wbcomputation.fraction_computer import FractionComputer
+from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
 from lizard_wbcomputation.impact_from_buckets import SummedImpactFromBuckets
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
@@ -659,6 +660,17 @@ class WaterbalanceComputer2(object):
             substance_string, flows, concentrations_incremental, start_date,
             end_date, nutricalc_incr)
 
+        bucket2outcome = self.get_buckets_timeseries(start_date, end_date)
+
+        summed_loads = SummedImpactFromBuckets(self.area)
+        summed_loads.compute_buckets_timeseries = ImpactFromBuckets(bucket2outcome).compute
+        summed_loads.compute_buckets_summary = BucketsSummarizer().compute
+
+        bucket_loads = summed_loads.compute(start_date, end_date, substance_string)
+        print bucket_loads[0], bucket_loads[1]
+        load = load + bucket_loads[0]
+        load_incremental = load_incremental + bucket_loads[1]
+
         return load, load_incremental
 
     def get_impact_timeseries(self,
@@ -691,15 +703,6 @@ class WaterbalanceComputer2(object):
             load.multiply_timeseries(factor)
 
         return loads, loads_incremental
-
-    def get_impact_timeseries_from_buckets(self,
-            start_date, end_date, substance_string='phosphate'):
-
-        impact = SummedImpactFromBuckets(self.area)
-        impact.compute_buckets_timeseries = self.get_buckets_timeseries
-        impact.compute_buckets_summary = BucketsSummarizer().compute
-
-        return impact.compute(start_date, end_date, substance_string)
 
     def calc_sluice_error_timeseries(
         self, start_date, end_date):

@@ -137,5 +137,32 @@ class SummedImpactFromBucketsTestSuite(TestCase):
         substance = 'nitrogen'
         min_loads, incr_loads = impact.compute(start, end, substance)
 
-        self.assertEqual(1, len(min_loads))
-        self.assertEqual(1, len(incr_loads))
+        expected_labels = ['flow_off']
+        labels = [load.label for load in min_loads]
+        self.assertEqual(set(expected_labels), set(labels))
+
+        expected_labels = ['flow_off']
+        labels = [load.label for load in incr_loads]
+        self.assertEqual(set(expected_labels), set(labels))
+
+    def test_b(self):
+        """Test the correct load is returned when events are present."""
+        area = Mock()
+        area.location_id = 20120102
+
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+
+        daily_outcome = BucketOutcome()
+        daily_outcome.flow_off.add_value(start, 20.0)
+        daily_outcome.flow_off.add_value(start + timedelta(1), 40.0)
+
+        impact = SummedImpactFromBuckets(area)
+
+        impact.compute_buckets_timeseries = lambda start, end, type, substance: {}
+        impact.compute_buckets_summary = lambda bucket2outcome, start, end: daily_outcome
+
+        substance = 'nitrogen'
+        min_loads, incr_loads = impact.compute(start, end, substance)
+
+        self.assertEqual(daily_outcome.flow_off, min_loads[0].timeseries)
+        self.assertEqual(daily_outcome.flow_off, incr_loads[0].timeseries)

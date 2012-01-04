@@ -36,8 +36,10 @@ from nens import fews
 
 from timeseries.timeseries import TimeSeries
 
-from lizard_wbcomputation.delta_storage import DeltaStorage
 from lizard_wbcomputation.compute import WaterbalanceComputer2
+from lizard_wbcomputation.delta_storage import DeltaStorage
+from lizard_wbcomputation.load_computer import LoadForIntake
+
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
 
@@ -142,6 +144,14 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_discharge', Units.impact),
     'incr_impact_nitrogen_discharge': \
         TimeSeriesSpec('incr_impact_nitrogen_discharge', Units.impact),
+    'min_impact_phosphate_flow_off': \
+        TimeSeriesSpec('min_impact_phosphate_flow_off', Units.impact),
+    'incr_impact_phosphate_flow_off': \
+        TimeSeriesSpec('incr_impact_phosphate_flow_off', Units.impact),
+    'min_impact_nitrogen_flow_off': \
+        TimeSeriesSpec('min_impact_nitrogen_flow_off', Units.impact),
+    'incr_impact_nitrogen_flow_off': \
+        TimeSeriesSpec('incr_impact_nitrogen_flow_off', Units.impact),
     'delta_storage': \
         TimeSeriesSpec('delta_storage', Units.storage),
     }
@@ -275,24 +285,17 @@ def store_graphs_timeseries(run_info, area):
 
         for (impact, impact_incremental) in zip(impacts, impacts_incremental):
              assert impact.label == impact_incremental.label
-             if impact.label in ['precipitation', 'seepage']:
-                 key = '%s_impact_%s_%s' % ('min', substance, impact.label)
-                 writeable_timeseries.insert({key: impact.timeseries})
-                 key = '%s_impact_%s_%s' % ('incr', substance, impact.label)
-                 writeable_timeseries.insert({key: impact_incremental.timeseries})
-             else:
+             if type(impact) == LoadForIntake:
                  label = '%s_impact_%s_discharge' % ('min', substance)
                  writeable_timeseries.insert({'intakes': (label, {impact.label: impact.timeseries})})
                  label = '%s_impact_%s_discharge' % ('incr', substance)
                  writeable_timeseries.insert({'intakes': (label, {impact_incremental.label: impact_incremental.timeseries})})
-
-        # the next block are quick and dirty hacks to support the export
-        # of zero event impact time series on buckets
-        min_impact_buckets, incr_impact_buckets = cm.get_impact_timeseries_from_buckets(start_date, end_date, substance)
-        for timeseries in min_impact_buckets:
-            writeable_timeseries.timeseries_list.append(timeseries)
-        for timeseries in incr_impact_buckets:
-            writeable_timeseries.timeseries_list.append(timeseries)
+             else:
+                 key = '%s_impact_%s_%s' % ('min', substance, impact.label)
+                 print key
+                 writeable_timeseries.insert({key: impact.timeseries})
+                 key = '%s_impact_%s_%s' % ('incr', substance, impact.label)
+                 writeable_timeseries.insert({key: impact_incremental.timeseries})
 
     get_storage_timeseries = StorageTimeseries(cm).get
     timeseries = DeltaStorage(get_storage_timeseries).compute(start_date, end_date)

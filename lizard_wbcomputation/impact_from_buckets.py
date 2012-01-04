@@ -92,7 +92,7 @@ class SummedImpactFromBuckets(object):
         buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date, type, substance_string)
         buckets_summary = self.compute_buckets_summary(buckets_timeseries, start_date, end_date)
 
-        load = Load('%s_impact_%s_flow_off' % (type, substance_string))
+        load = Load('flow_off')
         load.timeseries = getattr(buckets_summary, 'flow_off')
         loads = [load]
 
