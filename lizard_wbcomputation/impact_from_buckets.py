@@ -24,6 +24,7 @@
 import logging
 
 from lizard_wbcomputation.bucket_computer import BucketOutcome
+from lizard_wbcomputation.load_computer import Load
 
 logger = logging.getLogger(__name__)
 
@@ -91,10 +92,8 @@ class SummedImpactFromBuckets(object):
         buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date, type, substance_string)
         buckets_summary = self.compute_buckets_summary(buckets_timeseries, start_date, end_date)
 
-        impact_timeseries = []
-        impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'hardened'), self.area, '%s_impact_%s_hardened' % (type, substance_string)))
-        impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'drained'), self.area, '%s_impact_%s_drained' % (type, substance_string)))
-        impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'flow_off'), self.area, '%s_impact_%s_flow_off' % (type, substance_string)))
-        impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'undrained'), self.area, '%s_impact_%s_drainage' % (type, substance_string)))
-        impact_timeseries.append(update_timeseries(getattr(buckets_summary, 'sewer'), self.area, '%s_impact_%s_sewer' % (type, substance_string)))
-        return impact_timeseries
+        load = Load('%s_impact_%s_flow_off' % (type, substance_string))
+        load.timeseries = getattr(buckets_summary, 'flow_off')
+        loads = [load]
+
+        return loads
