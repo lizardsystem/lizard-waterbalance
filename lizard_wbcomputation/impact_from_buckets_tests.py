@@ -63,7 +63,7 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         type = 'min'
         substance = 'nitrogen'
-        bucket2impact = impact.compute(start, end, type, substance)
+        bucket2impact = impact.compute(start, end, substance, type)
 
         self.assertEqual([bucket], bucket2impact.keys())
 
@@ -88,7 +88,7 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         type = 'min'
         substance = 'nitrogen'
-        bucket2impact = impact.compute(start, end, type, substance)
+        bucket2impact = impact.compute(start, end, substance, type)
 
         self.assertEqual([bucket], bucket2impact.keys())
 
@@ -113,7 +113,7 @@ class ImpactFromBucketsTestSuite(TestCase):
 
         type = 'incr'
         substance = 'nitrogen'
-        bucket2impact = impact.compute(start, end, type, substance)
+        bucket2impact = impact.compute(start, end, substance, type)
 
         self.assertEqual([bucket], bucket2impact.keys())
 
@@ -125,17 +125,14 @@ class SummedImpactFromBucketsTestSuite(TestCase):
 
     def test_a(self):
         """Test the correct load is returned when no bucket is present."""
-        area = Mock()
-        area.location_id = 20120102
+        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+        impact = SummedImpactFromBuckets(start, end)
 
-        impact = SummedImpactFromBuckets(area)
-
-        impact.compute_buckets_timeseries = lambda start, end, type, substance: {}
+        impact.compute_bucket2load_timeseries = lambda start, end, substance, type: {}
         impact.compute_buckets_summary = BucketsSummarizer().compute
 
-        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
         substance = 'nitrogen'
-        min_loads, incr_loads = impact.compute(start, end, substance)
+        min_loads, incr_loads = impact.compute(substance)
 
         expected_labels = ['flow_off']
         labels = [load.label for load in min_loads]
@@ -147,22 +144,18 @@ class SummedImpactFromBucketsTestSuite(TestCase):
 
     def test_b(self):
         """Test the correct load is returned when events are present."""
-        area = Mock()
-        area.location_id = 20120102
-
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+        impact = SummedImpactFromBuckets(start, end)
 
         daily_outcome = BucketOutcome()
         daily_outcome.flow_off.add_value(start, 20.0)
         daily_outcome.flow_off.add_value(start + timedelta(1), 40.0)
 
-        impact = SummedImpactFromBuckets(area)
-
-        impact.compute_buckets_timeseries = lambda start, end, type, substance: {}
+        impact.compute_bucket2load_timeseries = lambda start, end, substance, type: {}
         impact.compute_buckets_summary = lambda bucket2outcome, start, end: daily_outcome
 
         substance = 'nitrogen'
-        min_loads, incr_loads = impact.compute(start, end, substance)
+        min_loads, incr_loads = impact.compute(substance)
 
         self.assertEqual(daily_outcome.flow_off, min_loads[0].timeseries)
         self.assertEqual(daily_outcome.flow_off, incr_loads[0].timeseries)

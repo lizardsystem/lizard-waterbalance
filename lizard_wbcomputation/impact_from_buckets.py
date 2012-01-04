@@ -40,7 +40,7 @@ class ImpactFromBuckets(object):
     def __init__(self, bucket2outcome):
         self.bucket2outcome = bucket2outcome
 
-    def compute(self, start_date, end_date, type, substance):
+    def compute(self, start_date, end_date, substance, type):
         bucket2impact = {}
         for bucket, outcome in self.bucket2outcome.items():
             bucket2impact[bucket] = BucketOutcome()
@@ -68,29 +68,22 @@ class SummedImpactFromBuckets(object):
       *compute_buckets_summary*
         function to compute summary of the BucketOutcome of each bucket
     """
-    def __init__(self, area):
-        self.area = area
+    def __init__(self, start_date, end_date):
+        self.start_date, self.end_date = start_date, end_date
 
-    def compute(self, start_date, end_date, substance_string='phosphate'):
+    def compute(self, substance='phosphate'):
 
-        min_impact_timeseries = self.compute_impact_timeseries('min', start_date, end_date, substance_string)
-        incr_impact_timeseries = self.compute_impact_timeseries('incr', start_date, end_date, substance_string)
+        minimal = self.compute_loads(substance, 'min')
+        incremental = self.compute_loads(substance, 'incr')
 
-        return min_impact_timeseries, incr_impact_timeseries
+        return minimal, incremental
 
-    def compute_impact_timeseries(self, type, start_date, end_date, substance_string):
+    def compute_loads(self, substance, type):
 
-        def update_timeseries(timeseries, area, label):
-            timeseries.location_id = area.location_id
-            timeseries.parameter_id = label
-            timeseries.units = 'mg/m2/dag'
-            timeseries.type = 'instantaneous'
-            timeseries.miss_val = '-999.0'
-            timeseries.station_name = 'Huh?'
-            return timeseries
-
-        buckets_timeseries = self.compute_buckets_timeseries(start_date, end_date, type, substance_string)
-        buckets_summary = self.compute_buckets_summary(buckets_timeseries, start_date, end_date)
+        bucket2load_timeseries = self.compute_bucket2load_timeseries(
+            self.start_date, self.end_date, substance, type)
+        buckets_summary = self.compute_buckets_summary(bucket2load_timeseries,
+            self.start_date, self.end_date)
 
         load = Load('flow_off')
         load.timeseries = getattr(buckets_summary, 'flow_off')

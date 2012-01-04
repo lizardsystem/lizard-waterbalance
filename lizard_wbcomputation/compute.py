@@ -662,11 +662,11 @@ class WaterbalanceComputer2(object):
 
         bucket2outcome = self.get_buckets_timeseries(start_date, end_date)
 
-        summed_loads = SummedImpactFromBuckets(self.area)
-        summed_loads.compute_buckets_timeseries = ImpactFromBuckets(bucket2outcome).compute
+        summed_loads = SummedImpactFromBuckets(start_date, end_date)
+        summed_loads.compute_bucket2load_timeseries = ImpactFromBuckets(bucket2outcome).compute
         summed_loads.compute_buckets_summary = BucketsSummarizer().compute
 
-        bucket_loads = summed_loads.compute(start_date, end_date, substance_string)
+        bucket_loads = summed_loads.compute(substance_string)
         print bucket_loads[0], bucket_loads[1]
         load = load + bucket_loads[0]
         load_incremental = load_incremental + bucket_loads[1]
