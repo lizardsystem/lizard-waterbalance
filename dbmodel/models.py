@@ -390,6 +390,20 @@ class Bucket(object):
         self.init_water_level = self.database_bucket.upper_init_water_level
         # self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
         # self.label_flow_off = self._get_label_flow_off()
+
+        # the following fields are set to None as the Django database does not
+        # define nitrogen
+        self.min_concentr_nitrogen_flow_off = None
+        self.min_concentr_nitrogen_drainage_indraft = None
+        self.min_concentr_nitrogen_hardened = None
+        self.min_concentr_nitrogen_drained = None
+        self.min_concentr_nitrogen_sewer = None
+        self.incr_concentr_nitrogen_flow_off = None
+        self.incr_concentr_nitrogen_drainage_indraft = None
+        self.incr_concentr_nitrogen_hardened = None
+        self.incr_concentr_nitrogen_drained = None
+        self.incr_concentr_nitrogen_sewer = None
+
         return self
 
     def retrieve_seepage(self, start_date, end_date):
@@ -424,6 +438,63 @@ class Bucket(object):
         """Return the label of the bucket."""
         return self.database_bucket.label.program_name
 
+    @property
+    def min_concentr_phosphate_flow_off(self):
+        return self.get_concentration('flow_off', 'stof_lower_concentration')
+
+    def get_concentration(self, program_name, attribute):
+        """Returns the value of the Concentration attribute specified.
+
+        The Django database does not define the concentration for each bucket
+        separately but it defines then for the combined incoming flows of all
+        buckets. To still have a concentration for a bucket, we use the
+        concentration for the specified combined incoming flows.
+
+        The parameters specify the attribute of a Concentration attribute whose
+        Label has the given program name. If no such Label exists, this
+        function returns None.
+
+        """
+        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
+            if concentr.label.program_name == program_name:
+                return getattr(concentr, attribute)
+        return None
+
+    @property
+    def min_concentr_phosphate_drainage_indraft(self):
+        return self.get_concentration('undrained', 'stof_lower_concentration')
+
+    @property
+    def min_concentr_phosphate_hardened(self):
+        return self.get_concentration('hardened', 'stof_lower_concentration')
+
+    @property
+    def min_concentr_phosphate_drained(self):
+        return self.get_concentration('drained', 'stof_lower_concentration')
+
+    @property
+    def min_concentr_phosphate_sewer(self):
+        return self.get_concentration('sewer', 'stof_lower_concentration')
+
+    @property
+    def incr_concentr_phosphate_flow_off(self):
+        return self.get_concentration('flow_off', 'stof_increment')
+
+    @property
+    def incr_concentr_phosphate_drainage_indraft(self):
+        return self.get_concentration('undrained', 'stof_increment')
+
+    @property
+    def incr_concentr_phosphate_hardened(self):
+        return self.get_concentration('hardened', 'stof_increment')
+
+    @property
+    def incr_concentr_phosphate_drained(self):
+        return self.get_concentration('drained', 'stof_increment')
+
+    @property
+    def incr_concentr_phosphate_sewer(self):
+        return self.get_concentration('sewer', 'stof_increment')
 
 class PumpingStation(object):
 
