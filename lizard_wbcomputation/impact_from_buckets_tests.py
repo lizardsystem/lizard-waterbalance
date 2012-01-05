@@ -175,8 +175,8 @@ class SummedImpactFromBucketsTestSuite(TestCase):
         expected_timeseries = [buckets_summary.flow_off, buckets_summary.hardened]
 
         min_timeseries = [l.timeseries for l in min_loads]
-        self.assertEqual(expected_timeseries, min_timeseries)
+        self.assertEqual(expected_timeseries.sort(), min_timeseries.sort())
 
         incr_timeseries = [l.timeseries for l in incr_loads]
-        self.assertEqual(expected_timeseries, incr_timeseries)
+        self.assertEqual(expected_timeseries.sort(), incr_timeseries.sort())
 
