@@ -73,7 +73,7 @@ class SummedImpactFromBuckets(object):
     """
     def __init__(self, start_date, end_date):
         self.start_date, self.end_date = start_date, end_date
-        self.interesting_attributes = ['flow_off', 'hardened']
+        self.interesting_attributes = ['hardened', 'drained', 'undrained', 'flow_off', 'sewer']
 
     def compute(self, substance='phosphate'):
 

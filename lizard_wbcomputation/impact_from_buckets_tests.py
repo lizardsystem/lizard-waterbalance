@@ -166,6 +166,7 @@ class SummedImpactFromBucketsTestSuite(TestCase):
         buckets_summary.hardened.add_value(start, 60.0)
         buckets_summary.hardened.add_value(start + timedelta(1), 80.0)
 
+        impact.interesting_attributes = ['hardened', 'flow_off']
         impact.compute_bucket2load_timeseries = lambda start, end, substance, type: {}
         impact.compute_buckets_summary = lambda bucket2outcome, start, end: buckets_summary
 
