@@ -21,9 +21,14 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+
 import logging
 
+from timeseries.timeseriesstub import SparseTimeseriesStub
+
 from lizard_wbcomputation.bucket_computer import BucketOutcome
+from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.load_computer import Load
 
 logger = logging.getLogger(__name__)
@@ -56,43 +61,37 @@ class ImpactFromBuckets(object):
         return getattr(bucket, '%s_concentr_%s_flow_off' % (type, substance))
 
 
-class SummedImpactFromBuckets(object):
-    """Implements the calculation of the substance impact time series'.
+class SummedLoadsFromBuckets(object):
+    """Implements the calculation of the bucket loads.
 
-    The flow off and net drainage of a bucket causes the flow of substances
-    into the open water. This class implements the calculation of these
-    multiple substance time series.
-
-    Instance variables:
-      *area*
-        area for which to compute the substance impact
-      *compute_buckets_timeseries*
-        function to compute the impact from the timeseries of a BucketOutcome
-      *compute_buckets_summary*
-        function to compute summary of the BucketOutcome of each bucket
     """
     def __init__(self, start_date, end_date):
         self.start_date, self.end_date = start_date, end_date
-        self.interesting_attributes = ['hardened', 'drained', 'undrained', 'flow_off', 'sewer']
 
     def compute(self, substance='phosphate'):
 
-        minimal = self.compute_loads(substance, 'min')
-        incremental = self.compute_loads(substance, 'incr')
+        min_summary, inc_summary = self.compute_summary(substance)
+        min_loads = self.create_loads_from_summary(min_summary)
+        inc_loads = self.create_loads_from_summary(inc_summary)
 
-        return minimal, incremental
+        return min_loads, inc_loads
 
-    def compute_loads(self, substance, type):
+    def compute_summary(self, substance):
+        """Compute and return the minimum and incremental the bucket loads.
 
-        bucket2load_timeseries = self.compute_bucket2load_timeseries(
-            self.start_date, self.end_date, substance, type)
-        buckets_summary = self.compute_buckets_summary(bucket2load_timeseries,
-            self.start_date, self.end_date)
+        This abstract method returns a tuple of two BucketSummary(s), where the
+        first summary contains the minimum bucket loads and the second the
+        incremental bucket loads.
 
+        The parameter specifies the substance for which to compute the load.
+
+        """
+        assert False
+
+    def create_loads_from_summary(self, summary):
         loads = []
         for attribute in self.interesting_attributes:
             load = Load(attribute)
-            load.timeseries = getattr(buckets_summary, attribute)
+            load.timeseries = getattr(summary, attribute)
             loads.append(load)
-
         return loads
