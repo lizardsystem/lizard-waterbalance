@@ -34,6 +34,7 @@ class Load(object):
 
     def __init__(self, label):
         self.label = label
+        self.name = label
         self.timeseries = TimeseriesStub()
 
     def multiply_timeseries(self, factor):
