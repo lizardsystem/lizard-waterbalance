@@ -144,6 +144,30 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_discharge', Units.impact),
     'incr_impact_nitrogen_discharge': \
         TimeSeriesSpec('incr_impact_nitrogen_discharge', Units.impact),
+    'min_impact_phosphate_hardened': \
+        TimeSeriesSpec('min_impact_phosphate_hardened', Units.impact),
+    'incr_impact_phosphate_hardened': \
+        TimeSeriesSpec('incr_impact_phosphate_hardened', Units.impact),
+    'min_impact_nitrogen_hardened': \
+        TimeSeriesSpec('min_impact_nitrogen_hardened', Units.impact),
+    'incr_impact_nitrogen_hardened': \
+        TimeSeriesSpec('incr_impact_nitrogen_hardened', Units.impact),
+    'min_impact_phosphate_drained': \
+        TimeSeriesSpec('min_impact_phosphate_drained', Units.impact),
+    'incr_impact_phosphate_drained': \
+        TimeSeriesSpec('incr_impact_phosphate_drained', Units.impact),
+    'min_impact_nitrogen_drained': \
+        TimeSeriesSpec('min_impact_nitrogen_drained', Units.impact),
+    'incr_impact_nitrogen_drained': \
+        TimeSeriesSpec('incr_impact_nitrogen_drained', Units.impact),
+    'min_impact_phosphate_undrained': \
+        TimeSeriesSpec('min_impact_phosphate_drainage', Units.impact),
+    'incr_impact_phosphate_undrained': \
+        TimeSeriesSpec('incr_impact_phosphate_drainage', Units.impact),
+    'min_impact_nitrogen_undrained': \
+        TimeSeriesSpec('min_impact_nitrogen_drainage', Units.impact),
+    'incr_impact_nitrogen_undrained': \
+        TimeSeriesSpec('incr_impact_nitrogen_drainage', Units.impact),
     'min_impact_phosphate_flow_off': \
         TimeSeriesSpec('min_impact_phosphate_flow_off', Units.impact),
     'incr_impact_phosphate_flow_off': \
@@ -152,6 +176,14 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_flow_off', Units.impact),
     'incr_impact_nitrogen_flow_off': \
         TimeSeriesSpec('incr_impact_nitrogen_flow_off', Units.impact),
+    'min_impact_phosphate_sewer': \
+        TimeSeriesSpec('min_impact_phosphate_sewer', Units.impact),
+    'incr_impact_phosphate_sewer': \
+        TimeSeriesSpec('incr_impact_phosphate_sewer', Units.impact),
+    'min_impact_nitrogen_sewer': \
+        TimeSeriesSpec('min_impact_nitrogen_sewer', Units.impact),
+    'incr_impact_nitrogen_sewer': \
+        TimeSeriesSpec('incr_impact_nitrogen_sewer', Units.impact),
     'delta_storage': \
         TimeSeriesSpec('delta_storage', Units.storage),
     }
