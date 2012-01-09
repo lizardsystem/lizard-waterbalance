@@ -21,11 +21,9 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
-
 import logging
 
-from timeseries.timeseriesstub import SparseTimeseriesStub
+from timeseries.timeseriesstub import add_timeseries
 
 from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
@@ -62,7 +60,7 @@ class ImpactFromBuckets(object):
 
 
 class SummedLoadsFromBuckets(object):
-    """Implements the calculation of the bucket loads.
+    """Implements the calculation of the summed bucket loads.
 
     """
     def __init__(self, start_date, end_date):
@@ -95,3 +93,36 @@ class SummedLoadsFromBuckets(object):
             load.timeseries = getattr(summary, attribute)
             loads.append(load)
         return loads
+
+
+class SummaryComputer(object):
+
+    def __init__(self, bucket2outcome):
+        self.bucket2outcome = bucket2outcome
+
+    def compute(self, substance):
+        """Compute and return the minimum and incremental the bucket loads.
+
+        This method returns a tuple of two BucketsSummary(s), where the first
+        summary contains the minimum bucket loads and the second the
+        incremental bucket loads.
+
+        The parameter specifies the substance for which to compute the load.
+
+        """
+        min_summary = BucketsSummary()
+        inc_summary = BucketsSummary()
+        for bucket, outcome in self.bucket2outcome.items():
+            min_outcome = bucket.compute_load_summary(outcome, substance, 'min')
+            inc_outcome = bucket.compute_load_summary(outcome, substance, 'inc')
+            for attribute in self.interesting_attributes:
+                self.add_timeseries(min_summary, min_outcome, attribute)
+                self.add_timeseries(inc_summary, inc_outcome, attribute)
+
+        return min_summary, inc_summary
+
+    def add_timeseries(self, summary, timeseries, attribute):
+
+        new_timeseries = add_timeseries(getattr(summary, attribute), getattr(timeseries, attribute))
+        setattr(summary, attribute, new_timeseries)
+

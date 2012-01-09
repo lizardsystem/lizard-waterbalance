@@ -32,20 +32,20 @@ from timeseries.timeseriesstub import SparseTimeseriesStub
 from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
-from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
+from lizard_wbcomputation.impact_from_buckets import SummaryComputer
 from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
 
-class ImpactFromBucketsTestSuite(TestCase):
+# class ImpactFromBucketsTestSuite(TestCase):
 
-    def test_a(self):
-        """Test the empty dict is returned when no buckets are present."""
-        bucket_outcomes = {}
-        impact = ImpactFromBuckets(bucket_outcomes)
+#     def test_a(self):
+#         """Test the empty dict is returned when no buckets are present."""
+#         bucket_outcomes = {}
+#         impact = ImpactFromBuckets(bucket_outcomes)
 
-        start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
+#         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
 
-        bucket_loads = impact.compute(start, end, 'nitrogen', 'min')
-        self.assertEqual({}, bucket_loads)
+#         bucket_loads = impact.compute(start, end, 'nitrogen', 'min')
+#         self.assertEqual({}, bucket_loads)
 
     # def test_b(self):
     #     """Test the correct BucketSummary is returned'hardened' loads are computed.
@@ -231,3 +231,123 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
     #     incr_timeseries = [l.timeseries for l in incr_loads]
     #     self.assertEqual(expected_timeseries.sort(), incr_timeseries.sort())
 
+
+class SummaryComputerTestSuite(TestCase):
+
+    def test_a(self):
+        """Test the correct minimum 'hardened' load is computed.
+
+        There is a single bucket.
+
+        """
+        def compute(outcome, substance, bound):
+            summary = BucketsSummary()
+            summary.hardened = \
+                SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+            return summary
+
+        bucket = Mock()
+        bucket.compute_load_summary = compute
+
+        summary = SummaryComputer({bucket: BucketOutcome()})
+        summary.interesting_attributes = ['hardened']
+
+        min_summary, inc_summary = summary.compute('phosphate')
+
+        expected_timeseries = \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+
+        self.assertEqual(expected_timeseries, min_summary.hardened)
+
+    def test_b(self):
+        """Test the correct minimum and incremental 'hardened' loads are computed.
+
+        There is a single bucket.
+
+        """
+        def compute(outcome, substance, bound):
+            summary = BucketsSummary()
+            if bound == 'min':
+                summary.hardened = \
+                    SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+            else:
+                summary.hardened = \
+                    SparseTimeseriesStub(datetime(2012, 1, 5), [0.3, 0.4])
+            return summary
+
+        bucket = Mock()
+        bucket.compute_load_summary = compute
+
+        summary = SummaryComputer({bucket: BucketOutcome()})
+        summary.interesting_attributes = ['hardened']
+
+        min_summary, inc_summary = summary.compute('phosphate')
+
+        min_timeseries, inc_timeseries = \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2]), \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.3, 0.4])
+
+        self.assertEqual(min_timeseries, min_summary.hardened)
+        self.assertEqual(inc_timeseries, inc_summary.hardened)
+
+    def test_c(self):
+        """Test the correct minimum 'hardened' and 'drained' loads are computed.
+
+
+        There is a single bucket.
+
+        """
+        def compute(outcome, substance, bound):
+            summary = BucketsSummary()
+            summary.hardened = \
+                SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+            summary.drained = \
+                SparseTimeseriesStub(datetime(2012, 1, 5), [0.3, 0.4])
+            return summary
+
+        bucket = Mock()
+        bucket.compute_load_summary = compute
+
+        summary = SummaryComputer({bucket: BucketOutcome()})
+        summary.interesting_attributes = ['hardened', 'drained']
+
+        min_summary, inc_summary = summary.compute('phosphate')
+
+        timeseries_hardened = \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+        timeseries_drained = \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.3, 0.4])
+
+        self.assertEqual(timeseries_hardened, min_summary.hardened)
+        self.assertEqual(timeseries_drained, min_summary.drained)
+
+    def test_d(self):
+        """Test the correct minimum 'hardened' load is computed.
+
+        There are two buckets.
+
+        """
+        def compute(outcome, substance, bound):
+            summary = BucketsSummary()
+            summary.hardened = \
+                SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
+            return summary
+
+        bucket2outcome = {}
+        bucket = Mock()
+        bucket.compute_load_summary = compute
+        bucket2outcome[bucket] = BucketOutcome()
+        bucket = Mock()
+        bucket.compute_load_summary = compute
+        bucket2outcome[bucket] = BucketOutcome()
+        assert 2 == len(bucket2outcome.keys())
+
+        summary = SummaryComputer(bucket2outcome)
+        summary.interesting_attributes = ['hardened']
+
+        min_summary, inc_summary = summary.compute('phosphate')
+
+        expected_timeseries = \
+            SparseTimeseriesStub(datetime(2012, 1, 5), [0.2, 0.4])
+
+        self.assertEqual(expected_timeseries, min_summary.hardened)
