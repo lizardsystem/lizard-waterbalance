@@ -63,30 +63,42 @@ class SummedLoadsFromBuckets(object):
     """Implements the calculation of the summed bucket loads.
 
     """
-    def __init__(self, start_date, end_date):
+    def __init__(self, start_date, end_date, bucket2outcome):
         self.start_date, self.end_date = start_date, end_date
+        self.bucket2outcome = bucket2outcome
 
-    def compute(self, substance='phosphate'):
-
+    def compute(self, substance):
         min_summary, inc_summary = self.compute_summary(substance)
-        min_loads = self.create_loads_from_summary(min_summary)
-        inc_loads = self.create_loads_from_summary(inc_summary)
-
+        min_loads = self._create_loads_from_summary(min_summary)
+        inc_loads = self._create_loads_from_summary(inc_summary)
         return min_loads, inc_loads
 
     def compute_summary(self, substance):
         """Compute and return the minimum and incremental the bucket loads.
 
-        This abstract method returns a tuple of two BucketSummary(s), where the
-        first summary contains the minimum bucket loads and the second the
+        This method returns a tuple of two BucketsSummary(s), where the first
+        summary contains the minimum bucket loads and the second the
         incremental bucket loads.
 
         The parameter specifies the substance for which to compute the load.
 
         """
-        assert False
+        min_summary = BucketsSummary()
+        inc_summary = BucketsSummary()
+        for bucket, outcome in self.bucket2outcome.items():
+            min_outcome = bucket.compute_load_summary(outcome, substance, 'min')
+            inc_outcome = bucket.compute_load_summary(outcome, substance, 'inc')
+            for attribute in self.interesting_attributes:
+                self._add_timeseries(min_summary, min_outcome, attribute)
+                self._add_timeseries(inc_summary, inc_outcome, attribute)
+        return min_summary, inc_summary
 
-    def create_loads_from_summary(self, summary):
+    def _add_timeseries(self, summary, timeseries, attribute):
+
+        new_timeseries = add_timeseries(getattr(summary, attribute), getattr(timeseries, attribute))
+        setattr(summary, attribute, new_timeseries)
+
+    def _create_loads_from_summary(self, summary):
         loads = []
         for attribute in self.interesting_attributes:
             load = Load(attribute)

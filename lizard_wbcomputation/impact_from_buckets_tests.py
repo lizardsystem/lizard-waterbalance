@@ -133,7 +133,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
             SparseTimeseriesStub(datetime(2012, 01, 05), [10.0, 20.0])
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
-        impact = SummedLoadsFromBuckets(start, end)
+        impact = SummedLoadsFromBuckets(start, end, {})
         impact.interesting_attributes = ['hardened']
         impact.compute_summary = lambda substance: (summary, BucketsSummary())
 
@@ -157,7 +157,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
             SparseTimeseriesStub(datetime(2012, 01, 05), [30.0, 40.0])
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
-        impact = SummedLoadsFromBuckets(start, end)
+        impact = SummedLoadsFromBuckets(start, end, {})
         impact.interesting_attributes = ['hardened']
         impact.compute_summary = lambda substance: (min_summary, incr_summary)
 
@@ -189,7 +189,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
             SparseTimeseriesStub(datetime(2012, 01, 05), [30.0, 40.0])
 
         start, end = datetime(2012, 1, 2), datetime(2012, 1, 4)
-        impact = SummedLoadsFromBuckets(start, end)
+        impact = SummedLoadsFromBuckets(start, end, {})
         impact.interesting_attributes = ['hardened', 'drained']
         impact.compute_summary = lambda substance: (summary, BucketsSummary())
 
@@ -240,19 +240,20 @@ class SummaryComputerTestSuite(TestCase):
         There is a single bucket.
 
         """
-        def compute(outcome, substance, bound):
+        def compute_load_summary(outcome, substance, bound):
             summary = BucketsSummary()
             summary.hardened = \
                 SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
             return summary
 
         bucket = Mock()
-        bucket.compute_load_summary = compute
+        bucket.compute_load_summary = compute_load_summary
 
-        summary = SummaryComputer({bucket: BucketOutcome()})
+        start, end = datetime(2012, 1, 9), datetime(2012, 1, 4)
+        summary = SummedLoadsFromBuckets(start, end, {bucket: BucketOutcome()})
         summary.interesting_attributes = ['hardened']
 
-        min_summary, inc_summary = summary.compute('phosphate')
+        min_summary, inc_summary = summary.compute_summary('phosphate')
 
         expected_timeseries = \
             SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2])
@@ -265,7 +266,7 @@ class SummaryComputerTestSuite(TestCase):
         There is a single bucket.
 
         """
-        def compute(outcome, substance, bound):
+        def compute_load_summary(outcome, substance, bound):
             summary = BucketsSummary()
             if bound == 'min':
                 summary.hardened = \
@@ -276,12 +277,13 @@ class SummaryComputerTestSuite(TestCase):
             return summary
 
         bucket = Mock()
-        bucket.compute_load_summary = compute
+        bucket.compute_load_summary = compute_load_summary
 
-        summary = SummaryComputer({bucket: BucketOutcome()})
+        start, end = datetime(2012, 1, 9), datetime(2012, 1, 4)
+        summary = SummedLoadsFromBuckets(start, end, {bucket: BucketOutcome()})
         summary.interesting_attributes = ['hardened']
 
-        min_summary, inc_summary = summary.compute('phosphate')
+        min_summary, inc_summary = summary.compute_summary('phosphate')
 
         min_timeseries, inc_timeseries = \
             SparseTimeseriesStub(datetime(2012, 1, 5), [0.1, 0.2]), \
