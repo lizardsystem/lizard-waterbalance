@@ -26,15 +26,14 @@
 #
 #******************************************************************************
 
-from datetime import timedelta
 import logging
 
 from lizard_wbcomputation.bucket_computer import BucketComputer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer2
 from lizard_wbcomputation.fraction_computer import FractionComputer
-from lizard_wbcomputation.impact_from_buckets import ImpactFromBuckets
-from lizard_wbcomputation.impact_from_buckets import SummedImpactFromBuckets
+from lizard_wbcomputation.impact_from_buckets import LoadSummary
+from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
 from lizard_wbcomputation.level_control_computer import LevelControlComputer
@@ -45,8 +44,6 @@ from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseries
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
-from timeseries.timeseriesstub import TimeseriesStub
-from timeseries.timeseriesstub import multiply_timeseries
 
 
 logger = logging.getLogger(__name__)
@@ -660,18 +657,25 @@ class WaterbalanceComputer2(object):
             substance_string, flows, concentrations_incremental, start_date,
             end_date, nutricalc_incr)
 
-        bucket2outcome = self.get_buckets_timeseries(start_date, end_date)
-
-        summed_loads = SummedImpactFromBuckets(start_date, end_date)
-        summed_loads.compute_bucket2load_timeseries = ImpactFromBuckets(bucket2outcome).compute
-        summed_loads.compute_buckets_summary = BucketsSummarizer().compute
-
-        bucket_loads = summed_loads.compute(substance_string)
-        print bucket_loads[0], bucket_loads[1]
+        bucket_loads = self._compute_bucket_loads(start_date, end_date, substance_string)
         load = load + bucket_loads[0]
         load_incremental = load_incremental + bucket_loads[1]
 
         return load, load_incremental
+
+    def _compute_bucket_loads(self, start_date, end_date, substance_string):
+
+        bucket2outcome = self.get_buckets_timeseries(start_date, end_date)
+
+        summed_loads = SummedLoadsFromBuckets(start_date, end_date, bucket2outcome)
+        summed_loads.interesting_labels = ['hardened', 'drained', 'undrained', \
+            'flow_off', 'sewer']
+        summed_loads.load_summary = LoadSummary(BucketsSummarizer())
+        summed_loads.load_summary.interesting_labels = summed_loads.interesting_labels
+        summed_loads.load_summary.start_date = start_date
+        summed_loads.load_summary.end_date = end_date
+
+        return summed_loads.compute(substance_string)
 
     def get_impact_timeseries(self,
             start_date, end_date, substance_string='phosphate'):
