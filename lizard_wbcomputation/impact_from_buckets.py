@@ -26,11 +26,11 @@ import logging
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import multiply_timeseries
 
+from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.load_computer import Load
 
 logger = logging.getLogger(__name__)
-
 
 class SummedLoadsFromBuckets(object):
     """Implements the calculation of the summed bucket loads.
@@ -59,8 +59,8 @@ class SummedLoadsFromBuckets(object):
         min_summary = BucketsSummary()
         inc_summary = BucketsSummary()
         for bucket, outcome in self.bucket2outcome.items():
-            min_outcome = self.load_summary.compute(bucket, outcome, substance, 'min')
-            inc_outcome = self.load_summary.compute(bucket, outcome, substance, 'incr')
+            min_outcome = self.summary_load.compute(bucket, outcome, substance, 'min')
+            inc_outcome = self.summary_load.compute(bucket, outcome, substance, 'incr')
             for attribute in self.interesting_labels:
                 self._add_timeseries(min_summary, min_outcome, attribute)
                 self._add_timeseries(inc_summary, inc_outcome, attribute)
@@ -79,7 +79,8 @@ class SummedLoadsFromBuckets(object):
         return loads
 
 
-class LoadSummary(object):
+class SummaryLoad(object):
+    """Implements the calculation of the loads of a single bucket."""
 
     def __init__(self, buckets_summarizer):
         self.summarizer = buckets_summarizer
@@ -89,22 +90,22 @@ class LoadSummary(object):
 
     def compute(self, bucket, outcome, substance, bound):
         self._substance, self._bound = substance, bound
-        bucket2outcome = {bucket: outcome}
-        summary = self._compute_summary(bucket2outcome)
-        return self._compute_load_summary(bucket, summary)
+        load_outcome = self._compute_load(bucket, outcome)
+        bucket2load_outcome = {bucket: load_outcome}
+        return self._compute_summary(bucket2load_outcome)
 
-    def _compute_summary(self, bucket2outcome):
-        return self.summarizer.compute(bucket2outcome, self.start_date, self.end_date)
+    def _compute_load(self, bucket, outcome):
+        load_outcome = BucketOutcome()
+        concentration = self._get_concentration(bucket, 'flow_off')
+        load_outcome.flow_off = multiply_timeseries(outcome.flow_off, concentration)
+        concentration = self._get_concentration(bucket, 'drainage_indraft')
+        load_outcome.net_drainage = multiply_timeseries(outcome.net_drainage, concentration)
+        return load_outcome
 
-    def _compute_load_summary(self, bucket, summary):
-        load_summary = BucketsSummary()
-        for label in self.interesting_labels:
-            timeseries = getattr(summary, label)
-            concentration = self._get_concentration(bucket, label)
-            load_timeseries = multiply_timeseries(timeseries, concentration)
-            setattr(load_summary, label, load_timeseries)
-        return load_summary
+    def _compute_summary(self, bucket2load_outcome):
+        return self.summarizer.compute(bucket2load_outcome, self.start_date, self.end_date)
 
     def _get_concentration(self, bucket, label):
         attribute = '%s_concentr_%s_%s' % (self._bound, self._substance, label)
         return getattr(bucket, attribute)
+

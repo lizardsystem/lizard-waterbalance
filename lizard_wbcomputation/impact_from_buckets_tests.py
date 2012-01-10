@@ -33,8 +33,8 @@ from lizard_wbcomputation.bucket_computer import BucketOutcome
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.bucket_types import BucketTypes
-from lizard_wbcomputation.impact_from_buckets import LoadSummary
 from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
+from lizard_wbcomputation.impact_from_buckets import SummaryLoad
 
 
 class SummedLoadsFromBuckets_compute_TestSuite(TestCase):
@@ -126,7 +126,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         There is a single bucket.
 
         """
-        class StubLoadSummary(object):
+        class StubSummaryLoad(object):
 
             def compute(self, bucket, outcome, substance, bound):
                 summary = BucketsSummary()
@@ -134,14 +134,14 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
                     SparseTimeseriesStub(datetime(2012, 1, 9), [0.1, 0.2])
                 return summary
 
-        load_summary = StubLoadSummary()
+        summary_load = StubSummaryLoad()
 
         bucket = Mock()
 
         start, end = datetime(2012, 1, 9), datetime(2012, 1, 10)
         summary = SummedLoadsFromBuckets(start, end, {bucket: BucketOutcome()})
         summary.interesting_labels = ['hardened']
-        summary.load_summary = load_summary
+        summary.summary_load = summary_load
 
         min_summary, inc_summary = summary.compute_summary('phosphate')
 
@@ -156,7 +156,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         There is a single bucket.
 
         """
-        class StubLoadSummary(object):
+        class StubSummaryLoad(object):
 
             def compute(self, bucket, outcome, substance, bound):
                 summary = BucketsSummary()
@@ -173,7 +173,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         start, end = datetime(2012, 1, 9), datetime(2012, 1, 9)
         summary = SummedLoadsFromBuckets(start, end, {bucket: BucketOutcome()})
         summary.interesting_labels = ['hardened']
-        summary.load_summary = StubLoadSummary()
+        summary.summary_load = StubSummaryLoad()
 
         min_summary, inc_summary = summary.compute_summary('phosphate')
 
@@ -190,7 +190,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         There is a single bucket.
 
         """
-        class StubLoadSummary(object):
+        class StubSummaryLoad(object):
 
             def compute(self, bucket, outcome, substance, bound):
                 summary = BucketsSummary()
@@ -205,7 +205,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         start, end = datetime(2012, 1, 9), datetime(2012, 1, 10)
         summary = SummedLoadsFromBuckets(start, end, {bucket: BucketOutcome()})
         summary.interesting_labels = ['hardened', 'drained']
-        summary.load_summary = StubLoadSummary()
+        summary.summary_load = StubSummaryLoad()
 
         min_summary, inc_summary = summary.compute_summary('phosphate')
 
@@ -223,7 +223,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         There are two buckets.
 
         """
-        class StubLoadSummary(object):
+        class StubSummaryLoad(object):
 
             def compute(self, bucket, outcome, substance, bound):
                 summary = BucketsSummary()
@@ -241,7 +241,7 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         start, end = datetime(2012, 1, 9), datetime(2012, 1, 10)
         summary = SummedLoadsFromBuckets(start, end, bucket2outcome)
         summary.interesting_labels = ['hardened']
-        summary.load_summary = StubLoadSummary()
+        summary.summary_load = StubSummaryLoad()
 
         min_summary, inc_summary = summary.compute_summary('phosphate')
 
@@ -251,8 +251,8 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
         self.assertEqual(expected_timeseries, min_summary.hardened)
 
 
-class LoadSummaryTestSuite(TestCase):
-    """Implements a test suite for LoadSummary.
+class SummaryLoadTestSuite(TestCase):
+    """Implements a test suite for SummaryLoad.
 
     This test suite assumes there is a single bucket with a hardened surface.
 
@@ -262,37 +262,36 @@ class LoadSummaryTestSuite(TestCase):
         self.today = datetime(2012, 1, 9)
         self.bucket = Mock()
         self.bucket.surface_type = BucketTypes.HARDENED_SURFACE
-        self.bucket.min_concentr_phosphate_hardened = 0.2
-        self.bucket.incr_concentr_phosphate_hardened = 0.1
-        self.bucket.min_concentr_phosphate_drained = 0.3
-        self.bucket.incr_concentr_phosphate_drained = 0.4
+        self.bucket.min_concentr_phosphate_flow_off = 0.2
+        self.bucket.incr_concentr_phosphate_flow_off = 0.1
+        self.bucket.min_concentr_phosphate_drainage_indraft = 0.3
+        self.bucket.incr_concentr_phosphate_drainage_indraft = 0.4
         self.outcome = BucketOutcome()
         self.outcome.flow_off.add_value(self.today, -10.0)
         self.outcome.net_drainage.add_value(self.today, -20.0)
 
     def test_a(self):
         """Test the minimum phosphate load of a hardened bucket flow."""
-        load_summary = self.create_load_summary()
-        load_summary.interesting_labels = ['hardened']
-        summary = load_summary.compute(self.bucket, self.outcome, 'phosphate', 'min')
+        summary_load = self.create_summary_load()
+        summary_load.interesting_labels = ['hardened']
+        summary = summary_load.compute(self.bucket, self.outcome, 'phosphate', 'min')
         self.assertEqual(summary.hardened, SparseTimeseriesStub(self.today, [0.2 * 10.0]))
 
-    def create_load_summary(self):
-        load_summary = LoadSummary(BucketsSummarizer())
-        load_summary.set_time_range(self.today, self.today + timedelta(1))
-        return load_summary
+    def create_summary_load(self):
+        summary_load = SummaryLoad(BucketsSummarizer())
+        summary_load.set_time_range(self.today, self.today + timedelta(1))
+        return summary_load
 
     def test_b(self):
         """Test the incremental phosphate load of a hardened bucket flow."""
-        load_summary = self.create_load_summary()
-        load_summary.interesting_labels = ['hardened']
-        summary = load_summary.compute(self.bucket, self.outcome, 'phosphate', 'incr')
+        summary_load = self.create_summary_load()
+        summary_load.interesting_labels = ['hardened']
+        summary = summary_load.compute(self.bucket, self.outcome, 'phosphate', 'incr')
         self.assertEqual(summary.hardened, SparseTimeseriesStub(self.today, [0.1 * 10.0]))
 
     def test_c(self):
         """Test the minimal phosphate load of a drained bucket flow."""
-        load_summary = self.create_load_summary()
-        load_summary.interesting_labels = ['drained']
-        summary = load_summary.compute(self.bucket, self.outcome, 'phosphate', 'min')
+        summary_load = self.create_summary_load()
+        summary_load.interesting_labels = ['drained']
+        summary = summary_load.compute(self.bucket, self.outcome, 'phosphate', 'min')
         self.assertEqual(summary.drained, SparseTimeseriesStub(self.today, [0.3 * 0.0]))
-
