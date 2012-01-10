@@ -21,11 +21,14 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 import logging
 
 from timeseries.timeseriesstub import add_timeseries
+from timeseries.timeseriesstub import multiply_timeseries
 
 from lizard_wbcomputation.bucket_computer import BucketOutcome
+from lizard_wbcomputation.bucket_summarizer import BucketSummarizer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
 from lizard_wbcomputation.load_computer import Load
 
@@ -57,7 +60,6 @@ class ImpactFromBuckets(object):
 
     def get_concentration(self, bucket, type, substance):
         return getattr(bucket, '%s_concentr_%s_flow_off' % (type, substance))
-
 
 class SummedLoadsFromBuckets(object):
     """Implements the calculation of the summed bucket loads.
@@ -104,3 +106,25 @@ class SummedLoadsFromBuckets(object):
             load.timeseries = getattr(summary, attribute)
             loads.append(load)
         return loads
+
+class LoadSummary(object):
+
+    def __init__(self, buckets_summarizer):
+        self.buckets_summarizer = buckets_summarizer
+
+    def compute(self, start_date, end_date, bucket, outcome, substance, bound):
+
+        summary = self._compute_summary(start_date, end_date, bucket, outcome)
+
+        attribute = '%s_concentr_%s_hardened' % (bound, substance)
+
+        load_summary = BucketsSummary()
+        load_summary.hardened = multiply_timeseries(summary.hardened, getattr(bucket, attribute))
+
+        return load_summary
+
+    def _compute_summary(self, start_date, end_date, bucket, outcome):
+
+        return self.buckets_summarizer.compute({bucket: outcome}, start_date, end_date)
+
+

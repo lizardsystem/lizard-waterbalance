@@ -22,6 +22,7 @@
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+from datetime import timedelta
 from unittest import TestCase
 
 from mock import Mock
@@ -29,7 +30,10 @@ from mock import Mock
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 from lizard_wbcomputation.bucket_computer import BucketOutcome
+from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummary
+from lizard_wbcomputation.bucket_types import BucketTypes
+from lizard_wbcomputation.impact_from_buckets import LoadSummary
 from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
 
 # class ImpactFromBucketsTestSuite(TestCase):
@@ -323,3 +327,21 @@ class SummedLoadsFromBucketsTestSuite(TestCase):
             SparseTimeseriesStub(datetime(2012, 1, 9), [0.2, 0.4])
 
         self.assertEqual(expected_timeseries, min_summary.hardened)
+
+
+class LoadSummaryTestSuite(TestCase):
+
+    def setUp(self):
+        self.today = datetime(2012, 1, 9)
+
+    def test_a(self):
+        """construction"""
+        bucket = Mock()
+        bucket.surface_type = BucketTypes.HARDENED_SURFACE
+        bucket.min_concentr_phosphate_hardened = 0.2
+        outcome = BucketOutcome()
+        outcome.flow_off.add_value(self.today, 10.0)
+        outcome.net_drainage.add_value(self.today, 20.0)
+        start, end = self.today, self.today + timedelta(1)
+        summary = LoadSummary(BucketsSummarizer()).compute(start, end, bucket, outcome, 'phosphate', 'min')
+        self.assertEqual(summary.hardened, SparseTimeseriesStub(self.today, [-1 * 0.2 * 10.0]))
