@@ -60,7 +60,7 @@ class SummedLoadsFromBuckets(object):
         inc_summary = BucketsSummary()
         for bucket, outcome in self.bucket2outcome.items():
             min_outcome = self.load_summary.compute(bucket, outcome, substance, 'min')
-            inc_outcome = self.load_summary.compute(bucket, outcome, substance, 'inc')
+            inc_outcome = self.load_summary.compute(bucket, outcome, substance, 'incr')
             for attribute in self.interesting_labels:
                 self._add_timeseries(min_summary, min_outcome, attribute)
                 self._add_timeseries(inc_summary, inc_outcome, attribute)
