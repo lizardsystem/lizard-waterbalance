@@ -395,14 +395,8 @@ class Bucket(object):
         # define nitrogen
         self.min_concentr_nitrogen_flow_off = None
         self.min_concentr_nitrogen_drainage_indraft = None
-        self.min_concentr_nitrogen_hardened = None
-        self.min_concentr_nitrogen_drained = None
-        self.min_concentr_nitrogen_sewer = None
         self.incr_concentr_nitrogen_flow_off = None
         self.incr_concentr_nitrogen_drainage_indraft = None
-        self.incr_concentr_nitrogen_hardened = None
-        self.incr_concentr_nitrogen_drained = None
-        self.incr_concentr_nitrogen_sewer = None
 
         return self
 
@@ -465,18 +459,6 @@ class Bucket(object):
         return self.get_concentration('undrained', 'stof_lower_concentration')
 
     @property
-    def min_concentr_phosphate_hardened(self):
-        return self.get_concentration('hardened', 'stof_lower_concentration')
-
-    @property
-    def min_concentr_phosphate_drained(self):
-        return self.get_concentration('drained', 'stof_lower_concentration')
-
-    @property
-    def min_concentr_phosphate_sewer(self):
-        return self.get_concentration('sewer', 'stof_lower_concentration')
-
-    @property
     def incr_concentr_phosphate_flow_off(self):
         return self.get_concentration('flow_off', 'stof_increment')
 
@@ -484,17 +466,6 @@ class Bucket(object):
     def incr_concentr_phosphate_drainage_indraft(self):
         return self.get_concentration('undrained', 'stof_increment')
 
-    @property
-    def incr_concentr_phosphate_hardened(self):
-        return self.get_concentration('hardened', 'stof_increment')
-
-    @property
-    def incr_concentr_phosphate_drained(self):
-        return self.get_concentration('drained', 'stof_increment')
-
-    @property
-    def incr_concentr_phosphate_sewer(self):
-        return self.get_concentration('sewer', 'stof_increment')
 
 class PumpingStation(object):
 
