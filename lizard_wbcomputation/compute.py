@@ -32,7 +32,7 @@ from lizard_wbcomputation.bucket_computer import BucketComputer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer2
 from lizard_wbcomputation.fraction_computer import FractionComputer
-from lizard_wbcomputation.impact_from_buckets import LoadSummary
+from lizard_wbcomputation.impact_from_buckets import SummaryLoad
 from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
 from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
@@ -670,10 +670,9 @@ class WaterbalanceComputer2(object):
         summed_loads = SummedLoadsFromBuckets(start_date, end_date, bucket2outcome)
         summed_loads.interesting_labels = ['hardened', 'drained', 'undrained', \
             'flow_off', 'sewer']
-        summed_loads.load_summary = LoadSummary(BucketsSummarizer())
-        summed_loads.load_summary.interesting_labels = summed_loads.interesting_labels
-        summed_loads.load_summary.start_date = start_date
-        summed_loads.load_summary.end_date = end_date
+        summed_loads.summary_load = SummaryLoad(BucketsSummarizer())
+        summed_loads.summary_load.start_date = start_date
+        summed_loads.summary_load.end_date = end_date
 
         return summed_loads.compute(substance_string)
 
