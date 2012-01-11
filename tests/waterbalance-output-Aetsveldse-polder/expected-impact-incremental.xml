@@ -1526,13 +1526,13 @@
     </header>
     <event date="2000-01-01" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-02" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-01-03" flag="0" time="00:00:00" value="57.4541731141"/>
-    <event date="2000-01-04" flag="0" time="00:00:00" value="25.4007923241"/>
+    <event date="2000-01-03" flag="0" time="00:00:00" value="17.2362519342"/>
+    <event date="2000-01-04" flag="0" time="00:00:00" value="7.62023769724"/>
     <event date="2000-01-05" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-01-06" flag="0" time="00:00:00" value="4.23346538736"/>
-    <event date="2000-01-07" flag="0" time="00:00:00" value="0.604780769622"/>
-    <event date="2000-01-08" flag="0" time="00:00:00" value="5.4430269266"/>
-    <event date="2000-01-09" flag="0" time="00:00:00" value="0.604780769622"/>
+    <event date="2000-01-06" flag="0" time="00:00:00" value="1.27003961621"/>
+    <event date="2000-01-07" flag="0" time="00:00:00" value="0.181434230887"/>
+    <event date="2000-01-08" flag="0" time="00:00:00" value="1.63290807798"/>
+    <event date="2000-01-09" flag="0" time="00:00:00" value="0.181434230887"/>
     <event date="2000-01-10" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-11" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-12" flag="0" time="00:00:00" value="0.0"/>
@@ -1544,54 +1544,54 @@
     <event date="2000-01-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-20" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-01-21" flag="0" time="00:00:00" value="16.3290807798"/>
-    <event date="2000-01-22" flag="0" time="00:00:00" value="5.4430269266"/>
+    <event date="2000-01-21" flag="0" time="00:00:00" value="4.89872423394"/>
+    <event date="2000-01-22" flag="0" time="00:00:00" value="1.63290807798"/>
     <event date="2000-01-23" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-24" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-26" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-01-27" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-01-28" flag="0" time="00:00:00" value="73.1784731243"/>
-    <event date="2000-01-29" flag="0" time="00:00:00" value="10.2812730836"/>
-    <event date="2000-01-30" flag="0" time="00:00:00" value="2.41912307849"/>
-    <event date="2000-01-31" flag="0" time="00:00:00" value="4.23346538736"/>
-    <event date="2000-02-01" flag="0" time="00:00:00" value="71.3641308154"/>
+    <event date="2000-01-28" flag="0" time="00:00:00" value="21.9535419373"/>
+    <event date="2000-01-29" flag="0" time="00:00:00" value="3.08438192507"/>
+    <event date="2000-01-30" flag="0" time="00:00:00" value="0.725736923547"/>
+    <event date="2000-01-31" flag="0" time="00:00:00" value="1.27003961621"/>
+    <event date="2000-02-01" flag="0" time="00:00:00" value="21.4092392446"/>
     <event date="2000-02-02" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-02-03" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-04" flag="0" time="00:00:00" value="15.1195192406"/>
+    <event date="2000-02-04" flag="0" time="00:00:00" value="4.53585577217"/>
     <event date="2000-02-05" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-06" flag="0" time="00:00:00" value="18.7482038583"/>
-    <event date="2000-02-07" flag="0" time="00:00:00" value="15.1195192406"/>
-    <event date="2000-02-08" flag="0" time="00:00:00" value="44.7537769521"/>
+    <event date="2000-02-06" flag="0" time="00:00:00" value="5.62446115749"/>
+    <event date="2000-02-07" flag="0" time="00:00:00" value="4.53585577217"/>
+    <event date="2000-02-08" flag="0" time="00:00:00" value="13.4261330856"/>
     <event date="2000-02-09" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-10" flag="0" time="00:00:00" value="58.6637346534"/>
+    <event date="2000-02-10" flag="0" time="00:00:00" value="17.599120396"/>
     <event date="2000-02-11" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-12" flag="0" time="00:00:00" value="15.1195192406"/>
+    <event date="2000-02-12" flag="0" time="00:00:00" value="4.53585577217"/>
     <event date="2000-02-13" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-14" flag="0" time="00:00:00" value="4.23346538736"/>
-    <event date="2000-02-15" flag="0" time="00:00:00" value="48.9872423394"/>
-    <event date="2000-02-16" flag="0" time="00:00:00" value="32.05338079"/>
-    <event date="2000-02-17" flag="0" time="00:00:00" value="13.3051769317"/>
-    <event date="2000-02-18" flag="0" time="00:00:00" value="30.8438192507"/>
-    <event date="2000-02-19" flag="0" time="00:00:00" value="0.604780769622"/>
+    <event date="2000-02-14" flag="0" time="00:00:00" value="1.27003961621"/>
+    <event date="2000-02-15" flag="0" time="00:00:00" value="14.6961727018"/>
+    <event date="2000-02-16" flag="0" time="00:00:00" value="9.616014237"/>
+    <event date="2000-02-17" flag="0" time="00:00:00" value="3.99155307951"/>
+    <event date="2000-02-18" flag="0" time="00:00:00" value="9.25314577522"/>
+    <event date="2000-02-19" flag="0" time="00:00:00" value="0.181434230887"/>
     <event date="2000-02-20" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-02-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-02-22" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-23" flag="0" time="00:00:00" value="27.8199154026"/>
-    <event date="2000-02-24" flag="0" time="00:00:00" value="90.7171154434"/>
+    <event date="2000-02-23" flag="0" time="00:00:00" value="8.34597462079"/>
+    <event date="2000-02-24" flag="0" time="00:00:00" value="27.215134633"/>
     <event date="2000-02-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-02-26" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-02-27" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-02-28" flag="0" time="00:00:00" value="21.7721077064"/>
-    <event date="2000-02-29" flag="0" time="00:00:00" value="60.4780769622"/>
+    <event date="2000-02-28" flag="0" time="00:00:00" value="6.53163231192"/>
+    <event date="2000-02-29" flag="0" time="00:00:00" value="18.1434230887"/>
     <event date="2000-03-01" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-03-02" flag="0" time="00:00:00" value="172.967300112"/>
-    <event date="2000-03-03" flag="0" time="00:00:00" value="0.604780769622"/>
-    <event date="2000-03-04" flag="0" time="00:00:00" value="13.9099577013"/>
+    <event date="2000-03-02" flag="0" time="00:00:00" value="51.8901900336"/>
+    <event date="2000-03-03" flag="0" time="00:00:00" value="0.181434230887"/>
+    <event date="2000-03-04" flag="0" time="00:00:00" value="4.17298731039"/>
     <event date="2000-03-05" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-06" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-03-07" flag="0" time="00:00:00" value="55.0350500356"/>
-    <event date="2000-03-08" flag="0" time="00:00:00" value="35.6820654077"/>
+    <event date="2000-03-07" flag="0" time="00:00:00" value="16.5105150107"/>
+    <event date="2000-03-08" flag="0" time="00:00:00" value="10.7046196223"/>
     <event date="2000-03-09" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-10" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-11" flag="0" time="00:00:00" value="0.0"/>
@@ -1607,10 +1607,10 @@
     <event date="2000-03-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-22" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-23" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-03-24" flag="0" time="00:00:00" value="18.7482038583"/>
-    <event date="2000-03-25" flag="0" time="00:00:00" value="51.4063654179"/>
-    <event date="2000-03-26" flag="0" time="00:00:00" value="2.41912307849"/>
-    <event date="2000-03-27" flag="0" time="00:00:00" value="0.604780769622"/>
+    <event date="2000-03-24" flag="0" time="00:00:00" value="5.62446115749"/>
+    <event date="2000-03-25" flag="0" time="00:00:00" value="15.4219096254"/>
+    <event date="2000-03-26" flag="0" time="00:00:00" value="0.725736923547"/>
+    <event date="2000-03-27" flag="0" time="00:00:00" value="0.181434230887"/>
     <event date="2000-03-28" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-03-30" flag="0" time="00:00:00" value="0.0"/>
@@ -1627,17 +1627,17 @@
     <event date="2000-04-10" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-11" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-12" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-04-13" flag="0" time="00:00:00" value="18.1434230887"/>
-    <event date="2000-04-14" flag="0" time="00:00:00" value="23.5864500153"/>
-    <event date="2000-04-15" flag="0" time="00:00:00" value="13.9099577013"/>
-    <event date="2000-04-16" flag="0" time="00:00:00" value="1.20956153924"/>
-    <event date="2000-04-17" flag="0" time="00:00:00" value="41.7298731039"/>
+    <event date="2000-04-13" flag="0" time="00:00:00" value="5.4430269266"/>
+    <event date="2000-04-14" flag="0" time="00:00:00" value="7.07593500458"/>
+    <event date="2000-04-15" flag="0" time="00:00:00" value="4.17298731039"/>
+    <event date="2000-04-16" flag="0" time="00:00:00" value="0.362868461773"/>
+    <event date="2000-04-17" flag="0" time="00:00:00" value="12.5189619312"/>
     <event date="2000-04-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-20" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-21" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-04-22" flag="0" time="00:00:00" value="16.3290807798"/>
-    <event date="2000-04-23" flag="0" time="00:00:00" value="12.7003961621"/>
+    <event date="2000-04-22" flag="0" time="00:00:00" value="4.89872423394"/>
+    <event date="2000-04-23" flag="0" time="00:00:00" value="3.81011884862"/>
     <event date="2000-04-24" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-04-26" flag="0" time="00:00:00" value="0.0"/>
@@ -1660,28 +1660,28 @@
     <event date="2000-05-13" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-14" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-15" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-05-16" flag="0" time="00:00:00" value="39.9155307951"/>
+    <event date="2000-05-16" flag="0" time="00:00:00" value="11.9746592385"/>
     <event date="2000-05-17" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-20" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-05-21" flag="0" time="00:00:00" value="13.3051769317"/>
+    <event date="2000-05-21" flag="0" time="00:00:00" value="3.99155307951"/>
     <event date="2000-05-22" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-05-23" flag="0" time="00:00:00" value="38.7059692558"/>
-    <event date="2000-05-24" flag="0" time="00:00:00" value="41.7298731039"/>
+    <event date="2000-05-23" flag="0" time="00:00:00" value="11.6117907768"/>
+    <event date="2000-05-24" flag="0" time="00:00:00" value="12.5189619312"/>
     <event date="2000-05-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-05-26" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-05-27" flag="0" time="00:00:00" value="16.3290807798"/>
-    <event date="2000-05-28" flag="0" time="00:00:00" value="68.945007737"/>
+    <event date="2000-05-27" flag="0" time="00:00:00" value="4.89872423394"/>
+    <event date="2000-05-28" flag="0" time="00:00:00" value="20.6835023211"/>
     <event date="2000-05-29" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-05-30" flag="0" time="00:00:00" value="19.9577653975"/>
+    <event date="2000-05-30" flag="0" time="00:00:00" value="5.98732961926"/>
     <event date="2000-05-31" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-01" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-02" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-06-03" flag="0" time="00:00:00" value="0.604780769622"/>
+    <event date="2000-06-03" flag="0" time="00:00:00" value="0.181434230887"/>
     <event date="2000-06-04" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-05" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-06-06" flag="0" time="00:00:00" value="6.04780769622"/>
+    <event date="2000-06-06" flag="0" time="00:00:00" value="1.81434230887"/>
     <event date="2000-06-07" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-08" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-09" flag="0" time="00:00:00" value="0.0"/>
@@ -1689,7 +1689,7 @@
     <event date="2000-06-11" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-12" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-13" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-06-14" flag="0" time="00:00:00" value="6.65258846585"/>
+    <event date="2000-06-14" flag="0" time="00:00:00" value="1.99577653975"/>
     <event date="2000-06-15" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-16" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-17" flag="0" time="00:00:00" value="0.0"/>
@@ -1697,31 +1697,31 @@
     <event date="2000-06-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-20" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-21" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-06-22" flag="0" time="00:00:00" value="15.7243000102"/>
-    <event date="2000-06-23" flag="0" time="00:00:00" value="42.3346538736"/>
-    <event date="2000-06-24" flag="0" time="00:00:00" value="16.9338615494"/>
+    <event date="2000-06-22" flag="0" time="00:00:00" value="4.71729000306"/>
+    <event date="2000-06-23" flag="0" time="00:00:00" value="12.7003961621"/>
+    <event date="2000-06-24" flag="0" time="00:00:00" value="5.08015846483"/>
     <event date="2000-06-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-26" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-27" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-28" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-06-30" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-07-01" flag="0" time="00:00:00" value="31.4486000204"/>
-    <event date="2000-07-02" flag="0" time="00:00:00" value="67.7354461977"/>
+    <event date="2000-07-01" flag="0" time="00:00:00" value="9.43458000611"/>
+    <event date="2000-07-02" flag="0" time="00:00:00" value="20.3206338593"/>
     <event date="2000-07-03" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-04" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-05" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-06" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-07" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-07-08" flag="0" time="00:00:00" value="1.20956153924"/>
-    <event date="2000-07-09" flag="0" time="00:00:00" value="225.583227069"/>
+    <event date="2000-07-08" flag="0" time="00:00:00" value="0.362868461773"/>
+    <event date="2000-07-09" flag="0" time="00:00:00" value="67.6749681208"/>
     <event date="2000-07-10" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-11" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-12" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-07-13" flag="0" time="00:00:00" value="52.0111461875"/>
-    <event date="2000-07-14" flag="0" time="00:00:00" value="21.1673269368"/>
-    <event date="2000-07-15" flag="0" time="00:00:00" value="15.1195192406"/>
-    <event date="2000-07-16" flag="0" time="00:00:00" value="3.62868461773"/>
+    <event date="2000-07-13" flag="0" time="00:00:00" value="15.6033438563"/>
+    <event date="2000-07-14" flag="0" time="00:00:00" value="6.35019808104"/>
+    <event date="2000-07-15" flag="0" time="00:00:00" value="4.53585577217"/>
+    <event date="2000-07-16" flag="0" time="00:00:00" value="1.08860538532"/>
     <event date="2000-07-17" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-19" flag="0" time="00:00:00" value="0.0"/>
@@ -1729,10 +1729,10 @@
     <event date="2000-07-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-22" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-23" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-07-24" flag="0" time="00:00:00" value="93.7410192915"/>
+    <event date="2000-07-24" flag="0" time="00:00:00" value="28.1223057874"/>
     <event date="2000-07-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-26" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-07-27" flag="0" time="00:00:00" value="47.1729000306"/>
+    <event date="2000-07-27" flag="0" time="00:00:00" value="14.1518700092"/>
     <event date="2000-07-28" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-07-30" flag="0" time="00:00:00" value="0.0"/>
@@ -1756,7 +1756,7 @@
     <event date="2000-08-17" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-19" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-08-20" flag="0" time="00:00:00" value="48.3824615698"/>
+    <event date="2000-08-20" flag="0" time="00:00:00" value="14.5147384709"/>
     <event date="2000-08-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-22" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-23" flag="0" time="00:00:00" value="0.0"/>
@@ -1764,25 +1764,25 @@
     <event date="2000-08-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-26" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-27" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-08-28" flag="0" time="00:00:00" value="11.4908346228"/>
+    <event date="2000-08-28" flag="0" time="00:00:00" value="3.44725038685"/>
     <event date="2000-08-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-08-30" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-08-31" flag="0" time="00:00:00" value="3.02390384811"/>
-    <event date="2000-09-01" flag="0" time="00:00:00" value="47.7776808002"/>
-    <event date="2000-09-02" flag="0" time="00:00:00" value="33.8677230989"/>
-    <event date="2000-09-03" flag="0" time="00:00:00" value="9.67649231396"/>
+    <event date="2000-08-31" flag="0" time="00:00:00" value="0.907171154434"/>
+    <event date="2000-09-01" flag="0" time="00:00:00" value="14.3333042401"/>
+    <event date="2000-09-02" flag="0" time="00:00:00" value="10.1603169297"/>
+    <event date="2000-09-03" flag="0" time="00:00:00" value="2.90294769419"/>
     <event date="2000-09-04" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-05" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-09-06" flag="0" time="00:00:00" value="30.8438192507"/>
+    <event date="2000-09-06" flag="0" time="00:00:00" value="9.25314577522"/>
     <event date="2000-09-07" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-09-08" flag="0" time="00:00:00" value="42.3346538736"/>
+    <event date="2000-09-08" flag="0" time="00:00:00" value="12.7003961621"/>
     <event date="2000-09-09" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-10" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-11" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-12" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-13" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-14" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-09-15" flag="0" time="00:00:00" value="159.057342411"/>
+    <event date="2000-09-15" flag="0" time="00:00:00" value="47.7172027232"/>
     <event date="2000-09-16" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-17" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-18" flag="0" time="00:00:00" value="0.0"/>
@@ -1792,103 +1792,103 @@
     <event date="2000-09-22" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-23" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-24" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-09-25" flag="0" time="00:00:00" value="78.6215000509"/>
-    <event date="2000-09-26" flag="0" time="00:00:00" value="6.65258846585"/>
-    <event date="2000-09-27" flag="0" time="00:00:00" value="12.0956153924"/>
-    <event date="2000-09-28" flag="0" time="00:00:00" value="0.604780769622"/>
+    <event date="2000-09-25" flag="0" time="00:00:00" value="23.5864500153"/>
+    <event date="2000-09-26" flag="0" time="00:00:00" value="1.99577653975"/>
+    <event date="2000-09-27" flag="0" time="00:00:00" value="3.62868461773"/>
+    <event date="2000-09-28" flag="0" time="00:00:00" value="0.181434230887"/>
     <event date="2000-09-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-09-30" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-01" flag="0" time="00:00:00" value="12.0956153924"/>
+    <event date="2000-10-01" flag="0" time="00:00:00" value="3.62868461773"/>
     <event date="2000-10-02" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-03" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-04" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-05" flag="0" time="00:00:00" value="57.4541731141"/>
-    <event date="2000-10-06" flag="0" time="00:00:00" value="13.3051769317"/>
+    <event date="2000-10-05" flag="0" time="00:00:00" value="17.2362519342"/>
+    <event date="2000-10-06" flag="0" time="00:00:00" value="3.99155307951"/>
     <event date="2000-10-07" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-08" flag="0" time="00:00:00" value="50.8015846483"/>
-    <event date="2000-10-09" flag="0" time="00:00:00" value="30.8438192507"/>
-    <event date="2000-10-10" flag="0" time="00:00:00" value="70.1545692762"/>
-    <event date="2000-10-11" flag="0" time="00:00:00" value="16.3290807798"/>
+    <event date="2000-10-08" flag="0" time="00:00:00" value="15.2404753945"/>
+    <event date="2000-10-09" flag="0" time="00:00:00" value="9.25314577522"/>
+    <event date="2000-10-10" flag="0" time="00:00:00" value="21.0463707829"/>
+    <event date="2000-10-11" flag="0" time="00:00:00" value="4.89872423394"/>
     <event date="2000-10-12" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-13" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-14" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-15" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-16" flag="0" time="00:00:00" value="61.0828577319"/>
+    <event date="2000-10-16" flag="0" time="00:00:00" value="18.3248573196"/>
     <event date="2000-10-17" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-18" flag="0" time="00:00:00" value="71.9689115851"/>
+    <event date="2000-10-18" flag="0" time="00:00:00" value="21.5906734755"/>
     <event date="2000-10-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-20" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-10-22" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-23" flag="0" time="00:00:00" value="6.65258846585"/>
+    <event date="2000-10-23" flag="0" time="00:00:00" value="1.99577653975"/>
     <event date="2000-10-24" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-10-25" flag="0" time="00:00:00" value="3.02390384811"/>
-    <event date="2000-10-26" flag="0" time="00:00:00" value="21.7721077064"/>
-    <event date="2000-10-27" flag="0" time="00:00:00" value="47.7776808002"/>
-    <event date="2000-10-28" flag="0" time="00:00:00" value="12.7003961621"/>
-    <event date="2000-10-29" flag="0" time="00:00:00" value="29.0294769419"/>
-    <event date="2000-10-30" flag="0" time="00:00:00" value="70.7593500458"/>
-    <event date="2000-10-31" flag="0" time="00:00:00" value="16.3290807798"/>
-    <event date="2000-11-01" flag="0" time="00:00:00" value="15.1195192406"/>
-    <event date="2000-11-02" flag="0" time="00:00:00" value="51.4063654179"/>
+    <event date="2000-10-25" flag="0" time="00:00:00" value="0.907171154434"/>
+    <event date="2000-10-26" flag="0" time="00:00:00" value="6.53163231192"/>
+    <event date="2000-10-27" flag="0" time="00:00:00" value="14.3333042401"/>
+    <event date="2000-10-28" flag="0" time="00:00:00" value="3.81011884862"/>
+    <event date="2000-10-29" flag="0" time="00:00:00" value="8.70884308256"/>
+    <event date="2000-10-30" flag="0" time="00:00:00" value="21.2278050137"/>
+    <event date="2000-10-31" flag="0" time="00:00:00" value="4.89872423394"/>
+    <event date="2000-11-01" flag="0" time="00:00:00" value="4.53585577217"/>
+    <event date="2000-11-02" flag="0" time="00:00:00" value="15.4219096254"/>
     <event date="2000-11-03" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-11-04" flag="0" time="00:00:00" value="1.20956153924"/>
-    <event date="2000-11-05" flag="0" time="00:00:00" value="23.5864500153"/>
-    <event date="2000-11-06" flag="0" time="00:00:00" value="3.62868461773"/>
-    <event date="2000-11-07" flag="0" time="00:00:00" value="24.7960115545"/>
-    <event date="2000-11-08" flag="0" time="00:00:00" value="111.279661611"/>
-    <event date="2000-11-09" flag="0" time="00:00:00" value="234.050157844"/>
-    <event date="2000-11-10" flag="0" time="00:00:00" value="59.268515423"/>
-    <event date="2000-11-11" flag="0" time="00:00:00" value="10.2812730836"/>
-    <event date="2000-11-12" flag="0" time="00:00:00" value="44.7537769521"/>
+    <event date="2000-11-04" flag="0" time="00:00:00" value="0.362868461773"/>
+    <event date="2000-11-05" flag="0" time="00:00:00" value="7.07593500458"/>
+    <event date="2000-11-06" flag="0" time="00:00:00" value="1.08860538532"/>
+    <event date="2000-11-07" flag="0" time="00:00:00" value="7.43880346636"/>
+    <event date="2000-11-08" flag="0" time="00:00:00" value="33.3838984832"/>
+    <event date="2000-11-09" flag="0" time="00:00:00" value="70.2150473532"/>
+    <event date="2000-11-10" flag="0" time="00:00:00" value="17.7805546269"/>
+    <event date="2000-11-11" flag="0" time="00:00:00" value="3.08438192507"/>
+    <event date="2000-11-12" flag="0" time="00:00:00" value="13.4261330856"/>
     <event date="2000-11-13" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-11-14" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-11-15" flag="0" time="00:00:00" value="1.81434230887"/>
-    <event date="2000-11-16" flag="0" time="00:00:00" value="29.6342577115"/>
-    <event date="2000-11-17" flag="0" time="00:00:00" value="53.8254884964"/>
-    <event date="2000-11-18" flag="0" time="00:00:00" value="19.9577653975"/>
-    <event date="2000-11-19" flag="0" time="00:00:00" value="48.3824615698"/>
-    <event date="2000-11-20" flag="0" time="00:00:00" value="8.46693077471"/>
-    <event date="2000-11-21" flag="0" time="00:00:00" value="17.5386423191"/>
-    <event date="2000-11-22" flag="0" time="00:00:00" value="15.7243000102"/>
-    <event date="2000-11-23" flag="0" time="00:00:00" value="16.9338615494"/>
+    <event date="2000-11-15" flag="0" time="00:00:00" value="0.54430269266"/>
+    <event date="2000-11-16" flag="0" time="00:00:00" value="8.89027731345"/>
+    <event date="2000-11-17" flag="0" time="00:00:00" value="16.1476465489"/>
+    <event date="2000-11-18" flag="0" time="00:00:00" value="5.98732961926"/>
+    <event date="2000-11-19" flag="0" time="00:00:00" value="14.5147384709"/>
+    <event date="2000-11-20" flag="0" time="00:00:00" value="2.54007923241"/>
+    <event date="2000-11-21" flag="0" time="00:00:00" value="5.26159269572"/>
+    <event date="2000-11-22" flag="0" time="00:00:00" value="4.71729000306"/>
+    <event date="2000-11-23" flag="0" time="00:00:00" value="5.08015846483"/>
     <event date="2000-11-24" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-11-25" flag="0" time="00:00:00" value="39.3107500255"/>
-    <event date="2000-11-26" flag="0" time="00:00:00" value="10.8860538532"/>
-    <event date="2000-11-27" flag="0" time="00:00:00" value="29.6342577115"/>
+    <event date="2000-11-25" flag="0" time="00:00:00" value="11.7932250076"/>
+    <event date="2000-11-26" flag="0" time="00:00:00" value="3.26581615596"/>
+    <event date="2000-11-27" flag="0" time="00:00:00" value="8.89027731345"/>
     <event date="2000-11-28" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-11-29" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-11-30" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-01" flag="0" time="00:00:00" value="2.41912307849"/>
-    <event date="2000-12-02" flag="0" time="00:00:00" value="40.5203115647"/>
+    <event date="2000-12-01" flag="0" time="00:00:00" value="0.725736923547"/>
+    <event date="2000-12-02" flag="0" time="00:00:00" value="12.1560934694"/>
     <event date="2000-12-03" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-04" flag="0" time="00:00:00" value="4.23346538736"/>
+    <event date="2000-12-04" flag="0" time="00:00:00" value="1.27003961621"/>
     <event date="2000-12-05" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-06" flag="0" time="00:00:00" value="13.9099577013"/>
-    <event date="2000-12-07" flag="0" time="00:00:00" value="11.4908346228"/>
+    <event date="2000-12-06" flag="0" time="00:00:00" value="4.17298731039"/>
+    <event date="2000-12-07" flag="0" time="00:00:00" value="3.44725038685"/>
     <event date="2000-12-08" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-09" flag="0" time="00:00:00" value="10.8860538532"/>
-    <event date="2000-12-10" flag="0" time="00:00:00" value="82.2501846687"/>
-    <event date="2000-12-11" flag="0" time="00:00:00" value="45.9633384913"/>
-    <event date="2000-12-12" flag="0" time="00:00:00" value="39.3107500255"/>
-    <event date="2000-12-13" flag="0" time="00:00:00" value="38.7059692558"/>
-    <event date="2000-12-14" flag="0" time="00:00:00" value="61.6876385015"/>
-    <event date="2000-12-15" flag="0" time="00:00:00" value="53.2207077268"/>
-    <event date="2000-12-16" flag="0" time="00:00:00" value="36.891626947"/>
+    <event date="2000-12-09" flag="0" time="00:00:00" value="3.26581615596"/>
+    <event date="2000-12-10" flag="0" time="00:00:00" value="24.6750554006"/>
+    <event date="2000-12-11" flag="0" time="00:00:00" value="13.7890015474"/>
+    <event date="2000-12-12" flag="0" time="00:00:00" value="11.7932250076"/>
+    <event date="2000-12-13" flag="0" time="00:00:00" value="11.6117907768"/>
+    <event date="2000-12-14" flag="0" time="00:00:00" value="18.5062915504"/>
+    <event date="2000-12-15" flag="0" time="00:00:00" value="15.966212318"/>
+    <event date="2000-12-16" flag="0" time="00:00:00" value="11.0674880841"/>
     <event date="2000-12-17" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-18" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-19" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-20" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-21" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-22" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-23" flag="0" time="00:00:00" value="7.25736923547"/>
-    <event date="2000-12-24" flag="0" time="00:00:00" value="52.6159269572"/>
+    <event date="2000-12-23" flag="0" time="00:00:00" value="2.17721077064"/>
+    <event date="2000-12-24" flag="0" time="00:00:00" value="15.7847780871"/>
     <event date="2000-12-25" flag="0" time="00:00:00" value="0.0"/>
     <event date="2000-12-26" flag="0" time="00:00:00" value="0.0"/>
-    <event date="2000-12-27" flag="0" time="00:00:00" value="26.6103538634"/>
-    <event date="2000-12-28" flag="0" time="00:00:00" value="10.8860538532"/>
-    <event date="2000-12-29" flag="0" time="00:00:00" value="119.141811616"/>
-    <event date="2000-12-30" flag="0" time="00:00:00" value="16.9338615494"/>
+    <event date="2000-12-27" flag="0" time="00:00:00" value="7.98310615902"/>
+    <event date="2000-12-28" flag="0" time="00:00:00" value="3.26581615596"/>
+    <event date="2000-12-29" flag="0" time="00:00:00" value="35.7425434847"/>
+    <event date="2000-12-30" flag="0" time="00:00:00" value="5.08015846483"/>
   </series>
   <series>
     <header>
