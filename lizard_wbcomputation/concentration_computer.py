@@ -17,48 +17,50 @@
 # You should have received a copy of the GNU General Public License along with
 # the lizard_waterbalance app.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright 2011 Nelen & Schuurmans
+# Copyright 2011, 2012 Nelen & Schuurmans
 #
 #******************************************************************************
 
+from datetime import datetime
 import logging
 
 from timeseries.timeseriesstub import enumerate_dict_events
+from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 logger = logging.getLogger(__name__)
 
-class ConcentrationComputer:
+# class ConcentrationComputer:
 
-    def compute(self,
-                fractions_dict, concentration_dict,
-                start_date, end_date):
-        """Compute and return the concentration time series.
+#     def compute(self,
+#                 fractions_dict, concentration_dict,
+#                 start_date, end_date):
+#         """Compute and return the concentration time series.
 
-        Parameters:
-        * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
-        * concentration_list -- dict of label keys with concentration values in [mg/l]
+#         Parameters:
+#         * fractions_list -- dict of fractions timeseries in [0.0, 1.0]
+#         * concentration_list -- dict of label keys with concentration values in [mg/l]
 
-        Computation is based on constant concentration of the fractions
-        """
-        timeseries = SparseTimeseriesStub()
-        for events in enumerate_dict_events(fractions_dict):
-            date = events['date']
-            del(events['date'])
-            concentration = 0
-            for key, value in events.items():
-                if key in ['intakes', 'defined_input']:
-                    for key_intake, value_intake in value.items():
-                        if key_intake == 'intake_wl_control':
-                            concentration += value_intake[1] * concentration_dict[key_intake]
-                        else:
-                            concentration += value_intake[1] * concentration_dict[key_intake.label.program_name]
-                else:
-                    concentration += value[1] * concentration_dict[key]
+#         Computation is based on constant concentration of the fractions
+#         """
+#         timeseries = SparseTimeseriesStub()
+#         for events in enumerate_dict_events(fractions_dict):
+#             date = events['date']
+#             del(events['date'])
+#             concentration = 0
+#             for key, value in events.items():
+#                 if key in ['intakes', 'defined_input']:
+#                     for key_intake, value_intake in value.items():
+#                         if key_intake == 'intake_wl_control':
+#                             concentration += value_intake[1] * concentration_dict[key_intake]
+#                         else:
+#                             concentration += value_intake[1] * concentration_dict[key_intake.label.program_name]
+#                 else:
+#                     concentration += value[1] * concentration_dict[key]
 
-            timeseries.add_value(date, concentration)
+#             timeseries.add_value(date, concentration)
 
-        return timeseries
+#         return timeseries
 
 class ConcentrationComputer2:
 
@@ -134,3 +136,24 @@ class ConcentrationComputer2:
             total_outflow.add_value(date, total)
         return total_outflow
 
+class ConcentrationComputer(object):
+
+    def compute(self):
+        concentration_timeseries = SparseTimeseriesStub()
+        concentration = self.initial_concentration
+        volume = self.initial_volume
+        chloride = volume * concentration
+        for events in enumerate_events(self.incoming_volume_timeseries,
+                                       self.incoming_chloride_timeseries,
+                                       self.outgoing_volume_timeseries):
+            date = events[0][0]
+            incoming_volume = events[0][1]
+            outgoing_volume = events[2][1]
+            incoming_chloride = events[1][1]
+
+            chloride = ((volume + incoming_volume + outgoing_volume) / (volume + incoming_volume)) * (chloride + incoming_chloride)
+            concentration = chloride / (volume + incoming_volume + outgoing_volume)
+            volume += incoming_volume + outgoing_volume
+
+            concentration_timeseries.add_value(date, concentration)
+        return concentration_timeseries
