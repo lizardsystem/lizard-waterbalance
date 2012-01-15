@@ -151,9 +151,12 @@ class ConcentrationComputer(object):
             outgoing_volume = events[2][1]
             incoming_chloride = events[1][1]
 
-            chloride = ((volume + incoming_volume + outgoing_volume) / (volume + incoming_volume)) * (chloride + incoming_chloride)
-            concentration = chloride / (volume + incoming_volume + outgoing_volume)
-            volume += incoming_volume + outgoing_volume
+            new_volume = volume + incoming_volume + outgoing_volume
+            max_volume = volume + incoming_volume
+            chloride = (new_volume / max_volume) * (chloride + incoming_chloride)
+            volume = new_volume
+            concentration = chloride / volume
 
             concentration_timeseries.add_value(date, concentration)
         return concentration_timeseries
+
