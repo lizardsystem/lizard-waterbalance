@@ -24,8 +24,10 @@
 from datetime import datetime
 import logging
 
+from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 logger = logging.getLogger(__name__)
@@ -159,4 +161,19 @@ class ConcentrationComputer(object):
 
             concentration_timeseries.add_value(date, concentration)
         return concentration_timeseries
+
+class TotalIncomingVolumeChlorideTimeseries(object):
+
+    def compute(self):
+        volume_timeseries = self.get_volume_timeseries()
+        concentration_levels = self.get_chloride_concentration_levels()
+        concentration_timeseries = [multiply_timeseries(v, c) for (v, c) in zip(volume_timeseries, concentration_levels)]
+        return add_timeseries(*volume_timeseries), \
+               add_timeseries(*concentration_timeseries)
+
+    def get_volume_timeseries(self):
+        return [self.precipitation, self.seepage]
+
+    def get_chloride_concentration_levels(self):
+        return [self.precipitation_chloride, self.seepage_chloride]
 

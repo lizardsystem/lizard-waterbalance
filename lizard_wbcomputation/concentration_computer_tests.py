@@ -27,6 +27,7 @@ from unittest import TestCase
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer
+from lizard_wbcomputation.concentration_computer import TotalIncomingVolumeChlorideTimeseries
 
 
 class ConcentrationComputer_compute_TestSuite(TestCase):
@@ -88,10 +89,44 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
 
         concentration_timeseries = concentrations.compute()
 
-        print list(concentration_timeseries.events())
-
         expected_concentrations = [((90.0 / 120.0) * 3200.0) / 90.0]
         expected_concentrations.append(((90.0 / 100.0) * 2650.0) / 90.0)
 
-        print expected_concentrations
         self.assertEqual(self.timeseries(*expected_concentrations), concentration_timeseries)
+
+
+class TotalIncomingVolumeChlorideTimeseries_compute_TestSuite(TestCase):
+
+    def test_a(self):
+        """Test the incoming volume and chloride levels.
+
+        There is only precipitation incoming.
+
+        """
+        date = datetime(2012, 1, 18)
+        incoming = TotalIncomingVolumeChlorideTimeseries()
+        incoming.precipitation = SparseTimeseriesStub(date, [10.0, 20.0])
+        incoming.precipitation_chloride = 2.0
+        incoming.seepage = SparseTimeseriesStub()
+        incoming.seepage_chloride = 6.0
+        volume_timeseries, chloride_timeseries = incoming.compute()
+
+        self.assertEqual(SparseTimeseriesStub(date, [10.0, 20.0]), volume_timeseries)
+        self.assertEqual(SparseTimeseriesStub(date, [20.0, 40.0]), chloride_timeseries)
+
+    def test_b(self):
+        """Test the incoming volume and chloride levels.
+
+        There is only seepage incoming.
+
+        """
+        date = datetime(2012, 1, 18)
+        incoming = TotalIncomingVolumeChlorideTimeseries()
+        incoming.precipitation = SparseTimeseriesStub()
+        incoming.precipitation_chloride = 2.0
+        incoming.seepage = SparseTimeseriesStub(date, [5.0, 10.0])
+        incoming.seepage_chloride = 6.0
+        volume_timeseries, chloride_timeseries = incoming.compute()
+
+        self.assertEqual(SparseTimeseriesStub(date, [5.0, 10.0]), volume_timeseries)
+        self.assertEqual(SparseTimeseriesStub(date, [30.0, 60.0]), chloride_timeseries)
