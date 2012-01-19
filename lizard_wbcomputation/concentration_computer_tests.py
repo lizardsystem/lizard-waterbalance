@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # pylint: disable=C0111
-
 # The lizard_wbcomputation package implements the computational core of the
 # lizard waterbalance Django app.
 #
@@ -27,7 +26,7 @@ from unittest import TestCase
 from timeseries.timeseriesstub import SparseTimeseriesStub
 
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer
-from lizard_wbcomputation.concentration_computer import TotalIncomingVolumeChlorideTimeseries
+from lizard_wbcomputation.concentration_computer import TotalVolumeChlorideTimeseries
 
 
 class ConcentrationComputer_compute_TestSuite(TestCase):
@@ -43,9 +42,9 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.initial_concentration = 30.0 # [g/m3]
         concentrations.initial_volume = 100.0
 
-        concentrations.incoming_volume_timeseries = self.timeseries(0.0)
-        concentrations.incoming_chloride_timeseries = self.timeseries(0.0)
-        concentrations.outgoing_volume_timeseries = self.timeseries(-20.0)
+        concentrations.incoming_volumes = self.timeseries(0.0)
+        concentrations.incoming_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes = self.timeseries(-20.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -65,9 +64,9 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.initial_concentration = 30.0 # [g/m3]
         concentrations.initial_volume = 100.0
 
-        concentrations.incoming_volume_timeseries = self.timeseries(0.0, 0.0)
-        concentrations.incoming_chloride_timeseries = self.timeseries(0.0, 0.0)
-        concentrations.outgoing_volume_timeseries = self.timeseries(-20.0, -30.0)
+        concentrations.incoming_volumes = self.timeseries(0.0, 0.0)
+        concentrations.incoming_chlorides = self.timeseries(0.0, 0.0)
+        concentrations.outgoing_volumes = self.timeseries(-20.0, -30.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -83,9 +82,9 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.initial_concentration = 30.0 # [g/m3]
         concentrations.initial_volume = 100.0
 
-        concentrations.incoming_volume_timeseries = self.timeseries(20.0, 10.0)
-        concentrations.incoming_chloride_timeseries = self.timeseries(200.0, 250.0)
-        concentrations.outgoing_volume_timeseries = self.timeseries(-30.0, -10.0)
+        concentrations.incoming_volumes = self.timeseries(20.0, 10.0)
+        concentrations.incoming_chlorides = self.timeseries(200.0, 250.0)
+        concentrations.outgoing_volumes = self.timeseries(-30.0, -10.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -95,7 +94,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         self.assertEqual(self.timeseries(*expected_concentrations), concentration_timeseries)
 
 
-class TotalIncomingVolumeChlorideTimeseries_compute_TestSuite(TestCase):
+class TotalVolumeChlorideTimeseries_compute_TestSuite(TestCase):
 
     def test_a(self):
         """Test the incoming volume and chloride levels.
@@ -104,11 +103,16 @@ class TotalIncomingVolumeChlorideTimeseries_compute_TestSuite(TestCase):
 
         """
         date = datetime(2012, 1, 18)
-        incoming = TotalIncomingVolumeChlorideTimeseries()
-        incoming.precipitation = SparseTimeseriesStub(date, [10.0, 20.0])
-        incoming.precipitation_chloride = 2.0
-        incoming.seepage = SparseTimeseriesStub()
-        incoming.seepage_chloride = 6.0
+
+        precipitation = SparseTimeseriesStub(date, [10.0, 20.0])
+        seepage = SparseTimeseriesStub()
+        volumes = [precipitation, seepage]
+
+        precipitation_chloride = 2.0
+        seepage_chloride = 6.0
+        concentrations = [precipitation_chloride, seepage_chloride]
+
+        incoming = TotalVolumeChlorideTimeseries(volumes, concentrations)
         volume_timeseries, chloride_timeseries = incoming.compute()
 
         self.assertEqual(SparseTimeseriesStub(date, [10.0, 20.0]), volume_timeseries)
@@ -121,11 +125,16 @@ class TotalIncomingVolumeChlorideTimeseries_compute_TestSuite(TestCase):
 
         """
         date = datetime(2012, 1, 18)
-        incoming = TotalIncomingVolumeChlorideTimeseries()
-        incoming.precipitation = SparseTimeseriesStub()
-        incoming.precipitation_chloride = 2.0
-        incoming.seepage = SparseTimeseriesStub(date, [5.0, 10.0])
-        incoming.seepage_chloride = 6.0
+
+        precipitation = SparseTimeseriesStub()
+        seepage = SparseTimeseriesStub(date, [5.0, 10.0])
+        volumes = [precipitation, seepage]
+
+        precipitation_chloride = 2.0
+        seepage_chloride = 6.0
+        concentrations = [precipitation_chloride, seepage_chloride]
+
+        incoming = TotalVolumeChlorideTimeseries(volumes, concentrations)
         volume_timeseries, chloride_timeseries = incoming.compute()
 
         self.assertEqual(SparseTimeseriesStub(date, [5.0, 10.0]), volume_timeseries)

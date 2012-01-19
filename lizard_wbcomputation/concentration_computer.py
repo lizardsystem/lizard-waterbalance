@@ -138,42 +138,64 @@ class ConcentrationComputer2:
             total_outflow.add_value(date, total)
         return total_outflow
 
-class ConcentrationComputer(object):
 
+class ConcentrationComputer(object):
+    """Computes the chloride concentration time series of a water body.
+
+    Instance parameters:
+      *incoming_volumes*
+        time series of water volume that comes into the water body
+      *incoming_chlorides*
+        time series of the chloride concentration of the water body
+      *incoming_volumes*
+        time series of water volume that goes out of the water body
+
+    """
     def compute(self):
-        concentration_timeseries = SparseTimeseriesStub()
+        """Returns the chloride concentration time series of a water body."""
+        concentrations = SparseTimeseriesStub()
         concentration = self.initial_concentration
         volume = self.initial_volume
         chloride = volume * concentration
-        for events in enumerate_events(self.incoming_volume_timeseries,
-                                       self.incoming_chloride_timeseries,
-                                       self.outgoing_volume_timeseries):
-            date = events[0][0]
-            incoming_volume = events[0][1]
-            outgoing_volume = events[2][1]
-            incoming_chloride = events[1][1]
-
+        for events in enumerate_events(self.incoming_volumes,
+                                       self.incoming_chlorides,
+                                       self.outgoing_volumes):
+            date, incoming_volume, incoming_chloride, outgoing_volume = \
+                self.parse_events(events)
             new_volume = volume + incoming_volume + outgoing_volume
             max_volume = volume + incoming_volume
             chloride = (new_volume / max_volume) * (chloride + incoming_chloride)
             volume = new_volume
-            concentration = chloride / volume
+            concentrations.add_value(date, chloride / volume)
+        return concentrations
 
-            concentration_timeseries.add_value(date, concentration)
-        return concentration_timeseries
+    def parse_events(self, events):
+        date = events[0][0]
+        incoming_volume = events[0][1]
+        incoming_chloride = events[1][1]
+        outgoing_volume = events[2][1]
+        return date, incoming_volume, incoming_chloride, outgoing_volume
 
-class TotalIncomingVolumeChlorideTimeseries(object):
+class TotalVolumeChlorideTimeseries(object):
+    """Implements the computation of the total volume and chloride timeseries.
+
+    The input of the computation consists of a list of volume time series and a
+    list of concentrations. The concentration at an index specifies the
+    chloride concentration of the volume time series at the same index.
+
+    """
+    def __init__(self, volumes, concentrations):
+        self.volumes = volumes
+        self.concentrations = concentrations
 
     def compute(self):
-        volume_timeseries = self.get_volume_timeseries()
-        concentration_levels = self.get_chloride_concentration_levels()
-        concentration_timeseries = [multiply_timeseries(v, c) for (v, c) in zip(volume_timeseries, concentration_levels)]
-        return add_timeseries(*volume_timeseries), \
-               add_timeseries(*concentration_timeseries)
+        """Return the total volume time series and chloride level time series.
 
-    def get_volume_timeseries(self):
-        return [self.precipitation, self.seepage]
+        This method returns these time series as a pair.
 
-    def get_chloride_concentration_levels(self):
-        return [self.precipitation_chloride, self.seepage_chloride]
+        """
+        volumes_concentrations = zip(self.volumes, self.concentrations)
+        chlorides = [multiply_timeseries(volumes, concentrations) \
+                     for (volumes, concentrations) in volumes_concentrations]
+        return add_timeseries(*self.volumes), add_timeseries(*chlorides)
 
