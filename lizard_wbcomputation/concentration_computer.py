@@ -162,11 +162,15 @@ class ConcentrationComputer(object):
                                        self.outgoing_volumes):
             date, incoming_volume, incoming_chloride, outgoing_volume = \
                 self.parse_events(events)
-            new_volume = volume + incoming_volume + outgoing_volume
+            new_volume = max(volume + incoming_volume + outgoing_volume, 0.0)
             max_volume = volume + incoming_volume
-            chloride = (new_volume / max_volume) * (chloride + incoming_chloride)
+            if max_volume > 0.0:
+                chloride = (new_volume / max_volume) * (chloride + incoming_chloride)
             volume = new_volume
-            concentrations.add_value(date, chloride / volume)
+            if volume > 0.0:
+                concentrations.add_value(date, chloride / volume)
+            else:
+                concentrations.add_value(date, 0.0)
         return concentrations
 
     def parse_events(self, events):

@@ -93,6 +93,41 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
 
         self.assertEqual(self.timeseries(*expected_concentrations), concentration_timeseries)
 
+    def test_d(self):
+        """Test that without volume, the concentration is 0.0
+
+        There is a single event.
+
+        """
+        concentrations = ConcentrationComputer()
+        concentrations.initial_concentration = 30.0 # [g/m3]
+        concentrations.initial_volume = 0.0
+
+        concentrations.incoming_volumes = self.timeseries(0.0)
+        concentrations.incoming_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes = self.timeseries(-20.0)
+
+        concentration_timeseries = concentrations.compute()
+
+        self.assertEqual(self.timeseries(0.0), concentration_timeseries)
+
+    def test_e(self):
+        """Test that with more volume going out than in, the concentration is 0.0
+
+        There is a single event.
+
+        """
+        concentrations = ConcentrationComputer()
+        concentrations.initial_concentration = 30.0 # [g/m3]
+        concentrations.initial_volume = 10.0
+
+        concentrations.incoming_volumes = self.timeseries(0.0)
+        concentrations.incoming_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes = self.timeseries(-20.0)
+
+        concentration_timeseries = concentrations.compute()
+
+        self.assertEqual(self.timeseries(0.0), concentration_timeseries)
 
 class TotalVolumeChlorideTimeseries_compute_TestSuite(TestCase):
 
