@@ -45,6 +45,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -53,6 +54,26 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
     def timeseries(self, *args, **kwargs):
         date = datetime(2012, 1, 12)
         return SparseTimeseriesStub(date, list(args))
+
+    def test_aa(self):
+        """Test that without incoming flows the concentration remains the same.
+
+        There is a single event.
+
+        """
+        concentrations = ConcentrationComputer()
+        concentrations.initial_concentration = 30.0 # [g/m3]
+        concentrations.initial_volume = 100.0
+
+        concentrations.incoming_volumes = self.timeseries(0.0)
+        concentrations.incoming_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes = self.timeseries(-10.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(-10.0)
+
+        concentration_timeseries = concentrations.compute()
+
+        print list(concentration_timeseries.events())
+        self.assertEqual(self.timeseries(3000.0 / 90.0), concentration_timeseries)
 
     def test_b(self):
         """Test that without incoming flows the concentration remains the same.
@@ -67,6 +88,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0, 0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0, 0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0, -30.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0, 0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -85,6 +107,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(20.0, 10.0)
         concentrations.incoming_chlorides = self.timeseries(200.0, 250.0)
         concentrations.outgoing_volumes = self.timeseries(-30.0, -10.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0, 0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -106,6 +129,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -124,6 +148,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0)
+        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
 
         concentration_timeseries = concentrations.compute()
 

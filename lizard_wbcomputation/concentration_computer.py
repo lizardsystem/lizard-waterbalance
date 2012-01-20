@@ -136,6 +136,7 @@ class ConcentrationComputer2:
                 else:
                      total += event[1]
             total_outflow.add_value(date, total)
+            print date, total_outflow
         return total_outflow
 
 
@@ -147,7 +148,7 @@ class ConcentrationComputer(object):
         time series of water volume that comes into the water body
       *incoming_chlorides*
         time series of the chloride concentration of the water body
-      *incoming_volumes*
+      *outgoing_volumes*
         time series of water volume that goes out of the water body
 
     """
@@ -159,18 +160,22 @@ class ConcentrationComputer(object):
         chloride = volume * concentration
         for events in enumerate_events(self.incoming_volumes,
                                        self.incoming_chlorides,
-                                       self.outgoing_volumes):
-            date, incoming_volume, incoming_chloride, outgoing_volume = \
+                                       self.outgoing_volumes,
+                                       self.outgoing_volumes_without_chlorides):
+            date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_without_chlorides = \
                 self.parse_events(events)
-            new_volume = max(volume + incoming_volume + outgoing_volume, 0.0)
+            # print date, incoming_volume, incoming_chloride, outgoing_volume
+
+            max_chloride = chloride + incoming_chloride
             max_volume = volume + incoming_volume
-            if max_volume > 0.0:
-                chloride = (new_volume / max_volume) * (chloride + incoming_chloride)
-            volume = new_volume
-            if volume > 0.0:
-                concentrations.add_value(date, chloride / volume)
+            if max_volume + outgoing_volume > 0.0:
+                concentration = max_chloride / (max_volume + outgoing_volume_without_chlorides)
             else:
-                concentrations.add_value(date, 0.0)
+                concentration = 0.0
+            concentrations.add_value(date, concentration)
+
+            volume = max(max_volume + outgoing_volume, 0.0)
+            chloride = concentration * volume
         return concentrations
 
     def parse_events(self, events):
@@ -178,7 +183,11 @@ class ConcentrationComputer(object):
         incoming_volume = events[0][1]
         incoming_chloride = events[1][1]
         outgoing_volume = events[2][1]
-        return date, incoming_volume, incoming_chloride, outgoing_volume
+        try:
+            outgoing_volume_without_chlorides = events[3][1]
+        except:
+            outgoing_volume_without_chlorides = 0.0
+        return date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_without_chlorides
 
 class TotalVolumeChlorideTimeseries(object):
     """Implements the computation of the total volume and chloride timeseries.
