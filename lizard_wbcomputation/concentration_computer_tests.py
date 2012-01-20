@@ -32,24 +32,31 @@ from lizard_wbcomputation.concentration_computer import TotalVolumeChlorideTimes
 class ConcentrationComputer_compute_TestSuite(TestCase):
     """Implements a test suite for method ConcentrationComputer::compute."""
 
+    def setUp(self):
+        self.concentrations = ConcentrationComputer()
+        self.concentrations.initial_concentration = 30.0 # [g/m3]
+        self.concentrations.initial_volume = 100.0 # [m3]
+
     def test_a(self):
         """Test that without incoming flows the concentration remains the same.
 
         There is a single event.
 
         """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 100.0
+        self.set_timeseries(incoming_volumes =               [0.0],
+                            incoming_chlorides =             [0.0],
+                            outgoing_volumes =             [-20.0],
+                            outgoing_volumes_no_chloride =   [0.0])
 
-        concentrations.incoming_volumes = self.timeseries(0.0)
-        concentrations.incoming_chlorides = self.timeseries(0.0)
-        concentrations.outgoing_volumes = self.timeseries(-20.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
-
-        concentration_timeseries = concentrations.compute()
+        concentration_timeseries = self.concentrations.compute()
 
         self.assertEqual(self.timeseries(30.0), concentration_timeseries)
+
+    def set_timeseries(self, *args, **kwargs):
+        self.concentrations.incoming_volumes = self.timeseries(0.0)
+        self.concentrations.incoming_chlorides = self.timeseries(0.0)
+        self.concentrations.outgoing_volumes = self.timeseries(-20.0)
+        self.concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
 
     def timeseries(self, *args, **kwargs):
         date = datetime(2012, 1, 12)
@@ -68,7 +75,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-10.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(-10.0)
+        concentrations.outgoing_volumes_no_chloride = self.timeseries(-10.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -88,7 +95,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0, 0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0, 0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0, -30.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0, 0.0)
+        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0, 0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -107,7 +114,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(20.0, 10.0)
         concentrations.incoming_chlorides = self.timeseries(200.0, 250.0)
         concentrations.outgoing_volumes = self.timeseries(-30.0, -10.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0, 0.0)
+        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0, 0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -129,7 +136,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
 
         concentration_timeseries = concentrations.compute()
 
@@ -148,7 +155,7 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         concentrations.incoming_volumes = self.timeseries(0.0)
         concentrations.incoming_chlorides = self.timeseries(0.0)
         concentrations.outgoing_volumes = self.timeseries(-20.0)
-        concentrations.outgoing_volumes_without_chlorides = self.timeseries(0.0)
+        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
 
         concentration_timeseries = concentrations.compute()
 

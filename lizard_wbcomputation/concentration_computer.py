@@ -145,11 +145,14 @@ class ConcentrationComputer(object):
 
     Instance parameters:
       *incoming_volumes*
-        time series of water volume that comes into the water body
+        time series of the water volume that comes into the water body
       *incoming_chlorides*
         time series of the chloride concentration of the water body
       *outgoing_volumes*
-        time series of water volume that goes out of the water body
+        time series of the water volume that goes out of the water body
+      *outgoing_volumes_no_chloride*
+        time series of the water volume that goes out of the water body and
+        which does not influence the chloride concentration
 
     """
     def compute(self):
@@ -161,15 +164,15 @@ class ConcentrationComputer(object):
         for events in enumerate_events(self.incoming_volumes,
                                        self.incoming_chlorides,
                                        self.outgoing_volumes,
-                                       self.outgoing_volumes_without_chlorides):
-            date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_without_chlorides = \
+                                       self.outgoing_volumes_no_chloride):
+            date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_no_chloride = \
                 self.parse_events(events)
             # print date, incoming_volume, incoming_chloride, outgoing_volume
 
             max_chloride = chloride + incoming_chloride
             max_volume = volume + incoming_volume
             if max_volume + outgoing_volume > 0.0:
-                concentration = max_chloride / (max_volume + outgoing_volume_without_chlorides)
+                concentration = max_chloride / (max_volume + outgoing_volume_no_chloride)
             else:
                 concentration = 0.0
             concentrations.add_value(date, concentration)
@@ -184,10 +187,10 @@ class ConcentrationComputer(object):
         incoming_chloride = events[1][1]
         outgoing_volume = events[2][1]
         try:
-            outgoing_volume_without_chlorides = events[3][1]
+            outgoing_volume_no_chloride = events[3][1]
         except:
-            outgoing_volume_without_chlorides = 0.0
-        return date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_without_chlorides
+            outgoing_volume_no_chloride = 0.0
+        return date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_no_chloride
 
 class TotalVolumeChlorideTimeseries(object):
     """Implements the computation of the total volume and chloride timeseries.
