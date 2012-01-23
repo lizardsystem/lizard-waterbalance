@@ -171,7 +171,6 @@ class ConcentrationComputer(object):
                                        self.outgoing_volumes_no_chloride):
             date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_no_chloride = \
                 self.parse_events(events)
-            # print date, incoming_volume, incoming_chloride, outgoing_volume
 
             max_chloride = chloride + incoming_chloride
             max_volume = volume + incoming_volume
