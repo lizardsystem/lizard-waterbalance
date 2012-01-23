@@ -30,7 +30,9 @@ import logging
 
 from lizard_wbcomputation.bucket_computer import BucketComputer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
+from lizard_wbcomputation.concentration_computer import ConcentrationComputer
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer2
+from lizard_wbcomputation.concentration_computer import TotalVolumeChlorideTimeseries
 from lizard_wbcomputation.fraction_computer import FractionComputer
 from lizard_wbcomputation.impact_from_buckets import SummaryLoad
 from lizard_wbcomputation.impact_from_buckets import SummedLoadsFromBuckets
@@ -42,6 +44,7 @@ from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
 
 from timeseries.timeseriesstub import enumerate_events
+from timeseries.timeseriesstub import subtract_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
@@ -132,6 +135,57 @@ def retrieve_outgoing_timeseries(area, only_input=False):
             outgoing_timeseries[pumping_station] = timeseries
     return outgoing_timeseries
 
+
+class VolumesConcentrations(object):
+
+    def __init__(self, area, incoming_flows, level_control, bucket2outcome):
+        self.area = area
+        self.incoming_flows = incoming_flows
+        self.level_control = level_control
+        self.bucket2outcome = bucket2outcome
+
+    def get_volumes(self):
+        volume_timeseries = []
+        volume_timeseries.append(self.incoming_flows['precipitation'])
+        volume_timeseries.append(self.incoming_flows['seepage'])
+        for intake in self.incoming_flows['defined_input'].keys():
+            if intake.is_computed:
+                assert intake.into
+                volume_timeseries.append(self.level_control['intake_wl_control'])
+            else:
+                timeseries = TimeseriesRestrictedStub(timeseries=intake.retrieve_sum_timeseries(),
+                                                                  start_date=self.start_date,
+                                                                  end_date=self.end_date)
+            volume_timeseries.append(timeseries)
+        for bucket, outcome in self.bucket2outcome.items():
+            volume_timeseries.append(self.get_incoming_timeseries(self.get_restricted_timeseries(outcome.flow_off)))
+            volume_timeseries.append(self.get_incoming_timeseries(self.get_restricted_timeseries(outcome.net_drainage)))
+        return volume_timeseries
+
+    def get_concentrations(self):
+        chloride_concentration_levels = []
+        chloride_concentration_levels.append(self.area.concentr_chloride_precipitation)
+        chloride_concentration_levels.append(self.area.concentr_chloride_seepage)
+        for intake in self.incoming_flows['defined_input'].keys():
+            chloride_concentration_levels.append(intake.concentr_chloride)
+        for bucket, outcome in self.bucket2outcome.items():
+            chloride_concentration_levels.append(bucket.concentr_chloride_flow_off)
+            chloride_concentration_levels.append(bucket.concentr_chloride_drainage_indraft)
+        return chloride_concentration_levels
+
+    def get_restricted_timeseries(self, timeseries):
+        return TimeseriesRestrictedStub(timeseries=timeseries,
+                                        start_date=self.start_date,
+                                        end_date=self.end_date)
+
+    def get_incoming_timeseries(self, timeseries):
+        incoming_timeseries = SparseTimeseriesStub()
+        for event in timeseries.events():
+            if event[1] < 0.0:
+                incoming_timeseries.add_value(event[0], -event[1])
+            else:
+                incoming_timeseries.add_value(event[0], 0.0)
+        return incoming_timeseries
 
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
@@ -589,38 +643,50 @@ class WaterbalanceComputer2(object):
         return calc_waterlevel, sluice_error
 
 
-    def get_concentration_timeseries(self,
-            start_date, end_date):
-        """ Alleen chloride op dit moment"""
+    def get_concentration_timeseries(self, start_date, end_date):
         logger.debug("WaterbalanceComputer2::get_concentration_timeseries")
-        if (self.outcome.has_key('concentration') and
-            self.outcome_info['concentration']['start_date']==start_date and
-            self.outcome_info['concentration']['end_date']>=end_date):
-            return self.outcome['concentration']
-        else:
-            logger.debug("Calculating concentration (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
-            inflow = self.get_open_water_incoming_flows(start_date, end_date)
-            storage = self.get_level_control_timeseries(start_date, end_date)['storage']
+        logger.debug("Calculating concentration (%s - %s)..." % (
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')))
+        inflow = self.get_open_water_incoming_flows(start_date, end_date)
+        level_control = self.get_level_control_timeseries(start_date, end_date)
+        bucket2outcome = self.get_buckets_timeseries(start_date, end_date)
 
-            concentrations = self._create_concentrations()
-            for intake in inflow['defined_input'].keys():
-                if intake.is_computed:
-                    inflow['defined_input'].pop(intake)
-            outflow = self.get_open_water_outgoing_flows(start_date, end_date)
-            for intake in outflow['defined_output'].keys():
-                if intake.is_computed:
-                    outflow['defined_output'].pop(intake)
-            concentration = self.concentration_computer.compute(inflow, outflow, storage, concentrations,
-                                                   start_date, end_date)
+        vc = VolumesConcentrations(self.area, inflow, level_control, bucket2outcome)
+        vc.start_date = start_date
+        vc.end_date = end_date
 
-            self.outcome['concentration'] = concentration
-            self.outcome_info['concentration'] = {'start_date': start_date,
-                                   'end_date': end_date}
-            self.updated = True
+        totals = TotalVolumeChlorideTimeseries(vc.get_volumes(), vc.get_concentrations())
 
-        return concentration
+        computer = ConcentrationComputer()
+        computer.initial_concentration = self.area.init_concentration
+        computer.initial_volume = 0.0
+        computer.incoming_volumes, computer.incoming_chlorides = totals.compute()
+
+        computer.outgoing_volumes = level_control['total_outgoing']
+        computer.outgoing_volumes_no_chloride = \
+            self.get_vertical_open_water_timeseries(start_date, end_date)['evaporation']
+
+        # storage = level_control['storage']
+        # concentrations = self._create_concentrations()
+        # for intake in inflow['defined_input'].keys():
+        #     if intake.is_computed:
+        #         inflow['defined_input'].pop(intake)
+        # outflow = self.get_open_water_outgoing_flows(start_date, end_date)
+        # for intake in outflow['defined_output'].keys():
+        #     if intake.is_computed:
+        #         outflow['defined_output'].pop(intake)
+        # concentration = self.concentration_computer.compute(inflow, outflow, storage, concentrations,
+        #                                        start_date, end_date)
+
+        # self.outcome['concentration'] = concentration
+        # self.outcome_info['concentration'] = {'start_date': start_date,
+        #                        'end_date': end_date}
+        # self.updated = True
+
+        # return concentration
+
+        return computer.compute()
 
     def get_load_timeseries(self,
             start_date, end_date, substance_string='phosphate'):
