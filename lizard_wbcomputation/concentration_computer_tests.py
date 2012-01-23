@@ -30,7 +30,7 @@ from lizard_wbcomputation.concentration_computer import TotalVolumeChlorideTimes
 
 
 class ConcentrationComputer_compute_TestSuite(TestCase):
-    """Implements a test suite for method ConcentrationComputer::compute."""
+    """Implements a test suite for ConcentrationComputer::compute."""
 
     def setUp(self):
         self.concentrations = ConcentrationComputer()
@@ -38,128 +38,92 @@ class ConcentrationComputer_compute_TestSuite(TestCase):
         self.concentrations.initial_volume = 100.0 # [m3]
 
     def test_a(self):
-        """Test that without incoming flows the concentration remains the same.
+        """Test without incoming volumes and outgoing volumes without chloride.
 
-        There is a single event.
+        Each time series has a single event.
 
         """
-        self.set_timeseries(incoming_volumes =               [0.0],
-                            incoming_chlorides =             [0.0],
-                            outgoing_volumes =             [-20.0],
-                            outgoing_volumes_no_chloride =   [0.0])
-
-        concentration_timeseries = self.concentrations.compute()
-
-        self.assertEqual(self.timeseries(30.0), concentration_timeseries)
+        self.set_timeseries(incoming_volumes=               [0.0],
+                            incoming_chlorides=             [0.0],
+                            outgoing_volumes=             [-20.0],
+                            outgoing_volumes_no_chloride=   [0.0])
+        self.assertEqual(self.timeseries(30.0), self.concentrations.compute())
 
     def set_timeseries(self, *args, **kwargs):
-        self.concentrations.incoming_volumes = self.timeseries(0.0)
-        self.concentrations.incoming_chlorides = self.timeseries(0.0)
-        self.concentrations.outgoing_volumes = self.timeseries(-20.0)
-        self.concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
+        for attribute, values in kwargs.items():
+            timeseries = self.timeseries(*values)
+            setattr(self.concentrations, attribute, timeseries)
 
     def timeseries(self, *args, **kwargs):
         date = datetime(2012, 1, 12)
         return SparseTimeseriesStub(date, list(args))
 
-    def test_aa(self):
-        """Test that without incoming flows the concentration remains the same.
-
-        There is a single event.
-
-        """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 100.0
-
-        concentrations.incoming_volumes = self.timeseries(0.0)
-        concentrations.incoming_chlorides = self.timeseries(0.0)
-        concentrations.outgoing_volumes = self.timeseries(-10.0)
-        concentrations.outgoing_volumes_no_chloride = self.timeseries(-10.0)
-
-        concentration_timeseries = concentrations.compute()
-
-        print list(concentration_timeseries.events())
-        self.assertEqual(self.timeseries(3000.0 / 90.0), concentration_timeseries)
-
     def test_b(self):
-        """Test that without incoming flows the concentration remains the same.
+        """Test without incoming volumes and outgoing volumes without chloride.
 
-        There are multiple events.
+        Each time series has multiple events.
 
         """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 100.0
-
-        concentrations.incoming_volumes = self.timeseries(0.0, 0.0)
-        concentrations.incoming_chlorides = self.timeseries(0.0, 0.0)
-        concentrations.outgoing_volumes = self.timeseries(-20.0, -30.0)
-        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0, 0.0)
-
-        concentration_timeseries = concentrations.compute()
-
-        self.assertEqual(self.timeseries(30.0, 30.0), concentration_timeseries)
+        self.set_timeseries(incoming_volumes=               [0.0,   0.0],
+                            incoming_chlorides=             [0.0,   0.0],
+                            outgoing_volumes=             [-20.0, -30.0],
+                            outgoing_volumes_no_chloride=   [0.0,   0.0])
+        self.assertEqual(self.timeseries(30.0, 30.0), self.concentrations.compute())
 
     def test_c(self):
-        """Test the concentration with incoming events.
+        """Test without incoming volumes but with outgoing volumes without chloride.
 
-        There are multiple events.
+        Each time series has a single event.
 
         """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 100.0
-
-        concentrations.incoming_volumes = self.timeseries(20.0, 10.0)
-        concentrations.incoming_chlorides = self.timeseries(200.0, 250.0)
-        concentrations.outgoing_volumes = self.timeseries(-30.0, -10.0)
-        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0, 0.0)
-
-        concentration_timeseries = concentrations.compute()
-
-        expected_concentrations = [((90.0 / 120.0) * 3200.0) / 90.0]
-        expected_concentrations.append(((90.0 / 100.0) * 2650.0) / 90.0)
-
-        self.assertEqual(self.timeseries(*expected_concentrations), concentration_timeseries)
+        self.set_timeseries(incoming_volumes=               [0.0],
+                            incoming_chlorides=             [0.0],
+                            outgoing_volumes=             [-10.0],
+                            outgoing_volumes_no_chloride= [-10.0])
+        self.assertEqual(self.timeseries(300.0 / 9.0), self.concentrations.compute())
 
     def test_d(self):
-        """Test that without volume, the concentration is 0.0
+        """Test with incoming volumes s but with outgoing volumes without chloride.
 
-        There is a single event.
+        Each time series has multiple events.
 
         """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 0.0
-
-        concentrations.incoming_volumes = self.timeseries(0.0)
-        concentrations.incoming_chlorides = self.timeseries(0.0)
-        concentrations.outgoing_volumes = self.timeseries(-20.0)
-        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
-
-        concentration_timeseries = concentrations.compute()
-
-        self.assertEqual(self.timeseries(0.0), concentration_timeseries)
+        self.set_timeseries(incoming_volumes=             [ 20.0,  10.0],
+                            incoming_chlorides=           [200.0, 250.0],
+                            outgoing_volumes=             [-30.0, -10.0],
+                            outgoing_volumes_no_chloride= [  0.0,   0.0])
+        expected_timeseries = \
+            self.timeseries(((90.0 / 120.0) * 3200.0) / 90.0, \
+                            ((90.0 / 100.0) * 2650.0) / 90.0)
+        self.assertEqual(expected_timeseries, self.concentrations.compute())
 
     def test_e(self):
-        """Test that with more volume going out than in, the concentration is 0.0
+        """Test without volume, the concentration is 0.0
 
-        There is a single event.
+        Each time series has a single event.
 
         """
-        concentrations = ConcentrationComputer()
-        concentrations.initial_concentration = 30.0 # [g/m3]
-        concentrations.initial_volume = 10.0
+        self.concentrations.initial_volume = 0.0
+        self.set_timeseries(incoming_volumes=             [  0.0],
+                            incoming_chlorides=           [  0.0],
+                            outgoing_volumes=             [-20.0],
+                            outgoing_volumes_no_chloride= [  0.0])
+        self.assertEqual(self.timeseries(0.0), self.concentrations.compute())
 
-        concentrations.incoming_volumes = self.timeseries(0.0)
-        concentrations.incoming_chlorides = self.timeseries(0.0)
-        concentrations.outgoing_volumes = self.timeseries(-20.0)
-        concentrations.outgoing_volumes_no_chloride = self.timeseries(0.0)
+    def test_f(self):
+        """Test that more volume going out than possible, the concentration is 0.0
 
-        concentration_timeseries = concentrations.compute()
+        Each time series has a single event.
 
-        self.assertEqual(self.timeseries(0.0), concentration_timeseries)
+        """
+        self.concentrations.initial_volume = 10.0
+
+        self.set_timeseries(incoming_volumes=             [  0.0],
+                            incoming_chlorides=           [  0.0],
+                            outgoing_volumes=             [-20.0],
+                            outgoing_volumes_no_chloride= [  0.0])
+        self.assertEqual(self.timeseries(0.0), self.concentrations.compute())
+
 
 class TotalVolumeChlorideTimeseries_compute_TestSuite(TestCase):
 
