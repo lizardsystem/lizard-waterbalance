@@ -144,6 +144,10 @@ class ConcentrationComputer(object):
     """Computes the chloride concentration time series of a water body.
 
     Instance parameters:
+      *initial_concentration*
+        initial chloride concentration of the water body in [g/m3]
+      *initial_volume*
+        initial volume of the water body in [g/m3]
       *incoming_volumes*
         time series of the water volume that comes into the water body
       *incoming_chlorides*
@@ -191,6 +195,7 @@ class ConcentrationComputer(object):
         except:
             outgoing_volume_no_chloride = 0.0
         return date, incoming_volume, incoming_chloride, outgoing_volume, outgoing_volume_no_chloride
+
 
 class TotalVolumeChlorideTimeseries(object):
     """Implements the computation of the total volume and chloride timeseries.
