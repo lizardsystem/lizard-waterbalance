@@ -80,6 +80,7 @@ class Units(object):
     These units are implemented as class variables to mimic global definitions.
 
     """
+    concentration = 'g/m3'
     flow = 'm3/dag'
     impact = 'mg/m2/dag'
     storage = 'm3'
@@ -184,6 +185,8 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_sewer', Units.impact),
     'incr_impact_nitrogen_sewer': \
         TimeSeriesSpec('incr_impact_nitrogen_sewer', Units.impact),
+    'concentrations': \
+        TimeSeriesSpec('chloride', Units.concentration),
     'delta_storage': \
         TimeSeriesSpec('delta_storage', Units.storage),
     }
@@ -332,6 +335,9 @@ def store_graphs_timeseries(run_info, area):
     get_storage_timeseries = StorageTimeseries(cm).get
     timeseries = DeltaStorage(get_storage_timeseries).compute(start_date, end_date)
     writeable_timeseries.insert({'delta_storage': timeseries})
+
+    concentrations = cm.get_concentration_timeseries(start_date, end_date)
+    writeable_timeseries.insert({'concentrations': concentrations})
 
     return writeable_timeseries.timeseries_list
 
