@@ -83,6 +83,7 @@ class Units(object):
     concentration = 'g/m3'
     flow = 'm3/dag'
     impact = 'mg/m2/dag'
+    level = 'mNAP'
     storage = 'm3'
 
 
@@ -117,6 +118,8 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('precipitation', Units.flow),
     'seepage': \
         TimeSeriesSpec('seepage', Units.flow),
+    'water_level': \
+        TimeSeriesSpec('water_level', Units.level),
     'sluice_error': \
         TimeSeriesSpec('sluice_error', Units.flow),
     'undrained': \
@@ -306,13 +309,14 @@ def store_graphs_timeseries(run_info, area):
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
     incoming = cm.get_open_water_incoming_flows(start_date, end_date)
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
-    sluice_error = cm.calc_sluice_error_timeseries(start_date, end_date)
+    water_level, sluice_error = cm.get_waterlevel_with_sluice_error(start_date, end_date)
 
     writeable_timeseries = WriteableTimeseriesList(area, LABEL2TIMESERIESSPEC)
 
     writeable_timeseries.insert(incoming)
     writeable_timeseries.insert(outgoing)
-    writeable_timeseries.insert({'sluice_error':sluice_error})
+    writeable_timeseries.insert({'water_level': water_level})
+    writeable_timeseries.insert({'sluice_error': sluice_error})
 
     for substance in ['phosphate', 'nitrogen']:
         impacts, impacts_incremental = \
@@ -337,6 +341,8 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert({'delta_storage': timeseries})
 
     concentrations = cm.get_concentration_timeseries(start_date, end_date)
+    writeable_timeseries.insert({'concentrations': concentrations})
+
     writeable_timeseries.insert({'concentrations': concentrations})
 
     return writeable_timeseries.timeseries_list
