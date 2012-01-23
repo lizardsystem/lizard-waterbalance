@@ -58,7 +58,7 @@ The script will ignore all the other information in the run file.
 
 The user can invoke the script from the lizard-waterbalance root directory like
 this [#fn1]_::
-
+1
   $> bin/wbcompute <path-to-the-run-xml-file>
 
 The command will compute the waterbalance for the configuration specified in
@@ -99,6 +99,8 @@ exported are identified by their location and their parameter as follows:
 | total drainage from buckets of type 'verhard' of 'ongedraineerd'                                         | uitspoeling           | location id of area            | 'discharge_drainage'                  | 'm3/dag'       |
 +----------------------------------------------------------------------------------------------------------+-----------------------+--------------------------------+---------------------------------------+----------------+
 | total indraft from buckets                                                                               | intrek                | location id of area            | 'indraft'                             | 'm3/dag'       |
++----------------------------------------------------------------------------------------------------------+-----------------------+--------------------------------+---------------------------------------+----------------+
+| water level                                                                                              | water hoogte          | location id of area            | 'water_level'                         | 'mNAP'         |
 +----------------------------------------------------------------------------------------------------------+-----------------------+--------------------------------+---------------------------------------+----------------+
 | sluice error                                                                                             | sluitfout             | location id of area            | 'sluice_error'                        | 'm3/dag'       |
 +----------------------------------------------------------------------------------------------------------+-----------------------+--------------------------------+---------------------------------------+----------------+
