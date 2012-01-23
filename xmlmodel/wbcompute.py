@@ -343,8 +343,6 @@ def store_graphs_timeseries(run_info, area):
     concentrations = cm.get_concentration_timeseries(start_date, end_date)
     writeable_timeseries.insert({'concentrations': concentrations})
 
-    writeable_timeseries.insert({'concentrations': concentrations})
-
     return writeable_timeseries.timeseries_list
 
 class StorageTimeseries(object):
