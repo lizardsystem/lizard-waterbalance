@@ -99,6 +99,7 @@ class Area(BaseModel):
                 'surface',
                 'bottom_height',
                 'init_water_level',
+                'ini_con_cl',
                 'max_intake',
                 'max_outtake',
                 'concentr_chloride_precipitation',
@@ -123,6 +124,10 @@ class Area(BaseModel):
     @property
     def init_water_level(self):
         return 0
+
+    @property
+    def init_concentration(self):
+        return self.ini_con_cl
 
     @property
     def buckets(self):
