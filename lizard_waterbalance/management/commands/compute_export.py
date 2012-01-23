@@ -146,7 +146,7 @@ class Command(BaseCommand):
         write_to_pi_file(location_id = "SAP",
                          filename="fractions.xml", timeseries=fractions)
 
-        series, delta = computer.get_concentration_timeseries(start, end)
+        series = computer.get_concentration_timeseries(start, end)
         write_to_pi_file(location_id = "SAP", parameter_id = "concentration",
                          filename="concentration.xml", timeseries=series)
 
