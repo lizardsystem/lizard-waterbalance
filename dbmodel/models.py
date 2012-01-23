@@ -61,6 +61,11 @@ class Area(object):
         return self.configuration.open_water.init_water_level
 
     @property
+    def init_concentration(self):
+        """Return the initial chloride concentration level of the current Area in [g/m3]."""
+        return 0.0
+
+    @property
     def max_intake(self):
         """Return the max capacity of an intake of the current Area in [mNAP].
 
@@ -388,9 +393,6 @@ class Bucket(object):
         self.min_water_level = self.database_bucket.upper_min_water_level
         self.equi_water_level = self.database_bucket.upper_equi_water_level
         self.init_water_level = self.database_bucket.upper_init_water_level
-        # self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
-        # self.label_flow_off = self._get_label_flow_off()
-
         # the following fields are set to None as the Django database does not
         # define nitrogen
         self.min_concentr_nitrogen_flow_off = None
@@ -417,21 +419,6 @@ class Bucket(object):
                                         start_date=start_date,
                                         end_date=end_date)
 
-    def _get_concentr_chloride_flow_off(self):
-        """Return the chloride concentration of the flow off.
-
-        This value is None when no Label exists with a program name equal to
-        the program name of the label of the bucket.
-
-        """
-        for concentr in self.configuration.config_concentrations.all().select_related('Label'):
-            if concentr.label.program_name == self.database_bucket.label.program_name:
-                return concentr.cl_concentration
-
-    def _get_label_flow_off(self):
-        """Return the label of the bucket."""
-        return self.database_bucket.label.program_name
-
     @property
     def min_concentr_phosphate_flow_off(self):
         return self.get_concentration('flow_off', 'stof_lower_concentration')
@@ -453,6 +440,14 @@ class Bucket(object):
             if concentr.label.program_name == program_name:
                 return getattr(concentr, attribute)
         return None
+
+    @property
+    def concentr_chloride_flow_off(self):
+        return self.get_concentration('flow_off', 'cl_concentration')
+
+    @property
+    def concentr_chloride_drainage_indraft(self):
+        return self.get_concentration('undrained', 'cl_concentration')
 
     @property
     def min_concentr_phosphate_drainage_indraft(self):
@@ -477,8 +472,7 @@ class PumpingStation(object):
         """Store the properties that do not belong to the database bucket."""
         self.name = self.db_station.name
         self.label = self.db_station.label
-        self.concentr_chloride_flow_off = self._get_concentr_chloride_flow_off()
-        self.label_flow_off = self._get_label_flow_off()
+        self.concentr_chloride = self._get_concentr_chloride_flow_off()
         self.into = self.db_station.into
         self.is_computed = self.db_station.computed_level_control
         self.max_discharge = self.db_station.max_discharge
@@ -541,10 +535,6 @@ class PumpingStation(object):
             if concentr.label.program_name == self.db_station.label.program_name:
                 return concentr
         return None
-
-    def _get_label_flow_off(self):
-        """Return the label of the bucket."""
-        return self.db_station.label.program_name
 
     def __hash__(self):
         return hash(self.name)
