@@ -292,6 +292,12 @@ class TimeseriesForLabel(TimeseriesForSomething):
         self.timeseries.parameter_id = self.parameter_id
         self.timeseries.units = self.units
 
+    def __eq__(self, other):
+        return self.timeseries == other.timeseries and \
+            self.location_id == other.location_id and \
+            self.parameter_id == other.parameter_id and \
+            self.units == other.units
+
 
 class TimeseriesForPumpingStation(TimeseriesForSomething):
 
@@ -315,28 +321,56 @@ class WriteableTimeseriesList(object):
     def insert(self, mapping2timeseries):
         multiple_timeseries = TimeseriesForSomething.create(self.area,
             self.label2time_series_spec, mapping2timeseries)
-        for timeseries in multiple_timeseries:
-            timeseries.set_standard_fields()
-            timeseries.set_specific_fields()
-            self.timeseries_list.append(timeseries.timeseries)
+        self.append_timeseries_specs(multiple_timeseries)
 
+    def append_writeables(self, writeables):
+        for writeable in writeables:
+            writeables.set_standard_fields()
+            writeables.set_specific_fields()
+            self.timeseries_list.append(writeables.timeseries)
 
 class FractionsTimeseries(object):
 
-    def as_writeable_timeseries(self, label2values):
-        intake2timeseries = {}
-        timeseries_dict = {'intakes': ('fraction_discharge', intake2timeseries)}
+    def __init__(self, area_id):
+        self.area_id = area_id
+
+    def as_writeables(self, label2values):
+        """Return the fraction time series as a list of writeable TimeSeries.
+
+        The given parameter is a dict of label to a value that is either
+
+          - a dict of intake to fraction time series when the label is
+            'intakes' or
+          - a single fraction time series when otherwise.
+
+        """
+        writeables = []
         for label, values in label2values.items():
             if label == 'intakes':
-                for intake, timeseries in values.items():
-                    intake2timeseries[intake] = timeseries
+                # values is a dict of intake to single fraction time series
+                writeables += self._as_writeables_for_intakes(values)
             else:
-                new_label = 'fraction_' + label
-                timeseries_dict[new_label] = values
-        if len(intake2timeseries) == 0:
-            del timeseries_dict['intakes']
-        return timeseries_dict
+                # values is a single fraction time series
+                writeable = self._create_writeable(values, self.area_id,
+                                                   'fraction_water_' + label)
+                writeables.append(writeable)
+        return writeables
 
+    def _as_writeables_for_intakes(self, intake2timeseries):
+        writeables = []
+        for intake, timeseries in intake2timeseries.items():
+            if intake.is_computed:
+                parameter = 'fraction_water_level_control'
+            else:
+                parameter = 'fraction_water_discharge'
+            writeable = self._create_writeable(timeseries, intake.location_id,
+                                               parameter)
+            writeables.append(writeable)
+        return writeables
+
+    def _create_writeable(self, timeseries, location, parameter):
+        units = Units.fraction
+        return TimeseriesForLabel(timeseries, location, parameter, units)
 
 def store_graphs_timeseries(run_info, area):
 
@@ -379,9 +413,8 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert({'concentrations': concentrations})
 
     fractions = cm.get_fraction_timeseries(start_date, end_date)
-
-    label2timeseries = FractionsTimeseries().as_writeable_timeseries(fractions)
-    writeable_timeseries.insert(label2timeseries)
+    writeables = FractionsTimeseries(area.location_id).as_writeable_timeseries(fractions)
+    writeable_timeseries.append_writeables(writeables)
 
     return writeable_timeseries.timeseries_list
 

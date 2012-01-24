@@ -34,6 +34,7 @@ from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
 from xmlmodel.wbcompute import FractionsTimeseries
 from xmlmodel.wbcompute import TimeSeriesSpec
+from xmlmodel.wbcompute import TimeseriesForLabel
 from xmlmodel.wbcompute import Units
 from xmlmodel.wbcompute import WriteableTimeseriesList
 
@@ -225,7 +226,7 @@ class MoreTests(TestCase):
 
         The writeable time series should have units Units.flow.
 
-        """
+         """
         writeable_timeseries = WriteableTimeseriesList(self.area,
                                                    self.label2spec)
 
@@ -274,35 +275,115 @@ class WriteableTimeseriesListTests(TestCase):
 
 class FractionsTimeseries_as_writeable_timeseries_TestSuite(TestCase):
 
+    def setUp(self):
+        self.area_location = 20120124
+        self.fractions = FractionsTimeseries(self.area_location)
+
     def test_a(self):
-        """Test the empty dict of time series."""
-        fractions_timeseries = FractionsTimeseries()
-        timeseries_dict = fractions_timeseries.as_writeable_timeseries({})
-        self.assertEqual({}, timeseries_dict)
+        """Test an empty dictionary."""
+        multiple_timeseries = self.fractions.as_writeables({})
+        self.assertEqual([], multiple_timeseries)
 
     def test_b(self):
-        """Test a dict of 2 time series non of which for a pumping station."""
-        fractions_timeseries = FractionsTimeseries()
-        label2timeseries = {'initial': SparseTimeseriesStub(),
-                            'seepage': SparseTimeseriesStub()}
-        timeseries_dict = fractions_timeseries.as_writeable_timeseries(label2timeseries)
-        self.assertEqual(2, len(timeseries_dict))
-        self.assertEqual(timeseries_dict['fraction_initial'], label2timeseries['initial'])
+        """Test a dictionary of a single time series.
+
+        The time series is not the discharge time series of a pumping station.
+
+        """
+        timeseries = SparseTimeseriesStub()
+        writeables = self.fractions.as_writeables({'initial': timeseries})
+        expected_writeables = \
+            [self._expected_writeable(timeseries, self.area_location,
+                                      'fraction_water_initial')]
+        self.assertEqual(expected_writeables, writeables)
+
+    def _expected_writeable(self, timeseries, location, parameter):
+        units = Units.fraction
+        return TimeseriesForLabel(timeseries, location, parameter, units)
 
     def test_c(self):
-        """Test a dict of a single pumping station."""
-        fractions_timeseries = FractionsTimeseries()
-        intake = "don't care"
+        """Test a dictionary of multiple time series.
+
+        The multiple time series are not the discharge time series of pumping
+        stations.
+
+        """
+        initial_timeseries = SparseTimeseriesStub()
+        seepage_timeseries = SparseTimeseriesStub()
+        writeables = \
+          self.fractions.as_writeables({'initial': initial_timeseries,
+                                        'seepage': seepage_timeseries})
+        expected_writeables = \
+          [self._expected_writeable(initial_timeseries, self.area_location,
+                                    'fraction_water_initial'),
+           self._expected_writeable(seepage_timeseries, self.area_location,
+                                    'fraction_water_seepage')]
+        self.assertTrue(self._writeables_are_equal(expected_writeables, writeables))
+
+    def _writeables_are_equal(self, writeables, other_writeables):
+        for writeable in writeables:
+            if not writeable in other_writeables:
+                return False
+        for writeable in other_writeables:
+            if not writeable in writeables:
+                return False
+        return True
+
+    def test_d(self):
+        """Test a dictionary of a single time series.
+
+        The time series is the discharge time series of a pumping station that
+        is not used for level control.
+
+        """
+        intake = self._create_intake(location='Wijchen', is_computed=False)
         timeseries = SparseTimeseriesStub()
-        label2timeseries = {'intakes': {intake: timeseries}}
-        timeseries_dict = fractions_timeseries.as_writeable_timeseries(label2timeseries)
+        writeables = \
+             self.fractions.as_writeables({'intakes': {intake: timeseries}})
+        expected_writeables = \
+            [self._expected_writeable(timeseries, 'Wijchen',
+                                      'fraction_water_discharge')]
+        self.assertEqual(expected_writeables, writeables)
 
-        self.assertEqual(1, len(timeseries_dict))
+    def _create_intake(self, location, is_computed):
+        intake = Mock()
+        intake.location_id = location
+        intake.is_computed = is_computed
+        return intake
 
-        label_intake2timeseries = timeseries_dict['intakes']
-        self.assertEqual('fraction_discharge', label_intake2timeseries[0])
+    def test_e(self):
+        """Test a dictionary of multiple time series.
 
-        intake2timeseries = label_intake2timeseries[1]
+        The multiple time series are the discharge time series of pumping
+        stations that are not used for level control.
 
-        self.assertEqual(1, len(intake2timeseries))
-        self.assertEqual(intake2timeseries[intake], timeseries)
+        """
+        intakes = [self._create_intake(location=location, is_computed=False)
+                   for location in ['Wijchen', 'Utrecht']]
+        label2intakes = {intakes[0]: SparseTimeseriesStub(),
+                         intakes[1]: SparseTimeseriesStub()}
+        writeables = \
+            self.fractions.as_writeables({'intakes': label2intakes})
+        expected_writeables = \
+            [self._expected_writeable(SparseTimeseriesStub(), 'Wijchen',
+                                      'fraction_water_discharge'),
+             self._expected_writeable(SparseTimeseriesStub(), 'Utrecht',
+                                      'fraction_water_discharge')]
+        self.assertTrue(self._writeables_are_equal(expected_writeables,
+                                                   writeables))
+
+    def test_f(self):
+        """Test a dictionary of a single time series.
+
+        The time series is the discharge time series of a pumping station that
+        is used for level control.
+
+        """
+        intake = self._create_intake(location='Wijchen', is_computed=True)
+        timeseries = SparseTimeseriesStub()
+        writeables = \
+            self.fractions.as_writeables({'intakes': {intake: timeseries}})
+        expected_writeables = \
+            [self._expected_writeable(timeseries, 'Wijchen',
+                                      'fraction_water_level_control')]
+        self.assertEqual(expected_writeables, writeables)
