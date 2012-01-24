@@ -82,6 +82,7 @@ class Units(object):
     """
     concentration = 'g/m3'
     flow = 'm3/dag'
+    fraction = '[0,1]'
     impact = 'mg/m2/dag'
     level = 'mNAP'
     storage = 'm3'
@@ -192,6 +193,24 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('chloride', Units.concentration),
     'delta_storage': \
         TimeSeriesSpec('delta_storage', Units.storage),
+    'fraction_initial': \
+        TimeSeriesSpec('fraction_water_initial', Units.fraction),
+    'fraction_precipitation': \
+        TimeSeriesSpec('fraction_water_precipitation', Units.fraction),
+    'fraction_seepage': \
+        TimeSeriesSpec('fraction_water_seepage', Units.fraction),
+    'fraction_hardened': \
+        TimeSeriesSpec('fraction_water_hardened', Units.fraction),
+    'fraction_drained': \
+        TimeSeriesSpec('fraction_water_drained', Units.fraction),
+    'fraction_undrained': \
+        TimeSeriesSpec('fraction_water_drainage', Units.fraction),
+    'fraction_flow_off': \
+        TimeSeriesSpec('fraction_water_flow_off', Units.fraction),
+    'fraction_sewer': \
+        TimeSeriesSpec('fraction_water_sewer', Units.fraction),
+    'fraction_discharge': \
+        TimeSeriesSpec('fraction_water_discharge', Units.fraction),
     }
 
 
@@ -302,6 +321,23 @@ class WriteableTimeseriesList(object):
             self.timeseries_list.append(timeseries.timeseries)
 
 
+class FractionsTimeseries(object):
+
+    def as_writeable_timeseries(self, label2values):
+        intake2timeseries = {}
+        timeseries_dict = {'intakes': ('fraction_discharge', intake2timeseries)}
+        for label, values in label2values.items():
+            if label == 'intakes':
+                for intake, timeseries in values.items():
+                    intake2timeseries[intake] = timeseries
+            else:
+                new_label = 'fraction_' + label
+                timeseries_dict[new_label] = values
+        if len(intake2timeseries) == 0:
+            del timeseries_dict['intakes']
+        return timeseries_dict
+
+
 def store_graphs_timeseries(run_info, area):
 
     cm = WaterbalanceComputer2(None, area)
@@ -331,7 +367,6 @@ def store_graphs_timeseries(run_info, area):
                  writeable_timeseries.insert({'intakes': (label, {impact_incremental.label: impact_incremental.timeseries})})
              else:
                  key = '%s_impact_%s_%s' % ('min', substance, impact.label)
-                 print key
                  writeable_timeseries.insert({key: impact.timeseries})
                  key = '%s_impact_%s_%s' % ('incr', substance, impact.label)
                  writeable_timeseries.insert({key: impact_incremental.timeseries})
@@ -342,6 +377,11 @@ def store_graphs_timeseries(run_info, area):
 
     concentrations = cm.get_concentration_timeseries(start_date, end_date)
     writeable_timeseries.insert({'concentrations': concentrations})
+
+    fractions = cm.get_fraction_timeseries(start_date, end_date)
+
+    label2timeseries = FractionsTimeseries().as_writeable_timeseries(fractions)
+    writeable_timeseries.insert(label2timeseries)
 
     return writeable_timeseries.timeseries_list
 

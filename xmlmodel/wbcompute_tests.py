@@ -32,6 +32,7 @@ from timeseries.timeseriesstub import TimeseriesStub
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from xmlmodel.reader import Area
 from xmlmodel.wbcompute import insert_calculation_range
+from xmlmodel.wbcompute import FractionsTimeseries
 from xmlmodel.wbcompute import TimeSeriesSpec
 from xmlmodel.wbcompute import Units
 from xmlmodel.wbcompute import WriteableTimeseriesList
@@ -271,3 +272,37 @@ class WriteableTimeseriesListTests(TestCase):
         self.assertEqual(Units.impact, single_timeseries.units)
 
 
+class FractionsTimeseries_as_writeable_timeseries_TestSuite(TestCase):
+
+    def test_a(self):
+        """Test the empty dict of time series."""
+        fractions_timeseries = FractionsTimeseries()
+        timeseries_dict = fractions_timeseries.as_writeable_timeseries({})
+        self.assertEqual({}, timeseries_dict)
+
+    def test_b(self):
+        """Test a dict of 2 time series non of which for a pumping station."""
+        fractions_timeseries = FractionsTimeseries()
+        label2timeseries = {'initial': SparseTimeseriesStub(),
+                            'seepage': SparseTimeseriesStub()}
+        timeseries_dict = fractions_timeseries.as_writeable_timeseries(label2timeseries)
+        self.assertEqual(2, len(timeseries_dict))
+        self.assertEqual(timeseries_dict['fraction_initial'], label2timeseries['initial'])
+
+    def test_c(self):
+        """Test a dict of a single pumping station."""
+        fractions_timeseries = FractionsTimeseries()
+        intake = "don't care"
+        timeseries = SparseTimeseriesStub()
+        label2timeseries = {'intakes': {intake: timeseries}}
+        timeseries_dict = fractions_timeseries.as_writeable_timeseries(label2timeseries)
+
+        self.assertEqual(1, len(timeseries_dict))
+
+        label_intake2timeseries = timeseries_dict['intakes']
+        self.assertEqual('fraction_discharge', label_intake2timeseries[0])
+
+        intake2timeseries = label_intake2timeseries[1]
+
+        self.assertEqual(1, len(intake2timeseries))
+        self.assertEqual(intake2timeseries[intake], timeseries)
