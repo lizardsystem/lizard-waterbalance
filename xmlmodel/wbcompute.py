@@ -149,6 +149,14 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_discharge', Units.impact),
     'incr_impact_nitrogen_discharge': \
         TimeSeriesSpec('incr_impact_nitrogen_discharge', Units.impact),
+    'min_impact_phosphate_level_control': \
+        TimeSeriesSpec('min_impact_phosphate_level_control', Units.impact),
+    'incr_impact_phosphate_level_control': \
+        TimeSeriesSpec('incr_impact_phosphate_level_control', Units.impact),
+    'min_impact_nitrogen_level_control': \
+        TimeSeriesSpec('min_impact_nitrogen_level_control', Units.impact),
+    'incr_impact_nitrogen_level_control': \
+        TimeSeriesSpec('incr_impact_nitrogen_level_control', Units.impact),
     'min_impact_phosphate_hardened': \
         TimeSeriesSpec('min_impact_phosphate_hardened', Units.impact),
     'incr_impact_phosphate_hardened': \
@@ -394,9 +402,13 @@ def store_graphs_timeseries(run_info, area):
         for (impact, impact_incremental) in zip(impacts, impacts_incremental):
              assert impact.label == impact_incremental.label
              if type(impact) == LoadForIntake:
-                 label = '%s_impact_%s_discharge' % ('min', substance)
+                 if impact.label.is_computed:
+                     name = 'level_control'
+                 else:
+                     name = 'discharge'
+                 label = '%s_impact_%s_%s' % ('min', substance, name)
                  writeable_timeseries.insert({'intakes': (label, {impact.label: impact.timeseries})})
-                 label = '%s_impact_%s_discharge' % ('incr', substance)
+                 label = '%s_impact_%s_%s' % ('incr', substance, name)
                  writeable_timeseries.insert({'intakes': (label, {impact_incremental.label: impact_incremental.timeseries})})
              else:
                  key = '%s_impact_%s_%s' % ('min', substance, impact.label)

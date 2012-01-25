@@ -6068,7 +6068,7 @@
     <header>
       <type>instantaneous</type>
       <locationId>3201_PS2</locationId>
-      <parameterId>min_impact_phosphate_discharge</parameterId>
+      <parameterId>min_impact_phosphate_level_control</parameterId>
       <timeStep unit="nonequidistant"/>
       <startDate date="2008-12-31" time="23:00:00"/>
       <endDate date="2009-12-31" time="23:00:00"/>
@@ -6447,7 +6447,7 @@
     <header>
       <type>instantaneous</type>
       <locationId>3201_PS2</locationId>
-      <parameterId>incr_impact_phosphate_discharge</parameterId>
+      <parameterId>incr_impact_phosphate_level_control</parameterId>
       <timeStep unit="nonequidistant"/>
       <startDate date="2008-12-31" time="23:00:00"/>
       <endDate date="2009-12-31" time="23:00:00"/>
@@ -12890,7 +12890,7 @@
     <header>
       <type>instantaneous</type>
       <locationId>3201_PS2</locationId>
-      <parameterId>min_impact_nitrogen_discharge</parameterId>
+      <parameterId>min_impact_nitrogen_level_control</parameterId>
       <timeStep unit="nonequidistant"/>
       <startDate date="2008-12-31" time="23:00:00"/>
       <endDate date="2009-12-31" time="23:00:00"/>
@@ -13269,7 +13269,7 @@
     <header>
       <type>instantaneous</type>
       <locationId>3201_PS2</locationId>
-      <parameterId>incr_impact_nitrogen_discharge</parameterId>
+      <parameterId>incr_impact_nitrogen_level_control</parameterId>
       <timeStep unit="nonequidistant"/>
       <startDate date="2008-12-31" time="23:00:00"/>
       <endDate date="2009-12-31" time="23:00:00"/>
