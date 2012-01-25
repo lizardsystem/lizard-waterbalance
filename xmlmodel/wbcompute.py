@@ -338,7 +338,6 @@ class FractionsTimeseries(object):
         """Return the fraction time series as a list of writeable TimeSeries.
 
         The given parameter is a dict of label to a value that is either
-
           - a dict of intake to fraction time series when the label is
             'intakes' or
           - a single fraction time series when otherwise.
