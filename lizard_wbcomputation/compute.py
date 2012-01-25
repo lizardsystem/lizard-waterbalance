@@ -497,15 +497,11 @@ class WaterbalanceComputer2(object):
             buckets_summary = self.get_bucketflow_summary(start_date, end_date)
             vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
 
-            #to do: label timeseries
-
             # We compute the level control for a specific range of time. To do
             # so, we set an instance method that can determine whether a given
             # date is inside that range.
             date_range = DateRange(start_date, end_date)
             self.level_control_computer.inside_range = date_range.inside
-
-
 
             outcome = self.level_control_computer.compute(
                 self.area,
