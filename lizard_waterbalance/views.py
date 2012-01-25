@@ -1296,7 +1296,7 @@ def waterbalance_fraction_distribution(
 
     # Draw axis 2
     # show the computed substance levels
-    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(calc_start_datetime), date2datetime(calc_end_datetime))[0]
+    substance_timeseries = waterbalance_computer.get_concentration_timeseries(date2datetime(calc_start_datetime), date2datetime(calc_end_datetime))
 
     style = dict(color='black', lw=3)
     handles.append(Line2D([], [], **style))
@@ -1390,17 +1390,17 @@ def waterbalance_phosphate_impact(
     legend_info = LegendInfo()
     legend_info.retrieve_labels()
 
-    for key, impact in impacts.items():
-        label_name, label = legend_info.retrieve(key)
+    for index, impact in enumerate(impacts):
+        label_name, label = legend_info.retrieve(impact.label)
         name = extended_legend_name(label_name, " (min)")
         name_incremental = extended_legend_name(label_name, " (incr)")
 
         bars_minimum.append((name,
-                     impact,
+                     impact.timeseries,
                      label,
                      label.color))
         bars_increment.append((name_incremental,
-                               impacts_incremental[key],
+                               impacts_incremental[index].timeseries,
                                label,
                                label.color_increment))
         legend.append((label.order, name, label.color))
