@@ -319,15 +319,15 @@ class WriteableTimeseriesList(object):
         self.timeseries_list = []
 
     def insert(self, mapping2timeseries):
-        multiple_timeseries = TimeseriesForSomething.create(self.area,
+        writeables = TimeseriesForSomething.create(self.area,
             self.label2time_series_spec, mapping2timeseries)
-        self.append_timeseries_specs(multiple_timeseries)
+        self.append_writeables(writeables)
 
     def append_writeables(self, writeables):
         for writeable in writeables:
-            writeables.set_standard_fields()
-            writeables.set_specific_fields()
-            self.timeseries_list.append(writeables.timeseries)
+            writeable.set_standard_fields()
+            writeable.set_specific_fields()
+            self.timeseries_list.append(writeable.timeseries)
 
 class FractionsTimeseries(object):
 
@@ -412,7 +412,7 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert({'concentrations': concentrations})
 
     fractions = cm.get_fraction_timeseries(start_date, end_date)
-    writeables = FractionsTimeseries(area.location_id).as_writeable_timeseries(fractions)
+    writeables = FractionsTimeseries(area.location_id).as_writeables(fractions)
     writeable_timeseries.append_writeables(writeables)
 
     return writeable_timeseries.timeseries_list
