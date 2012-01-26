@@ -365,6 +365,26 @@ class Area(object):
         """Not implemented as the Django database does not define nitrogen."""
         pass
 
+    @property
+    def min_concentr_sulphate_precipitation(self):
+        """Not implemented as the Django database does not define sulphate."""
+        pass
+
+    @property
+    def incr_concentr_sulphate_precipitation(self):
+        """Not implemented as the Django database does not define sulphate."""
+        pass
+
+    @property
+    def min_concentr_sulphate_seepage(self):
+        """Not implemented as the Django database does not define sulphate."""
+        pass
+
+    @property
+    def incr_concentr_sulphate_seepage(self):
+        """Not implemented as the Django database does not define sulphate."""
+        pass
+
 
 class Bucket(object):
 
@@ -399,6 +419,10 @@ class Bucket(object):
         self.min_concentr_nitrogen_drainage_indraft = None
         self.incr_concentr_nitrogen_flow_off = None
         self.incr_concentr_nitrogen_drainage_indraft = None
+        self.min_concentr_sulphate_flow_off = None
+        self.min_concentr_sulphate_drainage_indraft = None
+        self.incr_concentr_sulphate_flow_off = None
+        self.incr_concentr_sulphate_drainage_indraft = None
 
         return self
 

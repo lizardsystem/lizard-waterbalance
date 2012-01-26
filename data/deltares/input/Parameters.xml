@@ -130,6 +130,22 @@
             <description>Concentratie N kwel incrementeel [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate_precipitation" name="Concentratie SO4 neerslag minimaal">
+            <description>Concentratie SO4 neerslag minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_seepage" name="Concentratie SO4 kwel minimaal">
+            <description>Concentratie SO4 kwel minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_precipitation" name="Concentratie SO4 neerslag incrementeel">
+            <description>Concentratie SO4 neerslag incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_seepage" name="Concentratie SO4 kwel incrementeel">
+            <description>Concentratie SO4 kwel incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
     </group>
     <group id="SAP_verhard" name="Verhard">
         <model>Bucket</model>
@@ -279,6 +295,22 @@
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom minimaal">
+            <description>Concentratie SO4 oppervlakte afstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom minimaal">
+            <description>Concentratie SO4 uitstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom incrementeel">
+            <description>Concentratie SO4 oppervlakte afstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom incrementeel">
+            <description>Concentratie SO4 uitstroom incrementeel [g/m3]</description>
             <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="label_flow_off" name="Label oppervlakte afstroom">
@@ -440,6 +472,22 @@
             <description>Concentratie N uitstroom incrementeel</description>
             <dblValue>0.0</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom minimaal">
+            <description>Concentratie SO4 oppervlakte afstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom minimaal">
+            <description>Concentratie SO4 uitstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom incrementeel">
+            <description>Concentratie SO4 oppervlakte afstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom incrementeel">
+            <description>Concentratie SO4 uitstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
         <parameter id="label_flow_off" name="Label oppervlakte afstroom">
             <description>Label oppervlakte afstroom</description>
             <stringValue>afstroming</stringValue>
@@ -599,6 +647,22 @@
             <description>Concentratie N uitstroom incrementeel</description>
             <dblValue>0.0</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom minimaal">
+            <description>Concentratie SO4 oppervlakte afstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom minimaal">
+            <description>Concentratie SO4 uitstroom minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie SO4 oppervlakte afstroom incrementeel">
+            <description>Concentratie SO4 oppervlakte afstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie SO4 uitstroom incrementeel">
+            <description>Concentratie SO4 uitstroom incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
         <parameter id="label_flow_off" name="Label oppervlakte afstroom">
             <description>Label oppervlakte afstroom</description>
             <stringValue>afstroming</stringValue>
@@ -658,6 +722,14 @@
             <description>Concentratie N incrementeel g/m3]</description>
             <dblValue>-999.0</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie SO4 minimaal">
+            <description>Concentratie SO4 minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie SO4 incrementeel">
+            <description>Concentratie SO4 incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
     </group>
     <group id="SAP_ip" name="inlaat peilbeheer">
         <model>PumpingStation</model>
@@ -709,6 +781,14 @@
             <description>Concentratie N incrementeel g/m3]</description>
             <dblValue>-999.0</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie SO4 minimaal">
+            <description>Concentratie SO4 minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie SO4 incrementeel">
+            <description>Concentratie SO4 incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
     </group>
     <group id="SAP_up" name="uitlaat peilbeheer">
         <model>PumpingStation</model>
@@ -759,6 +839,14 @@
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
             <dblValue>-999.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie SO4 minimaal">
+            <description>Concentratie SO4 minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie SO4 incrementeel">
+            <description>Concentratie SO4 incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
         </parameter>
     </group>
 </parameters>

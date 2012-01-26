@@ -197,6 +197,42 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('min_impact_nitrogen_sewer', Units.impact),
     'incr_impact_nitrogen_sewer': \
         TimeSeriesSpec('incr_impact_nitrogen_sewer', Units.impact),
+    'min_impact_sulphate_precipitation': \
+        TimeSeriesSpec('min_impact_sulphate_precipitation', Units.impact),
+    'min_impact_sulphate_seepage': \
+        TimeSeriesSpec('min_impact_sulphate_seepage', Units.impact),
+    'incr_impact_sulphate_precipitation': \
+        TimeSeriesSpec('incr_impact_sulphate_precipitation', Units.impact),
+    'incr_impact_sulphate_seepage': \
+        TimeSeriesSpec('incr_impact_sulphate_seepage', Units.impact),
+    'min_impact_sulphate_discharge': \
+        TimeSeriesSpec('min_impact_sulphate_discharge', Units.impact),
+    'incr_impact_sulphate_discharge': \
+        TimeSeriesSpec('incr_impact_sulphate_discharge', Units.impact),
+    'min_impact_sulphate_level_control': \
+        TimeSeriesSpec('min_impact_sulphate_level_control', Units.impact),
+    'incr_impact_sulphate_level_control': \
+        TimeSeriesSpec('incr_impact_sulphate_level_control', Units.impact),
+    'min_impact_sulphate_hardened': \
+        TimeSeriesSpec('min_impact_sulphate_hardened', Units.impact),
+    'incr_impact_sulphate_hardened': \
+        TimeSeriesSpec('incr_impact_sulphate_hardened', Units.impact),
+    'min_impact_sulphate_drained': \
+        TimeSeriesSpec('min_impact_sulphate_drained', Units.impact),
+    'incr_impact_sulphate_drained': \
+        TimeSeriesSpec('incr_impact_sulphate_drained', Units.impact),
+    'min_impact_sulphate_undrained': \
+        TimeSeriesSpec('min_impact_sulphate_drainage', Units.impact),
+    'incr_impact_sulphate_undrained': \
+        TimeSeriesSpec('incr_impact_sulphate_drainage', Units.impact),
+    'min_impact_sulphate_flow_off': \
+        TimeSeriesSpec('min_impact_sulphate_flow_off', Units.impact),
+    'incr_impact_sulphate_flow_off': \
+        TimeSeriesSpec('incr_impact_sulphate_flow_off', Units.impact),
+    'min_impact_sulphate_sewer': \
+        TimeSeriesSpec('min_impact_sulphate_sewer', Units.impact),
+    'incr_impact_sulphate_sewer': \
+        TimeSeriesSpec('incr_impact_sulphate_sewer', Units.impact),
     'concentrations': \
         TimeSeriesSpec('chloride', Units.concentration),
     'delta_storage': \
@@ -395,7 +431,7 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert({'water_level': water_level})
     writeable_timeseries.insert({'sluice_error': sluice_error})
 
-    for substance in ['phosphate', 'nitrogen']:
+    for substance in ['phosphate', 'nitrogen', 'sulphate']:
         impacts, impacts_incremental = \
             cm.get_impact_timeseries(start_date, end_date, substance)
 

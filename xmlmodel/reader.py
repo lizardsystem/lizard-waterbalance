@@ -112,6 +112,10 @@ class Area(BaseModel):
                 'incr_concentr_nitrogen_precipitation',
                 'min_concentr_nitrogen_seepage',
                 'incr_concentr_nitrogen_seepage',
+                'min_concentr_sulphate_precipitation',
+                'incr_concentr_sulphate_precipitation',
+                'min_concentr_sulphate_seepage',
+                'incr_concentr_sulphate_seepage',
                 ]
 
     @classmethod
@@ -169,6 +173,10 @@ class Bucket(BaseModel):
                 'min_concentr_nitrogen_drainage_indraft',
                 'incr_concentr_nitrogen_flow_off',
                 'incr_concentr_nitrogen_drainage_indraft',
+                'min_concentr_sulphate_flow_off',
+                'min_concentr_sulphate_drainage_indraft',
+                'incr_concentr_sulphate_flow_off',
+                'incr_concentr_sulphate_drainage_indraft',
                 'label_flow_off',
                 'label_drainage_indraft',
                 ]
@@ -193,6 +201,8 @@ class PumpingStation(BaseModel):
                 'incr_concentr_phosphate',
                 'min_concentr_nitrogen',
                 'incr_concentr_nitrogen',
+                'min_concentr_sulphate',
+                'incr_concentr_sulphate',
                 ]
 
     @classmethod
