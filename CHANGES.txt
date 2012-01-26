@@ -5,7 +5,9 @@ Changelog of lizard-waterbalance
 0.19.1.12 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Computes and exports the chloride concentrations (#46)
+- Exports the water level (#49)
+- Exports the fraction distribution (#50)
 
 
 0.19.1.11 (2011-12-22)
