@@ -156,7 +156,7 @@ class VolumesConcentrations(object):
                 timeseries = TimeseriesRestrictedStub(timeseries=intake.retrieve_sum_timeseries(),
                                                                   start_date=self.start_date,
                                                                   end_date=self.end_date)
-            volume_timeseries.append(timeseries)
+                volume_timeseries.append(timeseries)
         for bucket, outcome in self.bucket2outcome.items():
             volume_timeseries.append(self.get_incoming_timeseries(self.get_restricted_timeseries(outcome.flow_off)))
             volume_timeseries.append(self.get_incoming_timeseries(self.get_restricted_timeseries(outcome.net_drainage)))
@@ -186,6 +186,7 @@ class VolumesConcentrations(object):
             else:
                 incoming_timeseries.add_value(event[0], 0.0)
         return incoming_timeseries
+
 
 class WaterbalanceComputer2(object):
     """Compute the waterbalance-related time series.
