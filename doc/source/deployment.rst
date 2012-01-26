@@ -44,8 +44,9 @@ your buildout environment in Windows:
 
     C:\github.com\lizard-waterbalance>C:\Python26\python.exe setup-wbcompute.py py2exe
 
-  creates a ``dist\wbcompute.exe`` that contains the Python interpreter and all
-  other dependencies.
+  creates a ``dist\wbcompute.exe`` to use as an entry point for the wbcompute
+  script. Note that you also have to place the other files from directory
+  ``dist`` in the directory to which you deploy ``wbcompute.exe``.
 
 py2exe byte-compiles the files of the libraries that wbcompute depends on and
 packages these byte-compiled files. On one occassion I noticed that it skipped
