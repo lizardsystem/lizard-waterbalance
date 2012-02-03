@@ -381,10 +381,12 @@ class FractionsTimeseries(object):
     def as_writeables(self, label2values):
         """Return the fraction time series as a list of writeable TimeSeries.
 
-        The given parameter is a dict of label to a value that is either
-          - a dict of intake to fraction time series when the label is
-            'intakes' or
-          - a single fraction time series when otherwise.
+        Parameter:
+          *label2values*
+            dict of (string) label to a value that is either (i) a
+            dict of intake to fraction time series when the label is equal
+            to 'intakes', or (ii) a single fraction time series when
+            otherwise
 
         """
         writeables = []
