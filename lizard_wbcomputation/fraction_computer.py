@@ -202,9 +202,9 @@ class FractionComputer:
     def compute_fraction(self, current_input, current_total_output, current_storage, previous_fraction, previous_storage):
 
         input = current_input
-        output = previous_fraction/100 * current_total_output
-        new_storage_fraction = previous_fraction/100 * previous_storage + input - output
-        fraction = 100 * new_storage_fraction / current_storage
+        output = previous_fraction * current_total_output
+        new_storage_fraction = previous_fraction * previous_storage + input - output
+        fraction = new_storage_fraction / current_storage
         return fraction
 
     def initial_storage(self, area):
