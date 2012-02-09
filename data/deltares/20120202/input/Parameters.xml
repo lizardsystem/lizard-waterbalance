@@ -12,11 +12,11 @@
         </parameter>
         <parameter id="max_intake" name="Maximum inlaat capaciteit">
             <description>Maximale inlaat capaciteit voor peilhandhaving [m3/dag]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1000000.0</dblValue>
         </parameter>
         <parameter id="max_outtake" name="Maximum uitlaat capaciteit">
             <description>Maximale uitlaat capaciteit voor peilhandhaving [m3/dag]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1000000.0</dblValue>
         </parameter>
         <parameter id="surface" name="Oppervlak openwater">
             <description>Oppervlak openwater [m2]</description>
