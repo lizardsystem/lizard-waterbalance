@@ -5,7 +5,7 @@ Changelog of lizard-waterbalance
 0.19.1.14 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Exports the fractions as real values in the range [0,1] (#54).
 
 
 0.19.1.13 (2012-01-26)
