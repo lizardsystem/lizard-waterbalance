@@ -39,7 +39,6 @@ from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
 
 from timeseries.timeseriesstub import enumerate_events
-from timeseries.timeseriesstub import subtract_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
