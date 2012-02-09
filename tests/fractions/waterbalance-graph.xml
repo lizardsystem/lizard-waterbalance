@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?><TimeSeries version="1.2" xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd">
+  <timeZone>0.00</timeZone>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201_PS1</locationId>
+      <parameterId>Q</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-01-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>m3/dag</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="3000.0"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="3000.0"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_sewer</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_undrained</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.000653969953773"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.000653186176935"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.000652715177548"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.000652212480237"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.00064580746573"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.000645323861616"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.000644643480995"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.00064411922669"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.000643612852678"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.000643098265171"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.000642575177619"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.000642043288109"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.000640439570781"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.000637290412995"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.000636679487988"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.000636115948826"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.000635542106777"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.000630310589497"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.000627036596263"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.000621081738049"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.000620487528311"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.000619881545521"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.000604470841919"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.000591470074157"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.000590851607157"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.000590251457919"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.000589638642097"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.000589012599458"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.00058837271705"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.000587718337984"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.000587048772902"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.000586363281648"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_drained</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201_PS1</locationId>
+      <parameterId>fraction_water_discharge</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.000699979613787"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0014093403395"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.00212940393824"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.00286003480157"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.00356903473356"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.00431519847255"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.00507140408866"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.00584051443504"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.00662207242329"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.00741630745006"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.00822366178798"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.00904460141977"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.00986320722379"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.010667732173"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.0115262279014"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.0124011480014"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.0132920638005"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0140956483276"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0149495183433"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0157451646161"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0166868342418"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0176471611277"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0181819339214"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0187645243525"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0197391008122"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0207347870796"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0217514880275"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0227901331161"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0238517392739"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0249373963229"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0260482479498"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0271855221227"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201_PS2</locationId>
+      <parameterId>fraction_water_level_control</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_hardened</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.000420069195405"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.000419754632317"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.000419312074813"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.000418971070573"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.000418641696673"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.000418306980257"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.000417966734938"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.000417620764335"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.000440154790779"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.000669107377859"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.00066846595219"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.000667874278122"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.000667271786792"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.00104562359686"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.00128271408336"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.00176108651801"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.00175940162744"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.00175768335422"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.00306005528688"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.00417677810702"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.004172410685"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.00416817261734"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.00416384510218"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.00415942418335"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.00415490553237"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.00415028451048"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.00414555624967"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.00414071552317"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_initial</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="99.8646050432"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="99.7449182536"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="99.6729942033"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="99.5962297157"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="98.6181507683"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="98.544301911"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="98.4404042599"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="98.3603479075"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="98.2830219686"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="98.2044417864"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="98.1245636031"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="98.0433413154"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="97.7984453584"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="97.3175526252"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="97.2242612069"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="97.1382058529"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="97.0505771947"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="96.2516973626"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="95.7517416087"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="94.8424038628"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="94.7516649527"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="94.6591282365"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="92.3058338387"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="90.3205491473"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="90.2261060275"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="90.1344601251"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="90.0408799694"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="89.9452800103"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="89.8475666466"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="89.7476395679"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="89.6453935059"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="89.5407154348"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_precipitation</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.000220502359566"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.000220343359758"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.000258066161849"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.00323058505802"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.00322816587846"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.00346096117357"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.00349815879603"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.00349540872022"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.00349261403759"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.00348977319191"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.00348688454353"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.00439228585108"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.00569492028666"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.00577936774617"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.00577425229936"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.00576904332955"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.00827276209852"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.00962102386753"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0122952136025"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0122834503591"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0122714540511"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0198248723569"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0259986079728"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0260228689958"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0259964366314"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0259694463928"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0259418736057"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0259136912738"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0258848704658"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0258553808204"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0258251897387"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_flow_off</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.000267788588229"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.000267595491275"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.000267389399034"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.00595299586456"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.0059485380448"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.00599963658256"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.00599475739678"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.00599004462121"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.00598525540342"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.00598038707649"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.00597543683058"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.00667945897935"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.00915542349697"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.00914664684342"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.00913855094305"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.00913030702965"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0134386817619"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0160022910227"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0211534148978"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.021133176716"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.021112537556"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0352703292058"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0472631280203"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0472137076248"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0471657509631"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0471167821413"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0470667563924"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0470156247368"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0469633346837"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0469098311481"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0468550549856"/>
+  </series>
+  <series>
+    <header>
+      <type>instantaneous</type>
+      <locationId>3201</locationId>
+      <parameterId>fraction_water_seepage</parameterId>
+      <timeStep unit="nonequidistant"/>
+      <startDate date="2008-12-31" time="23:00:00"/>
+      <endDate date="2009-12-31" time="23:00:00"/>
+      <missVal>-999.0</missVal>
+      <stationName>Huh?</stationName>
+      <units>[0,1]</units>
+    </header>
+    <event date="2008-12-31" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-01" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-02" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-03" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-04" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-05" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-06" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-07" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-08" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-09" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-10" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-11" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-12" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-13" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-14" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-15" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-16" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-17" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-18" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-19" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-20" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-21" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-22" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-23" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-24" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-25" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-26" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-27" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-28" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-29" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-30" flag="0" time="23:00:00" value="0.0"/>
+    <event date="2009-01-31" flag="0" time="23:00:00" value="0.0"/>
+  </series>
+</TimeSeries>

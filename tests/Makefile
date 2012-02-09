@@ -56,3 +56,6 @@ test-increment-2:
 	- rm increment-2/nan-2/output/waterbalance-graph.xml
 	../bin/wbcompute increment-2/nan-2/input/Run.xml
 	python verify_presence.py increment-2/nan-2/output/waterbalance-graph.xml 'value="nan"'
+
+test-fractions:
+	../bin/check_fractions fractions/waterbalance-graph.xml
