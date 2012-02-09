@@ -20,11 +20,6 @@
 # Copyright 2010 Nelen & Schuurmans
 #
 #******************************************************************************
-#
-# Initial programmer: Pieter Swinkels
-# Initial date:       2010-11-26
-#
-#******************************************************************************
 
 import logging
 
@@ -663,25 +658,6 @@ class WaterbalanceComputer2(object):
         computer.outgoing_volumes = level_control['total_outgoing']
         computer.outgoing_volumes_no_chloride = \
             self.get_vertical_open_water_timeseries(start_date, end_date)['evaporation']
-
-        # storage = level_control['storage']
-        # concentrations = self._create_concentrations()
-        # for intake in inflow['defined_input'].keys():
-        #     if intake.is_computed:
-        #         inflow['defined_input'].pop(intake)
-        # outflow = self.get_open_water_outgoing_flows(start_date, end_date)
-        # for intake in outflow['defined_output'].keys():
-        #     if intake.is_computed:
-        #         outflow['defined_output'].pop(intake)
-        # concentration = self.concentration_computer.compute(inflow, outflow, storage, concentrations,
-        #                                        start_date, end_date)
-
-        # self.outcome['concentration'] = concentration
-        # self.outcome_info['concentration'] = {'start_date': start_date,
-        #                        'end_date': end_date}
-        # self.updated = True
-
-        # return concentration
 
         return computer.compute()
 
