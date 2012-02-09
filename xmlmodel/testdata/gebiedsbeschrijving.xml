@@ -134,6 +134,22 @@
             <description>Concentratie N kwel incrementeel [g/m3]</description>
             <dblValue>0.8</dblValue>
         </parameter>
+        <parameter id="min_concentr_sulphate_precipitation" name="Concentratie SO4 neerslag minimaal">
+            <description>Concentratie SO4 neerslag minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate_seepage" name="Concentratie SO4 kwel minimaal">
+            <description>Concentratie SO4 kwel minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_precipitation" name="Concentratie SO4 neerslag incerementeel">
+            <description>Concentratie SO4 neerslag incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate_seepage" name="Concentratie SO4 kwel incrementeel">
+            <description>Concentratie SO4 kwel incrementeel [g/m3]</description>
+            <dblValue>0.8</dblValue>
+        </parameter>
     </group>
     <group id="verhard" name="Verhard">
         <model>Bucket</model>
