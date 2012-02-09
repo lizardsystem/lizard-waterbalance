@@ -155,23 +155,10 @@ class FractionComputer:
                                                            previous_intakes[key],
                                                            previous_storage)
 
-            # Due to rounding errors, the sum of the fractions is seldom equal
-            # to 1.0. As the fraction of the next day depends on the fraction
-            # of the previous day, this effect gets worse over time. To avoid
-            # this effect, we divide each fraction by the sum of fractions.
+            # total_fractions = initial + precipitation + seepage + sewer + hardened + \
+            #                   drained + undrained + flow_off + sum(intakes.values())
 
-            total_fractions = initial + precipitation + seepage + sewer + hardened + \
-                              drained + undrained + flow_off + sum(intakes.values())
-
-                #TO DO: dit is een correctie die niet mogelijk hoeft te zijn. graag een alert als dit niet klopt
-                #initial /= total_fractions
-                #precipitation /= total_fractions
-                #seepage /= total_fractions
-                #hardened /= total_fractions
-                #drained /= total_fractions
-                #undrained /= total_fractions
-                #flow_off /= total_fractions
-                #intakes = [intake / total_fractions for intake in intakes]
+            # print "total_fractions", total_fractions
 
             fractions_initial.add_value(date, initial)
             previous_initial = initial
