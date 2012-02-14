@@ -26,9 +26,13 @@ from optparse import OptionParser
 
 class Fractions(object):
 
+    def __init__(self, fractions_reader):
+        self.fractions_reader = fractions_reader
+
     def verify(self, file_name):
         success = True
-        for date, value in self.fraction_timeseries.get_events():
+        fraction_timeseries = self.fractions_reader.get(file_name)
+        for date, value in fraction_timeseries.get_events():
             event_value = value[0]
             success = event_value > 1 - 1e-6 and event_value < 1 + 1e-6
             if not success:

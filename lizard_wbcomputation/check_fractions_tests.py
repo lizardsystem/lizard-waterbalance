@@ -24,28 +24,32 @@
 from datetime import datetime
 from unittest import TestCase
 
+from mock import Mock
+
 from timeseries.timeseries import TimeSeries
 
 from check_fractions import Fractions
 
-class Fractions_check_TestSuite(TestCase):
+
+class MockFractionsReader(object):
+
+    def __init__(self, *args):
+        fraction_timeseries = TimeSeries()
+        for index, value in enumerate(args):
+            fraction_timeseries[datetime(2012, 2,  9 + index, 23, 0)] = value
+        self.get = Mock(return_value=fraction_timeseries)
+
+
+class Fractions_verify_TestSuite(TestCase):
 
     def test_a(self):
         """Test for a single fraction time series whose values are always 1."""
-        fractions = Fractions()
-        fractions.fraction_timeseries = TimeSeries()
-        fractions.fraction_timeseries[datetime(2012, 2,  9, 23, 0)] = 1.0
-        fractions.fraction_timeseries[datetime(2012, 2, 10, 23, 0)] = 1.0
-        fractions.fraction_timeseries[datetime(2012, 2, 11, 23, 0)] = 1.0
+        fractions = Fractions(MockFractionsReader(1.0, 1.0, 1.0))
         self.assertTrue(fractions.verify('waterbalance-graph.xml'))
 
     def test_b(self):
         """Test for a single fraction time series whose values are not always 1.
 
         """
-        fractions = Fractions()
-        fractions.fraction_timeseries = TimeSeries()
-        fractions.fraction_timeseries[datetime(2012, 2,  9, 23, 0)] = 1.0
-        fractions.fraction_timeseries[datetime(2012, 2, 10, 23, 0)] = 0.8
-        fractions.fraction_timeseries[datetime(2012, 2, 11, 23, 0)] = 1.0
+        fractions = Fractions(MockFractionsReader(1.0, 0.8, 1.0))
         self.assertFalse(fractions.verify('waterbalance-graph.xml'))
