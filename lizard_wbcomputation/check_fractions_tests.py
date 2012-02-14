@@ -28,6 +28,7 @@ from mock import Mock
 
 from timeseries.timeseries import TimeSeries
 
+from check_fractions import SummedFractionsReader
 from check_fractions import Fractions
 
 
@@ -53,3 +54,33 @@ class Fractions_verify_TestSuite(TestCase):
         """
         fractions = Fractions(MockFractionsReader(1.0, 0.8, 1.0))
         self.assertFalse(fractions.verify('waterbalance-graph.xml'))
+
+
+class SummedFractionsReader_get_TestSuite(TestCase):
+
+    def test_a(self):
+        """Test the sum of a single time series."""
+        fractions_reader = SummedFractionsReader()
+
+        fractions_reader.fraction_timeseries_list = []
+        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(1.0, 0.5, 0.75).get())
+
+        expected_fraction_timeseries = MockFractionsReader(1.0, 0.5, 0.75).get()
+
+        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
+
+    def test_b(self):
+        """Test the sum of two time series."""
+        fractions_reader = SummedFractionsReader()
+
+        fractions_reader.fraction_timeseries_list = []
+        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(1.0, 0.50, 0.75).get())
+        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(0.0, 0.25, 0.10).get())
+
+        expected_fraction_timeseries = MockFractionsReader(1.0, 0.75, 0.85).get()
+
+        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
+
+

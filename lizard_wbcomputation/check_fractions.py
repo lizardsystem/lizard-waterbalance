@@ -24,6 +24,12 @@
 from optparse import OptionParser
 
 
+class SummedFractionsReader(object):
+
+    def get(self, file_name):
+        return reduce(lambda x, y: x + y, self.fraction_timeseries_list)
+
+
 class Fractions(object):
 
     def __init__(self, fractions_reader):
