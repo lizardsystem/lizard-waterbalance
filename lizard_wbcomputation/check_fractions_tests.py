@@ -56,14 +56,22 @@ class Fractions_verify_TestSuite(TestCase):
         self.assertFalse(fractions.verify('waterbalance-graph.xml'))
 
 
+class MockTimeSeries(object):
+
+    def __init__(self, *args):
+        self.input = {}
+
+    def as_dict(self, file_name):
+        return self.input
+
+
 class SummedFractionsReader_get_TestSuite(TestCase):
 
     def test_a(self):
         """Test the sum of a single time series."""
-        fractions_reader = SummedFractionsReader()
-
-        fractions_reader.fraction_timeseries_list = []
-        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(1.0, 0.5, 0.75).get())
+        time_series = MockTimeSeries()
+        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get()}
+        fractions_reader = SummedFractionsReader(time_series.as_dict)
 
         expected_fraction_timeseries = MockFractionsReader(1.0, 0.5, 0.75).get()
 
@@ -72,11 +80,27 @@ class SummedFractionsReader_get_TestSuite(TestCase):
 
     def test_b(self):
         """Test the sum of two time series."""
-        fractions_reader = SummedFractionsReader()
+        time_series = MockTimeSeries()
+        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get(),
+                             ('3201_PS1', 'fraction_water_discharge'): MockFractionsReader(0.0, 0.25, 0.10).get()}
 
-        fractions_reader.fraction_timeseries_list = []
-        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(1.0, 0.50, 0.75).get())
-        fractions_reader.fraction_timeseries_list.append(MockFractionsReader(0.0, 0.25, 0.10).get())
+        fractions_reader = SummedFractionsReader(time_series.as_dict)
+
+        expected_fraction_timeseries = MockFractionsReader(1.0, 0.75, 0.85).get()
+
+        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
+
+    def test_c(self):
+        """Test the sum of three time series.
+
+        One of the time series is not a fraction time series."""
+        time_series = MockTimeSeries()
+        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get(),
+                             ('3201_PS1', 'fraction_water_discharge'): MockFractionsReader(0.0, 0.25, 0.10).get(),
+                             ('3201_PS1', 'min_impact_phosphate_discharge'): MockFractionsReader(0.2, 0.2, 0.2).get()}
+
+        fractions_reader = SummedFractionsReader(time_series.as_dict)
 
         expected_fraction_timeseries = MockFractionsReader(1.0, 0.75, 0.85).get()
 
