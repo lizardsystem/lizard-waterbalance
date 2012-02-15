@@ -54,8 +54,8 @@ class SummedFractionsReader(object):
 
 
 class Fractions(object):
-    """Implements the check whether the fraction time series from a file add up
-    to one.
+    """Implements the check whether the event values of the fraction time
+    series from a file add up to a target value.
 
     To retrieve the summed fraction time series from a given file, this class
     uses a so-called 'fraction reader' object that is passed to the constructor
@@ -65,9 +65,13 @@ class Fractions(object):
 
     that returns the summed fraction time series.
 
+    The target value is set in the constructor as attribute `target_value` and
+    can be overriden by the client code after construction.
+
     """
     def __init__(self, fractions_reader):
         self.fractions_reader = fractions_reader
+        self.target_value = 1.0
 
     def verify(self, file_name):
         """Returns True if and only if the summed fractions from the given file
@@ -78,11 +82,16 @@ class Fractions(object):
         fraction_timeseries = self.fractions_reader.get(file_name)
         for date, value in fraction_timeseries.get_events():
             event_value = value[0]
-            success = event_value > 1 - 1e-6 and event_value < 1 + 1e-6
+            success = self.nearby_target_value(event_value)
             if not success:
                 print 'Failure', date, event_value
                 break
         return success
+
+    def nearby_target_value(self, value):
+        lower_bound = self.target_value - 1e-6
+        upper_bound = self.target_value + 1e-6
+        return value > lower_bound and value < upper_bound
 
 
 def main():
