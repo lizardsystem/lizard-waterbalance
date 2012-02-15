@@ -59,7 +59,7 @@ class FractionComputer:
         for key in intakes_timeseries.keys():
             fractions_intakes[key] = SparseTimeseriesStub()
 
-        previous_initial = 100.0
+        previous_initial = 1.0
         previous_precipitation = 0.0
         previous_seepage = 0.0
         previous_hardened = 0.0
@@ -155,10 +155,10 @@ class FractionComputer:
                                                            previous_intakes[key],
                                                            previous_storage)
 
-            # total_fractions = initial + precipitation + seepage + sewer + hardened + \
-            #                   drained + undrained + flow_off + sum(intakes.values())
+            total_fractions = initial + precipitation + seepage + sewer + hardened + \
+                              drained + undrained + flow_off + sum(intakes.values())
 
-            # print "total_fractions", total_fractions
+            print "total_fractions", total_fractions
 
             fractions_initial.add_value(date, initial)
             previous_initial = initial
