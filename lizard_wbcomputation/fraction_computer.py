@@ -155,10 +155,10 @@ class FractionComputer:
                                                            previous_intakes[key],
                                                            previous_storage)
 
-            total_fractions = initial + precipitation + seepage + sewer + hardened + \
-                              drained + undrained + flow_off + sum(intakes.values())
+            # total_fractions = initial + precipitation + seepage + sewer + hardened + \
+            #                   drained + undrained + flow_off + sum(intakes.values())
 
-            print "total_fractions", total_fractions
+            # print "total_fractions", total_fractions
 
             fractions_initial.add_value(date, initial)
             previous_initial = initial
