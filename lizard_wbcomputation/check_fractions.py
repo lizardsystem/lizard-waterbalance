@@ -80,6 +80,7 @@ class Fractions(object):
             event_value = value[0]
             success = event_value > 1 - 1e-6 and event_value < 1 + 1e-6
             if not success:
+                print 'Failure', date, event_value
                 break
         return success
 
