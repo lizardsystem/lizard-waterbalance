@@ -32,13 +32,17 @@ from check_fractions import SummedFractionsReader
 from check_fractions import Fractions
 
 
+def create_time_series(*args):
+    time_series = TimeSeries()
+    for index, value in enumerate(args):
+        time_series[datetime(2012, 2,  9 + index, 23, 0)] = value
+    return time_series
+
+
 class MockFractionsReader(object):
 
     def __init__(self, *args):
-        fraction_timeseries = TimeSeries()
-        for index, value in enumerate(args):
-            fraction_timeseries[datetime(2012, 2,  9 + index, 23, 0)] = value
-        self.get = Mock(return_value=fraction_timeseries)
+        self.get = Mock(return_value=create_time_series(*args))
 
 
 class Fractions_verify_TestSuite(TestCase):
@@ -60,6 +64,10 @@ class MockTimeSeries(object):
 
     def __init__(self, *args):
         self.input = {}
+        for time_series_spec in args:
+            location, parameter = time_series_spec[0:2]
+            values = time_series_spec[2:]
+            self.input[(location, parameter)] = create_time_series(*values)
 
     def as_dict(self, file_name):
         return self.input
@@ -69,42 +77,31 @@ class SummedFractionsReader_get_TestSuite(TestCase):
 
     def test_a(self):
         """Test the sum of a single time series."""
-        time_series = MockTimeSeries()
-        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get()}
+        time_series = MockTimeSeries(
+            ('3201', 'fraction_water_undrained', 1.0, 0.50, 0.75))
         fractions_reader = SummedFractionsReader(time_series.as_dict)
-
-        expected_fraction_timeseries = MockFractionsReader(1.0, 0.5, 0.75).get()
-
-        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
-        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
+        time_series = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(create_time_series(1.0, 0.50, 0.75), time_series)
 
     def test_b(self):
         """Test the sum of two time series."""
-        time_series = MockTimeSeries()
-        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get(),
-                             ('3201_PS1', 'fraction_water_discharge'): MockFractionsReader(0.0, 0.25, 0.10).get()}
-
+        time_series = MockTimeSeries(
+            ('3201',     'fraction_water_undrained', 1.0, 0.50, 0.75),
+            ('3201_PS1', 'fraction_water_discharge', 0.0, 0.25, 0.10))
         fractions_reader = SummedFractionsReader(time_series.as_dict)
-
-        expected_fraction_timeseries = MockFractionsReader(1.0, 0.75, 0.85).get()
-
-        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
-        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
+        time_series = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(create_time_series(1.0, 0.75, 0.85), time_series)
 
     def test_c(self):
         """Test the sum of three time series.
 
-        One of the time series is not a fraction time series."""
-        time_series = MockTimeSeries()
-        time_series.input = {('3201', 'fraction_water_undrained'):  MockFractionsReader(1.0, 0.5, 0.75).get(),
-                             ('3201_PS1', 'fraction_water_discharge'): MockFractionsReader(0.0, 0.25, 0.10).get(),
-                             ('3201_PS1', 'min_impact_phosphate_discharge'): MockFractionsReader(0.2, 0.2, 0.2).get()}
+        One of the time series is not a fraction time series.
 
+        """
+        time_series = MockTimeSeries(
+            ('3201',     'fraction_water_undrained',       1.0, 0.50, 0.75),
+            ('3201_PS1', 'fraction_water_discharge',       0.0, 0.25, 0.10),
+            ('3201_PS1', 'min_impact_phosphate_discharge', 0.2, 0.20, 0.20))
         fractions_reader = SummedFractionsReader(time_series.as_dict)
-
-        expected_fraction_timeseries = MockFractionsReader(1.0, 0.75, 0.85).get()
-
-        fraction_timeseries = fractions_reader.get('waterbalance-graph.xml')
-        self.assertEqual(expected_fraction_timeseries, fraction_timeseries)
-
-
+        time_series = fractions_reader.get('waterbalance-graph.xml')
+        self.assertEqual(create_time_series(1.0, 0.75, 0.85), time_series)
