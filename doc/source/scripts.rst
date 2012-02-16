@@ -227,6 +227,22 @@ exported are identified by their location and their parameter as follows:
 | fraction of water coming in through an intake used for level control                                     |                       | location id of pumping station | 'fraction_water_level_control'        | '[0, 1]'       |
 +----------------------------------------------------------------------------------------------------------+-----------------------+--------------------------------+---------------------------------------+----------------+
 
+Scripts to check the output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+lizard-waterbalance provides two scripts to verify the validity of the computed
+time series:
+
+  - ``check_fractions`` checks whether the event values of the fraction time
+    series add up to 1.0 for each day;
+  - ``check_symmetry`` checks whether the water balance with sluice error is
+    symmetrical each day.
+
+The user can invoke these script from the lizard-waterbalance root directory
+like this::
+
+  $> bin/check_fractions <path-to-output-xml-file>
+
 .. rubric:: Footnotes
 
 .. [#fn1] the command-line interface of wbcompute.exe is the same
