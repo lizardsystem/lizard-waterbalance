@@ -35,6 +35,7 @@ from xml.dom.minidom import parse
 from nens import fews
 
 from timeseries.timeseries import TimeSeries
+from timeseries.timeseriesstub import enumerate_events
 
 from lizard_wbcomputation.compute import WaterbalanceComputer2
 from lizard_wbcomputation.delta_storage import DeltaStorage
@@ -454,8 +455,10 @@ def store_graphs_timeseries(run_info, area):
                  key = '%s_impact_%s_%s' % ('incr', substance, impact.label)
                  writeable_timeseries.insert({key: impact_incremental.timeseries})
 
-    get_storage_timeseries = StorageTimeseries(cm).get
-    timeseries = DeltaStorage(get_storage_timeseries).compute(start_date, end_date)
+    storage_timeseries = StorageTimeseries(cm)
+    get_storage_timeseries = storage_timeseries.get
+    get_delta_storage = storage_timeseries.get_delta_storage
+    timeseries = DeltaStorage(get_storage_timeseries, get_delta_storage).compute(start_date, end_date)
     writeable_timeseries.insert({'delta_storage': timeseries})
 
     concentrations = cm.get_concentration_timeseries(start_date, end_date)
@@ -473,9 +476,22 @@ class StorageTimeseries(object):
         self.wb_computer = wb_computer
 
     def get(self, start_date, end_date):
-        timeseries_dict = \
+        self.timeseries_dict = \
             self.wb_computer.get_level_control_timeseries(start_date, end_date)
-        return timeseries_dict['storage']
+        return self.timeseries_dict['storage']
+
+    def get_delta_storage(self, latest_date):
+        incoming_timeseries = self.timeseries_dict['total_incoming']
+        outgoing_timeseries = self.timeseries_dict['total_outgoing']
+        delta_storage = 0.0
+        for events in enumerate_events(incoming_timeseries, outgoing_timeseries):
+            date = events[0][0]
+            if date.isocalendar() > latest_date.isocalendar():
+                break
+            else:
+                incoming, outgoing = events[0][1], events[1][1]
+                delta_storage = incoming + outgoing
+        return delta_storage
 
 def main(args):
     """Compute the waterbalance for the information specified in the given file.
