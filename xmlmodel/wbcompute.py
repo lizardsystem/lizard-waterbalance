@@ -493,6 +493,13 @@ class StorageTimeseries(object):
                 delta_storage = incoming + outgoing
         return delta_storage
 
+
+def negate_outgoing_timeseries(area):
+    for ps in area.pumping_stations:
+        if not ps.into:
+            ps.sum_timeseries = abs(ps.sum_timeseries) * -1.0
+
+
 def main(args):
     """Compute the waterbalance for the information specified in the given file.
 
@@ -515,6 +522,7 @@ def main(args):
     tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
     area = parse_parameters(run_info['inputParameterFile'])
     attach_timeseries_to_structures(area, tsd, ASSOC)
+    negate_outgoing_timeseries(area)
     graphs_timeseries = store_graphs_timeseries(run_info, area)
     TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
                                 graphs_timeseries)
