@@ -9,7 +9,6 @@ Changelog of lizard-waterbalance
 - Provides a script to verify the fractions add up to 1 (#56).
 - Provides a script to verify the waterbalance with sluice error is
   symmetrical.
-- Implements a script to verify the fractions add up to 1 (#56).
 - Balances the incoming and outgoing volumes computed for the first day of the
   specified horizon (#58).
 - Handles non-negative outgoing volumes of pumps (#59). Note that wbcompute
