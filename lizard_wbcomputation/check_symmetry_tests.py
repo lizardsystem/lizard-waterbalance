@@ -25,13 +25,139 @@ from unittest import TestCase
 
 from check_fractions_tests import MockTimeSeries
 from check_fractions_tests import create_time_series
+from check_symmetry import FilterTimeSeries
+from check_symmetry import SetOutgoingTimeSeries
+from check_symmetry import SwitchSignTimeSeries
 from check_symmetry import SummedTimeSeriesReader
 
 
-class MockRelevantParameters(object):
+class SwitchSignTimeSeries_as_dict_TestSuite(TestCase):
 
-    def is_relevant(self, parameter):
-        return parameter in ['discharge_flow_off', 'discharge_hardened']
+    def test_a(self):
+        """Test a single time series that should not be switched.
+
+        """
+        time_series = SwitchSignTimeSeries(
+            MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0)),
+            relevant_parameters=[])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+
+    def test_b(self):
+        """Test a single time series that should be switched.
+
+        """
+        time_series = SwitchSignTimeSeries(
+            MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0)),
+            relevant_parameters=['delta_storage'])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201', 'delta_storage', -10.0, -20.0, -30.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+
+    def test_c(self):
+        """Test multiple time series one fo which should be switched.
+
+        """
+        time_series = SwitchSignTimeSeries(
+            MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0),
+                           ('3201', 'discharge_drained', 0.0, 2.0, 4.0)),
+            relevant_parameters=['delta_storage'])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201', 'delta_storage', -10.0, -20.0, -30.0),
+                           ('3201', 'discharge_drained', 0.0, 2.0, 4.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+
+class SetOutgoingTimeSeries_as_dict_TestSuite(TestCase):
+
+    def test_a(self):
+        """Test the setting of a single time series of an incoming time series.
+
+        """
+        time_series = SetOutgoingTimeSeries(
+            MockTimeSeries(('3201', 'discharge_drained', 10.0, 20.0, 30.0)),
+            outgoing_pumping_stations=[])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201', 'discharge_drained', 10.0, 20.0, 30.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+    def test_b(self):
+        """Test the setting of a single time series of an outgoing time series.
+
+        """
+        time_series = SetOutgoingTimeSeries(
+            MockTimeSeries(('3201_PS1', 'Q', 0.0, 1.0, 2.0)),
+            outgoing_pumping_stations=['3201_PS1'])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201_PS1', 'Q', 0.0, -1.0, -2.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+    def test_c(self):
+        """Test the setting of a single time series of an outgoing time series.
+
+        """
+        time_series = SetOutgoingTimeSeries(
+            MockTimeSeries(('3201',     'discharge_drained', 10.0, 20.0, 30.0),
+                           ('3201_PS1', 'Q',                  0.0,  1.0,  2.0)),
+            outgoing_pumping_stations=['3201_PS1'])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        expected_time_series = \
+            MockTimeSeries(('3201',     'discharge_drained', 10.0, 20.0, 30.0),
+                           ('3201_PS1', 'Q',                  0.0, -1.0, -2.0))
+        self.assertEqual(expected_time_series.as_dict(file_name="don't care"),
+                         time_series_dict)
+
+
+class FilterTimeSeries_as_dict_TestSuite(TestCase):
+
+    def create_time_series(self, *parameters):
+        args = [('3201', parameter, 0.0, 1.0, 2.0) for parameter in parameters]
+        return MockTimeSeries(*args)
+
+    def test_a(self):
+        """Test the removal of a single time series when there are no relevant
+        parameters.
+
+        """
+        time_series = FilterTimeSeries(
+            self.create_time_series('discharge_flow_off'),
+            relevant_parameters=[])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(0, len(time_series_dict))
+
+    def test_b(self):
+        """Test the removal of all time series when there are no relevant
+        parameters.
+
+        """
+        time_series = FilterTimeSeries(
+            self.create_time_series('discharge_flow_off', 'discharge_hardened'),
+            relevant_parameters=[])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(0, len(time_series_dict))
+
+    def test_c(self):
+        """Test the removal of a single time series."""
+        time_series = FilterTimeSeries(
+            self.create_time_series('discharge_flow_off', 'discharge_hardened'),
+            relevant_parameters=['discharge_hardened'])
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(1, len(time_series_dict))
+        self.assertEqual(create_time_series(0.0, 1.0, 2.0),
+                         time_series_dict[('3201', 'discharge_hardened')])
 
 
 class SummedTimeSeriesReader_get_TestSuite(TestCase):
@@ -41,7 +167,6 @@ class SummedTimeSeriesReader_get_TestSuite(TestCase):
         time_series = MockTimeSeries(
             ('3201', 'discharge_flow_off', 1.0, 0.50, 0.75))
         fractions_reader = SummedTimeSeriesReader(time_series.as_dict)
-        fractions_reader.relevant_parameters = MockRelevantParameters()
         time_series = fractions_reader.get('waterbalance-graph.xml')
         self.assertEqual(create_time_series(1.0, 0.50, 0.75), time_series)
 
@@ -51,21 +176,6 @@ class SummedTimeSeriesReader_get_TestSuite(TestCase):
             ('3201', 'discharge_flow_off',  1.0,  0.50,  0.75),
             ('3201', 'discharge_hardened', -1.0, -0.50, -0.75))
         fractions_reader = SummedTimeSeriesReader(time_series.as_dict)
-        fractions_reader.relevant_parameters = MockRelevantParameters()
         time_series = fractions_reader.get('waterbalance-graph.xml')
         self.assertEqual(create_time_series(0.0, 0.0, 0.0), time_series)
 
-    def test_c(self):
-        """Test the sum of three time series.
-
-        One of the time series is not a fraction time series.
-
-        """
-        time_series = MockTimeSeries(
-            ('3201',     'discharge_flow_off',  1.0,  0.50,  0.75),
-            ('3201',     'discharge_hardened', -1.0, -0.50, -0.75),
-            ('3201',     'fraction_water_undrained',       1.0, 0.50, 0.75))
-        fractions_reader = SummedTimeSeriesReader(time_series.as_dict)
-        fractions_reader.relevant_parameters = MockRelevantParameters()
-        time_series = fractions_reader.get('waterbalance-graph.xml')
-        self.assertEqual(create_time_series(0.0, 0.0, 0.0), time_series)

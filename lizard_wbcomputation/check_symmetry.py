@@ -25,23 +25,76 @@ from optparse import OptionParser
 
 from timeseries.timeseries import TimeSeries
 
+from lizard_wbcomputation.check_fractions import Fractions
 
-class RelevantParameters(object):
 
-    def is_relevant(self, parameter):
-        return parameter in [
-            'Q',
-            'Q_COMP',
-            'delta_storage',
-            'discharge_drainage',
-            'discharge_drained',
-            'discharge_flow_off',
-            'discharge_hardened',
-            'indraft',
-            'precipitation',
-            'seepage',
-            'sluice_error',
-            ]
+OUTGOING_PUMPING_STATIONS = [
+    '3201_PS3',
+    ]
+
+PARAMETERS_TO_SWITCH = [
+    'delta_storage',
+    ]
+
+RELEVANT_PARAMETERS = [
+    'Q',
+    'delta_storage',
+    'discharge_drainage',
+    'discharge_drained',
+    'discharge_flow_off',
+    'discharge_hardened',
+    'discharge_sewer',
+    'indraft',
+    'precipitation',
+    'evaporation',
+    'seepage',
+    'infiltration',
+    'sluice_error',
+    ]
+
+class SwitchSignTimeSeries(object):
+
+    def __init__(self, time_series, relevant_parameters):
+        self.time_series = time_series
+        self.relevant_parameters = relevant_parameters
+
+    def as_dict(self, file_name):
+        time_series_dict = self.time_series.as_dict(file_name)
+        for key, time_serie in time_series_dict.items():
+            parameter = key[1]
+            if parameter in self.relevant_parameters:
+                time_series_dict[key] =  time_series_dict[key] * -1.0
+        return time_series_dict
+
+
+class FilterTimeSeries(object):
+
+    def __init__(self, time_series, relevant_parameters):
+        self.time_series = time_series
+        self.relevant_parameters = relevant_parameters
+
+    def as_dict(self, file_name):
+        time_series_dict = self.time_series.as_dict(file_name)
+        for key, time_serie in time_series_dict.items():
+            parameter = key[1]
+            if not parameter in self.relevant_parameters:
+                del time_series_dict[key]
+        return time_series_dict
+
+
+class SetOutgoingTimeSeries(object):
+
+    def __init__(self, time_series, outgoing_pumping_stations):
+        self.time_series = time_series
+        self.outgoing_pumping_stations = outgoing_pumping_stations
+
+    def as_dict(self, file_name):
+        time_series_dict = self.time_series.as_dict(file_name)
+        for key, time_serie in time_series_dict.items():
+            location = key[0]
+            if location in self.outgoing_pumping_stations:
+               time_series_dict[key] = abs(time_series_dict[key]) * -1.0
+        return time_series_dict
 
 
 class SummedTimeSeriesReader(object):
@@ -59,56 +112,23 @@ class SummedTimeSeriesReader(object):
 
     def get(self, file_name):
         """Returns the summed fraction time series from the given file."""
-        time_series = self._get_relevant_time_series(file_name)
+        time_series = self.get_time_series_as_dict(file_name).values()
         return reduce(lambda x, y: x + y, time_series)
-
-    def _get_relevant_time_series(self, file_name):
-        relevant_time_series = []
-        for key, time_series in self.get_time_series_as_dict(file_name).items():
-            parameter = key[1]
-            if self.relevant_parameters.is_relevant(parameter):
-                relevant_time_series.append(time_series)
-        return relevant_time_series
-
-
-class Fractions(object):
-    """Implements the check whether the fraction time series from a file add up
-    to one.
-
-    To retrieve the summed fraction time series from a given file, this class
-    uses a so-called 'fraction reader' object that is passed to the constructor
-    and stored as an instance attribute. A fraction reader should have a method
-
-      def get(self, file_name)
-
-    that returns the summed fraction time series.
-
-    """
-    def __init__(self, fractions_reader):
-        self.fractions_reader = fractions_reader
-
-    def verify(self, file_name):
-        """Returns True if and only if the summed fractions from the given file
-        add up to one.
-
-        """
-        success = True
-        fraction_timeseries = self.fractions_reader.get(file_name)
-        for date, value in fraction_timeseries.get_events():
-            event_value = value[0]
-            success = event_value > 1 - 1e-6 and event_value < 1 + 1e-6
-            if not success:
-                print 'Failure', date, event_value
-                break
-        return success
 
 
 def main():
     parser = OptionParser(usage="usage: %prog <PI XML time series file>")
     (options, args) = parser.parse_args()
     if len(args) == 1:
-        reader = SummedTimeSeriesReader(TimeSeries.as_dict)
-        reader.relevant_parameters = RelevantParameters()
+        reader = \
+            SummedTimeSeriesReader(
+                SwitchSignTimeSeries(
+                    SetOutgoingTimeSeries(
+                        FilterTimeSeries(TimeSeries,
+                                         relevant_parameters=RELEVANT_PARAMETERS),
+                        outgoing_pumping_stations=OUTGOING_PUMPING_STATIONS),
+                relevant_parameters=PARAMETERS_TO_SWITCH).as_dict)
+
         fractions = Fractions(reader)
         fractions.target_value = 0.0
         if fractions.verify(args[0]):
