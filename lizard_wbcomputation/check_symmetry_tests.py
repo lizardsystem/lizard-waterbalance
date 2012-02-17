@@ -25,19 +25,19 @@ from unittest import TestCase
 
 from check_fractions_tests import MockTimeSeries
 from check_fractions_tests import create_time_series
-from check_symmetry import FilterTimeSeries
-from check_symmetry import SetOutgoingTimeSeries
-from check_symmetry import SwitchSignTimeSeries
+from check_symmetry import Filter
+from check_symmetry import NegateSign
+from check_symmetry import SwitchSign
 from check_symmetry import SummedTimeSeriesReader
 
 
-class SwitchSignTimeSeries_as_dict_TestSuite(TestCase):
+class SwitchSign_as_dict_TestSuite(TestCase):
 
     def test_a(self):
         """Test a single time series that should not be switched.
 
         """
-        time_series = SwitchSignTimeSeries(
+        time_series = SwitchSign(
             MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0)),
             relevant_parameters=[])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -51,7 +51,7 @@ class SwitchSignTimeSeries_as_dict_TestSuite(TestCase):
         """Test a single time series that should be switched.
 
         """
-        time_series = SwitchSignTimeSeries(
+        time_series = SwitchSign(
             MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0)),
             relevant_parameters=['delta_storage'])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -65,7 +65,7 @@ class SwitchSignTimeSeries_as_dict_TestSuite(TestCase):
         """Test multiple time series one fo which should be switched.
 
         """
-        time_series = SwitchSignTimeSeries(
+        time_series = SwitchSign(
             MockTimeSeries(('3201', 'delta_storage', 10.0, 20.0, 30.0),
                            ('3201', 'discharge_drained', 0.0, 2.0, 4.0)),
             relevant_parameters=['delta_storage'])
@@ -77,13 +77,13 @@ class SwitchSignTimeSeries_as_dict_TestSuite(TestCase):
                          time_series_dict)
 
 
-class SetOutgoingTimeSeries_as_dict_TestSuite(TestCase):
+class NegateSign_as_dict_TestSuite(TestCase):
 
     def test_a(self):
         """Test the setting of a single time series of an incoming time series.
 
         """
-        time_series = SetOutgoingTimeSeries(
+        time_series = NegateSign(
             MockTimeSeries(('3201', 'discharge_drained', 10.0, 20.0, 30.0)),
             outgoing_pumping_stations=[])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -96,7 +96,7 @@ class SetOutgoingTimeSeries_as_dict_TestSuite(TestCase):
         """Test the setting of a single time series of an outgoing time series.
 
         """
-        time_series = SetOutgoingTimeSeries(
+        time_series = NegateSign(
             MockTimeSeries(('3201_PS1', 'Q', 0.0, 1.0, 2.0)),
             outgoing_pumping_stations=['3201_PS1'])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -109,7 +109,7 @@ class SetOutgoingTimeSeries_as_dict_TestSuite(TestCase):
         """Test the setting of a single time series of an outgoing time series.
 
         """
-        time_series = SetOutgoingTimeSeries(
+        time_series = NegateSign(
             MockTimeSeries(('3201',     'discharge_drained', 10.0, 20.0, 30.0),
                            ('3201_PS1', 'Q',                  0.0,  1.0,  2.0)),
             outgoing_pumping_stations=['3201_PS1'])
@@ -121,7 +121,7 @@ class SetOutgoingTimeSeries_as_dict_TestSuite(TestCase):
                          time_series_dict)
 
 
-class FilterTimeSeries_as_dict_TestSuite(TestCase):
+class Filter_as_dict_TestSuite(TestCase):
 
     def create_time_series(self, *parameters):
         args = [('3201', parameter, 0.0, 1.0, 2.0) for parameter in parameters]
@@ -132,7 +132,7 @@ class FilterTimeSeries_as_dict_TestSuite(TestCase):
         parameters.
 
         """
-        time_series = FilterTimeSeries(
+        time_series = Filter(
             self.create_time_series('discharge_flow_off'),
             relevant_parameters=[])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -143,7 +143,7 @@ class FilterTimeSeries_as_dict_TestSuite(TestCase):
         parameters.
 
         """
-        time_series = FilterTimeSeries(
+        time_series = Filter(
             self.create_time_series('discharge_flow_off', 'discharge_hardened'),
             relevant_parameters=[])
         time_series_dict = time_series.as_dict(file_name="don't care")
@@ -151,7 +151,7 @@ class FilterTimeSeries_as_dict_TestSuite(TestCase):
 
     def test_c(self):
         """Test the removal of a single time series."""
-        time_series = FilterTimeSeries(
+        time_series = Filter(
             self.create_time_series('discharge_flow_off', 'discharge_hardened'),
             relevant_parameters=['discharge_hardened'])
         time_series_dict = time_series.as_dict(file_name="don't care")
