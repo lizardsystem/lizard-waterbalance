@@ -495,6 +495,15 @@ class StorageTimeseries(object):
 
 
 def negate_outgoing_timeseries(area):
+    """Make the sign of the time series of pumps negative.
+
+    The XML specifies the time series for the pumping stations. Their event
+    values are always non-negative, even if the pumping station pumps water out
+    of the open water. But the computational core expects the event values of
+    outgoing time series to be non-positive. So we make these event values
+    non-positive.
+
+    """
     for ps in area.pumping_stations:
         if not ps.into:
             ps.sum_timeseries = abs(ps.sum_timeseries) * -1.0
