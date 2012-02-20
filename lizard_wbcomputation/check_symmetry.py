@@ -26,6 +26,9 @@ from optparse import OptionParser
 from timeseries.timeseries import TimeSeries
 
 from lizard_wbcomputation.check_fractions import Fractions
+from lizard_wbcomputation.time_series_dict_operator import Filter
+from lizard_wbcomputation.time_series_dict_operator import NegateSign
+from lizard_wbcomputation.time_series_dict_operator import SwitchSign
 
 
 OUTGOING_PUMPING_STATIONS = [
@@ -51,84 +54,6 @@ RELEVANT_PARAMETERS = [
     'infiltration',
     'sluice_error',
     ]
-
-
-class TimeSeriesDictOperator(object):
-
-    def __init__(self, time_series):
-        self.time_series = time_series
-
-    def operate(self, time_series_dict, key):
-        """Operate on time_series_dict[key].
-
-        This method is abstract and should be implemented in a subclass.
-
-        """
-        assert False
-
-    def as_dict(self, file_name):
-        time_series_dict = self.time_series.as_dict(file_name)
-        for key, time_serie in time_series_dict.items():
-            self.operate(time_series_dict, key)
-        return time_series_dict
-
-
-class SwitchSign(TimeSeriesDictOperator):
-    """Switches the sign of relevant time series.
-
-    Instance parameter:
-      *relevant_parameters*
-        parameter names of relevant time series
-
-    """
-    def __init__(self, time_series, relevant_parameters):
-        TimeSeriesDictOperator.__init__(self, time_series)
-        self.relevant_parameters = relevant_parameters
-
-    def operate(self, time_series_dict, key):
-        """Switch the sign of the given time series when relevant."""
-        parameter = key[1]
-        if parameter in self.relevant_parameters:
-            time_series_dict[key] = time_series_dict[key] * -1.0
-
-
-class Filter(TimeSeriesDictOperator):
-    """Removes the irrelevant time series.
-
-    Instance parameter:
-      *relevant_parameters*
-        parameter names of relevant time series
-
-    """
-    def __init__(self, time_series, relevant_parameters):
-        TimeSeriesDictOperator.__init__(self, time_series)
-        self.relevant_parameters = relevant_parameters
-
-    def operate(self, time_series_dict, key):
-        """Remove the given time series when irrelevant."""
-        parameter = key[1]
-        if not parameter in self.relevant_parameters:
-            del time_series_dict[key]
-
-
-class NegateSign(TimeSeriesDictOperator):
-    """Set the time series of outgoing pumping stations to negative.
-
-    Instance parameter:
-      *outgoing_pumping_stations*
-        locations of outgoing pumping stations
-
-    """
-    def __init__(self, time_series, outgoing_pumping_stations):
-        TimeSeriesDictOperator.__init__(self, time_series)
-        self.outgoing_pumping_stations = outgoing_pumping_stations
-
-    def operate(self, time_series_dict, key):
-        """Set the given time series to negative when outgoing."""
-        location = key[0]
-        if location in self.outgoing_pumping_stations:
-            time_series_dict[key] = abs(time_series_dict[key]) * -1.0
-
 
 class SummedTimeSeriesReader(object):
     """Implements the retrieval of the summed time series from a file.
