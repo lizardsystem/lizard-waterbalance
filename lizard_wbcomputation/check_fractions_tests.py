@@ -21,41 +21,11 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
 from unittest import TestCase
 
-from mock import Mock
-
-from timeseries.timeseries import TimeSeries
-
 from lizard_wbcomputation.check_fractions import SummedFractionsReader
-
-
-def create_time_series(*args):
-    time_series = TimeSeries()
-    for index, value in enumerate(args):
-        time_series[datetime(2012, 2,  9 + index, 23, 0)] = value
-    return time_series
-
-
-class MockFractionsReader(object):
-
-    def __init__(self, *args):
-        self.get = Mock(return_value=create_time_series(*args))
-
-
-class MockTimeSeries(object):
-
-    def __init__(self, *args):
-        self.input = {}
-        for time_series_spec in args:
-            location, parameter = time_series_spec[0:2]
-            values = time_series_spec[2:]
-            self.input[(location, parameter)] = create_time_series(*values)
-
-    def as_dict(self, file_name):
-        return self.input
-
+from lizard_wbcomputation.mock_time_series_reader import create_time_series
+from lizard_wbcomputation.mock_time_series_reader import MockTimeSeries
 
 class SummedFractionsReader_get_TestSuite(TestCase):
 

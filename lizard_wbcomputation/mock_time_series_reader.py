@@ -4,7 +4,7 @@
 # pylint: disable=C0111
 
 # The lizard_wbcomputation package implements the computational core of the
-# lizard waterbalance Django app.er
+# lizard waterbalance Django app.
 #
 # Copyright (C) 2012 Nelen & Schuurmans
 #
@@ -21,22 +21,32 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
-from unittest import TestCase
+from datetime import datetime
 
-from lizard_wbcomputation.mock_time_series_reader import MockTimeSeriesReader
-from lizard_wbcomputation.target_value_checker import TargetValueChecker
+from mock import Mock
+
+from timeseries.timeseries import TimeSeries
+
+class MockTimeSeriesReader(object):
+
+    def __init__(self, *args):
+        self.get = Mock(return_value=create_time_series(*args))
 
 
-class TargetValueChecker_verify_TestSuite(TestCase):
+class MockTimeSeries(object):
 
-    def test_a(self):
-        """Test for a single fraction time series whose values are always 1."""
-        fractions = TargetValueChecker(MockTimeSeriesReader(1.0, 1.0, 1.0))
-        self.assertTrue(fractions.verify('waterbalance-graph.xml'))
+    def __init__(self, *args):
+        self.input = {}
+        for time_series_spec in args:
+            location, parameter = time_series_spec[0:2]
+            values = time_series_spec[2:]
+            self.input[(location, parameter)] = create_time_series(*values)
 
-    def test_b(self):
-        """Test for a single fraction time series whose values are not always 1.
+    def as_dict(self, file_name):
+        return self.input
 
-        """
-        fractions = TargetValueChecker(MockTimeSeriesReader(1.0, 0.8, 1.0))
-        self.assertFalse(fractions.verify('waterbalance-graph.xml'))
+def create_time_series(*args):
+    time_series = TimeSeries()
+    for index, value in enumerate(args):
+        time_series[datetime(2012, 2,  9 + index, 23, 0)] = value
+    return time_series
