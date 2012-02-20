@@ -23,10 +23,11 @@
 
 from unittest import TestCase
 
-from check_fractions_tests import MockTimeSeries
-from check_fractions_tests import create_time_series
+from lizard_wbcomputation.mock_time_series_reader import MockTimeSeries
+from lizard_wbcomputation.mock_time_series_reader import create_time_series
 
 from lizard_wbcomputation.time_series_dict_operator import Filter
+from lizard_wbcomputation.time_series_dict_operator import FilterFractions
 from lizard_wbcomputation.time_series_dict_operator import NegateSign
 from lizard_wbcomputation.time_series_dict_operator import SwitchSign
 
@@ -158,3 +159,33 @@ class Filter_as_dict_TestSuite(TestCase):
         self.assertEqual(1, len(time_series_dict))
         self.assertEqual(create_time_series(0.0, 1.0, 2.0),
                          time_series_dict[('3201', 'discharge_hardened')])
+
+
+class FilterFractions_as_dict_TestSuite(TestCase):
+
+    def create_time_series(self, *parameters):
+        args = [('3201', parameter, 0.0, 1.0, 2.0) for parameter in parameters]
+        return MockTimeSeries(*args)
+
+    def test_a(self):
+        """Test the removal of a single non-fractions time series."""
+        time_series = FilterFractions(
+            self.create_time_series('discharge_flow_off'))
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(0, len(time_series_dict))
+
+    def test_b(self):
+        """Test the removal of all non-fractions time series."""
+        time_series = FilterFractions(
+            self.create_time_series('discharge_flow_off', 'discharge_hardened'))
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(0, len(time_series_dict))
+
+    def test_c(self):
+        """Test a single fractions time series."""
+        time_series = FilterFractions(
+            self.create_time_series('fraction_water_undrained'))
+        time_series_dict = time_series.as_dict(file_name="don't care")
+        self.assertEqual(1, len(time_series_dict))
+        self.assertEqual(create_time_series(0.0, 1.0, 2.0),
+                         time_series_dict[('3201', 'fraction_water_undrained')])

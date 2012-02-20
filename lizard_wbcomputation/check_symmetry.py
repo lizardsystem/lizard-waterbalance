@@ -25,7 +25,8 @@ from optparse import OptionParser
 
 from timeseries.timeseries import TimeSeries
 
-from lizard_wbcomputation.check_fractions import TargetValueChecker
+from lizard_wbcomputation.summed_time_series_reader import SummedTimeSeriesReader
+from lizard_wbcomputation.target_value_checker import TargetValueChecker
 from lizard_wbcomputation.time_series_dict_operator import Filter
 from lizard_wbcomputation.time_series_dict_operator import NegateSign
 from lizard_wbcomputation.time_series_dict_operator import SwitchSign
@@ -68,9 +69,9 @@ def main():
                         outgoing_pumping_stations=OUTGOING_PUMPING_STATIONS),
                 relevant_parameters=PARAMETERS_TO_SWITCH).as_dict)
 
-        fractions = TargetValueChecker(reader)
-        fractions.target_value = 0.0
-        if fractions.verify(args[0]):
+        target_value_checker = TargetValueChecker(reader)
+        target_value_checker.target_value = 0.0
+        if target_value_checker.verify(args[0]):
             return_code = 0
         else:
             return_code = 2

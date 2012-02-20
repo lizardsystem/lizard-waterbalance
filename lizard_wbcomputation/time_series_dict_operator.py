@@ -78,6 +78,17 @@ class Filter(TimeSeriesDictOperator):
         if not parameter in self.relevant_parameters:
             del time_series_dict[key]
 
+class FilterFractions(TimeSeriesDictOperator):
+    """Removes the non-fractions time series."""
+    def __init__(self, time_series):
+        TimeSeriesDictOperator.__init__(self, time_series)
+
+    def operate(self, time_series_dict, key):
+        """Remove the given time series when irrelevant."""
+        parameter = key[1]
+        if not parameter.startswith('fraction_'):
+            del time_series_dict[key]
+
 
 class NegateSign(TimeSeriesDictOperator):
     """Set the time series of outgoing pumping stations to negative.

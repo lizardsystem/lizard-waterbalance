@@ -25,40 +25,16 @@ from optparse import OptionParser
 
 from timeseries.timeseries import TimeSeries
 
+from lizard_wbcomputation.summed_time_series_reader import SummedTimeSeriesReader
 from lizard_wbcomputation.target_value_checker import TargetValueChecker
-
-class SummedFractionsReader(object):
-    """Implements the retrieval of the summed fraction time series from a file.
-
-    To retrieve all the time series from a given file, this class uses a
-    function supplied to the constructor and that is stored as an instance
-    attribute. This function returns all the time series as a dictionary that
-    maps a (location, parameter) tuple to a time series.
-
-    """
-
-    def __init__(self, get_time_series_as_dict):
-        self.get_time_series_as_dict = get_time_series_as_dict
-
-    def get(self, file_name):
-        """Returns the summed fraction time series from the given file."""
-        time_series = self._get_fraction_time_series(file_name)
-        return reduce(lambda x, y: x + y, time_series)
-
-    def _get_fraction_time_series(self, file_name):
-        relevant_time_series = []
-        for key, time_series in self.get_time_series_as_dict(file_name).items():
-            parameter = key[1]
-            if parameter.startswith('fraction_'):
-                relevant_time_series.append(time_series)
-        return relevant_time_series
-
+from lizard_wbcomputation.time_series_dict_operator import FilterFractions
 
 def main():
     parser = OptionParser(usage="usage: %prog <PI XML time series file>")
     (options, args) = parser.parse_args()
     if len(args) == 1:
-        if TargetValueChecker(SummedFractionsReader(TimeSeries.as_dict)).verify(args[0]):
+        reader = SummedTimeSeriesReader(FilterFractions(TimeSeries).as_dict)
+        if TargetValueChecker(reader).verify(args[0]):
             return_code = 0
         else:
             return_code = 2
