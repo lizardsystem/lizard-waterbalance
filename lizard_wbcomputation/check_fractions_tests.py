@@ -28,8 +28,7 @@ from mock import Mock
 
 from timeseries.timeseries import TimeSeries
 
-from check_fractions import SummedFractionsReader
-from check_fractions import TargetValueChecker
+from lizard_wbcomputation.check_fractions import SummedFractionsReader
 
 
 def create_time_series(*args):
@@ -43,21 +42,6 @@ class MockFractionsReader(object):
 
     def __init__(self, *args):
         self.get = Mock(return_value=create_time_series(*args))
-
-
-class TargetValueChecker_verify_TestSuite(TestCase):
-
-    def test_a(self):
-        """Test for a single fraction time series whose values are always 1."""
-        fractions = TargetValueChecker(MockFractionsReader(1.0, 1.0, 1.0))
-        self.assertTrue(fractions.verify('waterbalance-graph.xml'))
-
-    def test_b(self):
-        """Test for a single fraction time series whose values are not always 1.
-
-        """
-        fractions = TargetValueChecker(MockFractionsReader(1.0, 0.8, 1.0))
-        self.assertFalse(fractions.verify('waterbalance-graph.xml'))
 
 
 class MockTimeSeries(object):
