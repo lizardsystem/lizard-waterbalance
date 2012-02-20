@@ -53,24 +53,25 @@ class SummedFractionsReader(object):
         return relevant_time_series
 
 
-class Fractions(object):
-    """Implements the check whether the event values of the fraction time
-    series from a file add up to a target value.
+class TargetValueChecker(object):
+    """Implements check whether a time series revolves around a target value.
 
-    To retrieve the summed fraction time series from a given file, this class
-    uses a so-called 'fraction reader' object that is passed to the constructor
-    and stored as an instance attribute. A fraction reader should have a method
+    This class retrieves the time series from a file through the use of a
+    reader object. The client code passes that reader to the constructor, which
+    stores it as attribute 'time_series_reader'. The reader should have a
+    method
 
       def get(self, file_name)
 
-    that returns the summed fraction time series.
+    that returns the time series.
 
-    The target value is set in the constructor as attribute `target_value` and
-    can be overriden by the client code after construction.
+    The constructor sets the target value as attribute 'target_value'. By
+    default, the target value is 1.0 but client code can override this value
+    after construction.
 
     """
-    def __init__(self, fractions_reader):
-        self.fractions_reader = fractions_reader
+    def __init__(self, time_series_reader):
+        self.time_series_reader = time_series_reader
         self.target_value = 1.0
 
     def verify(self, file_name):
@@ -79,8 +80,8 @@ class Fractions(object):
 
         """
         success = True
-        fraction_timeseries = self.fractions_reader.get(file_name)
-        for date, value in fraction_timeseries.get_events():
+        timeseries = self.time_series_reader.get(file_name)
+        for date, value in timeseries.get_events():
             event_value = value[0]
             success = self.nearby_target_value(event_value)
             if not success:
