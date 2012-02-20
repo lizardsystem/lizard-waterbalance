@@ -21,4 +21,22 @@
 # You should have received a copy of the GNU General Public License along with
 # this package.  If not, see <http://www.gnu.org/licenses/>.
 
+class SummedTimeSeriesReader(object):
+    """Implements the retrieval of the summed time series from a file.
+
+    To retrieve all the time series from a given file, this class uses a
+    function supplied to the constructor and that is stored as an instance
+    attribute. This function returns all the time series as a dictionary that
+    maps a (location, parameter) tuple to a time series.
+
+    """
+
+    def __init__(self, get_time_series_as_dict):
+        self.get_time_series_as_dict = get_time_series_as_dict
+
+    def get(self, file_name):
+        """Returns the summed fraction time series from the given file."""
+        time_series = self.get_time_series_as_dict(file_name).values()
+        return reduce(lambda x, y: x + y, time_series)
+
 
