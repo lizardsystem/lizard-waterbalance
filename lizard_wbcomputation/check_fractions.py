@@ -99,7 +99,7 @@ def main():
     parser = OptionParser(usage="usage: %prog <PI XML time series file>")
     (options, args) = parser.parse_args()
     if len(args) == 1:
-        if Fractions(SummedFractionsReader(TimeSeries.as_dict)).verify(args[0]):
+        if TargetValueChecker(SummedFractionsReader(TimeSeries.as_dict)).verify(args[0]):
             return_code = 0
         else:
             return_code = 2
