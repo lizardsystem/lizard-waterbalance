@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Run xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wldelft.nl/fews/PI" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_run.xsd" version="1.5">
+    <timeZone>1.0</timeZone>
+    <startDateTime date="2002-01-19" time="00:00:00"/>
+    <endDateTime date="2014-02-28" time="00:00:00"/>
+    <time0 date="2014-02-27" time="10:00:00"/>
+    <workDir>data/deltares/20120227</workDir>
+    <inputParameterFile>data/deltares/20120227/input/Parameters.xml</inputParameterFile>
+    <inputTimeSeriesFile>data/deltares/20120227/input/Tijdreeksen.xml</inputTimeSeriesFile>
+    <outputDiagnosticFile>data/deltares/20120227/logs/Diagnostics.xml</outputDiagnosticFile>
+    <outputTimeSeriesFile>data/deltares/20120227/output/waterbalance-graph.xml</outputTimeSeriesFile>
+</Run>
