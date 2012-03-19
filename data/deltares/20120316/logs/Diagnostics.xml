@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
+<line level="3" description="LizardScripter :: 2012-03-16 17:34:57,256 :: D:\FEWS_Systemen\KRW_VSS\KRW_VSS_Waternet\Modules\Waterbalans\Waterbalans\Input\Tijdreeksen.xml"/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,220 :: no series found at loc/par: 3201/, using empty TimeSeries"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201/Cl"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-1/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-1/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-1/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-2/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-2/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-2/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-3/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-3/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-3/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-4/Qoverstort"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-4/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,220 :: unused series loc/par:  3201-DGW-4/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,236 :: WaterbalanceComputer2::get_open_water_incoming_flows"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,236 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,236 :: get input timeseries (2005-11-23 - 2010-01-01)..."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,236 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,267 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,282 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,299 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,329 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,329 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,345 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,361 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,391 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,407 :: WaterbalanceComputer2::get_bucketflow_summary"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,407 :: Calculating bucket_summary (2005-11-23 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,407 :: WaterbalanceComputer2::get_buckets_timeseries"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,407 :: Calculating buckets (2005-11-23 - 2010-01-01)..."/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,407 :: WaterbalanceComputer2::get_input_timeseries"/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,424 :: calculate bucket 3201-DGW-2 of type (0, 'ongedraineerd')"/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,424 :: Call to deprecated function events."/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,438 :: Call to deprecated function events."/>
+<line level="3" description="LizardScripter :: 2012-03-16 17:35:06,548 :: calculate bucket 3201-DGW-2 of type (3, 'stedelijk')"/>
+<line level="2" description="LizardScripter :: 2012-03-16 17:35:06,548 :: Call to deprecated function events."/>
+</Diag>
