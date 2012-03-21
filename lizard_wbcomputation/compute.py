@@ -290,8 +290,6 @@ class WaterbalanceComputer2(object):
             for event in self.area.retrieve_infiltration(start_date, end_date).events():
                 input_ts['infiltration'].add_value(event[0], event[1])
 
-            input_ts['sewer'] = self.area.retrieve_sewer(start_date, end_date)
-
             input_ts['open_water'] = {}
             input_ts['open_water']['minimum_level'] = self.area.retrieve_minimum_level(start_date, end_date)
             input_ts['open_water']['maximum_level'] = self.area.retrieve_maximum_level(start_date, end_date)
@@ -355,12 +353,11 @@ class WaterbalanceComputer2(object):
             buckets_outcome = {}
             for bucket in self.area.buckets:
                 buckets_outcome[bucket] = self.bucket_computer.compute(
-                                                                       bucket,
-                                                                       input['precipitation'],
-                                                                       input['evaporation'],
-                                                                       bucket.retrieve_seepage(start_date, end_date),
-                                                                       input['sewer'])
-
+                    bucket,
+                    input['precipitation'],
+                    input['evaporation'],
+                    bucket.retrieve_seepage(start_date, end_date),
+                    bucket.retrieve_sewer(start_date, end_date))
 
             # for bucket in self.configuration.retrieve_sobek_buckets():
             #     buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
@@ -908,5 +905,3 @@ class WaterbalanceComputer2(object):
                 concentrations[concentr.label.program_name] = concentr.cl_concentration
 
         return concentrations
-
-

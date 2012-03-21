@@ -62,12 +62,12 @@ ASSOC = {
         'nutricalc_min': 'NUTRIC_MIN',
         'precipitation': 'NEERSG',
         'seepage': 'KWEL',
-        'sewer': '',
         'water_level': 'WATHTE',
         },
     'Bucket': {
         # note that this is net seepage, so seepage minus infiltration
         'seepage': 'KWEL',
+        'sewer': 'Qoverstort',
         },
     'PumpingStation': {
         'sum_timeseries': 'Q',

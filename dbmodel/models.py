@@ -26,6 +26,7 @@ import logging
 
 from lizard_waterbalance.models import IncompleteData
 from lizard_waterbalance.models import PumpingStation as DatabasePumpingStation
+from lizard_wbcomputation.bucket_types import BucketTypes
 from timeseries.timeseriesstub import add_timeseries
 from timeseries.timeseriesstub import map_timeseries
 from timeseries.timeseriesstub import SparseTimeseriesStub
@@ -192,22 +193,6 @@ class Area(object):
             logger.warning(exception_msg)
             raise IncompleteData(exception_msg)
         timeseries = open_water.infiltration.get_timeseries()
-        return TimeseriesRestrictedStub(timeseries=timeseries,
-                                        start_date=start_date,
-                                        end_date=end_date)
-
-    def retrieve_sewer(self, start_date, end_date):
-        """Return the sewer time series for the current Area.
-
-        It is possible no sewer time series has been defined. In that case,
-        this method will return None.
-
-        """
-        open_water = self.configuration.open_water
-        if open_water.sewer is None:
-            return None
-
-        timeseries = open_water.sewer.get_timeseries()
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
@@ -442,6 +427,30 @@ class Bucket(object):
         return TimeseriesRestrictedStub(timeseries=timeseries,
                                         start_date=start_date,
                                         end_date=end_date)
+
+    def retrieve_sewer(self, start_date, end_date):
+        """Return the sewer time series of the current Bucket.
+
+        The current bucket only should have a sewer time series when it has
+        surface type 'stedelijk'. When the current bucket has another surface
+        type, this method returns None.
+
+        It is possible no sewer time series has been defined and in that case,
+        this method will return None.
+
+        """
+        timeseries = None
+
+        sewer = self.configuration.open_water.sewer
+        if sewer is None:
+            return timeseries
+
+        if self.database_bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
+            timeseries = \
+                TimeseriesRestrictedStub(timeseries=sewer.get_timeseries(),
+                    start_date=start_date, end_date=end_date)
+
+        return timeseries
 
     @property
     def min_concentr_phosphate_flow_off(self):
