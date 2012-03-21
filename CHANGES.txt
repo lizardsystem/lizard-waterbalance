@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.15 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Adds support for buckets of type 'stedelijk' (#61).
+
 
 
 0.19.1.14 (2012-02-17)
