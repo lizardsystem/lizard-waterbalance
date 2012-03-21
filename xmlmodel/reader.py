@@ -32,7 +32,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from timeseries.timeseries import TimeSeries
-from timeseries.timeseriesstub import SparseTimeseriesStub
+
 
 class BaseModel(object):
     expected = ['obj_id', 'location_id']
