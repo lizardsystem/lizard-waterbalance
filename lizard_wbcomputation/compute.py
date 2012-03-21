@@ -554,6 +554,7 @@ class WaterbalanceComputer2(object):
         incoming["flow_off"] = buckets_summary.flow_off
         incoming["undrained"] = buckets_summary.undrained
         incoming["hardened"] = buckets_summary.hardened
+        incoming["sewer"] = buckets_summary.sewer
         incoming["defined_input"]= input['incoming_timeseries']
         intake, outtake = self.get_level_control_pumping_stations()
         incoming["intake_wl_control"] = {intake: control['intake_wl_control']}

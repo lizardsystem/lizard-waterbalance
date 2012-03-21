@@ -126,6 +126,8 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('sluice_error', Units.flow),
     'undrained': \
         TimeSeriesSpec('discharge_drainage', Units.flow),
+    'sewer': \
+        TimeSeriesSpec('discharge_sewer', Units.flow),
     'min_impact_phosphate_precipitation': \
         TimeSeriesSpec('min_impact_phosphate_precipitation', Units.impact),
     'min_impact_phosphate_seepage': \
