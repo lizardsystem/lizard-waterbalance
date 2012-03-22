@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.16 (unreleased)
+0.19.1.16 (2012-03-22)
 ----------------------
 
 - Sets the logging level to info (from debug) (nens/vss#92)
