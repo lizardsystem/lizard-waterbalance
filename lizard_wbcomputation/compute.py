@@ -46,6 +46,22 @@ from timeseries.timeseriesstub import TimeseriesRestrictedStub
 logger = logging.getLogger(__name__)
 
 
+class memoize(object):
+    def __init__(self, function):
+        self._function = function
+        self._cacheName = '_cache__' + function.__name__
+    def __get__(self, instance, cls=None):
+        self._instance = instance
+        return self
+    def __call__(self, *args):
+        cache = self._instance.__dict__.setdefault(self._cacheName, {})
+        if cache.has_key(args):
+            return cache[args]
+        else:
+            object = cache[args] = self._function(self._instance, *args)
+            return object
+
+
 def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     """Return the adjusted evaporation timeserie.
 
@@ -325,7 +341,7 @@ class WaterbalanceComputer2(object):
 
         return input_ts
 
-
+    @memoize
     def get_buckets_timeseries(self, start_date, end_date):
         """return all outcome timeseries of all buckets
         Args:
@@ -458,6 +474,7 @@ class WaterbalanceComputer2(object):
 
         return outcome
 
+    @memoize
     def get_level_control_timeseries(self, start_date, end_date):
         """return all calculated flows for level_control ('peilhandhaving') and the resulting storage and level in open water
         Args:
@@ -532,6 +549,7 @@ class WaterbalanceComputer2(object):
         return find_pumping_station_level_control(self.area, find_intake), \
                find_pumping_station_level_control(self.area, not find_intake)
 
+    @memoize
     def get_open_water_incoming_flows(self, start_date, end_date):
         """ Return incoming waterflows.
         - precipitation
@@ -707,6 +725,7 @@ class WaterbalanceComputer2(object):
 
         return summed_loads.compute(substance_string)
 
+    @memoize
     def get_impact_timeseries(self,
             start_date, end_date, substance_string='phosphate'):
         logger.debug("WaterbalanceComputer2::get_impact_timeseries")
