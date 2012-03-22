@@ -84,26 +84,6 @@ class BucketOutcome:
                 "net_precipitation": self.net_precipitation}
 
 
-def empty_outcome(start_date):
-    """returns bucket_outcome with timeseries with memory, with a first value of 0
-
-    """
-    outcome = BucketOutcome()
-
-    outcome.storage = TimeseriesWithMemoryStub()
-    outcome.flow_off = TimeseriesWithMemoryStub()
-    outcome.net_drainage = TimeseriesWithMemoryStub()
-    outcome.seepage = TimeseriesWithMemoryStub()
-    outcome.net_precipitation = TimeseriesWithMemoryStub()
-
-    outcome.storage.add_value(start_date, 0)
-    outcome.flow_off.add_value(start_date, 0)
-    outcome.net_drainage.add_value(start_date, 0)
-    outcome.seepage.add_value(start_date, 0)
-    outcome.net_precipitation.add_value(start_date, 0)
-
-    return outcome
-
 def compute_seepage(bucket, seepage):
     """Return the seepage of the given bucket on the given date.
 
@@ -354,9 +334,7 @@ def compute_timeseries_from_sewer(bucket, sewer):
 
 
     bucket = switch_bucket_upper_values(bucket)
-    first_date = next(sewer.events())[0]
-    outcome = empty_outcome(first_date)
-
+    outcome = BucketOutcome()
     outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
     return outcome
 
@@ -397,9 +375,5 @@ class BucketComputer:
                 outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
             result = outcome
         else:
-            try:
-                start_date = precipitation.start_date
-            except AttributeError:
-                start_date = datetime(1990,1,1)
-            result = empty_outcome(start_date) #mooier is een functie_get startdate
+            result = BucketOutcome()
         return result
