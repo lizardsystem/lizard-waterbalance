@@ -5,14 +5,14 @@ Changelog of lizard-waterbalance
 0.19.1.16 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Sets the logging level to info (from debug) (nens/vss#92)
+- Updates timeseries to 0.15 (from 0.17)
 
 
 0.19.1.15 (2012-03-21)
 ----------------------
 
 - Adds support for buckets of type 'stedelijk' (#61).
-
 
 
 0.19.1.14 (2012-02-17)
