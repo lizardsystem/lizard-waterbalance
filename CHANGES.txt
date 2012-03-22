@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.18 (unreleased)
+0.19.1.18 (2012-03-22)
 ----------------------
 
 - Removes the requirement on a non-empty sewer time series (nens/vss#93)
