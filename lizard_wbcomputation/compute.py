@@ -251,7 +251,6 @@ class WaterbalanceComputer2(object):
         self.input = {}
         self.outcome = {}
 
-        self.input_info = {}
         self.outcome_info = {}
 
         self.references = False
@@ -264,7 +263,7 @@ class WaterbalanceComputer2(object):
         #self.store_timeserie = store_timeserie
         #self.level_control_storage = LevelControlStorage(store_timeserie=self.store_timeserie)
 
-    #TO DO
+    @memoize
     def get_input_timeseries(self, start_date, end_date):
         """return (and collect) all input timeseries
         Args:
@@ -283,61 +282,45 @@ class WaterbalanceComputer2(object):
             - incoming_timeseries[intake]
         """
         logger.debug("WaterbalanceComputer2::get_input_timeseries")
-        if (self.input.has_key('timeseries') and
-            self.input_info['timeseries']['start_date']==start_date and
-            self.input_info['timeseries']['end_date']>=end_date):
-            return self.input['timeseries']
-        else:
-            logger.debug("get input timeseries (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
 
-            input_ts = {}
-            input_ts['precipitation'] = SparseTimeseriesStub()
-            for event in self.area.retrieve_precipitation(start_date, end_date).events():
-                input_ts['precipitation'].add_value(event[0], event[1])
-            input_ts['evaporation'] = SparseTimeseriesStub()
-            for event in self.area.retrieve_evaporation(start_date, end_date).events():
-                input_ts['evaporation'].add_value(event[0], event[1])
-            input_ts['seepage'] = SparseTimeseriesStub()
-            for event in self.area.retrieve_seepage(start_date, end_date).events():
-                input_ts['seepage'].add_value(event[0], event[1])
-            input_ts['infiltration'] = SparseTimeseriesStub()
-            for event in self.area.retrieve_infiltration(start_date, end_date).events():
-                input_ts['infiltration'].add_value(event[0], event[1])
+        input_ts = {}
+        input_ts['precipitation'] = SparseTimeseriesStub()
+        for event in self.area.retrieve_precipitation(start_date, end_date).events():
+            input_ts['precipitation'].add_value(event[0], event[1])
+        input_ts['evaporation'] = SparseTimeseriesStub()
+        for event in self.area.retrieve_evaporation(start_date, end_date).events():
+            input_ts['evaporation'].add_value(event[0], event[1])
+        input_ts['seepage'] = SparseTimeseriesStub()
+        for event in self.area.retrieve_seepage(start_date, end_date).events():
+            input_ts['seepage'].add_value(event[0], event[1])
+        input_ts['infiltration'] = SparseTimeseriesStub()
+        for event in self.area.retrieve_infiltration(start_date, end_date).events():
+            input_ts['infiltration'].add_value(event[0], event[1])
 
-            input_ts['open_water'] = {}
-            input_ts['open_water']['minimum_level'] = self.area.retrieve_minimum_level(start_date, end_date)
-            input_ts['open_water']['maximum_level'] = self.area.retrieve_maximum_level(start_date, end_date)
+        input_ts['open_water'] = {}
+        input_ts['open_water']['minimum_level'] = self.area.retrieve_minimum_level(start_date, end_date)
+        input_ts['open_water']['maximum_level'] = self.area.retrieve_maximum_level(start_date, end_date)
 
-            input_ts['open_water']['seepage'] = input_ts['seepage']
+        input_ts['open_water']['seepage'] = input_ts['seepage']
 
-            for bucket in self.area.buckets:
-                input_ts[bucket] = {}
-                input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
+        for bucket in self.area.buckets:
+            input_ts[bucket] = {}
+            input_ts[bucket]['seepage'] = bucket.retrieve_seepage(start_date, end_date)
 
-            input_ts['incoming_timeseries'] = {}
-            for intake, timeseries in retrieve_incoming_timeseries(self.area, only_input=False).iteritems():
-                sparse_timeseries = SparseTimeseriesStub()
-                for event in timeseries.events():
-                    sparse_timeseries.add_value(event[0], event[1])
-                input_ts['incoming_timeseries'][intake] = TimeseriesRestrictedStub(timeseries=sparse_timeseries,
-                                                                start_date=start_date,
-                                                                end_date=end_date)
+        input_ts['incoming_timeseries'] = {}
+        for intake, timeseries in retrieve_incoming_timeseries(self.area, only_input=False).iteritems():
+            sparse_timeseries = SparseTimeseriesStub()
+            for event in timeseries.events():
+                sparse_timeseries.add_value(event[0], event[1])
+            input_ts['incoming_timeseries'][intake] = TimeseriesRestrictedStub(timeseries=sparse_timeseries,
+                                                            start_date=start_date,
+                                                            end_date=end_date)
 
-            input_ts['outgoing_timeseries'] = {}
-            for pump, timeseries in retrieve_outgoing_timeseries(self.area, only_input=False).iteritems():
-                input_ts['outgoing_timeseries'][pump] = TimeseriesRestrictedStub(timeseries=timeseries,
-                                                                start_date=start_date,
-                                                                end_date=end_date)
-
-            #store for later use (some kind of cache)
-            self.input['timeseries'] = input_ts
-            self.input_info['timeseries'] = {}
-            self.input_info['timeseries']['start_date'] = start_date
-            self.input_info['timeseries']['end_date'] = end_date
-
-            self.updated = True
+        input_ts['outgoing_timeseries'] = {}
+        for pump, timeseries in retrieve_outgoing_timeseries(self.area, only_input=False).iteritems():
+            input_ts['outgoing_timeseries'][pump] = TimeseriesRestrictedStub(timeseries=timeseries,
+                                                            start_date=start_date,
+                                                            end_date=end_date)
 
         return input_ts
 
@@ -355,31 +338,24 @@ class WaterbalanceComputer2(object):
           1. a dictionary with all calculated bucket timeseries. Key=bucket.
         """
         logger.debug("WaterbalanceComputer2::get_buckets_timeseries")
-        if (self.outcome.has_key('buckets') and
-            self.outcome_info['buckets']['start_date']==start_date and
-            self.outcome_info['buckets']['end_date']>=end_date):
-            return self.outcome['buckets']
-        else:
-            logger.debug("Calculating buckets (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
 
-            input = self.get_input_timeseries(start_date, end_date)
+        input = self.get_input_timeseries(start_date, end_date)
 
-            buckets_outcome = {}
-            for bucket in self.area.buckets:
-                buckets_outcome[bucket] = self.bucket_computer.compute(
-                    bucket,
-                    input['precipitation'],
-                    input['evaporation'],
-                    bucket.retrieve_seepage(start_date, end_date),
-                    bucket.retrieve_sewer(start_date, end_date))
+        buckets_outcome = {}
+        for bucket in self.area.buckets:
+            buckets_outcome[bucket] = self.bucket_computer.compute(
+                bucket,
+                input['precipitation'],
+                input['evaporation'],
+                bucket.retrieve_seepage(start_date, end_date),
+                bucket.retrieve_sewer(start_date, end_date))
 
-            # for bucket in self.configuration.retrieve_sobek_buckets():
-            #     buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
+        # for bucket in self.configuration.retrieve_sobek_buckets():
+        #     buckets_outcome[bucket]  = bucket.get_outcome(start_date, end_date)
 
         return buckets_outcome
 
+    @memoize
     def get_bucketflow_summary(self, start_date, end_date):
         """summarize outcome buckets into labels
         Args:
@@ -397,29 +373,8 @@ class WaterbalanceComputer2(object):
 
         """
         logger.debug("WaterbalanceComputer2::get_bucketflow_summary")
-
-        if (self.outcome.has_key('buckets_summary') and
-            self.outcome_info['buckets_summary']['start_date']==start_date and
-            self.outcome_info['buckets_summary']['end_date']>=end_date):
-            pass
-        else:
-            logger.debug("Calculating bucket_summary (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
-
-            buckets_outcome = self.get_buckets_timeseries(start_date, end_date)
-
-            buckets_summary = self.buckets_summarizer.compute(buckets_outcome, start_date, end_date)
-
-            #store for later use (some kind of cache)
-            self.outcome['buckets_summary'] = buckets_summary
-            self.outcome_info['buckets_summary'] = {}
-            self.outcome_info['buckets_summary']['start_date'] = start_date
-            self.outcome_info['buckets_summary']['end_date'] = end_date
-
-            self.updated = True
-
-        return self.outcome['buckets_summary']
+        outcome = self.get_buckets_timeseries(start_date, end_date)
+        return self.buckets_summarizer.compute(outcome, start_date, end_date)
 
     def get_vertical_open_water_timeseries(self, start_date, end_date):
         """return all timeseries directly related to openwater (vertical = rainfall, evaporation and seepage)
@@ -437,40 +392,24 @@ class WaterbalanceComputer2(object):
           - seepage
         """
         logger.debug("WaterbalanceComputer2::get_vertical_open_water_timeseries")
-        if (self.outcome.has_key('vertical_open_water') and
-            self.outcome_info['vertical_open_water']['start_date']==start_date and
-            self.outcome_info['vertical_open_water']['end_date']>=end_date):
-            return self.outcome['vertical_open_water']
-        else:
-            logger.debug("Calculating vertical open water flows (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
-            input = self.get_input_timeseries(start_date, end_date)
+        input = self.get_input_timeseries(start_date, end_date)
 
-            # The crop evaporation factor in the next call used to be a
-            # variable of the open water. Apparently the variable is a constant
-            # so we just fill it in.
-            crop_evaporation_factor = 1.0
+        # The crop evaporation factor in the next call used to be a
+        # variable of the open water. Apparently the variable is a constant
+        # so we just fill it in.
+        crop_evaporation_factor = 1.0
 
-            # We compute the vertical time series for a specific range of
-            # dates. To do so, we set an instance method that can determine
-            # whether a given date is inside that range.
-            date_range = DateRange(start_date, end_date)
-            self.vertical_timeseries_computer.inside_range = date_range.inside
-            outcome = self.vertical_timeseries_computer.compute(self.area.surface,
-                                                                crop_evaporation_factor,
-                                                                input['precipitation'],
-                                                                transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
-                                                                input['seepage'],
-                                                                input['infiltration'])
-
-            #store for later use (some kind of cache)
-            self.outcome['vertical_open_water'] = outcome
-            self.outcome_info['vertical_open_water'] = {}
-            self.outcome_info['vertical_open_water']['start_date'] = start_date
-            self.outcome_info['vertical_open_water']['end_date'] = end_date
-
-            self.updated = True
+        # We compute the vertical time series for a specific range of
+        # dates. To do so, we set an instance method that can determine
+        # whether a given date is inside that range.
+        date_range = DateRange(start_date, end_date)
+        self.vertical_timeseries_computer.inside_range = date_range.inside
+        outcome = self.vertical_timeseries_computer.compute(self.area.surface,
+                                                            crop_evaporation_factor,
+                                                            input['precipitation'],
+                                                            transform_evaporation_timeseries_penman_to_makkink(input['evaporation']),
+                                                            input['seepage'],
+                                                            input['infiltration'])
 
         return outcome
 
@@ -492,49 +431,30 @@ class WaterbalanceComputer2(object):
             TO DO: enddate startdate storage
         """
         logger.debug("WaterbalanceComputer2::get_level_control_timeseries")
+        input = self.get_input_timeseries(start_date, end_date)
+        buckets_summary = self.get_bucketflow_summary(start_date, end_date)
+        vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
 
-        if (self.outcome.has_key('level_control') and
-            self.outcome_info['level_control']['start_date']==start_date and
-            self.outcome_info['level_control']['end_date']>=end_date):
-            return self.outcome['level_control']
-        else:
-            logger.debug("Calculating level control (%s - %s)..." % (
-                    start_date.strftime('%Y-%m-%d'),
-                    end_date.strftime('%Y-%m-%d')))
+        # We compute the level control for a specific range of time. To do
+        # so, we set an instance method that can determine whether a given
+        # date is inside that range.
+        date_range = DateRange(start_date, end_date)
+        self.level_control_computer.inside_range = date_range.inside
 
-            input = self.get_input_timeseries(start_date, end_date)
-            buckets_summary = self.get_bucketflow_summary(start_date, end_date)
-            vertical_open_water_timeseries = self.get_vertical_open_water_timeseries(start_date, end_date)
-
-            # We compute the level control for a specific range of time. To do
-            # so, we set an instance method that can determine whether a given
-            # date is inside that range.
-            date_range = DateRange(start_date, end_date)
-            self.level_control_computer.inside_range = date_range.inside
-
-            outcome = self.level_control_computer.compute(
-                self.area,
-                buckets_summary,
-                vertical_open_water_timeseries["precipitation"],
-                vertical_open_water_timeseries["evaporation"],
-                vertical_open_water_timeseries["seepage"],
-                vertical_open_water_timeseries["infiltration"],
-                input['open_water']['minimum_level'],
-                input['open_water']['maximum_level'],
-                input['incoming_timeseries'],
-                input['outgoing_timeseries'],
-                self.area.max_intake,
-                self.area.max_outtake)
-
-            #cache
-            self.outcome['level_control'] = outcome
-
-            self.outcome_info['level_control'] = {}
-            self.outcome_info['level_control']['start_date'] = start_date
-            self.outcome_info['level_control']['end_date'] = end_date
-
-            self.updated = True
-            return outcome
+        outcome = self.level_control_computer.compute(
+            self.area,
+            buckets_summary,
+            vertical_open_water_timeseries["precipitation"],
+            vertical_open_water_timeseries["evaporation"],
+            vertical_open_water_timeseries["seepage"],
+            vertical_open_water_timeseries["infiltration"],
+            input['open_water']['minimum_level'],
+            input['open_water']['maximum_level'],
+            input['incoming_timeseries'],
+            input['outgoing_timeseries'],
+            self.area.max_intake,
+            self.area.max_outtake)
+        return outcome
 
     def get_level_control_pumping_stations(self):
         """Return the pair (intake, pump) pumping stations for level control.
