@@ -35,6 +35,7 @@ from lizard_wbcomputation.level_control_assignment import LevelControlAssignment
 from lizard_wbcomputation.level_control_computer import DateRange
 from lizard_wbcomputation.level_control_computer import LevelControlComputer
 from lizard_wbcomputation.load_computer import LoadComputer
+from lizard_wbcomputation.memoize import memoize
 from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
 
@@ -42,25 +43,7 @@ from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
 from timeseries.timeseriesstub import TimeseriesRestrictedStub
 
-
 logger = logging.getLogger(__name__)
-
-
-class memoize(object):
-    def __init__(self, function):
-        self._function = function
-        self._cacheName = '_cache__' + function.__name__
-    def __get__(self, instance, cls=None):
-        self._instance = instance
-        return self
-    def __call__(self, *args):
-        cache = self._instance.__dict__.setdefault(self._cacheName, {})
-        if cache.has_key(args):
-            return cache[args]
-        else:
-            object = cache[args] = self._function(self._instance, *args)
-            return object
-
 
 def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     """Return the adjusted evaporation timeserie.
