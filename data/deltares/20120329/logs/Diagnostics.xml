@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  WW-31/Cl"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw1/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw1/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw2/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw2/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw3/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw3/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw4/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: unused series loc/par:  `WW-31_gw4/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-03-28 17:15:40,533 :: start computation of waterbalance time series"/>
+</Diag>
