@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.19 (unreleased)
+0.19.1.19 (2012-03-29)
 ----------------------
 
 - wbcompute logs an explanatory message when it has to abort due to an area
