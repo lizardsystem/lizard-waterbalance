@@ -523,31 +523,35 @@ def main(args):
     file that specifies all the other required files.
 
     """
-    run_file, = args
-    run_dom = parse(run_file)
-    root = run_dom.childNodes[0]
-    run_info = dict([(i.tagName, getText(i))
-                     for i in root.childNodes
-                     if i.nodeType != i.TEXT_NODE
-                     and i.tagName != u"properties"])
-    insert_calculation_range(run_dom, run_info)
-    diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
-    logging.getLogger().addHandler(diag)
-    logging.getLogger().setLevel(logging.INFO)
-    log.debug(run_info['inputTimeSeriesFile'])
-    tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
-    area = parse_parameters(run_info['inputParameterFile'])
-    attach_timeseries_to_structures(area, tsd, ASSOC)
-    negate_outgoing_timeseries(area)
+    try:
+        run_file, = args
+        run_dom = parse(run_file)
+        root = run_dom.childNodes[0]
+        run_info = dict([(i.tagName, getText(i))
+                         for i in root.childNodes
+                         if i.nodeType != i.TEXT_NODE
+                         and i.tagName != u"properties"])
+        insert_calculation_range(run_dom, run_info)
+        diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
+        logging.getLogger().addHandler(diag)
+        logging.getLogger().setLevel(logging.INFO)
+        log.debug(run_info['inputTimeSeriesFile'])
+        tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
+        area = parse_parameters(run_info['inputParameterFile'])
+        attach_timeseries_to_structures(area, tsd, ASSOC)
+        negate_outgoing_timeseries(area)
 
-    log.info("start computation of waterbalance time series")
-    graphs_timeseries = store_graphs_timeseries(run_info, area)
-    log.info("finished computation of waterbalance time series")
+        log.info("start computation of waterbalance time series")
+        graphs_timeseries = store_graphs_timeseries(run_info, area)
+        log.info("finished computation of waterbalance time series")
 
-    log.info("start write of waterbalance time series")
-    TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
-                                graphs_timeseries)
-    log.info("finished write of waterbalance time series")
+        log.info("start write of waterbalance time series")
+        TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
+                                    graphs_timeseries)
+        log.info("finished write of waterbalance time series")
+    except:
+        log.warning('wbcompute aborts prematurely')
+        raise
 
 if __name__ == '__main__':
 
