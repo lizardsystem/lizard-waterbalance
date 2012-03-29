@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.19 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- wbcompute logs an explanatory message when it has to abort due to an area
+  surface of (or close to) 0.0 (nens/vss#97)
 
 
 0.19.1.18 (2012-03-22)
