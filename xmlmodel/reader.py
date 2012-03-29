@@ -118,6 +118,13 @@ class Area(BaseModel):
                 'incr_concentr_sulphate_seepage',
                 ]
 
+    def validate(self):
+        BaseModel.validate(self)
+        # place additional checks on the validity of the Area data here
+        if self.surface < 1e-6:
+            logger.warning('area surface of %.1f is too low to handle correctly', self.surface)
+            assert False
+
     @classmethod
     def corresponding_parameter_id(cls, local_name):
         """return the default parameter id for named timeseries.
