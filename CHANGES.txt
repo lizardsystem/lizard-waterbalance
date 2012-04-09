@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.22 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Makes sure the calculated bucket volume does not fall below 0.0
+  (nens/vss#101)
 
 
 0.19.1.21 (2012-04-10)
