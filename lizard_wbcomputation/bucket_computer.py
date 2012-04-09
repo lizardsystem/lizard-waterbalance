@@ -141,12 +141,12 @@ def compute_net_drainage(bucket, previous_volume):
     equi_volume = bucket.bottom_equi_water_level * bucket.surface
     if previous_volume > equi_volume:
         # the net drainage specifies an outgoing volume so should be
-        # non-positive: the drainage fraction is specified as a non-positive
+        # non-positive: the drainage fraction is specified as a non-negative
         # number
         net_drainage = -previous_volume * bucket.bottom_drainage_fraction
     elif previous_volume < equi_volume:
         # the net drainage specifies an incoming volume so should be
-        # non-negative: the indraft fraction is specified as a non-positive
+        # non-negative: the indraft fraction is specified as a non-negative
         # number
         net_drainage = previous_volume * bucket.bottom_indraft_fraction
     else:
