@@ -181,7 +181,9 @@ def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow
     else:
         flow_off = 0
 
-    if not allow_below_minimum_storage:
+    if allow_below_minimum_storage:
+        storage = max(storage, 0.0)
+    else:
         storage = max(storage, bucket.bottom_min_water_level * bucket.surface)
 
     return (storage, flow_off, net_drainage, seepage, net_precipitation)
