@@ -5,7 +5,8 @@ Changelog of lizard-waterbalance
 0.19.1.20 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Makes sure the sign of the infiltration time series is always non-positive
+  (nens/vss#100)
 
 
 0.19.1.19 (2012-03-29)
