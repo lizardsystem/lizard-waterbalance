@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.20 (unreleased)
+0.19.1.20 (2012-04-09)
 ----------------------
 
 - Corrects the sign of the computed bucket indraft (#53)
