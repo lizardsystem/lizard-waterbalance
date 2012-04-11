@@ -513,7 +513,7 @@ def negate_outgoing_timeseries(area):
     for ps in area.pumping_stations:
         if not ps.into:
             ps.sum_timeseries = abs(ps.sum_timeseries) * -1.0
-    area.infiltration = abs(area.infiltration) * 1.0
+    area.infiltration = abs(area.infiltration) * -1.0
 
 
 def main(args):
