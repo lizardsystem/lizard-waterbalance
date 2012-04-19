@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480/Cl"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-1_0/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-1_0/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-1_1/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-1_1/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-2_0/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-2_0/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-2_1/drainage_indraft"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,816 :: unused series loc/par:  6480-DGW-2_1/flow_off"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:28,880 :: start computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:41,177 :: finished computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:20:41,177 :: start write of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-04-19 14:21:08,404 :: finished write of waterbalance time series"/>
+</Diag>
