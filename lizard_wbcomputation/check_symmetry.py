@@ -33,7 +33,7 @@ from lizard_wbcomputation.time_series_dict_operator import SwitchSign
 
 
 OUTGOING_PUMPING_STATIONS = [
-    '3201_PS3',
+    '6480_inlaatPB',
     ]
 
 PARAMETERS_TO_SWITCH = [
@@ -56,9 +56,9 @@ RELEVANT_PARAMETERS = [
     'sluice_error',
     ]
 
-def main():
+def main(args):
     parser = OptionParser(usage="usage: %prog <PI XML time series file>")
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args(args)
     if len(args) == 1:
         reader = \
             SummedTimeSeriesReader(

@@ -51,6 +51,8 @@ setup(name='lizard-waterbalance',
       entry_points={
           'console_scripts': [
               'wbcompute = xmlmodel.wbcompute:main',
+              'check_symmetry = lizard_wbcomputation.check_symmetry:main',
+              'check_fractions = lizard_wbcomputation.check_fractions:main',
               ],
           'lizard_map.adapter_class': [
               'adapter_waterbalance = lizard_waterbalance.layers:AdapterWaterbalance',

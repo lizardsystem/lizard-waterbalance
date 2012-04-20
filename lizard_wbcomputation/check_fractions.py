@@ -29,9 +29,9 @@ from lizard_wbcomputation.summed_time_series_reader import SummedTimeSeriesReade
 from lizard_wbcomputation.target_value_checker import TargetValueChecker
 from lizard_wbcomputation.time_series_dict_operator import FilterFractions
 
-def main():
+def main(args):
     parser = OptionParser(usage="usage: %prog <PI XML time series file>")
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args(args)
     if len(args) == 1:
         reader = SummedTimeSeriesReader(FilterFractions(TimeSeries).as_dict)
         if TargetValueChecker(reader).verify(args[0]):
