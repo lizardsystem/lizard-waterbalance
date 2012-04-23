@@ -32,6 +32,8 @@ import sys
 from datetime import datetime
 from xml.dom.minidom import parse
 
+import pkginfo
+
 from nens import fews
 
 from timeseries.timeseries import TimeSeries
@@ -44,8 +46,10 @@ from lizard_wbcomputation.load_computer import LoadForIntake
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
 
-
 log = logging.getLogger(__name__)
+
+# wbcompute uses the same version as lizard-waterbalance as a whole
+version = pkginfo.installed.Installed("lizard_waterbalance").version
 
 def getText(node):
     return str("".join(t.nodeValue for t in node.childNodes
@@ -537,6 +541,7 @@ def main(args):
         diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
         logging.getLogger().addHandler(diag)
         logging.getLogger().setLevel(logging.INFO)
+        log.info("version: %s", version)
         log.debug(run_info['inputTimeSeriesFile'])
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
         area = parse_parameters(run_info['inputParameterFile'])
