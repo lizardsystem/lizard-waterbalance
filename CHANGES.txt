@@ -5,7 +5,10 @@ Changelog of lizard-waterbalance
 0.19.1.24 (unreleased)
 ----------------------
 
--  Implements support for the so-called Sobek buckets (#8).
+- Corrects the indraft and net drainage calculation (bug reported by Maarten
+  Ouboter).
+- Fixes the calls by buildout to check_fraction and check_symmetry.
+- Implements support for the so-called Sobek buckets (#8).
 
 
 0.19.1.23 (2012-04-11)
