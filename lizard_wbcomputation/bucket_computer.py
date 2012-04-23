@@ -354,8 +354,10 @@ def compute_timeseries_predefined(bucket):
 
     """
     outcome = BucketOutcome()
-    outcome.flow_off = bucket.retrieve_flow_off()
-    outcome.net_drainage = bucket.retrieve_net_drainage()
+    flow_off = bucket.retrieve_flow_off()
+    outcome.flow_off = multiply_timeseries(flow_off, -1.0)
+    net_drainage = bucket.retrieve_net_drainage()
+    outcome.net_drainage = multiply_timeseries(net_drainage, -1.0)
     return outcome
 
 
