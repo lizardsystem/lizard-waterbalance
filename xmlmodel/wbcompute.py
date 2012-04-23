@@ -334,7 +334,7 @@ class TimeseriesForSomething(object):
     def set_standard_fields(self):
         self.timeseries.type = 'instantaneous'
         self.timeseries.miss_val = '-999.0'
-        self.timeseries.station_name = 'Huh?'
+        self.timeseries.station_name = 'unspecified'
 
 
 class TimeseriesForLabel(TimeseriesForSomething):

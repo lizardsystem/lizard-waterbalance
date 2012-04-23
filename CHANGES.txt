@@ -10,6 +10,7 @@ Changelog of lizard-waterbalance
 - Fixes the calls by buildout to check_fraction and check_symmetry.
 - Implements support for the so-called Sobek buckets (#8).
 - Extends wbcompute to log the version info.
+- Modifies wbcompute to use 'unspecified' for an unknown station name.
 
 
 0.19.1.23 (2012-04-11)
