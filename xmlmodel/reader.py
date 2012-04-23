@@ -95,10 +95,9 @@ class BaseModel(object):
 
 
 class Area(BaseModel):
-    expected = ['obj_id', 'location_id',
+    expected = ['obj_id', 'location_id', 'name',
                 'surface',
                 'bottom_height',
-                'init_water_level',
                 'ini_con_cl',
                 'max_intake',
                 'max_outtake',
@@ -133,9 +132,29 @@ class Area(BaseModel):
 
         return None
 
-    @property
-    def init_water_level(self):
-        return 0
+    def set_init_water_level(self, date):
+        """Sets the initial water level.
+
+        This method sets the initial water level to the last-known water level
+        that is earlier than the given date.
+
+        """
+        logger.debug('set initial water level for area %s', self.name)
+        self.init_water_level = None
+        for event in self.retrieve_water_level().events():
+            if event[0] < date:
+                self.init_water_level = event[1]
+            else:
+                if self.init_water_level is None:
+                    logger.warning('no water level known earlier than %s',
+                        date.isoformat(' '))
+                    if event[0].isocalendar() == date.isocalendar():
+                        self.init_water_level = event[1]
+                    else:
+                        self.init_water_level = 0.0
+                break
+        logger.debug('initial water level of area set to %f',
+             self.init_water_level)
 
     @property
     def init_concentration(self):

@@ -547,7 +547,7 @@ def main(args):
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
         negate_outgoing_timeseries(area)
-
+        area.set_init_water_level(run_info['startDateTime'])
         log.info("start computation of waterbalance time series")
         graphs_timeseries = store_graphs_timeseries(run_info, area)
         log.info("finished computation of waterbalance time series")
