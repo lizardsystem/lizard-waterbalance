@@ -346,6 +346,19 @@ def compute_timeseries_from_sewer(bucket, sewer):
     outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
     return outcome
 
+def compute_timeseries_predefined(bucket):
+    """Return the BucketOutcome for the given bucket.
+
+    The given bucket has time series that are defined in the input, viz. one
+    time series for flow off and one time series for net drainage.
+
+    """
+    outcome = BucketOutcome()
+    outcome.flow_off = bucket.retrieve_flow_off()
+    outcome.net_drainage = bucket.retrieve_net_drainage()
+    return outcome
+
+
 class BucketComputer:
 
     def __init__(self, bucket_computers=None):
@@ -359,29 +372,28 @@ class BucketComputer:
             self.bucket_computers = bucket_computers
 
     def compute(self, bucket, precipitation, evaporation, seepage, sewer=None):
-        """Compute and return the waterbalance for a given bucket.
+        """Compute and return the BucketOutcome for the given bucket.
 
-        Parameters:
-        * bucket -- one bucket connected to the open water
-        * precipitation -- TimesseriesStub for the precipitation
-        * evaporation -- TimesseriesStub for the evaporation
-        * seepage -- TimesseriesStub for the seepage
+        Parameters precipitation, evaporation, seepage and sewer are time
+        series.
 
-        Return value:
-        * result -- dictionary of TimesseriesStub
         """
-        result = {}
-
-        if bucket.surface > 0:
-            surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
-            logger.debug("calculate bucket %s of type %s", bucket.name,
-                         surface_type_name)
-            bucket_computer = self.bucket_computers[bucket.surface_type]
-            if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
-                outcome = compute_timeseries_from_sewer(bucket, sewer)
+        logger.debug('calculate bucket outcome for bucket %s', bucket.name)
+        if bucket.is_computed:
+            if bucket.surface > 0:
+                surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
+                bucket_computer = self.bucket_computers[bucket.surface_type]
+                if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
+                    outcome = compute_timeseries_from_sewer(bucket, sewer)
+                else:
+                    outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
+                result = outcome
             else:
-                outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
-            result = outcome
+                logger.warning("bucket has non-positive surface", bucket.name,
+                         surface_type_name)
+                result = BucketOutcome()
         else:
-            result = BucketOutcome()
+            logger.debug('bucket outcome for bucket %s is predefined', bucket.name)
+            result = compute_timeseries_predefined(bucket)
+
         return result

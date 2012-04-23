@@ -68,6 +68,8 @@ ASSOC = {
         # note that this is net seepage, so seepage minus infiltration
         'seepage': 'KWEL',
         'sewer': 'Qoverstort',
+        'flow_off': 'flow_off',
+        'net_drainage': 'drainage_indraft'
         },
     'PumpingStation': {
         'sum_timeseries': 'Q',

@@ -155,6 +155,7 @@ class Bucket(BaseModel):
                 'name',
                 'surface_type',
                 'surface',
+                'is_computed',
                 'bottom_porosity',
                 'crop_evaporation_factor',
                 'min_crop_evaporation_factor',
