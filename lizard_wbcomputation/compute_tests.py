@@ -146,7 +146,7 @@ class computeTestSuite(TestCase):
         self.bucket.bottom_equi_water_level = 0.50
         self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
-        expected_value = -41302.53
+        expected_value = 41302.53
         computed_value = compute_net_drainage(self.bucket, previous_volume)
         self.assertAlmostEqual(expected_value, computed_value, 2)
 
@@ -183,13 +183,14 @@ class computeTestSuite(TestCase):
         self.bucket.bottom_equi_water_level = 0.50
         self.bucket.bottom_indraft_fraction = 0.04
         previous_volume = self.bucket.bottom_init_water_level * self.bucket.surface
+        print previous_volume
         evaporation = 20
         precipitation = 5
         seepage = 10
 
-        expected_flow_off = -655677.73
-        result_tuple = compute(self.bucket, previous_volume, evaporation,
-                               precipitation, seepage)
+        expected_flow_off = -660840.54
+        result_tuple = compute(self.bucket, previous_volume, precipitation,
+                               evaporation, seepage)
         self.assertAlmostEqual(expected_flow_off, result_tuple[1], 2)
 
     def test_j(self):
@@ -203,7 +204,7 @@ class computeTestSuite(TestCase):
         precipitation = 5
         seepage = 10
 
-        expected_drainage = -41302.53
+        expected_drainage = 41302.53
         result_tuple = compute(self.bucket, previous_volume, evaporation,
                                precipitation, seepage)
         self.assertAlmostEqual(expected_drainage, result_tuple[2], 2)

@@ -164,7 +164,7 @@ class MoreTests(TestCase):
         single_timeseries = writeable_timeseries.timeseries_list[0]
         self.assertEqual('instantaneous', single_timeseries.type)
         self.assertEqual('-999.0', single_timeseries.miss_val)
-        self.assertEqual('Huh?', single_timeseries.station_name)
+        self.assertEqual('unspecified', single_timeseries.station_name)
 
     def test_c(self):
         """Test an empty dict of PumpingStation to TimeseriesStub."""
