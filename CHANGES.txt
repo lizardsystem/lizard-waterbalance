@@ -5,8 +5,6 @@ Changelog of lizard-waterbalance
 0.19.1.24 (unreleased)
 ----------------------
 
-- Corrects the indraft and net drainage calculation (bug reported by Maarten
-  Ouboter).
 - Computes the initial water level from the given water level time series
   instead of a hard-coded value of 0.0 (#33)
 - Computes the initial water volume instead of a hard-coded value of 0.0 (#48)
