@@ -151,7 +151,7 @@ class BucketSummarizer:
             if bucket.surface_type == BucketTypes.DRAINED_SURFACE:
                 sum += outcome[0]
                 net_drainage = outcome[1]
-                if net_drainage > 0:
+                if net_drainage < 0:
                     sum += net_drainage
         return sum
 
@@ -170,7 +170,7 @@ class BucketSummarizer:
             if bucket.surface_type == BucketTypes.HARDENED_SURFACE or \
                bucket.surface_type == BucketTypes.UNDRAINED_SURFACE:
                 net_drainage = outcome[1]
-                if net_drainage > 0:
+                if net_drainage < 0:
                     sum += net_drainage
         return sum
 
@@ -188,7 +188,7 @@ class BucketSummarizer:
                bucket.surface_type == BucketTypes.HARDENED_SURFACE or \
                bucket.surface_type == BucketTypes.DRAINED_SURFACE:
                 net_drainage = outcome[1]
-                if net_drainage < 0:
+                if net_drainage > 0:
                     sum += net_drainage
         return sum
 
