@@ -408,11 +408,15 @@ class FractionsTimeseries(object):
             if label == 'intakes':
                 # values is a dict of intake to single fraction time series
                 writeables += self._as_writeables_for_intakes(values)
-            else:
-                # values is a single fraction time series
-                writeable = self._create_writeable(values, self.area_id,
-                                                   'fraction_water_' + label)
-                writeables.append(writeable)
+                continue
+
+            if label == 'undrained':
+                label = 'drainage'
+
+            # values is a single fraction time series
+            writeable = self._create_writeable(values, self.area_id,
+                                               'fraction_water_' + label)
+            writeables.append(writeable)
         return writeables
 
     def _as_writeables_for_intakes(self, intake2timeseries):

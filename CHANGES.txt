@@ -5,10 +5,11 @@ Changelog of lizard-waterbalance
 0.19.1.24 (unreleased)
 ----------------------
 
+- Implements support for the so-called Sobek buckets (#8).
 - Computes the initial water level from the given water level time series
   instead of a hard-coded value of 0.0 (#33)
 - Computes the initial water volume instead of a hard-coded value of 0.0 (#48)
-- Implements support for the so-called Sobek buckets (#8).
+- Assigns the right name to the drainage fraction time series (#60).
 - Fixes the calls by buildout to check_fraction and check_symmetry.
 - Modifies wbcompute to log the version info.
 - Modifies wbcompute to use 'unspecified' for an unknown station name.
