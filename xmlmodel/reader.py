@@ -157,6 +157,15 @@ class Area(BaseModel):
              self.init_water_level)
 
     @property
+    def init_volume(self):
+        water_height = self.init_water_level - self.bottom_height
+        if water_height < 0.0:
+            logger.warning('initial water level of area %s is below the level of the bottom',
+                 self.area.name)
+            water_height = 0.0
+        return water_height * self.surface
+
+    @property
     def init_concentration(self):
         return self.ini_con_cl
 

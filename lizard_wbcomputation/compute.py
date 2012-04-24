@@ -540,7 +540,7 @@ class WaterbalanceComputer2(object):
 
         computer = ConcentrationComputer()
         computer.initial_concentration = self.area.init_concentration
-        computer.initial_volume = 0.0
+        computer.initial_volume = self.area.init_volume
         computer.incoming_volumes, computer.incoming_chlorides = totals.compute()
 
         computer.outgoing_volumes = level_control['total_outgoing']
