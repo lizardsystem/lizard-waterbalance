@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.24 (unreleased)
+0.19.1.24 (2012-04-24)
 ----------------------
 
 - Implements support for the so-called Sobek buckets (#8).
