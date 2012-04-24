@@ -160,6 +160,9 @@ class BucketSummarizer:
         for bucket, outcome in self.bucket2daily_outcome.iteritems():
             if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                 net_drainage = outcome[1]
+                # Unfortunately, net_drainage specifies flow off, which should
+                # always be negative from the viewpoint of the bucket. For that
+                # reason, we only take the negative values
                 if net_drainage < 0:
                     sum += net_drainage
         return sum
