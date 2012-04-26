@@ -217,8 +217,6 @@ class Bucket(BaseModel):
                 'min_concentr_sulphate_drainage_indraft',
                 'incr_concentr_sulphate_flow_off',
                 'incr_concentr_sulphate_drainage_indraft',
-                'label_flow_off',
-                'label_drainage_indraft',
                 ]
 
     @classmethod
