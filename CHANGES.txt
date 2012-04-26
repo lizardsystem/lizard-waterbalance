@@ -5,7 +5,7 @@ Changelog of lizard-waterbalance
 0.19.1.26 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Removes the import of the label fields of a Bucket.
 
 
 0.19.1.25 (2012-04-26)
