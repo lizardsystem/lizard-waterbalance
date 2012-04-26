@@ -1,10 +1,9 @@
 from setuptools import setup
 
-import pkginfo
 import py2exe
 
 # wbcompute uses the same version as lizard-waterbalance as a whole
-version = pkginfo.installed.Installed("lizard_waterbalance").version
+version = '0.19.1.25dev'
 
 long_description = '\n\n'.join([
     open('README.rst').read(),
