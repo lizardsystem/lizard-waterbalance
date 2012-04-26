@@ -14,6 +14,7 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'nens == 1.10',
+    'pkginfo >= 0.8',
     'timeseries == 0.17',
     ],
 
