@@ -5,7 +5,7 @@ Changelog of lizard-waterbalance
 0.19.1.25 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Sets the initial water level (to 0.0) even no water level events are present.
 
 
 0.19.1.24 (2012-04-24)

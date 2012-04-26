@@ -146,13 +146,16 @@ class Area(BaseModel):
                 self.init_water_level = event[1]
             else:
                 if self.init_water_level is None:
-                    logger.warning('no water level known earlier than %s',
-                        date.isoformat(' '))
+                    s = date.isoformat(' ')
+                    logger.warning('no water level known before %s', s)
                     if event[0].isocalendar() == date.isocalendar():
                         self.init_water_level = event[1]
                     else:
                         self.init_water_level = 0.0
                 break
+        if self.init_water_level is None:
+            logger.warning('no water level known')
+            self.init_water_level = 0.0
         logger.debug('initial water level of area set to %f',
              self.init_water_level)
 
