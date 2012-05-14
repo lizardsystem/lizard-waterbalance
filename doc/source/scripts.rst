@@ -58,7 +58,7 @@ The script will ignore all the other information in the run file.
 
 The user can invoke the script from the lizard-waterbalance root directory like
 this [#fn1]_::
-1
+
   $> bin/wbcompute <path-to-the-run-xml-file>
 
 The command will compute the waterbalance for the configuration specified in
