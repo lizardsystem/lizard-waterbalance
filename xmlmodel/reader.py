@@ -119,10 +119,11 @@ class Area(BaseModel):
 
     def validate(self):
         success = BaseModel.validate(self)
-        # place additional checks on the validity of the Area data here
-        if self.surface < 1e-6:
-            logger.warning('area surface of %.1f is too low to handle correctly', self.surface)
-            assert False
+        if success:
+            # place additional checks on the validity of the Area data here
+            if self.surface < 1e-6:
+                logger.warning('area surface of %.1f is too low to handle correctly', self.surface)
+                assert False
         return success
 
     @classmethod
