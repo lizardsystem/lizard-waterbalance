@@ -379,6 +379,7 @@ class Bucket(object):
 
     def copy_properties(self):
         """Store the properties that do not belong to the database bucket."""
+        self.is_computed = True
         self.name = self.database_bucket.name
         self.surface_type = self.database_bucket.surface_type
         self.surface = self.database_bucket.surface
