@@ -2,10 +2,10 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.27 (unreleased)
+0.19.1.27 (2012-05-15)
 ----------------------
 
-- Nothing changed yet.
+- Sets the version of the setup wbcompute correctly.
 
 
 0.19.1.26 (2012-05-15)
