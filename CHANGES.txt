@@ -2,10 +2,11 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.26 (unreleased)
+0.19.1.26 (2012-05-15)
 ----------------------
 
 - Removes the import of the label fields of a Bucket.
+- Fixes a bug where a variable was used before initialization.
 
 
 0.19.1.25 (2012-04-26)
