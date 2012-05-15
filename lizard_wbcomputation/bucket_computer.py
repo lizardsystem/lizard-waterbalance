@@ -382,8 +382,8 @@ class BucketComputer:
         """
         logger.debug('calculate bucket outcome for bucket %s', bucket.name)
         if bucket.is_computed:
+            surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
             if bucket.surface > 0:
-                surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
                 bucket_computer = self.bucket_computers[bucket.surface_type]
                 if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                     outcome = compute_timeseries_from_sewer(bucket, sewer)
