@@ -30,7 +30,7 @@ import logging
 import sys
 
 from datetime import datetime
-from xml.dom.minidom import parse
+from xml.etree import ElementTree
 
 import pkginfo
 
@@ -43,6 +43,7 @@ from lizard_wbcomputation.compute import WaterbalanceComputer2
 from lizard_wbcomputation.delta_storage import DeltaStorage
 from lizard_wbcomputation.load_computer import LoadForIntake
 
+from xmlmodel.utils import convert_dom
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
 
@@ -275,8 +276,8 @@ def insert_calculation_range(run_dom, run_info):
 
     """
     def get_datetime_string(run_dom, datetime_tag):
-        element = run_dom.getElementsByTagName(datetime_tag)[0]
-        return element.getAttribute('date') + ' ' + element.getAttribute('time')
+        element = run_dom.find(datetime_tag)
+        return element.attrib['date'] + ' ' + element.attrib['time']
 
     def insert_datetime(run_dom, datetime_tag, run_info):
         datetime_string = get_datetime_string(run_dom, datetime_tag)
@@ -535,12 +536,12 @@ def main(args):
     """
     try:
         run_file, = args
-        run_dom = parse(run_file)
-        root = run_dom.childNodes[0]
-        run_info = dict([(i.tagName, getText(i))
-                         for i in root.childNodes
-                         if i.nodeType != i.TEXT_NODE
-                         and i.tagName != u"properties"])
+        run_dom = ElementTree.parse(run_file)
+        convert_dom(run_dom)
+        root = run_dom.getroot()
+        run_info = dict((i.tag, i.text)
+                         for i in root.getchildren()
+                         if i.tag != u"properties")
         insert_calculation_range(run_dom, run_info)
         diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
         logging.getLogger().addHandler(diag)

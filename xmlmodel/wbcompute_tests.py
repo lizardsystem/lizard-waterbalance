@@ -24,6 +24,7 @@
 from datetime import datetime
 from unittest import TestCase
 from xml.dom.minidom import parseString
+from xml.etree import ElementTree
 
 from mock import Mock
 
@@ -37,6 +38,7 @@ from xmlmodel.wbcompute import TimeSeriesSpec
 from xmlmodel.wbcompute import TimeseriesForLabel
 from xmlmodel.wbcompute import Units
 from xmlmodel.wbcompute import WriteableTimeseriesList
+from xmlmodel.utils import convert_dom
 
 
 def create_station():
@@ -67,7 +69,10 @@ class Tests(TestCase):
     </properties>
 </Run>
 '''
-        self.run_dom = parseString(run_file_contents)
+        self.run_dom = ElementTree.fromstring(run_file_contents)
+        # Wrap it in ElementTree, as would happen when using parse.
+        self.run_dom = ElementTree.ElementTree(element=self.run_dom)
+        convert_dom(self.run_dom)
 
     def test(self):
         """Function insert_calculation_range inserts the right start and end datetime."""
