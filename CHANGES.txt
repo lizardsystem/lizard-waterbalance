@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.19.1.28 (unreleased)
+0.19.1.28 (2012-06-13)
 ----------------------
 
 - Replace xml.dom.minidom with xml.etree.ElementTree for reading xml.
