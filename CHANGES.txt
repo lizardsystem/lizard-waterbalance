@@ -7,6 +7,8 @@ Changelog of lizard-waterbalance
 
 - Replace xml.dom.minidom with xml.etree.ElementTree for reading xml.
 
+- Update timeseries to 0.18 - also using elementtree now.
+
 
 0.19.1.27 (2012-05-15)
 ----------------------
