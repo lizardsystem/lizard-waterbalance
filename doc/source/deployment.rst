@@ -119,15 +119,15 @@ On windows:
 
 - > git pull
 
-- > git checkout latest tag
+- > git checkout <tag>
 
-- > bin\buildout
+- > bin\\buildout
 
 - add paths to eggs to python path
 
 - > \python27\python setup_wbcompute.py py2exe
 
-- test
+- test it
 
 - rename dist to wbcompute-<tag> and zip it
 

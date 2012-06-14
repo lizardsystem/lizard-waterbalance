@@ -5,13 +5,13 @@ Changelog of lizard-waterbalance
 0.19.1.30 (unreleased)
 ----------------------
 
-- Nothing changed yet.
+- Add checklist to docs
 
 
 0.19.1.29 (2012-06-13)
 ----------------------
 
-- Nothing changed yet.
+- Remove diagnostics output file
 
 
 0.19.1.28 (2012-06-13)
