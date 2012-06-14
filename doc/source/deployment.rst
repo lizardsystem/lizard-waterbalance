@@ -71,9 +71,12 @@ To create a releasable Windows executable, you have to create a tagged version
 of the lizard-waterbalance Django app. As with all Python apps developed at
 Nelen & Schuurmans, use the ``fullrelease`` script.
 
-  1. Update the version info that is specified in the setup script of
+  1a. Update the version info that is specified in the setup script of
   wbcompute. You have to do that manually as the fullrelease script only
   updates the version info in setup.py.
+
+  1b. Hardcode the version in the wbcompute.py because once py2exe-ed pkginfo
+  cannot read the version info from setup.py anymore.
 
   2. Personally, I use my Ubuntu development environment to create a tagged
   version of the lizard-waterbalance Django app. From the root of the Django
@@ -96,6 +99,37 @@ Nelen & Schuurmans, use the ``fullrelease`` script.
 
   5. Follow the steps mentioned in the previous section to create and package
   the Windows executable.
+
+Checklist
+~~~~~~~~~
+
+Checklist release-to-executable
+
+On ubuntu:
+
+- Change setup_wbcompute.py version to planned tag
+
+- Add hardcoded to xmlmodel/wbcompute.py
+
+- $ bin/fullrelease
+
+- Add 'dev' to setup_wbcompute.py version and commit it
+
+On windows:
+
+- > git pull
+
+- > git checkout latest tag
+
+- > bin\buildout
+
+- add paths to eggs to python path
+
+- > \python27\python setup_wbcompute.py py2exe
+
+- test
+
+- rename dist to wbcompute-<tag> and zip it
 
 
 .. rubric:: Footnotes
