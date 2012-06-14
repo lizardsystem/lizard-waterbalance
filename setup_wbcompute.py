@@ -43,4 +43,5 @@ setup(name='lizard-waterbalance',
               'wbcompute = xmlmodel.wbcompute:main',
               ],
           },
+      windows={'other_resources': ["VERSION", 1, version]},
       )

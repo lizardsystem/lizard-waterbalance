@@ -8,7 +8,7 @@
     <workDir>data/Waterbalans/model</workDir>
     <inputParameterFile>data/deltares/20120419/input/Parameters.xml</inputParameterFile>
     <inputTimeSeriesFile>data/deltares/20120419/input/Tijdreeksen.xml</inputTimeSeriesFile>
-    <outputDiagnosticFile>data/deltares/20120419/output/Diagnostics.xml</outputDiagnosticFile>
+    <outputDiagnosticFile>data/deltares/20120419/logs/Diagnostics.xml</outputDiagnosticFile>
     <outputTimeSeriesFile>data/deltares/20120419/output/waterbalance-graph.xml</outputTimeSeriesFile>
     <properties>
         <string key="Regio" value="Waternet"/>
