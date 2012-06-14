@@ -50,7 +50,7 @@ from xmlmodel.reader import attach_timeseries_to_structures
 log = logging.getLogger(__name__)
 
 # wbcompute uses the same version as lizard-waterbalance as a whole
-import pdb; pdb.set_trace() 
+# unfortunately, after py2exe-ing we can't get the version in this way.
 version = pkginfo.installed.Installed("lizard_waterbalance").version
 
 def getText(node):
