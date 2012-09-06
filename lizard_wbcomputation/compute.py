@@ -38,6 +38,7 @@ from lizard_wbcomputation.load_computer import LoadComputer
 from lizard_wbcomputation.memoize import memoize
 from lizard_wbcomputation.sluice_error_computer import SluiceErrorComputer
 from lizard_wbcomputation.vertical_timeseries_computer import VerticalTimeseriesComputer
+from lizard_wbcomputation.export import export_excel_small
 
 from timeseries.timeseriesstub import enumerate_events
 from timeseries.timeseriesstub import SparseTimeseriesStub
@@ -766,3 +767,6 @@ class WaterbalanceComputer2(object):
                 concentrations[concentr.label.program_name] = concentr.cl_concentration
 
         return concentrations
+
+    def write_excel_for_test(self, start_date, end_date):
+        export_excel_small(self, start_date, end_date, False)
