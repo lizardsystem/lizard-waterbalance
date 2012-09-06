@@ -5,7 +5,11 @@ Changelog of lizard-waterbalance
 0.19.1.30 (unreleased)
 ----------------------
 
-- Add checklist to docs
+- correct bucket upper en lower settings
+
+- correct bucket storage boundaries
+
+- add excel export for debug purposes
 
 
 0.19.1.29 (2012-06-13)
