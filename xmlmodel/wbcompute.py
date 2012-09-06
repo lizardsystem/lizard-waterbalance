@@ -487,6 +487,11 @@ def store_graphs_timeseries(run_info, area):
     writeables = FractionsTimeseries(area.location_id).as_writeables(fractions)
     writeable_timeseries.append_writeables(writeables)
 
+    if 'xlsTemplate' in run_info and 'xlsOutput' in run_info:
+        cm.write_excel_for_test(run_info['xlsTemplate'], run_info['xlsOutput'], start_date, end_date)
+    else:
+        log.info('No extra Excel utput specified. Add xlsTemplate and xlsOutput in the Run.xml file to generate this extra output.')
+
     return writeable_timeseries.timeseries_list
 
 class StorageTimeseries(object):

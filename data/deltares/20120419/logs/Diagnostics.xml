@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
-<line level="3" description="LizardScripter :: 2012-06-14 14:58:43,666 :: version: 0.19.1.30dev"/>
-<line level="3" description="LizardScripter :: 2012-06-14 14:58:46,283 :: unused series loc/par:  6480/Cl"/>
-<line level="3" description="LizardScripter :: 2012-06-14 14:58:46,310 :: start computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-06-14 14:58:57,183 :: finished computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-06-14 14:58:57,183 :: start write of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-06-14 14:59:02,023 :: finished write of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:24,986 :: version: 0.19.1.30dev"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:26,885 :: unused series loc/par:  6480/Cl"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:26,904 :: start computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:34,990 :: finished computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:34,991 :: start write of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-03 12:59:38,952 :: finished write of waterbalance time series"/>
 </Diag>

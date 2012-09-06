@@ -768,5 +768,5 @@ class WaterbalanceComputer2(object):
 
         return concentrations
 
-    def write_excel_for_test(self, start_date, end_date):
-        export_excel_small(self, start_date, end_date, False)
+    def write_excel_for_test(self, template_fileloc, output_fileloc, start_date, end_date):
+        export_excel_small(self, template_fileloc, output_fileloc, start_date, end_date, False)
