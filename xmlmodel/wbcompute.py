@@ -52,7 +52,8 @@ log = logging.getLogger(__name__)
 
 # wbcompute uses the same version as lizard-waterbalance as a whole
 # unfortunately, after py2exe-ing we can't get the version in this way.
-version = pkginfo.installed.Installed("lizard_waterbalance").version
+# version = pkginfo.installed.Installed("lizard_waterbalance").version
+version = '0.20.3'
 
 def getText(node):
     return str("".join(t.nodeValue for t in node.childNodes
