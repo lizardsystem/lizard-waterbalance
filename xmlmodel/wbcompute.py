@@ -28,6 +28,7 @@
 
 import logging
 import sys
+from time import time
 
 from datetime import datetime
 from xml.etree import ElementTree
@@ -541,6 +542,8 @@ def main(args):
 
     """
     try:
+        t1= time()
+
         run_file, = args
         run_dom = ElementTree.parse(run_file)
         convert_dom(run_dom)
@@ -553,19 +556,29 @@ def main(args):
         logging.getLogger().addHandler(diag)
         logging.getLogger().setLevel(logging.INFO)
         log.info("version: %s", version)
+        t2 = time()
+        log.info("init: %s"%(t2-t1))
+
         log.debug(run_info['inputTimeSeriesFile'])
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
         negate_outgoing_timeseries(area)
         area.set_init_water_level(run_info['startDateTime'])
+        t3 = time()
+        log.info("reading data: %s"%(t3-t2))
+
         log.info("start computation of waterbalance time series")
         graphs_timeseries = store_graphs_timeseries(run_info, area)
         log.info("finished computation of waterbalance time series")
+        t4 = time()
+        log.info("calculation: %s"%(t4-t3))
 
         log.info("start write of waterbalance time series")
         TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
                                     graphs_timeseries)
+        t5 = time()
+        log.info("writing data: %s"%(t5-t4))
         log.info("finished write of waterbalance time series")
     except:
         log.warning('wbcompute aborts prematurely')

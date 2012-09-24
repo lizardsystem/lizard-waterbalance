@@ -23,6 +23,8 @@
 
 import logging
 
+from time import time
+
 from lizard_wbcomputation.bucket_computer import BucketComputer
 from lizard_wbcomputation.bucket_summarizer import BucketsSummarizer
 from lizard_wbcomputation.concentration_computer import ConcentrationComputer
@@ -550,10 +552,11 @@ class WaterbalanceComputer2(object):
 
         return computer.compute()
 
-    @memoize
+
     def get_load_timeseries(self,
             start_date, end_date, substance_string='phosphate'):
 
+        t1 = time()
         logger.debug("WaterbalanceComputer2::get_load_timeseries")
 
         logger.debug("Calculating load (%s - %s)..." % (
@@ -575,15 +578,29 @@ class WaterbalanceComputer2(object):
         nutricalc_incr = self.area.retrieve_nutricalc_min(start_date,
                                                           end_date)
 
+
+
+        print "loads - init: %s"%(time()-t1)
+        t1 = time()
+
         load = self.load_computer.compute(self.area, 'min', substance_string,
             flows, concentrations, start_date, end_date, nutricalc_min)
         load_incremental = self.load_computer.compute(self.area, 'incr',
             substance_string, flows, concentrations_incremental, start_date,
             end_date, nutricalc_incr)
 
+        print "load - computer: %s"%(time()-t1)
+        t1 = time()
+
         bucket_loads = self._compute_bucket_loads(start_date, end_date, substance_string)
+
+        print "loads - computer bucket : %s"%(time()-t1)
+        t1 = time()
+
         load = load + bucket_loads[0]
         load_incremental = load_incremental + bucket_loads[1]
+
+        print "loads - combine: %s"%(time()-t1)
 
         return load, load_incremental
 
@@ -619,16 +636,24 @@ class WaterbalanceComputer2(object):
         #   divide that value by the surface of the open water to get to a
         #   value specified in [mg/day/m2] or [mg/m2/day], otherwise known as
         #   the impact.
+        t1 = time()
+
         loads, loads_incremental = self.get_load_timeseries(start_date, \
             end_date, substance_string)
 
+        print("calc loads: %s"%(time()-t1))
+        t2 = time()
+
         factor = 1000.0 / float(self.area.surface)
+        print("factor %s"%factor)
 
         for load in loads:
             load.multiply_timeseries(factor)
 
         for load in loads_incremental:
             load.multiply_timeseries(factor)
+
+        print("multiply loads: %s"%(time()-t2))
 
         return loads, loads_incremental
 
@@ -721,35 +746,46 @@ class WaterbalanceComputer2(object):
           3. a computed WaterbalanceOutcome.
         """
         logger.debug("WaterbalanceComputer2::compute")
+        t1 = time()
 
         #step 1. Get input timeseries
         self.get_input_timeseries(start_date, end_date)
 
+        print ("%s: inout"%(time()-t1))
         #step 2. Calculate buckets
         #self.get_buckets_timeseries(start_date, end_date)
+
 
         #step 3. Summarize according to labels
         self.get_bucketflow_summary(start_date, end_date)
 
+        print ("%s: get bucketflow"%(time()-t1))
         #step 4. Get vertical timeseries
         self.get_vertical_open_water_timeseries(start_date, end_date)
 
+        print ("%s: get_vertical_open_water_timeseries"%(time()-t1))
         #step 5. Get level control
         self.get_level_control_timeseries(start_date, end_date)
 
+        print ("%s: get_level_control_timeseries"%(time()-t1))
         #step 6. Get sluice_error
         self.get_reference_timeseries(start_date, end_date)
         self.calc_sluice_error_timeseries(start_date, end_date)
 
+        print ("%s: get_rev and sluice error"%(time()-t1))
         #step 7. Get fractions
         self.get_fraction_timeseries(start_date, end_date)
 
+        print ("%s: get fraction timeseries"%(time()-t1))
         #step 8. Get fractions
         #self.get_load_timeseries(start_date, end_date)
         self.get_impact_timeseries(start_date, end_date)
 
+        print ("%s: impact timeseries"%(time()-t1))
         #step 9. Get fractions
         self.get_concentration_timeseries(start_date, end_date)
+
+        print ("%s: get concentration timeseries"%(time()-t1))
 
         return
 

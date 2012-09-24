@@ -29,7 +29,6 @@ from timeseries.timeseriesstub import enumerate_dict_events
 from timeseries.timeseriesstub import multiply_timeseries
 from timeseries.timeseriesstub import TimeseriesStub
 
-
 class Load(object):
 
     def __init__(self, label):
@@ -69,6 +68,7 @@ class LoadForIntake(Load):
 
 class LoadComputer:
 
+
     def compute(self, area, concentration_string, substance_string,
                 flow_dict, concentration_dict,
                 start_date, end_date, nutricalc_timeseries=None):
@@ -102,7 +102,7 @@ class LoadComputer:
 
         """
 
-        self.loads = []
+        self.loads = {}
 
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
@@ -120,6 +120,17 @@ class LoadComputer:
                 del(events['drained'])
                 del(events['undrained'])
 
+            if first:
+                for key, value in events.items():
+                    if key in ['precipitation', 'seepage']:
+                        self._create_load_object(key)
+                    elif key in ['defined_input', 'intake_wl_control']:
+                        for key_intake, value_intake in value.items():
+                            self._create_load_object(key_intake)
+
+                first = False
+
+
             for key, value in events.items():
                 if key in ['precipitation', 'seepage']:
                     label = key
@@ -127,6 +138,7 @@ class LoadComputer:
                                   (concentration_string, substance_string, key)
                     load = value[1] * getattr(area, attr_string)
                     self._set_load(label, date, load)
+
                 elif key in ['defined_input', 'intake_wl_control']:
                     for key_intake, value_intake in value.items():
                         label = key_intake
@@ -135,16 +147,23 @@ class LoadComputer:
                         load = value_intake[1] * getattr(key_intake, attr_string)
                         self._set_load(label, date, load)
 
-        return self.loads
+
+
+        load = []
+        for key, value in self.loads.items():
+            load.append(value)
+
+        return load
 
     def _set_load(self, label, date, value):
-        load = next((load for load in self.loads if label == load.label), None)
-        if load is None:
-            if type(label) == str and label in ['precipitation', 'seepage']:
-                load = LoadForOpenWaterFlow(label)
-            elif type(label) == str:
-                load = LoadForLabel(label)
-            else:
-                load = LoadForIntake(label)
-            self.loads.append(load)
-        load.timeseries.add_value(date, value)
+        self.loads[label].timeseries.add_value(date, value)
+
+    def _create_load_object(self, label):
+
+        if type(label) == str and label in ['precipitation', 'seepage']:
+            load = LoadForOpenWaterFlow(label)
+        elif type(label) == str:
+            load = LoadForLabel(label)
+        else:
+            load = LoadForIntake(label)
+        self.loads[label] = load
