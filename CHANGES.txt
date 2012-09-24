@@ -5,7 +5,9 @@ Changelog of lizard-waterbalance
 0.20.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Increased speed of calculation
+
+- initial waterlevel now also takes value of startdate
 
 
 0.20.1 (2012-09-06)
