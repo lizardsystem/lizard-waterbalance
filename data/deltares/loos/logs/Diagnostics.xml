@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
-<line level="3" description="LizardScripter :: 2012-09-06 13:08:18,895 :: version: 0.19.1.30dev"/>
-<line level="3" description="LizardScripter :: 2012-09-06 13:08:21,672 :: unused series loc/par:  3300/Cl"/>
-<line level="2" description="LizardScripter :: 2012-09-06 13:08:21,703 :: no water level known before 2008-07-26 00:00:00"/>
-<line level="3" description="LizardScripter :: 2012-09-06 13:08:21,703 :: start computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-06 13:08:54,715 :: finished computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-06 13:08:54,715 :: start write of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-06 13:09:00,757 :: finished write of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:31,381 :: version: 0.20"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:31,381 :: init: 0.0248990058899"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:34,233 :: unused series loc/par:  3300/Cl"/>
+<line level="2" description="LizardScripter :: 2012-09-24 11:53:34,266 :: no water level known before 2008-07-26 00:00:00"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:34,266 :: reading data: 2.88517379761"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:34,266 :: start computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:44,308 :: finished computation of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:44,309 :: calculation: 10.0428080559"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:44,309 :: start write of waterbalance time series"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:50,536 :: writing data: 6.22730517387"/>
+<line level="3" description="LizardScripter :: 2012-09-24 11:53:50,537 :: finished write of waterbalance time series"/>
 </Diag>
