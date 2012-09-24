@@ -125,7 +125,7 @@ On windows:
 
 - add paths to eggs to python path
 
-- > \python27\python setup_wbcompute.py py2exe
+- > \\python27\\python setup_wbcompute.py py2exe
 
 - test it
 
