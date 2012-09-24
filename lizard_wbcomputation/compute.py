@@ -580,7 +580,7 @@ class WaterbalanceComputer2(object):
 
 
 
-        print "loads - init: %s"%(time()-t1)
+        #print "loads - init: %s"%(time()-t1)
         t1 = time()
 
         load = self.load_computer.compute(self.area, 'min', substance_string,
@@ -589,18 +589,18 @@ class WaterbalanceComputer2(object):
             substance_string, flows, concentrations_incremental, start_date,
             end_date, nutricalc_incr)
 
-        print "load - computer: %s"%(time()-t1)
+        #print "load - computer: %s"%(time()-t1)
         t1 = time()
 
         bucket_loads = self._compute_bucket_loads(start_date, end_date, substance_string)
 
-        print "loads - computer bucket : %s"%(time()-t1)
+        #print "loads - computer bucket : %s"%(time()-t1)
         t1 = time()
 
         load = load + bucket_loads[0]
         load_incremental = load_incremental + bucket_loads[1]
 
-        print "loads - combine: %s"%(time()-t1)
+        #print "loads - combine: %s"%(time()-t1)
 
         return load, load_incremental
 
@@ -641,11 +641,11 @@ class WaterbalanceComputer2(object):
         loads, loads_incremental = self.get_load_timeseries(start_date, \
             end_date, substance_string)
 
-        print("calc loads: %s"%(time()-t1))
+        #print("calc loads: %s"%(time()-t1))
         t2 = time()
 
         factor = 1000.0 / float(self.area.surface)
-        print("factor %s"%factor)
+        #print("factor %s"%factor)
 
         for load in loads:
             load.multiply_timeseries(factor)
@@ -653,7 +653,7 @@ class WaterbalanceComputer2(object):
         for load in loads_incremental:
             load.multiply_timeseries(factor)
 
-        print("multiply loads: %s"%(time()-t2))
+        #print("multiply loads: %s"%(time()-t2))
 
         return loads, loads_incremental
 
@@ -751,7 +751,7 @@ class WaterbalanceComputer2(object):
         #step 1. Get input timeseries
         self.get_input_timeseries(start_date, end_date)
 
-        print ("%s: inout"%(time()-t1))
+        #print ("%s: inout"%(time()-t1))
         #step 2. Calculate buckets
         #self.get_buckets_timeseries(start_date, end_date)
 
@@ -759,33 +759,33 @@ class WaterbalanceComputer2(object):
         #step 3. Summarize according to labels
         self.get_bucketflow_summary(start_date, end_date)
 
-        print ("%s: get bucketflow"%(time()-t1))
+        #print ("%s: get bucketflow"%(time()-t1))
         #step 4. Get vertical timeseries
         self.get_vertical_open_water_timeseries(start_date, end_date)
 
-        print ("%s: get_vertical_open_water_timeseries"%(time()-t1))
+        #print ("%s: get_vertical_open_water_timeseries"%(time()-t1))
         #step 5. Get level control
         self.get_level_control_timeseries(start_date, end_date)
 
-        print ("%s: get_level_control_timeseries"%(time()-t1))
+        #print ("%s: get_level_control_timeseries"%(time()-t1))
         #step 6. Get sluice_error
         self.get_reference_timeseries(start_date, end_date)
         self.calc_sluice_error_timeseries(start_date, end_date)
 
-        print ("%s: get_rev and sluice error"%(time()-t1))
+        #print ("%s: get_rev and sluice error"%(time()-t1))
         #step 7. Get fractions
         self.get_fraction_timeseries(start_date, end_date)
 
-        print ("%s: get fraction timeseries"%(time()-t1))
+        #print ("%s: get fraction timeseries"%(time()-t1))
         #step 8. Get fractions
         #self.get_load_timeseries(start_date, end_date)
         self.get_impact_timeseries(start_date, end_date)
 
-        print ("%s: impact timeseries"%(time()-t1))
+        #print ("%s: impact timeseries"%(time()-t1))
         #step 9. Get fractions
         self.get_concentration_timeseries(start_date, end_date)
 
-        print ("%s: get concentration timeseries"%(time()-t1))
+        #print ("%s: get concentration timeseries"%(time()-t1))
 
         return
 

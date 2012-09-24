@@ -107,6 +107,8 @@ class LoadComputer:
         if nutricalc_timeseries:
             flow_dict['nutricalc'] = nutricalc_timeseries
 
+        first = True
+
         for events in enumerate_dict_events(flow_dict):
             date = events['date']
             if date < start_date:
