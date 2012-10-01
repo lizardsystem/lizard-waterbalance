@@ -45,21 +45,22 @@ def validate_settings(area):
     errors = 0
     warnings = 0
 
-    if area.bottom_height > area.init_waterlevel:
+    if area.bottom_height > area.init_water_level:
         logger.error('bodemhoogte ligt boven initiele waterhoogte')
+        errors += 1
 
 
-    for ts_name in ['minimum_waterlevel',
-                    'maximum_waterlevel']:
+    for ts_name in ['minimum_level',
+                    'maximum_level']:
         value_error = False
 
-        for event in getattr(area,ts_name).events:
+        for event in getattr(area,ts_name).events():
             if event[1] < area.bottom_height:
                 value_error = True
 
         if value_error:
             logger.error('Het ingestelde %s moet hoger of gelijk liggen aan het streefpeil'%ts_name)
-
+            errors += 1
 
     for prop in ['concentr_chloride_precipitation',
                 'concentr_chloride_seepage',
@@ -84,21 +85,30 @@ def validate_settings(area):
                 'surface']:
         if getattr(area, prop) < 0:
             logger.error('instelling %s van het gebied moet groter of gelijk zijn aan 0'%prop)
-
+            errors += 1
 
 
     for bucket in area.buckets:
-    ['bottom_equi_water_level',
-     'equi_water_level',
+        for prop in ['bottom_equi_water_level',
+                    'equi_water_level',
+                    ]:
+            setattr(bucket,prop, 0)
 
-     ]
+        #warning: tussen min en max peil
+        if bucket.bottom_init_water_level > bucket.bottom_max_water_level:
+            logger.warning("Het initiele peil in bucket '%s' (onderste bakje) ligt boven het maximum peil."%bucket.name)
+            warnings += 1
+        if bucket.bottom_init_water_level < bucket.bottom_min_water_level:
+            logger.warning("Het initiele peil in bucket '%s' (onderste bakje) ligt onder het minimum peil."%bucket.name)
+            warnings += 1
+        if bucket.init_water_level > bucket.max_water_level:
+            logger.warning("Het initiele peil in bucket '%s' ligt boven het maximum peil."%bucket.name)
+            warnings += 1
+        if bucket.init_water_level < bucket.min_water_level:
+            logger.warning("Het initiele peil in bucket '%s' ligt onder het minimum peil."%bucket.name)
+            warnings += 1
 
-    #warning: tussen min en max peil
-    'bottom_init_water_level',
-    'init_water_level',
-
-
-        #groter dan 0
+        #groter of gelijk aan 0
         for prop in [
             'bottom_max_water_level',
             'max_water_level',
@@ -119,49 +129,35 @@ def validate_settings(area):
             'surface',]:
 
             if getattr(bucket, prop) < 0:
-                logger.error('waarde van %s moet groter of gelijk zijn aan 0'%prop)
+                logger.error("waarde %s van bucket '%s' moet groter of gelijk zijn aan 0"%(prop, bucket.name))
                 errors += 1
 
-#kleiner dan 0
-    'bottom_min_water_level',
-'min_water_level',
+        #kleiner of gelijk aan 0
+        for prop in ['bottom_min_water_level',
+                    'min_water_level',]:
 
-check tussen 0 en 1
-    a = ['bottom_crop_evaporation_factor',
-    'bottom_drainage_fraction',
-    'bottom_indraft_fraction',
-    'bottom_min_crop_evaporation_factor',
-    'bottom_porosity',
-    'crop_evaporation_factor',
-    'drainage_fraction',
-    'indraft_fraction',
-    'min_crop_evaporation_factor',
-    'porosity',
-    ]
+            if getattr(bucket, prop) > 0:
+                logger.error("waarde %s van bucket '%s' moet kleiner of gelijk zijn aan 0"%(prop, bucket.name))
+                errors += 1
 
 
+        #kleiner of gelijk aan 0
+        for prop in ['bottom_crop_evaporation_factor',
+                     'bottom_drainage_fraction',
+                     'bottom_indraft_fraction',
+                     'bottom_min_crop_evaporation_factor',
+                     'bottom_porosity',
+                     'crop_evaporation_factor',
+                     'drainage_fraction',
+                     'indraft_fraction',
+                     'min_crop_evaporation_factor',
+                     'porosity',]:
+
+            if getattr(bucket, prop) < 0 or getattr(bucket, prop) > 1:
+                logger.error("waarde %s van bucket '%s' moet tussen 0 en 1 liggen"%(prop, bucket.name))
+                errors += 1
 
 
-
-
-
-
-
-'is_computed',
-
-
-
-
-
-
-
-
-
-    'replace_impact_by_nutricalc',
-    'seepage',
-    'sewer',
-    'surface',
-    'surface_type']
 
 
 

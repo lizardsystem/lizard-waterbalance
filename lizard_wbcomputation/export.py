@@ -126,7 +126,7 @@ def export_excel_small(waterbalance_computer, template_fileloc, output_fileloc, 
     vertical_openwater = waterbalance_computer.get_vertical_open_water_timeseries(start_date, end_date)
     level_control = waterbalance_computer.get_level_control_timeseries(start_date, end_date)
     fractions = waterbalance_computer.get_fraction_timeseries(start_date, end_date)
-    sluice_error = waterbalance_computer.calc_sluice_error_timeseries(start_date, end_date)
+    sluice_error, sluice_error_inlet = waterbalance_computer.calc_sluice_error_timeseries(start_date, end_date)
     #chloride_concentration, delta_concentration = waterbalance_computer.get_concentration_timeseries(start_date, end_date)
     impact_minimum, impact_incremental = waterbalance_computer.get_impact_timeseries(start_date, end_date)
 

@@ -552,7 +552,7 @@ def main(args):
 
         #from pydev import pydevd
 
-        #pydevd.settrace('192.168.100.139', port=51234, stdoutToServer=True, stderrToServer=True, suspend=False)
+        #pydevd.settrace('192.168.20.53', port=51234, stdoutToServer=True, stderrToServer=True, suspend=False)
 
 
         run_file, = args

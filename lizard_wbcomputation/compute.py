@@ -685,7 +685,7 @@ class WaterbalanceComputer2(object):
 
         sluice_error_inlet = self.sluice_error_computer.compute(
             start_date, end_date,
-            [control["inlet_wl_control"]],
+            [control["intake_wl_control"]],
             ref_intakes.values())
 
 
