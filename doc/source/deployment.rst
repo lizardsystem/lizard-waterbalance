@@ -113,7 +113,7 @@ On ubuntu:
 
 - $ bin/fullrelease
 
-- Add 'dev' to setup_wbcompute.py version and commit it
+- Update version info in setup_wbcompute.py (with 'dev') and commit.
 
 On windows:
 
