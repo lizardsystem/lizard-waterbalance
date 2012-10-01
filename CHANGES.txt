@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.20.4 (unreleased)
+0.20.4 (2012-10-01)
 -------------------
 
 - split sluice_error in outlet and inlet part

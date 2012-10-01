@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Diag version="1.2" xmlns="..." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="...">
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:24,986 :: version: 0.19.1.30dev"/>
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:26,885 :: unused series loc/par:  6480/Cl"/>
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:26,904 :: start computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:34,990 :: finished computation of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:34,991 :: start write of waterbalance time series"/>
-<line level="3" description="LizardScripter :: 2012-09-03 12:59:38,952 :: finished write of waterbalance time series"/>
-</Diag>
+<line level="3" description="LizardScripter :: 2012-09-26 06:57:23,302 :: reading timeseries file data/deltares/20120419/input/Tijdreeksen.xml....."/>
+<line level="3" description="LizardScripter :: 2012-09-26 06:57:27,750 :: unused series loc/par:  6480/Cl"/>
+<line level="2" description="LizardScripter :: 2012-09-27 06:24:48,515 :: wbcompute aborts prematurely"/>
