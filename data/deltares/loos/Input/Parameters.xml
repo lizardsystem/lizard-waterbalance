@@ -44,47 +44,47 @@
         </parameter>
         <parameter id="min_concentr_phosphate_seepage" name="Concentratie P kwel minimaal">
             <description>Concentratie P kwel minimaal [g/m3]</description>
-            <dblValue>0.1</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_precipitation" name="Concentratie P neerslag incrementeel">
             <description>Concentratie P neerslag incrementeel [g/m3]</description>
-            <dblValue>0.02</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_seepage" name="Concentratie P kwel incrementeel">
             <description>Concentratie P kwel incrementeel [g/m3]</description>
-            <dblValue>0.02</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_precipitation" name="Concentratie N neerslag minimaal">
             <description>Concentratie N neerslag minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_seepage" name="Concentratie N kwel minimaal">
             <description>Concentratie N kwel minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_precipitation" name="Concentratie N neerslag incrementeel">
             <description>Concentratie N neerslag incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_seepage" name="Concentratie N kwel incrementeel">
             <description>Concentratie N kwel incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_precipitation" name="Concentratie S neerslag minimaal">
             <description>Concentratie S neerslag minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_seepage" name="Concentratie S kwel minimaal">
             <description>Concentratie S kwel minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_precipitation" name="Concentratie S neerslag incrementeel">
             <description>Concentratie S neerslag incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_seepage" name="Concentratie S kwel incrementeel">
             <description>Concentratie S kwel incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_GW1" name="Onv Breukeleveen Weersloot" readonly="false">
@@ -139,7 +139,7 @@
         </parameter>
         <parameter id="indraft_fraction" name="factie intrek">
             <description>factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.025</dblValue>
         </parameter>
         <parameter id="max_water_level" name="maximale waterstand">
             <description>maximale waterstand t.o.v. equilibrium [m]</description>
@@ -147,7 +147,7 @@
         </parameter>
         <parameter id="min_water_level" name="minimale waterstand">
             <description>minimale waterstand t.o.v. equilibrium [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="equi_water_level" name="equilibrium waterstand">
             <description>equilibrium waterstand [m]</description>
@@ -155,31 +155,31 @@
         </parameter>
         <parameter id="bottom_porosity" name="onderste bakje - porositeit">
             <description>onderste bakje - porositeit [0,1]</description>
-            <dblValue>0.2</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_crop_evaporation_factor" name="onderste bakje - gewasverdampingsfactor">
             <description>onderste bakje - gewasverdampingsfactor [0,1]</description>
-            <dblValue>1.0</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_crop_evaporation_factor" name="onderste bakje - minimum gewasverdampingsfactor">
             <description>onderste bakje - minimum gewasverdampingsfactor [0,1]</description>
-            <dblValue>0.75</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_drainage_fraction" name="onderste bakje - fractie uitspoel">
             <description>onderste bakje - fractie uitspoel [0,1]</description>
-            <dblValue>0.05</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_indraft_fraction" name="onderste bakje - factie intrek">
             <description>onderste bakje - factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_max_water_level" name="onderste bakje - maximale waterstand">
             <description>onderste bakje - maximale waterstand [m]</description>
-            <dblValue>0.4</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_water_level" name="onderste bakje - minimale waterstand">
             <description>onderste bakje - minimale waterstand [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">
             <description>onderste bakje - equilibrium waterstand [m]</description>
@@ -195,59 +195,59 @@
         </parameter>
         <parameter id="concentr_chloride_flow_off" name="Concentratie Cl oppervlakte afstroom">
             <description>Concentratie Cl oppervlakte afstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="concentr_chloride_drainage_indraft" name="Concentratie Cl uitstroom">
             <description>Concentratie Cl uitstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom minimaal">
             <description>Concentratie P oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom minimaal">
             <description>Concentratie P uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom incrementeel">
             <description>Concentratie P oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom incrementeel">
             <description>Concentratie P uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom minimaal">
             <description>Concentratie N oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom minimaal">
             <description>Concentratie N uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom incrementeel">
             <description>Concentratie N oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom minimaal">
             <description>Concentratie S oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom minimaal">
             <description>Concentratie S uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom incrementeel">
             <description>Concentratie S oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom incrementeel">
             <description>Concentratie S uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_GW2" name="Onv Drecht KWEL" readonly="false">
@@ -302,7 +302,7 @@
         </parameter>
         <parameter id="indraft_fraction" name="factie intrek">
             <description>factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.025</dblValue>
         </parameter>
         <parameter id="max_water_level" name="maximale waterstand">
             <description>maximale waterstand t.o.v. equilibrium [m]</description>
@@ -310,7 +310,7 @@
         </parameter>
         <parameter id="min_water_level" name="minimale waterstand">
             <description>minimale waterstand t.o.v. equilibrium [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="equi_water_level" name="equilibrium waterstand">
             <description>equilibrium waterstand [m]</description>
@@ -318,31 +318,31 @@
         </parameter>
         <parameter id="bottom_porosity" name="onderste bakje - porositeit">
             <description>onderste bakje - porositeit [0,1]</description>
-            <dblValue>0.2</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_crop_evaporation_factor" name="onderste bakje - gewasverdampingsfactor">
             <description>onderste bakje - gewasverdampingsfactor [0,1]</description>
-            <dblValue>1.0</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_crop_evaporation_factor" name="onderste bakje - minimum gewasverdampingsfactor">
             <description>onderste bakje - minimum gewasverdampingsfactor [0,1]</description>
-            <dblValue>0.75</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_drainage_fraction" name="onderste bakje - fractie uitspoel">
             <description>onderste bakje - fractie uitspoel [0,1]</description>
-            <dblValue>0.05</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_indraft_fraction" name="onderste bakje - factie intrek">
             <description>onderste bakje - factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_max_water_level" name="onderste bakje - maximale waterstand">
             <description>onderste bakje - maximale waterstand [m]</description>
-            <dblValue>0.4</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_water_level" name="onderste bakje - minimale waterstand">
             <description>onderste bakje - minimale waterstand [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">
             <description>onderste bakje - equilibrium waterstand [m]</description>
@@ -358,59 +358,59 @@
         </parameter>
         <parameter id="concentr_chloride_flow_off" name="Concentratie Cl oppervlakte afstroom">
             <description>Concentratie Cl oppervlakte afstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="concentr_chloride_drainage_indraft" name="Concentratie Cl uitstroom">
             <description>Concentratie Cl uitstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom minimaal">
             <description>Concentratie P oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom minimaal">
             <description>Concentratie P uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom incrementeel">
             <description>Concentratie P oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom incrementeel">
             <description>Concentratie P uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom minimaal">
             <description>Concentratie N oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom minimaal">
             <description>Concentratie N uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom incrementeel">
             <description>Concentratie N oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom minimaal">
             <description>Concentratie S oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom minimaal">
             <description>Concentratie S uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom incrementeel">
             <description>Concentratie S oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom incrementeel">
             <description>Concentratie S uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_GW3" name="Onv Loosdrecht  Drecht incl Loos+kievit" readonly="false">
@@ -465,7 +465,7 @@
         </parameter>
         <parameter id="indraft_fraction" name="factie intrek">
             <description>factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.025</dblValue>
         </parameter>
         <parameter id="max_water_level" name="maximale waterstand">
             <description>maximale waterstand t.o.v. equilibrium [m]</description>
@@ -473,7 +473,7 @@
         </parameter>
         <parameter id="min_water_level" name="minimale waterstand">
             <description>minimale waterstand t.o.v. equilibrium [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="equi_water_level" name="equilibrium waterstand">
             <description>equilibrium waterstand [m]</description>
@@ -481,31 +481,31 @@
         </parameter>
         <parameter id="bottom_porosity" name="onderste bakje - porositeit">
             <description>onderste bakje - porositeit [0,1]</description>
-            <dblValue>0.2</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_crop_evaporation_factor" name="onderste bakje - gewasverdampingsfactor">
             <description>onderste bakje - gewasverdampingsfactor [0,1]</description>
-            <dblValue>1.0</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_crop_evaporation_factor" name="onderste bakje - minimum gewasverdampingsfactor">
             <description>onderste bakje - minimum gewasverdampingsfactor [0,1]</description>
-            <dblValue>0.75</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_drainage_fraction" name="onderste bakje - fractie uitspoel">
             <description>onderste bakje - fractie uitspoel [0,1]</description>
-            <dblValue>0.05</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_indraft_fraction" name="onderste bakje - factie intrek">
             <description>onderste bakje - factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_max_water_level" name="onderste bakje - maximale waterstand">
             <description>onderste bakje - maximale waterstand [m]</description>
-            <dblValue>0.4</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_water_level" name="onderste bakje - minimale waterstand">
             <description>onderste bakje - minimale waterstand [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">
             <description>onderste bakje - equilibrium waterstand [m]</description>
@@ -521,59 +521,59 @@
         </parameter>
         <parameter id="concentr_chloride_flow_off" name="Concentratie Cl oppervlakte afstroom">
             <description>Concentratie Cl oppervlakte afstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="concentr_chloride_drainage_indraft" name="Concentratie Cl uitstroom">
             <description>Concentratie Cl uitstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom minimaal">
             <description>Concentratie P oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom minimaal">
             <description>Concentratie P uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom incrementeel">
             <description>Concentratie P oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom incrementeel">
             <description>Concentratie P uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom minimaal">
             <description>Concentratie N oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom minimaal">
             <description>Concentratie N uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom incrementeel">
             <description>Concentratie N oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom minimaal">
             <description>Concentratie S oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom minimaal">
             <description>Concentratie S uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom incrementeel">
             <description>Concentratie S oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom incrementeel">
             <description>Concentratie S uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_GW4" name="Onv Vuntus  Kromme Rade" readonly="false">
@@ -628,7 +628,7 @@
         </parameter>
         <parameter id="indraft_fraction" name="factie intrek">
             <description>factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.025</dblValue>
         </parameter>
         <parameter id="max_water_level" name="maximale waterstand">
             <description>maximale waterstand t.o.v. equilibrium [m]</description>
@@ -636,7 +636,7 @@
         </parameter>
         <parameter id="min_water_level" name="minimale waterstand">
             <description>minimale waterstand t.o.v. equilibrium [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="equi_water_level" name="equilibrium waterstand">
             <description>equilibrium waterstand [m]</description>
@@ -644,31 +644,31 @@
         </parameter>
         <parameter id="bottom_porosity" name="onderste bakje - porositeit">
             <description>onderste bakje - porositeit [0,1]</description>
-            <dblValue>0.2</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_crop_evaporation_factor" name="onderste bakje - gewasverdampingsfactor">
             <description>onderste bakje - gewasverdampingsfactor [0,1]</description>
-            <dblValue>1.0</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_crop_evaporation_factor" name="onderste bakje - minimum gewasverdampingsfactor">
             <description>onderste bakje - minimum gewasverdampingsfactor [0,1]</description>
-            <dblValue>0.75</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_drainage_fraction" name="onderste bakje - fractie uitspoel">
             <description>onderste bakje - fractie uitspoel [0,1]</description>
-            <dblValue>0.05</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_indraft_fraction" name="onderste bakje - factie intrek">
             <description>onderste bakje - factie intrek [0,1]</description>
-            <dblValue>0.03</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_max_water_level" name="onderste bakje - maximale waterstand">
             <description>onderste bakje - maximale waterstand [m]</description>
-            <dblValue>0.4</dblValue>
+            <dblValue>0.0</dblValue>
         </parameter>
         <parameter id="bottom_min_water_level" name="onderste bakje - minimale waterstand">
             <description>onderste bakje - minimale waterstand [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">
             <description>onderste bakje - equilibrium waterstand [m]</description>
@@ -684,59 +684,59 @@
         </parameter>
         <parameter id="concentr_chloride_flow_off" name="Concentratie Cl oppervlakte afstroom">
             <description>Concentratie Cl oppervlakte afstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="concentr_chloride_drainage_indraft" name="Concentratie Cl uitstroom">
             <description>Concentratie Cl uitstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom minimaal">
             <description>Concentratie P oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom minimaal">
             <description>Concentratie P uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom incrementeel">
             <description>Concentratie P oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom incrementeel">
             <description>Concentratie P uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom minimaal">
             <description>Concentratie N oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom minimaal">
             <description>Concentratie N uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom incrementeel">
             <description>Concentratie N oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom minimaal">
             <description>Concentratie S oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom minimaal">
             <description>Concentratie S uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom incrementeel">
             <description>Concentratie S oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom incrementeel">
             <description>Concentratie S uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_GW5" name="Verhard" readonly="false">
@@ -799,7 +799,7 @@
         </parameter>
         <parameter id="min_water_level" name="minimale waterstand">
             <description>minimale waterstand t.o.v. equilibrium [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0</dblValue>
         </parameter>
         <parameter id="equi_water_level" name="equilibrium waterstand">
             <description>equilibrium waterstand [m]</description>
@@ -831,7 +831,7 @@
         </parameter>
         <parameter id="bottom_min_water_level" name="onderste bakje - minimale waterstand">
             <description>onderste bakje - minimale waterstand [m]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>-999.0</dblValue>
         </parameter>
         <parameter id="bottom_equi_water_level" name="onderste bakje - equilibrium waterstand">
             <description>onderste bakje - equilibrium waterstand [m]</description>
@@ -847,70 +847,70 @@
         </parameter>
         <parameter id="concentr_chloride_flow_off" name="Concentratie Cl oppervlakte afstroom">
             <description>Concentratie Cl oppervlakte afstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="concentr_chloride_drainage_indraft" name="Concentratie Cl uitstroom">
             <description>Concentratie Cl uitstroom [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>18.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom minimaal">
             <description>Concentratie P oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom minimaal">
             <description>Concentratie P uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_flow_off" name="Concentratie P oppervlakte afstroom incrementeel">
             <description>Concentratie P oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate_drainage_indraft" name="Concentratie P uitstroom incrementeel">
             <description>Concentratie P uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>0.6</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom minimaal">
             <description>Concentratie N oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom minimaal">
             <description>Concentratie N uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_flow_off" name="Concentratie N oppervlakte afstroom incrementeel">
             <description>Concentratie N oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen_drainage_indraft" name="Concentratie N uitstroom incrementeel">
             <description>Concentratie N uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom minimaal">
             <description>Concentratie S oppervlakte afstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom minimaal">
             <description>Concentratie S uitstroom minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_flow_off" name="Concentratie S oppervlakte afstroom incrementeel">
             <description>Concentratie S oppervlakte afstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate_drainage_indraft" name="Concentratie S uitstroom incrementeel">
             <description>Concentratie S uitstroom incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
-    <group id="3300_inlaatPB" name="inlaat peilbeheer" readonly="false">
+    <group id="3300_inlaatPB1" name="Inlaat PB" readonly="false">
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaatPB</stringValue>
+            <stringValue>3300_inlaatPB1</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
-            <stringValue>inlaat peilbeheer</stringValue>
+            <stringValue>Inlaat PB</stringValue>
         </parameter>
         <parameter id="is_computed" name="Opgedrukt">
             <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
@@ -930,231 +930,11 @@
         </parameter>
         <parameter id="concentr_chloride" name="Concentratie Cl">
             <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_uitlaatPB" name="uitlaat peilbeheer" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaatPB</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>uitlaat peilbeheer</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_inlaat1" name="Tienhovens + Noorderpark" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaat1</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Tienhovens + Noorderpark</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>25.0</dblValue>
+            <dblValue>145.0</dblValue>
         </parameter>
         <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
             <description>Concentratie P minimaal [g/m3]</description>
             <dblValue>0.05</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.1</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_uitlaat1" name="LV duiker C" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaat1</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>LV duiker C</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_inlaat2" name="Gansenhoef" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaat2</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Gansenhoef</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>90.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.4</dblValue>
         </parameter>
         <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
             <description>Concentratie P incrementeel [g/m3]</description>
@@ -1162,360 +942,30 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
             <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
             <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
-    <group id="3300_uitlaat2" name="Noorderpark" readonly="false">
+    <group id="3300_uitlaatPB" name="Uitlaat PB" readonly="false">
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaat2</stringValue>
+            <stringValue>3300_uitlaatPB</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
-            <stringValue>Noorderpark</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_inlaat3" name="Bethune" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaat3</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Bethune</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>47.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.4</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.05</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_uitlaat3" name="Tienhovense plassen" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaat3</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Tienhovense plassen</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_inlaat4" name="Sluislek" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaat4</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Sluislek</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>5184.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>5184.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>100.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.18</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.05</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_uitlaat4" name="Uitlaat4" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaat4</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Uitlaat4</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>false</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_inlaatPB2" name="inlaat peilbeheer2" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaatPB2</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>inlaat peilbeheer2</stringValue>
-        </parameter>
-        <parameter id="is_computed" name="Opgedrukt">
-            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="into" name="Inlaat of Uitlaat">
-            <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
-        </parameter>
-        <parameter id="deb_zomer" name="Debiet zomer">
-            <description>Vast zomer debiet  [m3/dag]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="deb_wint" name="Debiet winter">
-            <description>debiet winter</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="concentr_chloride" name="Concentratie Cl">
-            <description>Concentratie Cl [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
-            <description>Concentratie P minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
-            <description>Concentratie P incrementeel [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
-            <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
-            <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
-            <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
-            <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
-        </parameter>
-    </group>
-    <group id="3300_uitlaatPB2" name="Gemaal Loosdrecht, Bedrijf pomp 2" readonly="false">
-        <model>PumpingStation</model>
-        <parameter id="location_id" name="Kunstwerk code">
-            <description>Code van het kunstwerk</description>
-            <stringValue>3300_uitlaatPB2</stringValue>
-        </parameter>
-        <parameter id="name" name="Naam van het kunstwerk">
-            <description>Naam van het bakje</description>
-            <stringValue>Gemaal Loosdrecht, Bedrijf pomp 2</stringValue>
+            <stringValue>Uitlaat PB</stringValue>
         </parameter>
         <parameter id="is_computed" name="Opgedrukt">
             <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
@@ -1547,19 +997,19 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
             <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
             <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
     <group id="3300_uitlaatPB1" name="Gemaal Loosdrecht, Bedrijf pomp 1" readonly="false">
@@ -1602,30 +1052,30 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
             <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
             <description>Concentratie S incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
-    <group id="3300_inlaatPB1" name="loosdefo tvgl" readonly="false">
+    <group id="3300_uitlaatPB2" name="Gemaal Loosdrecht, Bedrijf pomp 2" readonly="false">
         <model>PumpingStation</model>
         <parameter id="location_id" name="Kunstwerk code">
             <description>Code van het kunstwerk</description>
-            <stringValue>3300_inlaatPB1</stringValue>
+            <stringValue>3300_uitlaatPB2</stringValue>
         </parameter>
         <parameter id="name" name="Naam van het kunstwerk">
             <description>Naam van het bakje</description>
-            <stringValue>loosdefo tvgl</stringValue>
+            <stringValue>Gemaal Loosdrecht, Bedrijf pomp 2</stringValue>
         </parameter>
         <parameter id="is_computed" name="Opgedrukt">
             <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
@@ -1633,7 +1083,7 @@
         </parameter>
         <parameter id="into" name="Inlaat of Uitlaat">
             <description>Waarde is 1 als het een inlaat is, anders 0</description>
-            <boolValue>true</boolValue>
+            <boolValue>false</boolValue>
         </parameter>
         <parameter id="deb_zomer" name="Debiet zomer">
             <description>Vast zomer debiet  [m3/dag]</description>
@@ -1657,19 +1107,404 @@
         </parameter>
         <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
             <description>Concentratie N minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
             <description>Concentratie N incrementeel g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
             <description>Concentratie S minimaal [g/m3]</description>
-            <dblValue>0.0</dblValue>
+            <dblValue>1.0</dblValue>
         </parameter>
         <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
             <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_inlaat1" name="Tienhovens + Noorderpark" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_inlaat1</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Tienhovens + Noorderpark</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>true</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
             <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>22.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.45</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_uitlaat1" name="LV duiker C" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_uitlaat1</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>LV duiker C</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_inlaat2" name="Gansenhoef" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_inlaat2</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Gansenhoef</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>true</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>90.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.45</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_uitlaat2" name="Noorderpark" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_uitlaat2</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Noorderpark</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_inlaat3" name="Bethune" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_inlaat3</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Bethune</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>true</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>47.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_uitlaat3" name="Tienhovense plassen" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_uitlaat3</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Tienhovense plassen</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+    </group>
+    <group id="3300_inlaat4" name="Sluislek" readonly="false">
+        <model>PumpingStation</model>
+        <parameter id="location_id" name="Kunstwerk code">
+            <description>Code van het kunstwerk</description>
+            <stringValue>3300_inlaat4</stringValue>
+        </parameter>
+        <parameter id="name" name="Naam van het kunstwerk">
+            <description>Naam van het bakje</description>
+            <stringValue>Sluislek</stringValue>
+        </parameter>
+        <parameter id="is_computed" name="Opgedrukt">
+            <description>0=nee, 1=ja. i.g.v. nee, dan wordt dit kunstwerk berekend en de tijdserie gebruikt om de sluitfout te berekenen</description>
+            <boolValue>false</boolValue>
+        </parameter>
+        <parameter id="into" name="Inlaat of Uitlaat">
+            <description>Waarde is 1 als het een inlaat is, anders 0</description>
+            <boolValue>true</boolValue>
+        </parameter>
+        <parameter id="deb_zomer" name="Debiet zomer">
+            <description>Vast zomer debiet  [m3/dag]</description>
+            <dblValue>5184.0</dblValue>
+        </parameter>
+        <parameter id="deb_wint" name="Debiet winter">
+            <description>debiet winter</description>
+            <dblValue>5184.0</dblValue>
+        </parameter>
+        <parameter id="concentr_chloride" name="Concentratie Cl">
+            <description>Concentratie Cl [g/m3]</description>
+            <dblValue>100.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_phosphate" name="Concentratie P minimaal">
+            <description>Concentratie P minimaal [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_phosphate" name="Concentratie P incrementeel">
+            <description>Concentratie P incrementeel [g/m3]</description>
+            <dblValue>0.05</dblValue>
+        </parameter>
+        <parameter id="min_concentr_nitrogen" name="Concentratie N minimaal">
+            <description>Concentratie N minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_nitrogen" name="Concentratie N incrementeel">
+            <description>Concentratie N incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="min_concentr_sulphate" name="Concentratie S minimaal">
+            <description>Concentratie S minimaal [g/m3]</description>
+            <dblValue>1.0</dblValue>
+        </parameter>
+        <parameter id="incr_concentr_sulphate" name="Concentratie S incrementeel">
+            <description>Concentratie S incrementeel g/m3]</description>
+            <dblValue>1.0</dblValue>
         </parameter>
     </group>
 </parameters>

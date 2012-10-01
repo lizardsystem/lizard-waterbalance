@@ -525,8 +525,8 @@ class WaterbalanceComputer2(object):
         """ """
         logger.debug("WaterbalanceComputer2::get_waterlevel_with_sluice_error")
         calc_waterlevel = self.get_level_control_timeseries(start_date, end_date)['water_level']
-        sluice_error = self.calc_sluice_error_timeseries(start_date, end_date)
-        return calc_waterlevel, sluice_error
+        sluice_error_outlet, sluice_error_inlet = self.calc_sluice_error_timeseries(start_date, end_date)
+        return calc_waterlevel, sluice_error_outlet, sluice_error_inlet
 
     @memoize
     def get_concentration_timeseries(self, start_date, end_date):
@@ -678,12 +678,19 @@ class WaterbalanceComputer2(object):
 
         ref_intakes, ref_outtakes = self.get_reference_timeseries(start_date, end_date)
 
-        sluice_error = self.sluice_error_computer.compute(
+        sluice_error_outlet = self.sluice_error_computer.compute(
             start_date, end_date,
-            [control["intake_wl_control"], control["outtake_wl_control"]],
-            ref_intakes.values() + ref_outtakes.values())
+            [control["outtake_wl_control"]],
+            ref_outtakes.values())
 
-        return sluice_error
+        sluice_error_inlet = self.sluice_error_computer.compute(
+            start_date, end_date,
+            [control["inlet_wl_control"]],
+            ref_intakes.values())
+
+
+
+        return sluice_error_outlet, sluice_error_inlet
 
     @memoize
     def get_fraction_timeseries(self, start_date, end_date):

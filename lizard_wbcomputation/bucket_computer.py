@@ -84,113 +84,8 @@ class BucketOutcome:
                 "net_precipitation": self.net_precipitation}
 
 
-def compute_seepage(bucket, seepage):
-    """Return the seepage of the given bucket on the given date.
 
-    Parameters:
-    * bucket -- bucket for which to compute the seepage
-    * date -- date for which to compute the seepage
-    * seepage -- seepage in [mm/day]
-
-    """
-    # with regard to the factor 0.001 in the next line, seepage is specified
-    # in [mm/day] but surface in [m]: 1 [mm] == 0.001 [m]
-    return (bucket.surface * seepage) / 1000.0
-
-
-def compute_net_precipitation(bucket,
-                              previous_volume,
-                              precipitation,
-                              evaporation):
-    """Return the net precipitation of today.
-
-    With net precipitation, we mean the volume difference caused by
-    precipitation and evaporation.
-
-    Parameters:
-    * bucket -- bucket for which to compute the net precipitation
-    * previous_volume -- water volume of the bucket the day before
-    * precipitation -- precipitation of today in [mm/day]
-    * evaporation -- evaporation of today in [mm/day]
-
-    """
-    equi_volume = bucket.equi_water_level * bucket.surface
-    if previous_volume > equi_volume:
-        evaporation_factor = bucket.crop_evaporation_factor
-    else:
-        evaporation_factor = bucket.min_crop_evaporation_factor
-
-    net_precipitation = precipitation - evaporation * evaporation_factor
-    # with regard to the factor 0.001 in the next line, precipitation and
-    # evaporation are specified in [mm/day] but surface in [m]: 1 [mm] == 0.001
-    # [m]
-    return net_precipitation * bucket.surface / 1000.0
-
-
-def compute_net_drainage(bucket, previous_volume):
-    """Return the net drainage of today.
-
-    With net drainage, we mean the volume difference caused by drainage and
-    indraft.
-
-    Parameters:
-    * bucket -- bucket for which to compute the net drainage
-    * previous_volume -- water volume of the bucket the day before
-
-    """
-    equi_volume = bucket.equi_water_level * bucket.surface
-    if previous_volume > equi_volume:
-        # the net drainage specifies an outgoing volume so should be
-        # non-positive: the drainage fraction is specified as a non-negative
-        # number
-        net_drainage = -previous_volume * bucket.drainage_fraction
-    elif previous_volume < equi_volume:
-        # the net drainage specifies an incoming volume so should be
-        # non-negative: the indraft fraction is specified as a non-negative
-        # number
-        net_drainage = -previous_volume * bucket.indraft_fraction
-    else:
-        net_drainage = 0
-    return net_drainage
-
-def compute(bucket, previous_storage, precipitation, evaporation, seepage, allow_below_minimum_storage=True):
-    """Compute and return the waterbalance of the given bucket.
-
-    This method computes for the given bucket the water storage, flow off, net
-    drainage, seepage and net precipitation and returns them as a quintuple.
-
-    Parameters:
-    * bucket -- bucket for which to compute the waterbalance
-    * previous_storage -- water storage of the bucket the day before in [m3]
-    * precipitation -- precipitation time series for the bucket in [mm/day]
-    * evaporation -- evaporation time series for the bucket in [mm/day]
-    * seepage -- seepage time series for the bucket in [mm/day]
-    * allow_below_minimum_storage -- holds iff the computed storage can be below the minimum storage
-
-    """
-    net_precipitation = compute_net_precipitation(bucket, previous_storage,
-                                                  precipitation, evaporation)
-    net_drainage = compute_net_drainage(bucket, previous_storage)
-    seepage = compute_seepage(bucket, seepage)
-
-    storage = previous_storage + net_precipitation + net_drainage + seepage
-    max_storage = bucket.max_water_level * bucket.surface * bucket.porosity
-    if storage > max_storage:
-        flow_off = max_storage - storage
-        storage = max_storage
-    else:
-        flow_off = 0
-
-    if not allow_below_minimum_storage:
-        storage = max(storage, 0.0)
-
-#    else:
-#        storage = max(storage, bucket.min_water_level * bucket.surface)
-
-
-    return (storage, flow_off, net_drainage, seepage, net_precipitation)
-
-def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, allow_below_minimum_storage=True):
+def compute_timeseries(bucket, precipitation_ts, evaporation_ts, seepage_ts, fill_below_minimum_with_indraft=True):
     """Compute and return the waterbalance time series of the given bucket.
 
     This method computes for the given bucket the time series that can be
@@ -206,63 +101,146 @@ def compute_timeseries(bucket, precipitation, evaporation, seepage, compute, all
 
     """
     outcome = BucketOutcome()
-    volume = bucket.init_water_level * bucket.surface * bucket.porosity
+    previous_volume = bucket['init_water_level'] * bucket['surface'] * bucket['porosity']
+    max_volume = bucket['max_water_level'] * bucket['surface'] * bucket['porosity']
+    min_volume = bucket['min_water_level'] * bucket['surface'] * bucket['porosity']
+    equi_volume = bucket['equi_water_level'] * bucket['surface']
 
-    if not allow_below_minimum_storage and bucket.min_water_level == None:
-        logger.warming("Warning, minimum level is not set for %s, default value 0 taken for calculation (level below minimum level is not allowed for this bucket type)"%bucket.name)
-        bucket.min_water_level = 0
 
-    for triple in enumerate_events(precipitation, evaporation, seepage):
-        precipitation_event = triple[0]
-        event_date = precipitation_event[0]
-        evaporation_event = triple[1]
-        seepage_event = triple[2]
-        bucket_triple = compute(bucket, volume, precipitation_event[1],
-                                evaporation_event[1], seepage_event[1],
-                                allow_below_minimum_storage)
+    for triple in enumerate_events(precipitation_ts, evaporation_ts, seepage_ts):
+        precipitation = triple[0][1]
+        event_date = triple[0][0]
+        evaporation = triple[1][1]
+        seepage = triple[2][1]
+
+        net_drainage = 0
+        net_precipitation = 0
+        flow_off = 0
+
+
+        if previous_volume > equi_volume:
+            evaporation_factor = bucket['crop_evaporation_factor']
+        else:
+            evaporation_factor = bucket['min_crop_evaporation_factor']
+
+        net_precipitation_mmday = precipitation - evaporation * evaporation_factor
+        # with regard to the factor 0.001 in the next line, precipitation and
+        # evaporation are specified in [mm/day] but surface in [m]: 1 [mm] == 0.001
+        # [m]
+        net_precipitation = net_precipitation_mmday * bucket['surface'] / 1000.0
+
+
+        #####compute net drainage#####
+        if previous_volume > equi_volume:
+            # the net drainage specifies an outgoing volume so should be
+            # negative: the drainage fraction is specified as a positive
+            # number
+            net_drainage = (equi_volume - previous_volume) * bucket['drainage_fraction']
+        elif previous_volume < equi_volume:
+            # the net drainage specifies an incoming volume so should be
+            # postive: the indraft fraction is specified as a positive
+            # number
+            net_drainage = (equi_volume - previous_volume) * bucket['indraft_fraction']
+        else:
+            net_drainage = 0
+
+        #####compute seepage#####
+        seepage = bucket['surface'] * seepage / 1000.0
+
+        volume = previous_volume + net_precipitation + net_drainage + seepage
+
+        flow_off = 0
+        if volume > max_volume:
+            flow_off = max_volume - volume
+            volume = max_volume
+        elif volume < min_volume:
+            if fill_below_minimum_with_indraft:
+                #todo, check min/plus
+                net_drainage += min_volume - volume
+
+            volume = min_volume
+
+
         #note that bucket_triple is a quintuple now
-        volume = bucket_triple[0]
         outcome.storage.add_value(event_date, volume)
-        outcome.flow_off.add_value(event_date, bucket_triple[1])
-        outcome.net_drainage.add_value(event_date, bucket_triple[2])
-        outcome.seepage.add_value(event_date, bucket_triple[3])
-        outcome.net_precipitation.add_value(event_date, bucket_triple[4])
+        outcome.flow_off.add_value(event_date, flow_off)
+        outcome.net_drainage.add_value(event_date, net_drainage)
+        outcome.seepage.add_value(event_date, seepage)
+        outcome.net_precipitation.add_value(event_date, net_precipitation)
+
+        previous_volume = volume
+
     return outcome
 
-def switch_values(one, two):
-    return two, one
-
-def switch_bucket_upper_values(bucket):
-
-    bucket.bottom_porosity, bucket.porosity = switch_values(bucket.bottom_porosity, bucket.porosity)
-    bucket.bottom_drainage_fraction, bucket.drainage_fraction = switch_values(bucket.bottom_drainage_fraction, bucket.drainage_fraction)
-    bucket.bottom_indraft_fraction, bucket.indraft_fraction = switch_values(bucket.bottom_indraft_fraction, bucket.indraft_fraction)
-    bucket.bottom_max_water_level, bucket.max_water_level = switch_values(bucket.bottom_max_water_level, bucket.max_water_level)
-    bucket.bottom_min_water_level, bucket.min_water_level = switch_values(bucket.bottom_min_water_level, bucket.min_water_level)
-    bucket.bottom_equi_water_level, bucket.equi_water_level = switch_values(bucket.bottom_equi_water_level, bucket.equi_water_level)
-    bucket.bottom_init_water_level, bucket.init_water_level = switch_values(bucket.bottom_init_water_level, bucket.init_water_level)
-    return bucket
-
-def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage, compute):
+def compute_timeseries_on_undrained_surface(bucket, precipitation, evaporation, seepage):
 
     # we compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the porosity of the upper bucket is always 1.0
     #   - the storage of the upper bucket can not be below the minimum storage
 
-    upper_seepage = create_empty_timeseries(seepage)
+    bucket_settings = {
+        'surface': bucket.surface,
+        'porosity': bucket.porosity,
+        'crop_evaporation_factor': bucket.crop_evaporation_factor,
+        'min_crop_evaporation_factor': bucket.min_crop_evaporation_factor,
+        'drainage_fraction':bucket.drainage_fraction,
+        'indraft_fraction':bucket.indraft_fraction,
+        'max_water_level': bucket.max_water_level,
+        'min_water_level': bucket.min_water_level,
+        'equi_water_level': bucket.equi_water_level,
+        'init_water_level': bucket.init_water_level
+    }
 
-    bucket.porosity = 1.0
-
-    upper_outcome = compute_timeseries(bucket,
+    upper_outcome = compute_timeseries(bucket_settings,
                                        precipitation,
                                        evaporation,
-                                       upper_seepage,
-                                       compute,
+                                       seepage,
                                        False)
 
 
-    bucket = switch_bucket_upper_values(bucket)
+    return upper_outcome
+
+def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, seepage):
+
+    # we compute the upper bucket:
+    #   - the upper bucket does not have seepage
+    #   - the porosity of the upper bucket is always 1.0
+    #   - the storage of the upper bucket can not be below the minimum storage
+
+    bucket_settings = {
+        'surface': bucket.surface,
+        'porosity':1.0,
+        'crop_evaporation_factor': bucket.crop_evaporation_factor,
+        'min_crop_evaporation_factor': bucket.min_crop_evaporation_factor,
+        'drainage_fraction':bucket.drainage_fraction,
+        'indraft_fraction':bucket.indraft_fraction,
+        'max_water_level': bucket.max_water_level,
+        'min_water_level': bucket.min_water_level,
+        'equi_water_level': bucket.equi_water_level,
+        'init_water_level': bucket.init_water_level
+    }
+
+    upper_seepage = create_empty_timeseries(seepage)
+
+    upper_outcome = compute_timeseries(bucket_settings,
+                                       precipitation,
+                                       evaporation,
+                                       upper_seepage,
+                                       False)
+
+    bucket_settings = {
+        'surface': bucket.surface,
+        'porosity': bucket.bottom_porosity,
+        'crop_evaporation_factor': bucket.crop_evaporation_factor,
+        'min_crop_evaporation_factor': bucket.min_crop_evaporation_factor,
+        'drainage_fraction':bucket.bottom_drainage_fraction,
+        'indraft_fraction':bucket.bottom_indraft_fraction,
+        'max_water_level': bucket.bottom_max_water_level,
+        'min_water_level': bucket.bottom_min_water_level,
+        'equi_water_level': bucket.bottom_equi_water_level,
+        'init_water_level': bucket.bottom_init_water_level
+    }
 
 
     # we then compute the lower bucket:
@@ -270,13 +248,12 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     #    have flow off
     lower_precipitation = create_empty_timeseries(precipitation)
     lower_evaporation = create_empty_timeseries(evaporation)
-    lower_outcome = compute_timeseries(bucket,
+
+    lower_outcome = compute_timeseries(bucket_settings,
                                        lower_precipitation,
                                        lower_evaporation,
                                        seepage,
-                                       compute)
-
-    bucket = switch_bucket_upper_values(bucket)
+                                       True)
 
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
@@ -288,18 +265,33 @@ def compute_timeseries_on_hardened_surface(bucket, precipitation, evaporation, s
     return outcome
 
 
-def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage, compute):
+def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, seepage):
 
     # we first compute the upper bucket:
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
+
+    bucket_settings = {
+        'surface': bucket.surface,
+        'porosity':bucket.porosity,
+        'crop_evaporation_factor': bucket.crop_evaporation_factor,
+        'min_crop_evaporation_factor': bucket.min_crop_evaporation_factor,
+        'drainage_fraction':bucket.drainage_fraction,
+        'indraft_fraction':bucket.indraft_fraction,
+        'max_water_level': bucket.max_water_level,
+        'min_water_level': bucket.min_water_level,
+        'equi_water_level': bucket.equi_water_level,
+        'init_water_level': bucket.init_water_level
+    }
+
     upper_seepage = create_empty_timeseries(seepage)
 
-    upper_outcome = compute_timeseries(bucket,
+    upper_outcome = compute_timeseries(bucket_settings,
                                        precipitation,
                                        evaporation,
                                        upper_seepage,
-                                       compute)
+                                       True)
+
     assert len(list(upper_outcome.flow_off.events())) > 0
     assert len(list(upper_outcome.net_drainage.events())) > 0
 
@@ -308,29 +300,34 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
     (drainage, indraft) = split_timeseries(upper_outcome.net_drainage)
     # upper_outcome.flow_off and drainage are time series with only
     # non-positive values as they take water away from the upper bucket
-    lower_precipitation = add_timeseries(upper_outcome.flow_off, drainage)
+    lower_precipitation = drainage
     # As it is, lower_precipitation contains only non-positive values but it
     # adds water to the bottom bucket, so we have to invert these values. Also,
     # lower_precipitation is specified in [m3/day] but should be specified in
     # [mm/day]
 
-    bucket = switch_bucket_upper_values(bucket)
 
-    bucket.crop_evaporation_factor, tmp_crop_evaporation = 1, bucket.crop_evaporation_factor
-    bucket.min_crop_evaporation_factor, tmp_min_crop_evaporation = 1 , bucket.min_crop_evaporation_factor
+    bucket_settings = {
+        'surface': bucket.surface,
+        'porosity': 1.0, #bucket.bottom_porosity,
+        'crop_evaporation_factor': 1.0,
+        'min_crop_evaporation_factor': 1.0,
+        'drainage_fraction':bucket.bottom_drainage_fraction,
+        'indraft_fraction':bucket.bottom_indraft_fraction,
+        'max_water_level': bucket.bottom_max_water_level,
+        'min_water_level': bucket.bottom_min_water_level,
+        'equi_water_level': bucket.bottom_equi_water_level,
+        'init_water_level': bucket.bottom_init_water_level
+    }
+
     lower_precipitation = multiply_timeseries(lower_precipitation, -1000.0 / bucket.surface)
     lower_evaporation = create_empty_timeseries(evaporation)
     assert len(list(lower_precipitation.events())) > 0
-    lower_outcome = compute_timeseries(bucket,
+    lower_outcome = compute_timeseries(bucket_settings,
                                        lower_precipitation,
                                        lower_evaporation,
                                        seepage,
-                                       compute)
-
-    bucket.crop_evaporation_factor = tmp_crop_evaporation
-    bucket.min_crop_evaporation_factor = tmp_min_crop_evaporation
-
-    bucket = switch_bucket_upper_values(bucket)
+                                       True)
 
     outcome = BucketOutcome()
     outcome.storage = upper_outcome.storage
@@ -347,8 +344,6 @@ def compute_timeseries_from_sewer(bucket, sewer):
     #   - the upper bucket does not have seepage
     #   - the upper bucket has some of its own attributes
 
-
-    bucket = switch_bucket_upper_values(bucket)
     outcome = BucketOutcome()
     outcome.net_drainage = multiply_timeseries(sewer, -1 * bucket.surface/10000)
     return outcome
@@ -373,8 +368,7 @@ class BucketComputer:
     def __init__(self, bucket_computers=None):
         if bucket_computers is None:
             self.bucket_computers = {}
-            self.bucket_computers[BucketTypes.UNDRAINED_SURFACE] = compute_timeseries
-            self.bucket_computers[BucketTypes.STEDELIJK_SURFACE] = compute_timeseries
+            self.bucket_computers[BucketTypes.UNDRAINED_SURFACE] = compute_timeseries_on_undrained_surface
             self.bucket_computers[BucketTypes.HARDENED_SURFACE] = compute_timeseries_on_hardened_surface
             self.bucket_computers[BucketTypes.DRAINED_SURFACE] = compute_timeseries_on_drained_surface
         else:
@@ -395,7 +389,7 @@ class BucketComputer:
                 if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                     outcome = compute_timeseries_from_sewer(bucket, sewer)
                 else:
-                    outcome = bucket_computer(bucket, precipitation, evaporation, seepage, compute)
+                    outcome = bucket_computer(bucket, precipitation, evaporation, seepage)
                 result = outcome
             else:
                 logger.warning("bucket has non-positive surface", bucket.name,

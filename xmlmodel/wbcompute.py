@@ -47,12 +47,15 @@ from lizard_wbcomputation.load_computer import LoadForIntake
 from xmlmodel.utils import convert_dom
 from xmlmodel.reader import parse_parameters
 from xmlmodel.reader import attach_timeseries_to_structures
+from xmlmodel.validation import validate_settings
 
 log = logging.getLogger(__name__)
 
 # wbcompute uses the same version as lizard-waterbalance as a whole
 # unfortunately, after py2exe-ing we can't get the version in this way.
 version = pkginfo.installed.Installed("lizard_waterbalance").version
+
+#sys.path.append('/home/vagrant/pycharm-debug.egg')
 
 def getText(node):
     return str("".join(t.nodeValue for t in node.childNodes
@@ -133,6 +136,8 @@ LABEL2TIMESERIESSPEC = {
         TimeSeriesSpec('water_level', Units.level),
     'sluice_error': \
         TimeSeriesSpec('sluice_error', Units.flow),
+    'sluice_error_inlet':\
+        TimeSeriesSpec('sluice_error_inlet', Units.flow),
     'undrained': \
         TimeSeriesSpec('discharge_drainage', Units.flow),
     'sewer': \
@@ -445,7 +450,7 @@ def store_graphs_timeseries(run_info, area):
     start_date, end_date = run_info["startDateTime"], run_info["endDateTime"]
     incoming = cm.get_open_water_incoming_flows(start_date, end_date)
     outgoing = cm.get_open_water_outgoing_flows(start_date, end_date)
-    water_level, sluice_error = cm.get_waterlevel_with_sluice_error(start_date, end_date)
+    water_level, sluice_error, sluice_error_inlet = cm.get_waterlevel_with_sluice_error(start_date, end_date)
 
     writeable_timeseries = WriteableTimeseriesList(area, LABEL2TIMESERIESSPEC)
 
@@ -453,6 +458,7 @@ def store_graphs_timeseries(run_info, area):
     writeable_timeseries.insert(outgoing)
     writeable_timeseries.insert({'water_level': water_level})
     writeable_timeseries.insert({'sluice_error': sluice_error})
+    writeable_timeseries.insert({'sluice_error_inlet': sluice_error_inlet})
 
     for substance in ['phosphate', 'nitrogen', 'sulphate']:
         impacts, impacts_incremental = \
@@ -544,6 +550,11 @@ def main(args):
     try:
         t1= time()
 
+        #from pydev import pydevd
+
+        #pydevd.settrace('192.168.100.139', port=51234, stdoutToServer=True, stderrToServer=True, suspend=False)
+
+
         run_file, = args
         run_dom = ElementTree.parse(run_file)
         convert_dom(run_dom)
@@ -553,19 +564,29 @@ def main(args):
                          if i.tag != u"properties")
         insert_calculation_range(run_dom, run_info)
         diag = fews.DiagHandler(run_info['outputDiagnosticFile'])
+        diag.setLevel(logging.INFO)
         logging.getLogger().addHandler(diag)
-        logging.getLogger().setLevel(logging.INFO)
+
+        screen = logging.StreamHandler()
+        screen.setLevel(logging.DEBUG)
+        logging.getLogger().addHandler(screen)
+
         log.info("version: %s", version)
         t2 = time()
         log.info("init: %s"%(t2-t1))
 
         log.debug(run_info['inputTimeSeriesFile'])
+
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
+        t3 = time()
+
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
         negate_outgoing_timeseries(area)
         area.set_init_water_level(run_info['startDateTime'])
         t3 = time()
+        validate_settings(area)
+
         log.info("reading data: %s"%(t3-t2))
 
         log.info("start computation of waterbalance time series")

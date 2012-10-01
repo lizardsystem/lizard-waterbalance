@@ -144,7 +144,7 @@ class Area(BaseModel):
         logger.debug('set initial water level for area %s', self.name)
         self.init_water_level = None
         for event in self.retrieve_water_level().events():
-            if event[0] < date + datetime.timedelta(1):
+            if event[0] <= date:
                 self.init_water_level = event[1]
             else:
                 if self.init_water_level is None:
