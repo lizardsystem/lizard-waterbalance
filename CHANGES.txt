@@ -5,7 +5,11 @@ Changelog of lizard-waterbalance
 0.20.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- split sluice_error in outlet and inlet part
+
+- add validation on settings
+
+- bug fix drained bucket (in flow-off situation)
 
 
 0.20.3 (2012-09-24)
