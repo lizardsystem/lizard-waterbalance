@@ -2,7 +2,7 @@ from setuptools import setup
 
 import py2exe
 
-version = '0.20.4'
+version = '0.20.5'
 
 long_description = '\n\n'.join([
     open('README.rst').read(),
