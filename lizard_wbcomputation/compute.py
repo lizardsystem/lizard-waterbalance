@@ -66,22 +66,6 @@ def transform_evaporation_timeseries_penman_to_makkink(evaporation_timeseries):
     return result
 
 
-def find_pumping_station_level_control(area, find_intake):
-    """Find and return the PumpingStation to be used for level control.
-
-    Parameters:
-      *area*
-        Area-like object to which the searched  PumpingStation should belong
-      *find_intake*
-        holds if and only if the searched PumpingStation should be an intake
-
-    """
-    stations = (station for station in area.pumping_stations
-                if station.into == find_intake and
-                   station.is_computed == True)
-    return next(stations, None)
-
-
 def retrieve_incoming_timeseries(area, only_input=False):
     """Return the dictionary of intake to measured time series.
 
@@ -429,20 +413,6 @@ class WaterbalanceComputer2(object):
         return outcome
 
     @memoize
-    def get_level_control_pumping_stations(self):
-        """Return the pair (intake, pump) pumping stations for level control.
-
-        If the user did not define an intake for level control, this funtion
-        returns None for that intake. The same holds for the pump for level
-        control.
-
-        """
-        logger.debug("WaterbalanceComputer2::get_level_control_pumping_stations")
-        find_intake = True
-        return find_pumping_station_level_control(self.area, find_intake), \
-               find_pumping_station_level_control(self.area, not find_intake)
-
-    @memoize
     def get_open_water_incoming_flows(self, start_date, end_date):
         """ Return incoming waterflows.
         - precipitation
@@ -467,7 +437,10 @@ class WaterbalanceComputer2(object):
         incoming["hardened"] = buckets_summary.hardened
         incoming["sewer"] = buckets_summary.sewer
         incoming["defined_input"]= input['incoming_timeseries']
-        intake, outtake = self.get_level_control_pumping_stations()
+        intake =  (station for station in self.area.pumping_stations
+                        if station.into == True and
+                           station.is_computed == True and
+                           station.is_output_station == True)
         incoming["intake_wl_control"] = {intake: control['intake_wl_control']}
         return incoming
 
@@ -491,7 +464,10 @@ class WaterbalanceComputer2(object):
         outgoing["infiltration"] = vertical_open_water_timeseries["infiltration"]
         outgoing["indraft"] = buckets_summary.indraft
         outgoing["defined_output"]= input['outgoing_timeseries']
-        intake, outtake = self.get_level_control_pumping_stations()
+        outtake =  (station for station in self.area.pumping_stations
+            if station.into == True and
+               station.is_computed == True and
+                station.is_output_station == True)
         outgoing["outtake_wl_control"] = {outtake: control['outtake_wl_control']}
         return outgoing
 
@@ -719,12 +695,12 @@ class WaterbalanceComputer2(object):
             intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                    start_date=start_date,
                                                    end_date=end_date)
-        intake = find_pumping_station_level_control(self.area, True)
-        if intake is None:
-            logger.warning("No intake for level control is present for "
-                           "area %s", self.area.name)
-        else:
-            intakes_timeseries[intake] = control['intake_wl_control']
+        intake = (station for station in self.area.pumping_stations
+            if station.into == True and
+               station.is_computed == True and
+               station.is_output_station == True)
+
+        intakes_timeseries[intake] = control['intake_wl_control']
 
         fractions = self.fraction_computer.compute(self.area,
                                                    buckets_summary,
