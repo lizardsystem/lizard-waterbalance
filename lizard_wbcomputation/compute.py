@@ -437,10 +437,10 @@ class WaterbalanceComputer2(object):
         incoming["hardened"] = buckets_summary.hardened
         incoming["sewer"] = buckets_summary.sewer
         incoming["defined_input"]= input['incoming_timeseries']
-        intake =  (station for station in self.area.pumping_stations
+        intake =  [station for station in self.area.pumping_stations
                         if station.into == True and
                            station.is_computed == True and
-                           station.is_output_station == True)
+                           station.is_output_station == True][0]
         incoming["intake_wl_control"] = {intake: control['intake_wl_control']}
         return incoming
 
@@ -464,10 +464,10 @@ class WaterbalanceComputer2(object):
         outgoing["infiltration"] = vertical_open_water_timeseries["infiltration"]
         outgoing["indraft"] = buckets_summary.indraft
         outgoing["defined_output"]= input['outgoing_timeseries']
-        outtake =  (station for station in self.area.pumping_stations
+        outtake =  [station for station in self.area.pumping_stations
             if station.into == True and
                station.is_computed == True and
-                station.is_output_station == True)
+                station.is_output_station == True][0]
         outgoing["outtake_wl_control"] = {outtake: control['outtake_wl_control']}
         return outgoing
 
@@ -695,10 +695,10 @@ class WaterbalanceComputer2(object):
             intakes_timeseries[key] = TimeseriesRestrictedStub(timeseries=timeseries,
                                                    start_date=start_date,
                                                    end_date=end_date)
-        intake = (station for station in self.area.pumping_stations
+        intake = [station for station in self.area.pumping_stations
             if station.into == True and
                station.is_computed == True and
-               station.is_output_station == True)
+               station.is_output_station == True][0]
 
         intakes_timeseries[intake] = control['intake_wl_control']
 

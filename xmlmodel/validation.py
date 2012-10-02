@@ -158,6 +158,62 @@ def validate_settings(area):
                 errors += 1
 
 
+    computed_intakes = []
+    computed_outlets = []
+
+    for station in area.pumping_stations:
+        if station.is_computed:
+            station.is_output_station = False
+            if station.into:
+                computed_intakes.append(station)
+            else:
+                computed_outlets.append(station)
+
+    if len(computed_intakes) == 0:
+        logger.error('Er is geen inlaat voor peilbeheer gedefinieerd')
+    elif len(computed_intakes) == 1:
+        computed_intakes[0].is_output_station = True
+    else:
+        logger.warning('Er zijn meerdere inlaten gedefinieerd voor peilbeheer.\
+Deze optie is nog niet door en door getest (met name voor concentraties en belasting).\
+Het is daarom aan te raden om de gemeten debieten in Fews op te tellen  en aan één station te koppelen.')
+        found = False
+        for intake in computed_intakes:
+            if intake.location_id.endswith('PB1'):
+                logger.info("De tijdserie voor inlaat peilbeheer wordt weggeschreven naar station '%s'"%intake.location_id)
+                intake.is_output_station = True
+                found = True
+                break
+
+        if not found:
+            #take first.
+            intake = computed_intakes[0]
+            intake.is_output_station = True
+            logger.warning("Er is geen inlaat peilbeheer gedefinieerd eindigend op 'PB1'. De tijdserie voor inlaat peilbeheer wordt weggeschreven naar station '%s'"%intake.location_id)
+
+
+    if len(computed_outlets) == 0:
+        logger.error('Er is geen uitlaat voor peilbeheer gedefinieerd')
+    elif len(computed_outlets) == 1:
+        computed_intakes[0].is_output_station = True
+    else:
+        logger.warning('Er zijn meerdere uitlaten gedefinieerd voor peilbeheer.\
+Deze optie is nog niet door en door getest (met name voor concentraties en belasting).\
+Het is daarom aan te raden om de gemeten debieten in Fews op te tellen en aan één station te koppelen.')
+        found = False
+        for outlet in computed_outlets:
+            if outlet.location_id.endswith('PB1'):
+                logger.info("De tijdserie voor uitlaat peilbeheer wordt weggeschreven naar station '%s'"%outlet.location_id)
+                outlet.is_output_station = True
+                found = True
+                break
+
+        if not found:
+            #take first.
+            outlet = computed_outlets[0]
+            outlet.is_output_station = True
+            logger.warning("Er is geen uitlaat peilbeheer gedefinieerd eindigend op 'PB1'. De tijdserie voor uitlaat peilbeheer wordt weggeschreven naar station '%s'"%outlet.name)
+
 
 
 
