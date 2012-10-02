@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.20.5 (unreleased)
+0.20.5 (2012-10-02)
 -------------------
 
 - add support for multiple reference timeseries input for level control
