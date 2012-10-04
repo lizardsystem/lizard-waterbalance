@@ -195,7 +195,7 @@ Het is daarom aan te raden om de gemeten debieten in Fews op te tellen  en aan Ã
     if len(computed_outlets) == 0:
         logger.error('Er is geen uitlaat voor peilbeheer gedefinieerd')
     elif len(computed_outlets) == 1:
-        computed_intakes[0].is_output_station = True
+        computed_outlets[0].is_output_station = True
     else:
         logger.warning('Er zijn meerdere uitlaten gedefinieerd voor peilbeheer.\
 Deze optie is nog niet door en door getest (met name voor concentraties en belasting).\

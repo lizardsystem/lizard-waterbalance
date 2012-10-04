@@ -196,7 +196,7 @@ def compute_timeseries_on_undrained_surface(bucket, precipitation, evaporation, 
                                        precipitation,
                                        evaporation,
                                        seepage,
-                                       False)
+                                       True)
 
 
     return upper_outcome
@@ -290,7 +290,7 @@ def compute_timeseries_on_drained_surface(bucket, precipitation, evaporation, se
                                        precipitation,
                                        evaporation,
                                        upper_seepage,
-                                       True)
+                                       False)
 
     assert len(list(upper_outcome.flow_off.events())) > 0
     assert len(list(upper_outcome.net_drainage.events())) > 0
