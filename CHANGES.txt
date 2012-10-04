@@ -2,7 +2,7 @@ Changelog of lizard-waterbalance
 ===================================================
 
 
-0.20.6 (unreleased)
+0.20.6 (2012-10-04)
 -------------------
 
 - bugfix in bucket computer for indraft computation of waterlevels below minimumlevel
