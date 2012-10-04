@@ -441,6 +441,7 @@ class WaterbalanceComputer2(object):
                         if station.into == True and
                            station.is_computed == True and
                            station.is_output_station == True][0]
+        print intake.name
         incoming["intake_wl_control"] = {intake: control['intake_wl_control']}
         return incoming
 
@@ -465,10 +466,11 @@ class WaterbalanceComputer2(object):
         outgoing["indraft"] = buckets_summary.indraft
         outgoing["defined_output"]= input['outgoing_timeseries']
         outtake =  [station for station in self.area.pumping_stations
-            if station.into == True and
+            if station.into == False and
                station.is_computed == True and
                 station.is_output_station == True][0]
         outgoing["outtake_wl_control"] = {outtake: control['outtake_wl_control']}
+        print outtake.name
         return outgoing
 
     @memoize
