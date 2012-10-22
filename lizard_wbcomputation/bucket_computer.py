@@ -371,6 +371,7 @@ class BucketComputer:
             self.bucket_computers[BucketTypes.UNDRAINED_SURFACE] = compute_timeseries_on_undrained_surface
             self.bucket_computers[BucketTypes.HARDENED_SURFACE] = compute_timeseries_on_hardened_surface
             self.bucket_computers[BucketTypes.DRAINED_SURFACE] = compute_timeseries_on_drained_surface
+            self.bucket_computers[BucketTypes.STEDELIJK_SURFACE] = compute_timeseries_from_sewer
         else:
             self.bucket_computers = bucket_computers
 
@@ -385,10 +386,10 @@ class BucketComputer:
         if bucket.is_computed:
             surface_type_name = BucketTypes.SURFACE_TYPES[bucket.surface_type]
             if bucket.surface > 0:
-                bucket_computer = self.bucket_computers[bucket.surface_type]
                 if bucket.surface_type == BucketTypes.STEDELIJK_SURFACE:
                     outcome = compute_timeseries_from_sewer(bucket, sewer)
                 else:
+                    bucket_computer = self.bucket_computers[bucket.surface_type]
                     outcome = bucket_computer(bucket, precipitation, evaporation, seepage)
                 result = outcome
             else:

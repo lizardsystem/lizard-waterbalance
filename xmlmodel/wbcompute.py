@@ -135,7 +135,7 @@ LABEL2TIMESERIESSPEC = {
     'water_level': \
         TimeSeriesSpec('water_level', Units.level),
     'sluice_error': \
-        TimeSeriesSpec('sluice_error', Units.flow),
+        TimeSeriesSpec('sluice_error_outlet', Units.flow),
     'sluice_error_inlet':\
         TimeSeriesSpec('sluice_error_inlet', Units.flow),
     'undrained': \
@@ -571,38 +571,37 @@ def main(args):
         screen.setLevel(logging.DEBUG)
         logging.getLogger().addHandler(screen)
 
-        log.info("version: %s", version)
-        t2 = time()
-        log.info("init: %s"%(t2-t1))
+        log.setLevel(logging.DEBUG)
 
-        log.debug(run_info['inputTimeSeriesFile'])
+        log.info("version: %s", version)
+
+        t2 = time()
+        log.debug("init: %s s"%(t2-t1))
 
         tsd = TimeSeries.as_dict(run_info['inputTimeSeriesFile'])
-        t3 = time()
 
         area = parse_parameters(run_info['inputParameterFile'])
         attach_timeseries_to_structures(area, tsd, ASSOC)
         negate_outgoing_timeseries(area)
         area.set_init_water_level(run_info['startDateTime'])
-        t3 = time()
         validate_settings(area)
 
-        log.info("reading data: %s"%(t3-t2))
+        t3 = time()
+        log.debug("reading data: %s"%(t3-t2))
 
-        log.info("start computation of waterbalance time series")
         graphs_timeseries = store_graphs_timeseries(run_info, area)
-        log.info("finished computation of waterbalance time series")
-        t4 = time()
-        log.info("calculation: %s"%(t4-t3))
 
-        log.info("start write of waterbalance time series")
+        t4 = time()
+        log.debug("calculation: %s"%(t4-t3))
+
         TimeSeries.write_to_pi_file(run_info['outputTimeSeriesFile'],
                                     graphs_timeseries)
         t5 = time()
-        log.info("writing data: %s"%(t5-t4))
-        log.info("finished write of waterbalance time series")
+        log.debug("writing data: %s"%(t5-t4))
     except:
         log.warning('wbcompute aborts prematurely')
+        import traceback
+        log.warning("The strack trace is:\n%s"%traceback.format_exc().replace('"','\''))
         raise
 
 if __name__ == '__main__':
