@@ -5,7 +5,14 @@ Changelog of lizard-waterbalance
 0.20.7 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- bugfix bucket computer stedelijk (gemende riolering)
+
+- rename sluice_error to sluice_error_outlet
+
+- changed some log levels
+
+- added traceback to overall exception
+
 
 
 0.20.6 (2012-10-04)
