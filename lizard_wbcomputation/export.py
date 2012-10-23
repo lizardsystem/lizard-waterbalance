@@ -35,8 +35,6 @@ from xlutils.copy import copy
 import xlwt
 
 
-from django.http import HttpResponse
-
 from timeseries.timeseriesstub import enumerate_dict_events
 
 logger = logging.getLogger(__name__)
