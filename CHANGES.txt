@@ -5,7 +5,7 @@ Changelog of lizard-waterbalance
 0.20.8 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- removed unnecessary import which gave problems under windows executable
 
 
 0.20.7 (2012-10-22)
